@@ -293,7 +293,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
             <div class="card mb-4">
                 <div class="card-body">
                     <div class="row">
-                        <h5 class="card-header">Tabel Keadaan PTK</h5>
+                        <h5 class="card-header">Jumlah PTK</h5>
                         <div class="table-responsive text-nowrap">
                             <table class="table table-bordered">
                                 <thead>
@@ -333,6 +333,69 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                             </table>
                         </div>
                     </div>
+
+                    <div class="row mt-4">
+                        <h5 class="card-header">Pendidikan PTK</h5>
+                        <div class="table-responsive text-nowrap">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr class="table-light">
+                                        <th width="5">No</th>
+                                        <th>Tingkat Pendidikan Terakhir</th>
+                                        <th style="text-align: center;">Laki-laki</th>
+                                        <th style="text-align: center;">Perempuan</th>
+                                        <th style="text-align: center;">Jumlah</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-border-bottom-0">
+                                    <tr>
+                                        <td>1</td>
+                                        <td><span class="fw-medium">Strata 3/S3</span></td>
+                                        <td style="text-align: center;">7</td>
+                                        <td style="text-align: center;">9</td>
+                                        <td style="text-align: center;"><span class="fw-medium">16</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td><span class="fw-medium">Strata 2/S2</span></td>
+                                        <td style="text-align: center;">2</td>
+                                        <td style="text-align: center;">1</td>
+                                        <td style="text-align: center;"><span class="fw-medium">3</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td><span class="fw-medium">Strata 1/S1</span></td>
+                                        <td style="text-align: center;">2</td>
+                                        <td style="text-align: center;">1</td>
+                                        <td style="text-align: center;"><span class="fw-medium">3</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td><span class="fw-medium">Ahli Madya/Diploma</span></td>
+                                        <td style="text-align: center;">2</td>
+                                        <td style="text-align: center;">1</td>
+                                        <td style="text-align: center;"><span class="fw-medium">3</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>5</td>
+                                        <td><span class="fw-medium">SLTA</span></td>
+                                        <td style="text-align: center;">2</td>
+                                        <td style="text-align: center;">1</td>
+                                        <td style="text-align: center;"><span class="fw-medium">3</span></td>
+                                    </tr>
+                                    
+                                </tbody>
+                                <tfoot class="table-border-bottom-0">
+                                    <tr class="table-dark">
+                                        <th colspan="2" >Jumlah</th>
+                                        <th style="text-align: center;">9</th>
+                                        <th style="text-align: center;">10</th>
+                                        <th style="text-align: center;">19</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
                 </div>
                 <!-- /Current Plan -->
             </div>
@@ -343,7 +406,72 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
             <div class="card mb-4">
                 <div class="card-body">
                     <div class="row">
-                        Sarpras
+                        <h5 class="card-header">Tanah</h5>
+                        <div class="table-responsive text-nowrap">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr class="table-light">
+                                        <th width="5">No</th>
+                                        <th>Kepemilikan</th>
+                                        <th style="text-align: center;">Luas</th>
+                                        <th style="text-align: center;">No Sertifikat</th>
+                                        <th style="text-align: center;">Nama di Sertifikat</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-border-bottom-0">
+                                    <tr>
+                                        <td>1</td>
+                                        <td><span class="fw-medium">Yayasan</span></td>
+                                        <td style="text-align: center;">10.000 m</td>
+                                        <td style="text-align: center;">20971/2312/1<sup class="mt-3 mb-0 me-1">2</sup></td>
+                                        <td style="text-align: center;"><span class="fw-medium">Siti Robiah</span></td>
+                                    </tr>
+                                   
+                                </tbody>
+                                
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <h5 class="card-header">Bangunan</h5>
+                        <div class="table-responsive text-nowrap">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr class="table-light">
+                                        <th width="5">No</th>
+                                        <th>Nama Bangunan</th>
+                                        <th style="text-align: center;">Luas</th>
+                                        <th style="text-align: center;">Jumlah Ruangan</th>
+                                        <th style="text-align: center;">Kepemilikan</th>
+                                        <th style="text-align: center;">Kondisi</th>
+                                        <th style="text-align: center;">Detail</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-border-bottom-0">
+                                    <tr>
+                                        <td>1</td>
+                                        <td><span class="fw-medium">Bangunan Kelas 7A</span></td>
+                                        <td style="text-align: center;">75 m<sup class="mt-3 mb-0 me-1">2</sup></td>
+                                        <td style="text-align: center;">1 Ruang</td>
+                                        <td style="text-align: center;">SMP</td>
+                                        <td style="text-align: center;">Rusak Ringan</span></td>
+                                        <td style="text-align: center;"><a href="#">Detail</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td><span class="fw-medium">Bangunan Kelas Yayasan</span></td>
+                                        <td style="text-align: center;">75 m<sup class="mt-3 mb-0 me-1">2</sup></td>
+                                        <td style="text-align: center;">2 Ruang</td>
+                                        <td style="text-align: center;">Yayasan</td>
+                                        <td style="text-align: center;">Rusak Sedang</span></td>
+                                        <td style="text-align: center;"><a href="#">Detail</a></td>
+                                    </tr>
+                                   
+                                </tbody>
+                                
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
