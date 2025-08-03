@@ -286,7 +286,7 @@
   --button-secondary: var(--primary-50);
   --black: var(--dark-2);
   --white: var(--base);
-  --bg-color: var(--neutral-50);
+  --bg-color: var(--neutral-200);
   --text-primary-light: var(--neutral-900);
   --text-secondary-light: var(--neutral-600);
   --text-secondary-dark: var(--neutral-300);

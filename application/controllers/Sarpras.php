@@ -11,19 +11,51 @@ class Sarpras extends MY_Controller {
 	public function tanah()
 	{
 		$this->page_data['page']->title = 'Sarpras';
-		$this->page_data['page']->menu = 'sarpras';
-		$this->page_data['page']->submenu = 'sarpras_tanah';
-		$this->load->view('sarpras/v_tanah', $this->page_data);
-	}
-
-    public function tanahList()
-	{
-		$this->page_data['page']->title = 'Sarpras';
-		$this->page_data['page']->menu = 'sarpras';
-		$this->page_data['page']->submenu = 'sarpras_tanah';
+		$this->page_data['page']->subtitle = 'Tanah';
+		$this->page_data['page']->icon = 'hugeicons:maps-square-01';
 		$this->load->view('sarpras/v_tanah_list', $this->page_data);
 	}
 
+	public function tanahDetail()
+	{
+		$this->page_data['page']->title = 'Sarpras';
+		$this->page_data['page']->subtitle = 'Tanah';
+		$this->page_data['page']->icon = 'hugeicons:maps-square-01';
+		$this->load->view('sarpras/v_tanah_list', $this->page_data);
+	}
+
+	public function tanahTambah()
+	{
+		$this->page_data['page']->title = 'Sarpras';
+		$this->page_data['page']->subtitle = 'Tanah';
+		$this->page_data['page']->icon = 'hugeicons:maps-square-01';
+		$this->load->view('sarpras/v_tanah_add', $this->page_data);
+	}
+
+	public function bangunan()
+	{
+		$this->page_data['page']->title = 'Sarpras';
+		$this->page_data['page']->subtitle = 'Bangunan';
+		$this->page_data['page']->icon = 'hugeicons:maps-square-01';
+		$this->load->view('sarpras/v_bangunan_list', $this->page_data);
+	}
+
+	public function bangunanTambah()
+	{
+		$this->page_data['page']->title = 'Sarpras';
+		$this->page_data['page']->subtitle = 'Bangunan';
+		$this->page_data['page']->icon = 'hugeicons:maps-square-01';
+		$this->load->view('sarpras/v_bangunan_add', $this->page_data);
+	}
+
+	public function ruangan()
+	{
+		$this->page_data['page']->title = 'Sarpras';
+		$this->page_data['page']->subtitle = 'Ruangan';
+		$this->page_data['page']->icon = 'hugeicons:maps-square-01';
+		$this->load->view('sarpras/v_ruangan_list', $this->page_data);
+	}
+ 
 
 
 
