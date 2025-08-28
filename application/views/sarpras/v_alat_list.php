@@ -13,10 +13,10 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
             <div class="card basic-data-table">
                 <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-3 bg-warning-400" >
                     <div class="d-flex flex-wrap align-items-center gap-3">
-                      <h6>Data Ruangan</h6>
+                      <h6>Data Alat, Buku & Kendaraan</h6>
                     </div>
                     <div class="d-flex flex-wrap align-items-center gap-3">
-                        <a href="<?php echo url('sarpras/ruanganTambah') ?>" class="btn btn-sm btn-primary-600"><i class="ri-add-line"></i> Tambah Ruangan</a>
+                        <a href="<?php echo url('sarpras/alatTambah') ?>" class="btn btn-sm btn-primary-600"><i class="ri-add-line"></i> Tambah Alat</a>
                     </div>
                 </div>
                 <div class="card-body">
@@ -25,29 +25,29 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                             <thead>
                                 <tr>
                                     <th scope="col">No</th>
-                                    <th scope="col">Jenis Prasarana/Ruangan</th>
-                                    <th scope="col" class="text-center">Bangunan</th>
-                                    <th scope="col">Nama Ruangan</th>
-                                    <th scope="col">Luas Ruangan</th>
-                                    <th scope="col" class="text-center">Kapasitas</th>
+                                    <th scope="col">Jenis Sarana</th>
+                                    <th scope="col">Nama Sarana</th>
+                                    <th scope="col" class="text-center">Spesifikasi</th>
+                                    <th scope="col">Jumlah</th>
+                                    <th scope="col">Jumlah Laik</th>
+                                    <th scope="col">Status</th>
                                     <th scope="col" class="text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
                                     <td>1</td>
-                                    <td>Ruang Kelas</td>
-                                    <td>Bangunan Kelas 7</td>
-                                    <td>Ruang Kelas 7A</td>
-                                    <td class="text-center">63<sup>2</sup></td>
-                                    <td class="text-center">35</td>
-                                    
+                                    <td>Kursi Siswa</td>
+                                    <td>Kursi Siswa Kayu</td>
+                                    <td>Kayu</td>
+                                    <td>150</td>
+                                    <td>136</td>
+                                    <td><span class="bg-danger-focus text-danger-main px-24 py-4 rounded-pill fw-medium text-sm">Kurang 24 Kursi</span></td>
                                     <td>
                                         <div class="d-flex align-items-center gap-10 justify-content-center">
                                             <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#TanahDetail">
                                                 <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
                                             </button>
-
                                             <button type="button" class="bg-success-100 text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#TanahEdit">
                                                 <iconify-icon icon="lucide:edit" class="menu-icon"></iconify-icon>
                                             </button>
@@ -55,19 +55,38 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>1</td>
-                                    <td>Ruang Guru</td>
-                                    <td>Bangunan Yayasan</td>
-                                    <td>Ruang Guru</td>
-                                    <td class="text-center">63<sup>2</sup></td>
-                                    <td class="text-center">35</td>
-                                    
+                                    <td>2</td>
+                                    <td>Kursi Guru</td>
+                                    <td>Kursi Guru Kaki besi</td>
+                                    <td>Kayu & Besi</td>
+                                    <td>20</td>
+                                    <td>13</td>
+                                    <td><span class="bg-warning-focus text-warning-main px-24 py-4 rounded-pill fw-medium text-sm">Cukup</span></td>
                                     <td>
                                         <div class="d-flex align-items-center gap-10 justify-content-center">
                                             <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#TanahDetail">
                                                 <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
                                             </button>
+                                            <button type="button" class="bg-success-100 text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#TanahEdit">
+                                                <iconify-icon icon="lucide:edit" class="menu-icon"></iconify-icon>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
 
+                                <tr>
+                                    <td>2</td>
+                                    <td>Meja Siswa</td>
+                                    <td>Meja Siswa Kayu</td>
+                                    <td>Kayu</td>
+                                    <td>75</td>
+                                    <td>60</td>
+                                    <td><span class="bg-success-focus text-success-main px-24 py-4 rounded-pill fw-medium text-sm">Lebih 4 Meja</span></td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-10 justify-content-center">
+                                            <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#TanahDetail">
+                                                <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                            </button>
                                             <button type="button" class="bg-success-100 text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#TanahEdit">
                                                 <iconify-icon icon="lucide:edit" class="menu-icon"></iconify-icon>
                                             </button>
@@ -97,36 +116,46 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                         <div class="row">
                             <div class="col-md-6 mb-20 was-validated">
                                 <label for="editname"
-                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Nama Ruangan</label>
-                                <p>Ruangan Kelas 7</p>
+                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Jenis Sarana</label>
+                                <p>Kursi Siswa</p>
                             </div>
 
                             <div class="col-md-6 mb-20 was-validated">
-                                <label for="editname"class="form-label fw-semibold text-primary-light text-sm mb-8">Berdiri diatas Tanah</label>
-                                <p>Yayasan Miftahul Khoer El-Istohary</p>
+                                <label for="editname"class="form-label fw-semibold text-primary-light text-sm mb-8">Nama Sarana</label>
+                                <p>Kursi Siswa Kayu</p>
 
-                            </div>
-
-                            <div class="col-md-6 mb-20 was-validated">
-                                <label for="editname"
-                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Panjang (m)</label>
-                                <p>23</p>
                             </div>
 
                             <div class="col-md-6 mb-20 was-validated">
                                 <label for="editname"
-                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Lebar (m)</label>
-                                <p>25</p>
+                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Spesifikasi</label>
+                                <p>Kayu</p>
+                            </div>
+
+                            <div class="col-md-6 mb-20 was-validated">
+                                <label for="editname"
+                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Jumlah</label>
+                                <p>150</p>
                             </div>
 
                             <div class="col-md-6 mb-20">
-                                <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Luas Ruangan (m<sup>2</sup>)</label>
-                                <p>243</p>
+                                <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Jumlah Laik</label>
+                                <p>120</p>
                             </div>
 
                             <div class="col-md-6 mb-20">
-                                <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Kapasitas </label>
-                                <p>35</p>
+                                <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Jumlah Digunakan </label>
+                                <p>120</p>
+                            </div>
+
+                            <div class="col-md-6 mb-20">
+                                <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Jumlah Tidak Digunakan </label>
+                                <p>0</p>
+                            </div>
+
+                            <div class="col-md-6 mb-20">
+                                <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Status </label>
+                                <p><span class="bg-danger-focus text-danger-main px-24 py-4 rounded-pill fw-medium text-sm">Kurang 24 Kursi</span></p>
                             </div>
 
                            

@@ -55,6 +55,30 @@ class Sarpras extends MY_Controller {
 		$this->page_data['page']->icon = 'hugeicons:maps-square-01';
 		$this->load->view('sarpras/v_ruangan_list', $this->page_data);
 	}
+
+	public function ruanganTambah()
+	{
+		$this->page_data['page']->title = 'Sarpras';
+		$this->page_data['page']->subtitle = 'Ruangan';
+		$this->page_data['page']->icon = 'hugeicons:maps-square-01';
+		$this->load->view('sarpras/v_ruangan_add', $this->page_data);
+	}
+
+	public function alat()
+	{
+		$this->page_data['page']->title = 'Sarpras';
+		$this->page_data['page']->subtitle = 'Ruangan';
+		$this->page_data['page']->icon = 'hugeicons:maps-square-01';
+		$this->load->view('sarpras/v_alat_list', $this->page_data);
+	}
+
+	public function alatTambah()
+	{
+		$this->page_data['page']->title = 'Sarpras';
+		$this->page_data['page']->subtitle = 'Ruangan';
+		$this->page_data['page']->icon = 'hugeicons:maps-square-01';
+		$this->load->view('sarpras/v_alat_add', $this->page_data);
+	}
  
 
 

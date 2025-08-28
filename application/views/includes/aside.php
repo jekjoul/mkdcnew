@@ -64,13 +64,13 @@
 
             <li class="sidebar-menu-group-title">Kepegawaian</li>
             <li>
-                <a href="<?php echo url('kepegawaian/ptk') ?>">
+                <a href="<?php echo url('ptk/ptk') ?>">
                     <iconify-icon icon="icon-park-outline:user-business" class="menu-icon"></iconify-icon>
                     <span>Data PTK</span>
                 </a>
             </li>
             <li>
-                <a href="<?php echo url('kepegawaian/ptknonaktif') ?>">
+                <a href="<?php echo url('ptk/ptkNonaktif') ?>">
                     <iconify-icon icon="icon-park-outline:wrong-user" class="menu-icon"></iconify-icon>
                     <span>Data PTK Nonaktif</span>
                 </a>
@@ -80,7 +80,7 @@
 
 
             <li>
-                <a href="<?php echo url('datasiswa') ?>">
+                <a href="<?php echo url('siswa/all') ?>">
                     <iconify-icon icon="icon-park-outline:every-user" class="menu-icon"></iconify-icon>
                     <span>Data Siswa</span>
                 </a>
@@ -134,7 +134,7 @@
             <li>
                 <a href="<?php echo url('datasiswa') ?>">
                     <iconify-icon icon="material-symbols:bookmark-added-outline" class="menu-icon"></iconify-icon>
-                    <span>Tugas Mengajar</span>
+                    <span>Pembelajaran</span>
                 </a>
             </li>
 
