@@ -1,0 +1,1432 @@
+<?php
+
+defined('BASEPATH') OR exit('No direct script access allowed'); ?>
+
+<?php include viewPath('includes/header'); ?>
+
+<!-- meta tags and other links -->
+
+
+<div class="dashboard-main-body">
+    <div class="row gy-4">
+        <div class="col-lg-4">
+            <div class="user-grid-card position-relative border radius-16 overflow-hidden bg-base h-100">
+                <img src="<?php echo $url->assets ?>images/user-grid/user-grid-bg-guru.jpg" alt="" class="w-100 object-fit-cover">
+                <div class="pb-24 ms-16 mb-24 me-16  mt--100">
+                    <div class="text-center border border-top-0 border-start-0 border-end-0 mb-20">
+                        <img src="<?php echo $url->assets ?>images/user-grid/guru.png" alt=""
+                            class="border br-white border-width-2-px w-200-px h-200-px rounded-circle object-fit-cover">
+                        <h6 class="mb-0 mt-16">Yulianni</h6>
+                        <span class="text-secondary-light mb-16">Tenaga Kependidikan (GTY/PTY) </span><br>
+                        <span class="badge text-sm fw-semibold bg-dark-success-gradient px-20 py-9 radius-4 text-white">Tendik</span>
+                        <span class="badge text-sm fw-semibold bg-dark-lilac-gradient px-20 py-9 radius-4 text-white">Wali Kelas</span>
+                        <span class="badge text-sm fw-semibold bg-dark-info-gradient px-20 py-9 radius-4 text-white  mb-20">Guru Mapel</span>
+                    </div>
+                    <div class="mt-24">
+                        <h6 class="text-xl mb-16">Data Pribadi</h6>
+                        <ul>
+                            <li class="d-flex align-items-center gap-1 mb-12">
+                                <span class="w-40 text-md fw-semibold text-primary-light">Nama</span>
+                                <span class="w-60 text-secondary-light fw-medium">: Yulianni</span>
+                            </li>
+                            <li class="d-flex align-items-center gap-1 mb-12">
+                                <span class="w-40 text-md fw-semibold text-primary-light">NIY</span>
+                                <span class="w-60 text-secondary-light fw-medium">: 20210720002017</span>
+                            </li>
+                            <li class="d-flex align-items-center gap-1 mb-12">
+                                <span class="w-40 text-md fw-semibold text-primary-light"> NIK</span>
+                                <span class="w-60 text-secondary-light fw-medium">: 3207336003020001</span>
+                            </li>
+                            <li class="d-flex align-items-center gap-1 mb-12">
+                                <span class="w-40 text-md fw-semibold text-primary-light"> NUPTK</span>
+                                <span class="w-60 text-secondary-light fw-medium">:  5652780681230012 </span>
+                            </li>
+                            <li class="d-flex align-items-center gap-1 mb-12">
+                                <span class="w-40 text-md fw-semibold text-primary-light"> No HP</span>
+                                <span class="w-60 text-secondary-light fw-medium">: +6292240213444  &nbsp
+                                    <a class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Kirim Pesan Whatsapp">
+                                        <iconify-icon icon="tabler:brand-whatsapp-filled" class="text-md"></iconify-icon> 
+                                    </a>
+                                </span>
+                                
+                            </li>
+                            <li class="d-flex align-items-center gap-1 mb-12">
+                                <span class="w-40 text-md fw-semibold text-primary-light"> Tempat Lahir</span>
+                                <span class="w-60 text-secondary-light fw-medium">: Ciamis</span>
+                            </li>
+                            <li class="d-flex align-items-center gap-1 mb-12">
+                                <span class="w-40 text-md fw-semibold text-primary-light"> Tgl. Lahir</span>
+                                <span class="w-60 text-secondary-light fw-medium">: 20 Maret 2001</span>
+                            </li>
+                            <li class="d-flex align-items-center gap-1 mb-12">
+                                <span class="w-40 text-md fw-semibold text-primary-light"> TMT</span>
+                                <span class="w-60 text-secondary-light fw-medium">: 07 Januari 2021</span>
+                            </li>
+                            <li class="d-flex align-items-center gap-1 mb-12">
+                                <span class="w-40 text-md fw-semibold text-primary-light"> Tgl. Pensiun</span>
+                                <span class="w-60 text-secondary-light fw-medium">: 20 Maret 2061
+                            </li>
+                            <li class="d-flex align-items-center gap-1">
+                                <span class="w-40 text-md fw-semibold text-primary-light"> Status Dapodik</span>
+                                <span class="w-60 text-secondary-light fw-medium">: Belum Masuk Dapodik
+                            </li>
+
+                           
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <div class="card h-100">
+                <div class="card-body p-24">
+                    <ul class="nav border-gradient-tab nav-pills mb-20 d-inline-flex" id="pills-tab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link d-flex align-items-center px-24 active" id="pills-profile-tab"
+                                data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab"
+                                aria-controls="pills-profile" aria-selected="true">
+                                Profil
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link d-flex align-items-center px-24" id="pills-pembelajaran-tab"
+                                data-bs-toggle="pill" data-bs-target="#pills-pembelajaran" type="button" role="tab"
+                                aria-controls="pills-pembelajaran" aria-selected="false" tabindex="-1">
+                                Pembelajaran
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link d-flex align-items-center px-24" id="pills-riwayat-tab"
+                                data-bs-toggle="pill" data-bs-target="#pills-riwayat" type="button" role="tab"
+                                aria-controls="pills-riwayat" aria-selected="false" tabindex="-1">
+                                Jadwal Mengajar
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link d-flex align-items-center px-24" id="pills-arsip-tab"
+                                data-bs-toggle="pill" data-bs-target="#pills-arsip" type="button" role="tab"
+                                aria-controls="pills-arsip" aria-selected="false" tabindex="-1">
+                                Arsip
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link d-flex align-items-center px-24" id="pills-setting-tab"
+                                data-bs-toggle="pill" data-bs-target="#pills-setting" type="button" role="tab"
+                                aria-controls="pills-setting" aria-selected="false" tabindex="-1">
+                                Setting
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="pills-tabContent">
+                        <!-- Profil -->
+                        <div class="tab-pane fade show active" id="pills-profile" role="tabpanel"
+                            aria-labelledby="pills-profile-tab" tabindex="0">
+                            <div class="card radius-12 h-100 shadow">
+                                
+                                <div class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
+                                    <h6 class="text-lg mb-0">Profil PTK</h6>
+                                    <button type="button" class="text-xl line-height-1">
+                                        <iconify-icon icon="icon-park-outline:user-business" class="text-xl"></iconify-icon> 
+                                    </button>
+                                </div>
+
+                                <div class="card-body py-16 px-24">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
+                                                <div class="align-items-center gap-3 d-flex justify-content-between">
+                                                    <div>
+                                                         <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                            Nama Lengkap :
+                                                        </span>
+                                                        <br>
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                            Yulianni
+                                                        </span>&nbsp
+                                                    </div>
+                                                   
+                                                    <button class="text-success " data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                       <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                    </button>
+                                                   
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
+                                                <div class="align-items-center gap-3 d-flex justify-content-between">
+                                                    <div>
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                            Jenis Kelamin :
+                                                        </span><br>
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                            Perempuan
+                                                        </span>
+                                                    </div>
+                                                    <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                       <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
+                                                <div class="align-items-center gap-3 d-flex justify-content-between">
+                                                    <div>
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                            Tempat Tanggal Lahir :
+                                                        </span><br>
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                            Ciamis, 20 Maret 2002
+                                                        </span>
+                                                    </div>
+                                                    <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                       <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
+                                                <div class="align-items-center gap-3 d-flex justify-content-between">
+                                                    <div>
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                            Agama :
+                                                        </span><br>
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                            Islam
+                                                        </span>
+                                                    </div>
+                                                    <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                       <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
+                                                <div class="align-items-center gap-3 d-flex justify-content-between">
+                                                    <div>
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                            Status Perkawinan :
+                                                        </span><br>
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                            Kawin
+                                                        </span>
+                                                    </div>
+                                                    <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                       <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
+                                                <div class="align-items-center gap-3 d-flex justify-content-between">
+                                                    <div>
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                            Nama Ibu Kandung :
+                                                        </span><br>
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                            Yania
+                                                        </span>
+                                                    </div>
+                                                    <button class="text-danger" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-danger" data-bs-title="Tidak Sesuai Dapodik : Yani">
+                                                       <iconify-icon icon="ion:warning" class="text-xl"></iconify-icon> 
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
+                                                <div class="align-items-center gap-3 d-flex justify-content-between">
+                                                    <div>
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                            NIK :
+                                                        </span><br>
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                            3207336003020001
+                                                        </span>
+                                                    </div>
+                                                    <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                       <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
+                                                <div class="align-items-center gap-3 d-flex justify-content-between">
+                                                    <div>
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                            NUPTK :
+                                                        </span><br>
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                            5652780681230012
+                                                        </span>
+                                                    </div>
+                                                    <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                       <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
+                                                <div class="align-items-center gap-3 d-flex justify-content-between">
+                                                    <div>
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                        SK Pengangkatan :
+                                                        </span><br>
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                            421/120/SK-SMPMK/VII/2021
+                                                        </span>
+                                                    </div>
+                                                    <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                       <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
+                                                <div class="align-items-center gap-3 d-flex justify-content-between">
+                                                    <div>
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                        TMT Pengangkatan :
+                                                        </span><br>
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                            1 Juli 2021
+                                                        </span>
+                                                    </div> 
+                                                    <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                       <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
+                                                <div class="align-items-center gap-3 d-flex justify-content-between">
+                                                    <div>
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                        TMT Pengangkatan :
+                                                        </span><br>
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                            1 Juli 2021
+                                                        </span>
+                                                    </div>
+                                                    <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                       <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
+                                                <div class="align-items-center gap-3 d-flex justify-content-between">
+                                                    <div>
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                        Sekolah Induk :
+                                                        </span><br>
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                            Ya
+                                                        </span>
+                                                    </div>
+                                                    <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                       <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
+                                                <div class="align-items-center gap-3 d-flex justify-content-between">
+                                                    <div>
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                        Alamat :
+                                                        </span><br>
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                            Dusun Bojong Sukamulya RT 036 RW 014 Desa/Kel. Rawa Kec. Lumbung Kab. Ciamis
+                                                        </span>
+                                                    </div>
+                                                    <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                       <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
+                                                <div class="align-items-center gap-3 d-flex justify-content-between">
+                                                    <div>
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                        Status Kepegawaian :
+                                                        </span><br>
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                            Tenaga Kependidikan (GTY/PTY)
+                                                        </span>
+                                                    </div>
+                                                    <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                       <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                
+                            </div>
+                           
+                            <div class="row mt-20">
+                                <div class="col-xl-12">
+                                    <div class="card shadow">
+                                        <div class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
+                                            <h6 class="text-lg mb-0">Riwayat Pendidikan</h6>
+                                            <button type="button" class="text-xl line-height-1">
+                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon> 
+                                            </button>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <table class="table bordered-table"  data-page-length='10'>
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">No</th>
+                                                            <th scope="col">Jenjang</th>
+                                                            <th scope="col">Satuan Pendidikan</th>
+                                                            <th scope="col">Tanggal Lulus</th>
+                                                            <th scope="col">No Ijazah</th>
+                                                            <th scope="col" class="text-center">Aksi</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>1</td>
+                                                            <td>SD</td>
+                                                            <td>SDN 3 Rawa</td>
+                                                            <td>25 Juni 2012</td>
+                                                            <td>DN-12-2999821</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#detailIjazah">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </button>
+                                                                   
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                       
+                                                        <tr>
+                                                            <td>2</td>
+                                                            <td>SMP</td>
+                                                            <td>SMP Miftahul Khoer Boarding School</td>
+                                                            <td>25 Juni 2018</td>
+                                                            <td>DN-12-2999821</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </a>
+                                                                   
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>3</td>
+                                                            <td>SLTA</td>
+                                                            <td>SMK Industri Perunggasan Panjalu</td>
+                                                            <td>25 Juni 2012</td>
+                                                            <td>DN-12-2999821</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </a>
+                                                                   
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="card-footer text-center bg-transparent border border-end-0 border-start-0 border-bottom-0 py-16 px-24 ">
+                                                <a href="javascript:void(0)" class="btn btn-success text-light  ">
+                                                    <span class="d-flex">
+                                                        <iconify-icon icon="material-symbols:print-rounded" class="text-xl d-flex"> </iconify-icon> 
+                                                        &nbsp Cetak Profil
+                                                    </span>
+                                                </a>
+                                                <a href="javascript:void(0)" class="btn btn-success text-light  ">
+                                                    <span class="d-flex">
+                                                        <iconify-icon icon="material-symbols:print-rounded" class="text-xl d-flex"> </iconify-icon> 
+                                                        &nbsp Cetak Surat Keterangan Aktif
+                                                    </span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            
+                            
+                        </div>
+                        <!-- End of Profil -->
+
+                        <!-- Pembelajaran -->
+                        <div class="tab-pane fade" id="pills-pembelajaran" role="tabpanel" aria-labelledby="pills-pembelajaran-tab" tabindex="0">
+                            <div class="row">
+                                <div class="col-xl-12">
+                                    <div class="card shadow">
+                                        <div class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
+                                            <h6 class="text-lg mb-0">Pembelajaran Aktif</h6>
+                                            <button type="button" class="text-xl line-height-1">
+                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon> 
+                                            </button>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <table class="table bordered-table"  data-page-length='10'>
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">No</th>
+                                                            <th scope="col">Mata Pelajaran</th>
+                                                            <th scope="col">Jml Jam</th>
+                                                            <th scope="col">Rombel</th>
+                                                            <th scope="col">Tahun Pelajaran</th>
+                                                            <th scope="col" class="text-center">Aksi</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>1</td>
+                                                            <td>Seni & Budaya</td>
+                                                            <td>2</td>
+                                                            <td>VII - Al Maturidi</td>
+                                                            <td>2025/2026 Ganjil</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </a>
+                                                                   
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>2</td>
+                                                            <td>Seni & Budaya</td>
+                                                            <td>2</td>
+                                                            <td>VII - Az Zahrawi</td>
+                                                            <td>2025/2026 Ganjil</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </a>
+                                                                   
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>3</td>
+                                                            <td>Seni & Budaya</td>
+                                                            <td>2</td>
+                                                            <td>VIII - Maliki</td>
+                                                            <td>2025/2026 Ganjil</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </a>
+                                                                   
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>4</td>
+                                                            <td>Seni & Budaya</td>
+                                                            <td>2</td>
+                                                            <td>VII - Syafi'i</td>
+                                                            <td>2025/2026 Ganjil</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </a>
+                                                                   
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>5</td>
+                                                            <td>Seni & Budaya</td>
+                                                            <td>2</td>
+                                                            <td>IX - Az Zarnuji</td>
+                                                            <td>2025/2026 Ganjil</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </a>
+                                                                   
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>6</td>
+                                                            <td>Seni & Budaya</td>
+                                                            <td>2</td>
+                                                            <td>IX - Sonhaji</td>
+                                                            <td>2025/2026 Ganjil</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </a>
+                                                                   
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>7</td>
+                                                            <td>Seni & Budaya</td>
+                                                            <td>2</td>
+                                                            <td>X - Al Jazari</td>
+                                                            <td>2025/2026 Ganjil</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </a>
+                                                                   
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>8</td>
+                                                            <td>Seni & Budaya</td>
+                                                            <td>2</td>
+                                                            <td>XI -  Hanafi</td>
+                                                            <td>2025/2026 Ganjil</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </a>
+                                                                   
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>9</td>
+                                                            <td>Seni & Budaya</td>
+                                                            <td>2</td>
+                                                            <td>XII - Khalid</td>
+                                                            <td>2025/2026 Ganjil</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </a>
+                                                                   
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-20">
+                                <div class="col-md-12">
+                                    <div class="card shadow">
+                                        <div class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
+                                            <h6 class="text-lg mb-0">Riwayat Pembelajaran</h6>
+                                            <button type="button" class="text-xl line-height-1">
+                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon> 
+                                            </button>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <table class="table bordered-table " id="dataTable" data-page-length='5' style="width:100% !important">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">No</th>
+                                                            <th scope="col">Mata Pelajaran</th>
+                                                            <th scope="col">Jml Jam</th>
+                                                            <th scope="col">Rombel</th>
+                                                            <th scope="col">Tahun Pelajaran</th>
+                                                            <th scope="col" class="text-center">Aksi</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>1</td>
+                                                            <td>Seni & Budaya</td>
+                                                            <td>2</td>
+                                                            <td>VII - Al Maturidi</td>
+                                                            <td>2024/2025 Genap</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </a>
+                                                                   
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>2</td>
+                                                            <td>Seni & Budaya</td>
+                                                            <td>2</td>
+                                                            <td>VII - Az Zahrawi</td>
+                                                            <td>2024/2025 Ganjil</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </a>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>3</td>
+                                                            <td>Seni & Budaya</td>
+                                                            <td>2</td>
+                                                            <td>VIII - Maliki</td>
+                                                            <td>2024/2025 Ganjil</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </a>
+                                                                   
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>4</td>
+                                                            <td>Seni & Budaya</td>
+                                                            <td>2</td>
+                                                            <td>VII - Syafi'i</td>
+                                                            <td>2024/2025 Ganjil</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </a>
+                                                                   
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>5</td>
+                                                            <td>Seni & Budaya</td>
+                                                            <td>2</td>
+                                                            <td>IX - Az Zarnuji</td>
+                                                            <td>2024/2025 Ganjil</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </a>
+                                                                   
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>6</td>
+                                                            <td>Seni & Budaya</td>
+                                                            <td>2</td>
+                                                            <td>IX - Sonhaji</td>
+                                                            <td>2024/2025 Ganjil</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </a>
+                                                                   
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>7</td>
+                                                            <td>Seni & Budaya</td>
+                                                            <td>2</td>
+                                                            <td>X - Al Jazari</td>
+                                                            <td>2024/2025 Ganjil</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </a>
+                                                                   
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>8</td>
+                                                            <td>Seni & Budaya</td>
+                                                            <td>2</td>
+                                                            <td>XI -  Hanafi</td>
+                                                            <td>2024/2025 Ganjil</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </a>
+                                                                   
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>9</td>
+                                                            <td>Seni & Budaya</td>
+                                                            <td>2</td>
+                                                            <td>XII - Khalid</td>
+                                                            <td>2024/2025 Ganjil</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </a>
+                                                                   
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End of Pembelajaran -->
+                        
+                        <!-- Jadwal -->
+                        <div class="tab-pane fade" id="pills-riwayat" role="tabpanel" aria-labelledby="pills-riwayat-tab" tabindex="0">
+                            <div class="row">
+                                <div class="col-xl-12">
+                                    <div class="card shadow">
+                                        <div class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
+                                            <h6 class="text-lg mb-0">Jadwal Pembelajaran</h6>
+                                            <button type="button" class="text-xl line-height-1">
+                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon> 
+                                            </button>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <table class="table bordered-table"  data-page-length='10'>
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">No</th>
+                                                            <th scope="col">Mata Pelajaran</th>
+                                                            <th scope="col">Rombel</th>
+                                                            <th scope="col">Hari</th>
+                                                            <th scope="col">Jam</th>
+                                                            <th scope="col" class="text-center">Aksi</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>1</td>
+                                                            <td>Seni & Budaya</td>
+                                                            <td>VII - Al Maturidi</td>
+                                                            <td>Senin</td>
+                                                            <td>08.00-09.20</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </a>
+                                                                   
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="bg-success-focus">2</td>
+                                                            <td class="bg-success-focus">Seni & Budaya</td>
+                                                            <td class="bg-success-focus">VII - Az Zahrawi</td>
+                                                            <td class="bg-success-focus">Senin</td>
+                                                            <td class="bg-success-focus">09.40-10.20</td>
+                                                            <td class="bg-success-focus">
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </a>
+                                                                   
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>3</td>
+                                                            <td>Seni & Budaya</td>
+                                                            <td>VIII - Maliki</td>
+                                                            <td>Selasa</td>
+                                                            <td>08.00-09.20</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </a>
+                                                                   
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>4</td>
+                                                            <td>Seni & Budaya</td>
+                                                            <td>VII - Syafi'i</td>
+                                                            <td>Senin</td>
+                                                            <td>08.00-09.20</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </a>
+                                                                   
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>5</td>
+                                                            <td>Seni & Budaya</td>
+                                                            <td>IX - Az Zarnuji</td>
+                                                            <td>Senin</td>
+                                                            <td>08.00-09.20</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </a>
+                                                                   
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>6</td>
+                                                            <td>Seni & Budaya</td>
+                                                            <td>IX - Sonhaji</td>
+                                                            <td>Senin</td>
+                                                            <td>08.00-09.20</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </a>
+                                                                   
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>7</td>
+                                                            <td>Seni & Budaya</td>
+                                                            <td>X - Al Jazari</td>
+                                                            <td>Senin</td>
+                                                            <td>08.00-09.20</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </a>
+                                                                   
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>8</td>
+                                                            <td>Seni & Budaya</td>
+                                                            <td>XI -  Hanafi</td>
+                                                            <td>Senin</td>
+                                                            <td>08.00-09.20</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </a>
+                                                                   
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>9</td>
+                                                            <td>Seni & Budaya</td>
+                                                            <td>XII - Khalid</td>
+                                                            <td>Senin</td>
+                                                            <td>08.00-09.20</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </a>
+                                                                   
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End of Jadwal -->
+
+                        <!-- Arsip -->
+                        <div class="tab-pane fade" id="pills-arsip" role="tabpanel" aria-labelledby="pills-arsip-tab" tabindex="0">
+                            <div class="row mt-20">
+                                <div class="col-xl-12">
+                                    <div class="card basic-data-table shadow">
+                                        <div class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
+                                            <h6 class="text-lg mb-0">Data Pribadi</h6>
+                                            <button type="button" class="text-xl line-height-1">
+                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon> 
+                                            </button>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <table class="table bordered-table " id="dataPribadi" data-page-length='5' style="width:100% !important">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">Nama Dokumen</th>
+                                                            <th scope="col" class="text-center">Berkas</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>KTP</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <button type="button" class="btn rounded-pill btn-info-100 text-info-600 radius-8 px-20 py-11 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#detailIjazah"> 
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon></iconify-icon> Lihat
+                                                                    </button>
+
+                                                                    
+                                                                    <button type="button" class="btn rounded-pill btn-success-100 text-success-600 radius-8 px-20 py-11 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#detailIjazah"> 
+                                                                        <iconify-icon icon="lucide:edit" class="menu-icon"></iconify-icon></iconify-icon> Sunting
+                                                                    </button>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                       
+                                                        <tr>
+                                                            <td>Kartu Keluarga</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <button type="button" class="btn rounded-pill btn-info-100 text-info-600 radius-8 px-20 py-11 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#detailIjazah"> 
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon></iconify-icon> Lihat
+                                                                    </button>
+
+                                                                    
+                                                                    <button type="button" class="btn rounded-pill btn-success-100 text-success-600 radius-8 px-20 py-11 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#detailIjazah"> 
+                                                                        <iconify-icon icon="lucide:edit" class="menu-icon"></iconify-icon></iconify-icon> Sunting
+                                                                    </button>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        
+                                                        
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-20">
+                                <div class="col-xl-12">
+                                    <div class="card basic-data-table shadow">
+                                        <div class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
+                                            <h6 class="text-lg mb-0">SK Pengangkatan</h6>
+                                            <button type="button" class="text-xl line-height-1">
+                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon> 
+                                            </button>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <table class="table bordered-table " id="skPengangkatan" data-page-length='5' style="width:100% !important">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">No</th>
+                                                            <th scope="col">Nama Dokumen</th>
+                                                            <th scope="col">Tanggal Dokumen</th>
+                                                            <th scope="col">Penandatangan</th>
+                                                            <th scope="col">Jenis TTD</th>
+                                                            <th scope="col" class="text-center">Aksi</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>1</td>
+                                                            <td>SK Pengangkatan Yulianni 2025</td>
+                                                            <td>30 Juni 2025</td>
+                                                            <td>Dr. Siti Julaeha, M.Pd.</td>
+                                                            <td>Tanda Tangan Digital</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#detailIjazah">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </button>
+                                                                   
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                       
+                                                        <tr>
+                                                            <td>2</td>
+                                                            <td>SK Pengangkatan Yulianni 2021</td>
+                                                            <td>30 Juni 2021</td>
+                                                            <td>Dr. Siti Julaeha, M.Pd.</td>
+                                                            <td>Tanda Tangan Basah</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#detailIjazah">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </button>
+                                                                   
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        
+                                                        
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-20">
+                                <div class="col-xl-12">
+                                    <div class="card basic-data-table shadow">
+                                        <div class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
+                                            <h6 class="text-lg mb-0">SK Tugas Mengajar</h6>
+                                            <button type="button" class="text-xl line-height-1">
+                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon> 
+                                            </button>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <table class="table bordered-table " id="skTugas" data-page-length='5' style="width:100% !important">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">No</th>
+                                                            <th scope="col">Nama Dokumen</th>
+                                                            <th scope="col">Tanggal Dokumen</th>
+                                                            <th scope="col">Penandatangan</th>
+                                                            <th scope="col">Jenis TTD</th>
+                                                            <th scope="col" class="text-center">Aksi</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>1</td>
+                                                            <td>SK Tugas Mengajar 2025</td>
+                                                            <td>30 Juni 2025</td>
+                                                            <td>Dr. Siti Julaeha, M.Pd.</td>
+                                                            <td>Tanda Tangan Digital</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#detailIjazah">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </button>
+                                                                   
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                       
+                                                        <tr>
+                                                            <td>2</td>
+                                                            <td>SK Tugas Mengajar 2021</td>
+                                                            <td>30 Juni 2021</td>
+                                                            <td>Dr. Siti Julaeha, M.Pd.</td>
+                                                            <td>Tanda Tangan Basah</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#detailIjazah">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </button>
+                                                                   
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        
+                                                        
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <!-- End of Arsip -->
+
+                        <!-- Setting -->
+                        <div class="tab-pane fade" id="pills-setting" role="tabpanel"
+                            aria-labelledby="pills-setting-tab" tabindex="0">
+                            
+                            <div class="mb-24 mt-16">
+                                <div class="avatar-upload">
+                                    <div
+                                        class="avatar-edit position-absolute bottom-0 end-0 me-24 mt-16 z-1 cursor-pointer">
+                                        <input type='file' id="imageUpload" accept=".png, .jpg, .jpeg" hidden>
+                                        <label for="imageUpload"
+                                            class="w-32-px h-32-px d-flex justify-content-center align-items-center bg-primary-50 text-primary-600 border border-primary-600 bg-hover-primary-100 text-lg rounded-circle">
+                                            <iconify-icon icon="solar:camera-outline" class="icon"></iconify-icon>
+                                        </label>
+                                    </div>
+                                    <div class="avatar-preview">
+                                        <div id="imagePreview">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Upload Image End -->
+                            <form action="#">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="mb-20">
+                                            <label for="name"
+                                                class="form-label fw-semibold text-primary-light text-sm mb-8">Full Name
+                                                <span class="text-danger-600">*</span></label>
+                                            <input type="text" class="form-control radius-8" id="name"
+                                                placeholder="Enter Full Name">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="mb-20">
+                                            <label for="email"
+                                                class="form-label fw-semibold text-primary-light text-sm mb-8">Email
+                                                <span class="text-danger-600">*</span></label>
+                                            <input type="email" class="form-control radius-8" id="email"
+                                                placeholder="Enter email address">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="mb-20">
+                                            <label for="number"
+                                                class="form-label fw-semibold text-primary-light text-sm mb-8">Phone</label>
+                                            <input type="email" class="form-control radius-8" id="number"
+                                                placeholder="Enter phone number">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="mb-20">
+                                            <label for="depart"
+                                                class="form-label fw-semibold text-primary-light text-sm mb-8">Department
+                                                <span class="text-danger-600">*</span> </label>
+                                            <select class="form-control radius-8 form-select" id="depart">
+                                                <option>Enter Event Title </option>
+                                                <option>Enter Event Title One </option>
+                                                <option>Enter Event Title Two</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="mb-20">
+                                            <label for="desig"
+                                                class="form-label fw-semibold text-primary-light text-sm mb-8">Designation
+                                                <span class="text-danger-600">*</span> </label>
+                                            <select class="form-control radius-8 form-select" id="desig">
+                                                <option>Enter Designation Title </option>
+                                                <option>Enter Designation Title One </option>
+                                                <option>Enter Designation Title Two</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="mb-20">
+                                            <label for="Language"
+                                                class="form-label fw-semibold text-primary-light text-sm mb-8">Language
+                                                <span class="text-danger-600">*</span> </label>
+                                            <select class="form-control radius-8 form-select" id="Language">
+                                                <option> English</option>
+                                                <option> Bangla </option>
+                                                <option> Hindi</option>
+                                                <option> Arabic</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="mb-20">
+                                            <label for="desc"
+                                                class="form-label fw-semibold text-primary-light text-sm mb-8">Description</label>
+                                            <textarea name="#0" class="form-control radius-8" id="desc"
+                                                placeholder="Write description..."></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-center gap-3">
+                                    <button type="button"
+                                        class="btn btn-success border border-success-600 text-md px-56 py-12 radius-8">
+                                        Simpan Profil PTK
+                                    </button>
+                                </div>
+                            </form>
+
+
+                            <hr class="mt-40 mb-20">
+                            <h6>Ganti Password</h6>
+                            <div class="mb-20 mt-2">
+                                <label for="your-password"
+                                    class="form-label fw-semibold text-primary-light text-sm mb-8">New Password <span
+                                        class="text-danger-600">*</span></label>
+                                <div class="position-relative">
+                                    <input type="password" class="form-control radius-8" id="your-password"
+                                        placeholder="Enter New Password*">
+                                    <span
+                                        class="toggle-password ri-eye-line cursor-pointer position-absolute end-0 top-50 translate-middle-y me-16 text-secondary-light"
+                                        data-toggle="#your-password"></span>
+                                </div>
+                            </div>
+                            <div class="mb-20">
+                                <label for="confirm-password"
+                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Confirmed Password
+                                    <span class="text-danger-600">*</span></label>
+                                <div class="position-relative">
+                                    <input type="password" class="form-control radius-8" id="confirm-password"
+                                        placeholder="Confirm Password*">
+                                    <span
+                                        class="toggle-password ri-eye-line cursor-pointer position-absolute end-0 top-50 translate-middle-y me-16 text-secondary-light"
+                                        data-toggle="#confirm-password"></span>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-center gap-3">
+                                <button type="button"
+                                    class="btn btn-success border border-success-600 text-md px-56 py-12 radius-8">
+                                    Ganti Password
+                                </button>
+                            </div>
+                        </div>
+                        <!-- End of Setting -->
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Lihat Berkas -->
+<div class="modal fade" id="detailIjazah" tabindex="-1" aria-labelledby="exampleModalEditLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen modal-dialog modal-dialog-centered">
+        <div class="modal-content radius-16 bg-base">
+            <div class="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0">
+                <h1 class="modal-title fs-5" id="exampleModalEditLabel">Lihat Berkas</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-24">
+                <object style="width: 100%;height: 100%;" data="<?php echo url('uploads/berkas.pdf')?>" type="application/pdf" id="pdf_content" style="pointer-events: none;">
+                    <iframe src="<?php echo url('uploads/berkas.pdf')?>&embedded=true"></iframe>
+                </object>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End of Modal Lihat Berkas -->
+
+<?php include viewPath('includes/footer'); ?>
+
+<script>
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]'); 
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl)); 
+
+    // Boxed Tooltip
+    $(document).ready(function() {
+        $('.tooltip-dapo').each(function () {
+            var tooltipButton = $(this);
+            var tooltipContent = $(this).siblings('.my-tooltip').html(); 
+    
+            // Initialize the tooltip
+            tooltipButton.tooltip({
+                title: tooltipContent,
+                trigger: 'hover',
+                html: true
+            });
+    
+            // Optionally, reinitialize the tooltip if the content might change dynamically
+            tooltipButton.on('mouseenter', function() {
+                tooltipButton.tooltip('dispose').tooltip({
+                    title: tooltipContent,
+                    trigger: 'hover',
+                    html: true
+                }).tooltip('show');
+            });
+        });
+    });
+</script>
+
+<script>
+    // ======================== Upload Image Start =====================
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $('#imagePreview').css('background-image', 'url('+e.target.result +')');
+                $('#imagePreview').hide();
+                $('#imagePreview').fadeIn(650);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    $("#imageUpload").change(function() {
+        readURL(this);
+    });
+    // ======================== Upload Image End =====================
+
+    // ================== Password Show Hide Js Start ==========
+    function initializePasswordToggle(toggleSelector) {
+        $(toggleSelector).on('click', function() {
+            $(this).toggleClass("ri-eye-off-line");
+            var input = $($(this).attr("data-toggle"));
+            if (input.attr("type") === "password") {
+                input.attr("type", "text");
+            } else {
+                input.attr("type", "password");
+            }
+        });
+    }
+    // Call the function
+    initializePasswordToggle('.toggle-password');
+  // ========================= Password Show Hide Js End ===========================
+</script>
+
+
+<script>
+  let table = new DataTable('#dataTable');
+  let table2 = new DataTable('#skPengangkatan');
+  let table3 = new DataTable('#skTugas');
+  let table4 = new DataTable('#dataPribadi');
+
+</script>
+
+

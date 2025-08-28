@@ -286,7 +286,7 @@
   --button-secondary: var(--primary-50);
   --black: var(--dark-2);
   --white: var(--base);
-  --bg-color: var(--neutral-50);
+  --bg-color: var(--neutral-200);
   --text-primary-light: var(--neutral-900);
   --text-secondary-light: var(--neutral-600);
   --text-secondary-dark: var(--neutral-300);
@@ -6070,6 +6070,10 @@ html[data-theme=dark] .dark-bg-neutral-200 {
   margin-top: -50px;
 }
 
+.mt--75 {
+  margin-top: -75px;
+}
+
 .mt--100 {
   margin-top: -100px;
 }
@@ -6085,6 +6089,15 @@ html[data-theme=dark] .dark-bg-neutral-200 {
 .w-70 {
   width: 70%;
 }
+
+.w-40 {
+  width: 40%;
+}
+
+.w-60 {
+  width: 60%;
+}
+
 
 /* Gap Css */
 .gap-2 {
@@ -8371,7 +8384,7 @@ h6, .h6 {
   position: absolute;
   content: "";
   width: 100%;
-  height: 50%;
+  height: 14%;
   background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.25) 22%, rgba(0, 0, 0, 0.69) 57.92%, rgba(0, 0, 0, 0.7) 100%);
   left: inherit;
   bottom: inherit;
@@ -15322,5 +15335,6 @@ td.fc-header-center {
   background-color: var(--white);
   margin-block-start: auto;
 }
+
 
 /* === footer css end === */

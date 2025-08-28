@@ -11,20 +11,20 @@ class Lembaga extends MY_Controller {
 	public function index()
 	{
 		$this->page_data['page']->title = 'Lembaga';
-		$this->page_data['page']->menu = 'lembaga';
-		$this->page_data['page']->submenu = 'lembaga_list';
+		$this->page_data['page']->subtitle = 'Daftar Lembaga';
+		$this->page_data['page']->icon = 'solar:home-linear';
 		$this->load->view('lembaga/v_lembaga_list', $this->page_data);
 	}
 
-	public function detailLembaga()
+	public function detail()
 	{
 		$this->page_data['page']->title = 'Lembaga';
-		$this->page_data['page']->menu = 'lembaga';
-		$this->page_data['page']->submenu = 'lembaga_list';
-		$this->load->view('lembaga/v_lembaga_view', $this->page_data);
+		$this->page_data['page']->subtitle = 'Detail Lembaga';
+		$this->page_data['page']->icon = 'solar:home-linear';
+		$this->load->view('lembaga/v_lembaga_detail', $this->page_data);
 	}
 
-	public function detailLembagaProfil()
+	public function detailProfil()
 	{
 		$this->page_data['page']->title = 'Lembaga';
 		$this->page_data['page']->menu = 'lembaga';
