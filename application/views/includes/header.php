@@ -75,14 +75,22 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                             </button>
                             <ul class="d-flex align-items-center gap-2 mobile-hide">
                                 <li class="fw-medium">
-                                    <a href="index.html" class="d-flex align-items-center gap-1 hover-text-primary">
+                                    <a href="<?php echo url($page->titleUrl) ?>" class="d-flex align-items-center gap-1 hover-text-primary">
                                         <iconify-icon icon="<?php echo $page->icon; ?>" class="icon text-lg"></iconify-icon>
                                         <?php echo $page->title; ?>
                                     </a>
                                 </li>
                                 <?php if(isset($page->subtitle)){?>
                                 <li>/</li>
-                                <li class="fw-medium"> <?php echo $page->subtitle; ?></li>
+                                <li class="fw-medium"> 
+                                    <a href="<?php echo url($page->subtitleUrl) ?>" class="d-flex align-items-center gap-1 hover-text-primary"> <?php echo $page->subtitle; ?></a>
+                                </li>
+                                <?php }?>
+                                 <?php if(isset($page->subsubtitle)){?>
+                                <li>/</li>
+                                <li class="fw-medium">
+                                    <?php echo $page->subsubtitle; ?>
+                                </li>
                                 <?php }?>
                             </ul>
                         </div>

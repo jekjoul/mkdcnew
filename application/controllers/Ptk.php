@@ -11,7 +11,9 @@ class Ptk extends MY_Controller {
 	public function ptk()
 	{
 		$this->page_data['page']->title = 'PTK';
+		$this->page_data['page']->titleUrl = 'ptk/ptk';
 		$this->page_data['page']->subtitle = 'Daftar PTK';
+		$this->page_data['page']->subtitleUrl = 'ptk/ptk';
 		$this->page_data['page']->icon = 'icon-park-outline:user-business';
 		$this->load->view('ptk/v_ptk_list', $this->page_data);
 	}
@@ -19,7 +21,9 @@ class Ptk extends MY_Controller {
 	public function ptkDetail()
 	{
 		$this->page_data['page']->title = 'PTK';
-		$this->page_data['page']->subtitle = 'Detail PTK';
+		$this->page_data['page']->titleUrl = 'ptk/ptk';
+		$this->page_data['page']->subtitle = 'Yulianni';
+		$this->page_data['page']->subtitleUrl = 'ptk/ptkDetail';
 		$this->page_data['page']->icon = 'icon-park-outline:user-business';
 		$this->load->view('ptk/v_ptk_detail', $this->page_data);
 	}
@@ -27,7 +31,9 @@ class Ptk extends MY_Controller {
     public function ptkTambah()
 	{
 		$this->page_data['page']->title = 'PTK';
+		$this->page_data['page']->titleUrl = 'ptk/ptk';
 		$this->page_data['page']->subtitle = 'Tambah';
+		$this->page_data['page']->subtitleUrl = 'ptk/ptkTambah';
 		$this->page_data['page']->icon = 'icon-park-outline:user-business';
 		$this->load->view('ptk/v_ptk_add', $this->page_data);
 	}
@@ -35,7 +41,9 @@ class Ptk extends MY_Controller {
 	public function ptkNonaktif()
 	{
 		$this->page_data['page']->title = 'PTK Nonaktif';
+		$this->page_data['page']->titleUrl = 'ptk/ptk';
 		$this->page_data['page']->subtitle = 'Daftar PTK Nonaktif';
+		$this->page_data['page']->subtitleUrl = 'ptk/ptkNonaktif';
 		$this->page_data['page']->icon = 'icon-park-outline:user-business';
 		$this->load->view('ptk/v_ptk_nonaktif_list', $this->page_data);
 	}
