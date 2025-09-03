@@ -60,7 +60,30 @@
     4.12 Hover Css
     4.13 Overlay Css
     4.14 Position Css
+
 / ================================= Table Of Contents =================================== **/
+
+
+/* Custom Zakaria */
+
+.text-center-title{
+  text-align: center !important;
+  width: 100%;
+}
+
+.hrh{
+  width: 100%;
+  padding: 0 !important;
+}
+
+.th-nopadding{
+  padding: 0 !important
+}
+
+.valign-middle{
+  vertical-align: middle;
+}
+
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap");
 :root {
   --default-font: ;
@@ -15335,6 +15358,7 @@ td.fc-header-center {
   background-color: var(--white);
   margin-block-start: auto;
 }
+
 
 
 /* === footer css end === */
