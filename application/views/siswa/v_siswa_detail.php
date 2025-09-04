@@ -126,8 +126,8 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link d-flex align-items-center px-24" id="pills-arsip-tab"
-                                data-bs-toggle="pill" data-bs-target="#pills-arsip" type="button" role="tab"
-                                aria-controls="pills-arsip" aria-selected="false" tabindex="-1">
+                                data-bs-toggle="pill" data-bs-target="#pills-catatan" type="button" role="tab"
+                                aria-controls="pills-catatan" aria-selected="false" tabindex="-1">
                                 Catatan
                             </button>
                         </li>
@@ -834,18 +834,16 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 
                             
                         </div>
-                        <!-- End of Pembelajaran -->
+                        <!-- End of Rekam Didik -->
                         
-                        <!-- Jadwal -->
+                        <!-- Rekam Medis -->
                         <div class="tab-pane fade" id="pills-riwayat" role="tabpanel" aria-labelledby="pills-riwayat-tab" tabindex="0">
                             <div class="row">
                                 <div class="col-xl-12">
                                     <div class="card shadow">
                                         <div class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
-                                            <h6 class="text-lg mb-0">Jadwal Pembelajaran</h6>
-                                            <button type="button" class="text-xl line-height-1">
-                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon> 
-                                            </button>
+                                            <h6 class="text-lg mb-0">Riwayat Medis Siswa</h6>
+                                            <a href="<?php echo url('ptk/ptkTambah') ?>" class="btn btn-sm btn-info-100 text-dark"><i class="ri-add-line"></i> Tambah Rekam Medis</a>
                                         </div>
                                         <div class="card-body">
                                             <div class="table-responsive">
@@ -853,20 +851,20 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                     <thead>
                                                         <tr>
                                                             <th scope="col">No</th>
-                                                            <th scope="col">Mata Pelajaran</th>
-                                                            <th scope="col">Rombel</th>
-                                                            <th scope="col">Hari</th>
-                                                            <th scope="col">Jam</th>
-                                                            <th scope="col" class="text-center">Aksi</th>
+                                                            <th scope="col">Pemeriksa</th>
+                                                            <th scope="col">Keterangan</th>
+                                                            <th scope="col">Tanggal</th>
+                                                            <th scope="col">Penyakit</th>
+                                                            <th scope="col" class="text-center">Detail</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
                                                         <tr>
                                                             <td>1</td>
-                                                            <td>Seni & Budaya</td>
-                                                            <td>VII - Al Maturidi</td>
-                                                            <td>Senin</td>
-                                                            <td>08.00-09.20</td>
+                                                            <td>Puskesmas</td>
+                                                            <td>Cek Kesehatan Puskesmas</td>
+                                                            <td>04 September 2025</td>
+                                                            <td>-</td>
                                                             <td>
                                                                 <div class="d-flex align-items-center gap-10 justify-content-center">
                                                                     <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
@@ -877,116 +875,11 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                             </td>
                                                         </tr>
                                                         <tr>
-                                                            <td class="bg-success-focus">2</td>
-                                                            <td class="bg-success-focus">Seni & Budaya</td>
-                                                            <td class="bg-success-focus">VII - Az Zahrawi</td>
-                                                            <td class="bg-success-focus">Senin</td>
-                                                            <td class="bg-success-focus">09.40-10.20</td>
-                                                            <td class="bg-success-focus">
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </a>
-                                                                   
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>3</td>
-                                                            <td>Seni & Budaya</td>
-                                                            <td>VIII - Maliki</td>
-                                                            <td>Selasa</td>
-                                                            <td>08.00-09.20</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </a>
-                                                                   
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>4</td>
-                                                            <td>Seni & Budaya</td>
-                                                            <td>VII - Syafi'i</td>
-                                                            <td>Senin</td>
-                                                            <td>08.00-09.20</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </a>
-                                                                   
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>5</td>
-                                                            <td>Seni & Budaya</td>
-                                                            <td>IX - Az Zarnuji</td>
-                                                            <td>Senin</td>
-                                                            <td>08.00-09.20</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </a>
-                                                                   
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>6</td>
-                                                            <td>Seni & Budaya</td>
-                                                            <td>IX - Sonhaji</td>
-                                                            <td>Senin</td>
-                                                            <td>08.00-09.20</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </a>
-                                                                   
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>7</td>
-                                                            <td>Seni & Budaya</td>
-                                                            <td>X - Al Jazari</td>
-                                                            <td>Senin</td>
-                                                            <td>08.00-09.20</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </a>
-                                                                   
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>8</td>
-                                                            <td>Seni & Budaya</td>
-                                                            <td>XI -  Hanafi</td>
-                                                            <td>Senin</td>
-                                                            <td>08.00-09.20</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </a>
-                                                                   
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>9</td>
-                                                            <td>Seni & Budaya</td>
-                                                            <td>XII - Khalid</td>
-                                                            <td>Senin</td>
-                                                            <td>08.00-09.20</td>
+                                                            <td>2</td>
+                                                            <td>Sekolah</td>
+                                                            <td>Cek Tinggi & Berat Badan</td>
+                                                            <td>04 Agustus 2025</td>
+                                                            <td>-</td>
                                                             <td>
                                                                 <div class="d-flex align-items-center gap-10 justify-content-center">
                                                                     <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
@@ -1004,7 +897,55 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                 </div>
                             </div>
                         </div>
-                        <!-- End of Jadwal -->
+                        <!-- End of Rekam Medis -->
+
+                        <!-- Catatan -->
+                        <div class="tab-pane fade" id="pills-catatan" role="tabpanel" aria-labelledby="pills-catatan-tab" tabindex="0">
+                            <div class="row mt-20">
+                                <div class="col-xl-12">
+                                    <div class="card basic-data-table shadow">
+                                        <div class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
+                                            <h6 class="text-lg mb-0">Catatan Siswa</h6>
+                                            <button id="openModalBtn" class="btn btn-sm btn-info-100 text-dark"><i class="ri-add-line"></i> Tambah Catatan</button>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <table class="table bordered-table " id="dataPribadi" data-page-length='5' style="width:100% !important">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">Jenis Catatan</th>
+                                                            <th scope="col">Tanggal</th>
+                                                            <th scope="col">Keterangan</th>
+                                                            <th scope="col" class="text-center" style="max-width:130px !important">Detail</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>Pelanggaran</td>
+                                                            <td>21 Agustus 2025</td>
+                                                            <td><span class="float-left badge bg-warning">Bolos Sekolah</span></td>
+                                                            <td style="max-width:130px !important">
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <button type="button" class="btn rounded-pill btn-info-100 text-info-600 radius-8 px-20 py-11 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#detailIjazah"> 
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon></iconify-icon> Lihat
+                                                                    </button>
+
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                       
+                                                        
+                                                        
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End of catatan -->
 
                         <!-- Arsip -->
                         <div class="tab-pane fade" id="pills-arsip" role="tabpanel" aria-labelledby="pills-arsip-tab" tabindex="0">
@@ -1013,9 +954,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                     <div class="card basic-data-table shadow">
                                         <div class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
                                             <h6 class="text-lg mb-0">Data Pribadi</h6>
-                                            <button type="button" class="text-xl line-height-1">
-                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon> 
-                                            </button>
+                                            <a href="<?php echo url('ptk/ptkTambah') ?>" class="btn btn-sm btn-info-100 text-dark"><i class="ri-add-line"></i> Tambah Arsip</a>
                                         </div>
                                         <div class="card-body">
                                             <div class="table-responsive">
@@ -1072,135 +1011,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                 </div>
                             </div>
 
-                            <div class="row mt-20">
-                                <div class="col-xl-12">
-                                    <div class="card basic-data-table shadow">
-                                        <div class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
-                                            <h6 class="text-lg mb-0">SK Pengangkatan</h6>
-                                            <button type="button" class="text-xl line-height-1">
-                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon> 
-                                            </button>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="table-responsive">
-                                                <table class="table bordered-table " id="skPengangkatan" data-page-length='5' style="width:100% !important">
-                                                    <thead>
-                                                        <tr>
-                                                            <th scope="col">No</th>
-                                                            <th scope="col">Nama Dokumen</th>
-                                                            <th scope="col">Tanggal Dokumen</th>
-                                                            <th scope="col">Penandatangan</th>
-                                                            <th scope="col">Jenis TTD</th>
-                                                            <th scope="col" class="text-center">Aksi</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr>
-                                                            <td>1</td>
-                                                            <td>SK Pengangkatan Yulianni 2025</td>
-                                                            <td>30 Juni 2025</td>
-                                                            <td>Dr. Siti Julaeha, M.Pd.</td>
-                                                            <td>Tanda Tangan Digital</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#detailIjazah">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </button>
-                                                                   
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                       
-                                                        <tr>
-                                                            <td>2</td>
-                                                            <td>SK Pengangkatan Yulianni 2021</td>
-                                                            <td>30 Juni 2021</td>
-                                                            <td>Dr. Siti Julaeha, M.Pd.</td>
-                                                            <td>Tanda Tangan Basah</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#detailIjazah">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </button>
-                                                                   
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        
-                                                        
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                            
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row mt-20">
-                                <div class="col-xl-12">
-                                    <div class="card basic-data-table shadow">
-                                        <div class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
-                                            <h6 class="text-lg mb-0">SK Tugas Mengajar</h6>
-                                            <button type="button" class="text-xl line-height-1">
-                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon> 
-                                            </button>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="table-responsive">
-                                                <table class="table bordered-table " id="skTugas" data-page-length='5' style="width:100% !important">
-                                                    <thead>
-                                                        <tr>
-                                                            <th scope="col">No</th>
-                                                            <th scope="col">Nama Dokumen</th>
-                                                            <th scope="col">Tanggal Dokumen</th>
-                                                            <th scope="col">Penandatangan</th>
-                                                            <th scope="col">Jenis TTD</th>
-                                                            <th scope="col" class="text-center">Aksi</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr>
-                                                            <td>1</td>
-                                                            <td>SK Tugas Mengajar 2025</td>
-                                                            <td>30 Juni 2025</td>
-                                                            <td>Dr. Siti Julaeha, M.Pd.</td>
-                                                            <td>Tanda Tangan Digital</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#detailIjazah">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </button>
-                                                                   
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                       
-                                                        <tr>
-                                                            <td>2</td>
-                                                            <td>SK Tugas Mengajar 2021</td>
-                                                            <td>30 Juni 2021</td>
-                                                            <td>Dr. Siti Julaeha, M.Pd.</td>
-                                                            <td>Tanda Tangan Basah</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#detailIjazah">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </button>
-                                                                   
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        
-                                                        
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                            
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                       
 
                         </div>
                         <!-- End of Arsip -->
@@ -1368,6 +1179,17 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
     </div>
 </div>
 <!-- End of Modal Lihat Berkas -->
+
+<!-- Modal Ajax input catatan -->
+<div id="myModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" id="closeModalBtn">&times;</span>
+        <div id="modal-body" class="p-4">
+            <!-- Konten akan dimuat di sini -->
+        </div>
+    </div>
+</div>
+<!-- End of Modal Ajax input catatan -->
 
 <?php include viewPath('includes/footer'); ?>
 
@@ -1571,6 +1393,59 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
         titleAnim();
     });
   // ================================ Default Slider End ================================ 
+</script>
+
+<script>
+    const openModalBtn = document.getElementById('openModalBtn');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const myModal = document.getElementById('myModal');
+    const modalBody = document.getElementById('modal-body');
+
+    // Fungsi untuk memuat konten menggunakan AJAX
+    function loadModalContent() {
+        // Tampilkan spinner loading
+        modalBody.innerHTML = '<div class="spinner"></div>';
+
+        // Menggunakan setTimeout untuk mensimulasikan jeda dari permintaan AJAX
+        setTimeout(() => {
+            // Gunakan fetch() untuk memuat konten dari file eksternal (simulasi)
+            fetch('<?php echo url('siswa/inputCatatan') ?>')
+                .then(response => {
+                    // Periksa apakah responsnya OK
+                    if (!response.ok) {
+                        throw new Error('Jaringan tidak responsif atau terjadi kesalahan.');
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    // Masukkan data ke dalam elemen modal-body
+                    modalBody.innerHTML = data;
+                })
+                .catch(error => {
+                    // Tangani kesalahan
+                    console.error('Ada masalah dengan operasi fetch:', error);
+                    modalBody.innerHTML = '<p class="text-red-500">Gagal memuat konten. Silakan coba lagi.</p>';
+                });
+        }, 1000); // Tunda selama 1 detik untuk simulasi loading
+    }
+
+    // Ketika tombol "Buka Modal" ditekan, tampilkan modal dan muat konten
+    openModalBtn.addEventListener('click', () => {
+        myModal.style.display = 'flex';
+        loadModalContent();
+    });
+
+    // Ketika tombol "Tutup" ditekan, sembunyikan modal
+    closeModalBtn.addEventListener('click', () => {
+        myModal.style.display = 'none';
+    });
+
+    // Ketika pengguna mengklik area di luar modal, sembunyikan modal
+    window.addEventListener('click', (event) => {
+        if (event.target === myModal) {
+            myModal.style.display = 'none';
+        }
+    });
 </script>
 
 
