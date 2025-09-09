@@ -11,6 +11,7 @@ class Dashboard extends MY_Controller {
 	public function index()
 	{
 		$this->page_data['page']->title = 'Dashboard';
+		$this->page_data['page']->titleUrl = 'dashboard';
 		$this->page_data['page']->icon = 'solar:home-angle-2-linear';
 		
 		$this->load->view('dashboard', $this->page_data);
