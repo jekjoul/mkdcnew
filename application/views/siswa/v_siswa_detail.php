@@ -1,6 +1,6 @@
 <?php
 
-defined('BASEPATH') OR exit('No direct script access allowed'); ?>
+defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
 <?php include viewPath('includes/header'); ?>
 
@@ -29,9 +29,9 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                     <p class="card-text text-white mx-auto text-sm">FOTO 2025</p>
                                 </div>
                             </div>
-                           
+
                         </div>
-                
+
                         <h6 class="mb-0 mt-16">Mirna Rahmania</h6>
                         <span class="text-secondary-light mb-16">0778083335 / 2425010040</span><br>
                         <span class="badge text-sm fw-semibold bg-dark-info-gradient px-20 py-9 radius-4 text-white  mb-20">VIII - Syafi'i</span>
@@ -55,16 +55,16 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                             </li>
                             <li class="d-flex align-items-center gap-1 mb-12">
                                 <span class="w-40 text-md fw-semibold text-primary-light"> NIK</span>
-                                <span class="w-60 text-secondary-light fw-medium">:  5652780681230012 </span>
+                                <span class="w-60 text-secondary-light fw-medium">: 5652780681230012 </span>
                             </li>
                             <li class="d-flex align-items-center gap-1 mb-12">
                                 <span class="w-40 text-md fw-semibold text-primary-light"> No HP</span>
-                                <span class="w-60 text-secondary-light fw-medium">: +6292240213444  &nbsp
+                                <span class="w-60 text-secondary-light fw-medium">: +6292240213444 &nbsp
                                     <a class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Kirim Pesan Whatsapp">
-                                        <iconify-icon icon="tabler:brand-whatsapp-filled" class="text-md"></iconify-icon> 
+                                        <iconify-icon icon="tabler:brand-whatsapp-filled" class="text-md"></iconify-icon>
                                     </a>
                                 </span>
-                                
+
                             </li>
                             <li class="d-flex align-items-center gap-1 mb-12">
                                 <span class="w-40 text-md fw-semibold text-primary-light"> Tempat Lahir</span>
@@ -85,15 +85,15 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                             <li class="d-flex align-items-center gap-1">
                                 <span class="w-40 text-md fw-semibold text-primary-light"> Status Dapodik</span>
                                 <span class="w-60 text-secondary-light fw-medium">
-                                    : Sudah  Dapodik
+                                    : Sudah Dapodik
                                     <button class="text-success " data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                        <iconify-icon icon="material-symbols:check-box" class="text-md"></iconify-icon> 
+                                        <iconify-icon icon="material-symbols:check-box" class="text-md"></iconify-icon>
                                     </button>
                                 </span>
-                                
+
                             </li>
 
-                           
+
                         </ul>
                     </div>
                 </div>
@@ -125,9 +125,9 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link d-flex align-items-center px-24" id="pills-arsip-tab"
-                                data-bs-toggle="pill" data-bs-target="#pills-arsip" type="button" role="tab"
-                                aria-controls="pills-arsip" aria-selected="false" tabindex="-1">
+                            <button class="nav-link d-flex align-items-center px-24" id="pills-catatan-tab"
+                                data-bs-toggle="pill" data-bs-target="#pills-catatan" type="button" role="tab"
+                                aria-controls="pills-catatan" aria-selected="false" tabindex="-1">
                                 Catatan
                             </button>
                         </li>
@@ -145,7 +145,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                 Setting
                             </button>
                         </li>
-                        
+
                     </ul>
 
                     <div class="tab-content" id="pills-tabContent">
@@ -153,11 +153,11 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                         <div class="tab-pane fade show active" id="pills-profile" role="tabpanel"
                             aria-labelledby="pills-profile-tab" tabindex="0">
                             <div class="card radius-12 h-100 shadow">
-                                
+
                                 <div class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
                                     <h6 class="text-lg mb-0">Profil Siswa</h6>
                                     <button type="button" class="text-xl line-height-1">
-                                        <iconify-icon icon="icon-park-outline:user-business" class="text-xl"></iconify-icon> 
+                                        <iconify-icon icon="icon-park-outline:user-business" class="text-xl"></iconify-icon>
                                     </button>
                                 </div>
 
@@ -167,7 +167,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                             <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
                                                 <div class="align-items-center gap-3 d-flex justify-content-between">
                                                     <div>
-                                                         <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
                                                             Nama Lengkap :
                                                         </span>
                                                         <br>
@@ -175,11 +175,11 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                             Mirna Rahmania
                                                         </span>&nbsp
                                                     </div>
-                                                   
+
                                                     <button class="text-success " data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                       <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                     </button>
-                                                   
+
                                                 </div>
                                             </div>
 
@@ -196,7 +196,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                         </span>
                                                     </div>
                                                     <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                       <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                     </button>
                                                 </div>
                                             </div>
@@ -214,7 +214,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                         </span>
                                                     </div>
                                                     <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                       <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                     </button>
                                                 </div>
                                             </div>
@@ -231,7 +231,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                         </span>
                                                     </div>
                                                     <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                       <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                     </button>
                                                 </div>
                                             </div>
@@ -248,7 +248,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                         </span>
                                                     </div>
                                                     <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                       <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                     </button>
                                                 </div>
                                             </div>
@@ -265,7 +265,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                         </span>
                                                     </div>
                                                     <button class="text-danger" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-danger" data-bs-title="Tidak Sesuai Dapodik : Yani">
-                                                       <iconify-icon icon="ion:warning" class="text-xl"></iconify-icon> 
+                                                        <iconify-icon icon="ion:warning" class="text-xl"></iconify-icon>
                                                     </button>
                                                 </div>
                                             </div>
@@ -279,11 +279,11 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                             NISN :
                                                         </span><br>
                                                         <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
-                                                            0778083335 
+                                                            0778083335
                                                         </span>
                                                     </div>
                                                     <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                       <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                     </button>
                                                 </div>
                                             </div>
@@ -301,7 +301,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                         </span>
                                                     </div>
                                                     <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                       <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                     </button>
                                                 </div>
                                             </div>
@@ -312,14 +312,14 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                 <div class="align-items-center gap-3 d-flex justify-content-between">
                                                     <div>
                                                         <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
-                                                        Tanggal Pendaftaran :
+                                                            Tanggal Pendaftaran :
                                                         </span><br>
                                                         <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
                                                             15 Juli 2024
                                                         </span>
                                                     </div>
                                                     <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                       <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                     </button>
                                                 </div>
                                             </div>
@@ -330,14 +330,14 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                 <div class="align-items-center gap-3 d-flex justify-content-between">
                                                     <div>
                                                         <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
-                                                        Jenis Pendaftaran :
+                                                            Jenis Pendaftaran :
                                                         </span><br>
                                                         <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
-                                                           Siswa Baru
+                                                            Siswa Baru
                                                         </span>
-                                                    </div> 
+                                                    </div>
                                                     <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                       <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                     </button>
                                                 </div>
                                             </div>
@@ -348,14 +348,14 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                 <div class="align-items-center gap-3 d-flex justify-content-between">
                                                     <div>
                                                         <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
-                                                        Asal Sekolah :
+                                                            Asal Sekolah :
                                                         </span><br>
                                                         <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
                                                             SD Negeri 1 Mandalare
                                                         </span>
                                                     </div>
                                                     <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                       <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                     </button>
                                                 </div>
                                             </div>
@@ -366,14 +366,14 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                 <div class="align-items-center gap-3 d-flex justify-content-between">
                                                     <div>
                                                         <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
-                                                        Alamat :
+                                                            Alamat :
                                                         </span><br>
                                                         <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
-                                                            Dusun Mandalare 008/004 RT RW Desa/Kel. Mandalare Kec. Panjalu Kab. Ciamis Prov. Jawa Barat 
+                                                            Dusun Mandalare 008/004 RT RW Desa/Kel. Mandalare Kec. Panjalu Kab. Ciamis Prov. Jawa Barat
                                                         </span>
                                                     </div>
                                                     <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                       <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                     </button>
                                                 </div>
                                             </div>
@@ -384,34 +384,34 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                 <div class="align-items-center gap-3 d-flex justify-content-between">
                                                     <div>
                                                         <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
-                                                        Siswa Induk :
+                                                            Siswa Induk :
                                                         </span><br>
                                                         <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
                                                             Ya
                                                         </span>
                                                     </div>
                                                     <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                       <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                     </button>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        
+
 
                                         <div class="col-md-6">
                                             <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
                                                 <div class="align-items-center gap-3 d-flex justify-content-between">
                                                     <div>
                                                         <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
-                                                        Nomor Ponsel :
+                                                            Nomor Ponsel :
                                                         </span><br>
                                                         <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
-                                                            +6292240213444  
+                                                            +6292240213444
                                                         </span>
                                                     </div>
                                                     <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                       <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                     </button>
                                                 </div>
                                             </div>
@@ -420,20 +420,20 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                     </div>
                                 </div>
 
-                                
+
                             </div>
-                           
+
                             <div class="row mt-20">
                                 <div class="col-xl-12">
                                     <div class="card shadow">
                                         <div class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
                                             <h6 class="text-lg mb-0">Data Ayah</h6>
                                             <button type="button" class="text-xl line-height-1">
-                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon> 
+                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon>
                                             </button>
                                         </div>
                                         <div class="card-body">
-                                            
+
                                             <div class="row">
 
                                                 <div class="col-md-6">
@@ -445,11 +445,11 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                                 </span>
                                                                 <br>
                                                                 <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
-                                                                    Maman Maulana 
+                                                                    Maman Maulana
                                                                 </span>&nbsp
                                                             </div>
                                                             <button class="text-success " data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                            <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                                <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                             </button>
                                                         </div>
                                                     </div>
@@ -468,7 +468,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                                 </span>&nbsp
                                                             </div>
                                                             <button class="text-success " data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                            <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                                <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                             </button>
                                                         </div>
                                                     </div>
@@ -487,7 +487,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                                 </span>&nbsp
                                                             </div>
                                                             <button class="text-success " data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                            <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                                <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                             </button>
                                                         </div>
                                                     </div>
@@ -506,7 +506,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                                 </span>&nbsp
                                                             </div>
                                                             <button class="text-success " data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                            <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                                <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                             </button>
                                                         </div>
                                                     </div>
@@ -525,7 +525,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                                 </span>&nbsp
                                                             </div>
                                                             <button class="text-success " data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                            <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                                <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                             </button>
                                                         </div>
                                                     </div>
@@ -544,7 +544,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                                 </span>&nbsp
                                                             </div>
                                                             <button class="text-success " data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                            <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                                <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                             </button>
                                                         </div>
                                                     </div>
@@ -555,15 +555,15 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                         <div class="align-items-center gap-3 d-flex justify-content-between">
                                                             <div>
                                                                 <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
-                                                                    Alamat  :
+                                                                    Alamat :
                                                                 </span>
                                                                 <br>
                                                                 <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
-                                                                    Dusun Mandalare 008/004 RT RW Desa/Kel. Mandalare Kec. Panjalu Kab. Ciamis Prov. Jawa Barat 
+                                                                    Dusun Mandalare 008/004 RT RW Desa/Kel. Mandalare Kec. Panjalu Kab. Ciamis Prov. Jawa Barat
                                                                 </span>&nbsp
                                                             </div>
                                                             <button class="text-success " data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                            <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                                <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                             </button>
                                                         </div>
                                                     </div>
@@ -581,11 +581,11 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                         <div class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
                                             <h6 class="text-lg mb-0">Data Ibu</h6>
                                             <button type="button" class="text-xl line-height-1">
-                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon> 
+                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon>
                                             </button>
                                         </div>
                                         <div class="card-body">
-                                            
+
                                             <div class="row">
 
                                                 <div class="col-md-6">
@@ -597,11 +597,11 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                                 </span>
                                                                 <br>
                                                                 <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
-                                                                    Cucu maryam 
+                                                                    Cucu maryam
                                                                 </span>&nbsp
                                                             </div>
                                                             <button class="text-success " data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                            <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                                <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                             </button>
                                                         </div>
                                                     </div>
@@ -620,7 +620,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                                 </span>&nbsp
                                                             </div>
                                                             <button class="text-success " data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                            <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                                <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                             </button>
                                                         </div>
                                                     </div>
@@ -639,7 +639,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                                 </span>&nbsp
                                                             </div>
                                                             <button class="text-success " data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                            <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                                <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                             </button>
                                                         </div>
                                                     </div>
@@ -658,7 +658,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                                 </span>&nbsp
                                                             </div>
                                                             <button class="text-success " data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                            <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                                <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                             </button>
                                                         </div>
                                                     </div>
@@ -677,7 +677,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                                 </span>&nbsp
                                                             </div>
                                                             <button class="text-success " data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                            <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                                <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                             </button>
                                                         </div>
                                                     </div>
@@ -696,7 +696,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                                 </span>&nbsp
                                                             </div>
                                                             <button class="text-success " data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                            <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                                <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                             </button>
                                                         </div>
                                                     </div>
@@ -711,11 +711,11 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                                 </span>
                                                                 <br>
                                                                 <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
-                                                                    Dusun Mandalare 008/004 RT RW Desa/Kel. Mandalare Kec. Panjalu Kab. Ciamis Prov. Jawa Barat 
+                                                                    Dusun Mandalare 008/004 RT RW Desa/Kel. Mandalare Kec. Panjalu Kab. Ciamis Prov. Jawa Barat
                                                                 </span>&nbsp
                                                             </div>
                                                             <button class="text-success " data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                            <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon> 
+                                                                <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                             </button>
                                                         </div>
                                                     </div>
@@ -736,13 +736,13 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                             <div class="card-footer text-center bg-transparent border border-end-0 border-start-0 border-bottom-0 py-16 px-24 ">
                                                 <a href="javascript:void(0)" class="btn btn-success text-light  ">
                                                     <span class="d-flex">
-                                                        <iconify-icon icon="material-symbols:print-rounded" class="text-xl d-flex"> </iconify-icon> 
+                                                        <iconify-icon icon="material-symbols:print-rounded" class="text-xl d-flex"> </iconify-icon>
                                                         &nbsp Cetak Profil
                                                     </span>
                                                 </a>
                                                 <a href="javascript:void(0)" class="btn btn-success text-light  ">
                                                     <span class="d-flex">
-                                                        <iconify-icon icon="material-symbols:print-rounded" class="text-xl d-flex"> </iconify-icon> 
+                                                        <iconify-icon icon="material-symbols:print-rounded" class="text-xl d-flex"> </iconify-icon>
                                                         &nbsp Cetak Surat Keterangan Aktif
                                                     </span>
                                                 </a>
@@ -752,8 +752,8 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                 </div>
                             </div>
 
-                            
-                            
+
+
                         </div>
                         <!-- End of Profil -->
 
@@ -765,12 +765,12 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                         <div class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
                                             <h6 class="text-lg mb-0">Rekam Didik</h6>
                                             <button type="button" class="text-xl line-height-1">
-                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon> 
+                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon>
                                             </button>
                                         </div>
                                         <div class="card-body">
                                             <div class="table-responsive">
-                                                <table class="table bordered-table"  data-page-length='10'>
+                                                <table class="table bordered-table" data-page-length='10'>
                                                     <thead>
                                                         <tr>
                                                             <th scope="col">No</th>
@@ -791,7 +791,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                                     <a href="<?php echo url('siswa/rekamDidik') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
                                                                         <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
                                                                     </a>
-                                                                   
+
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -805,7 +805,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                                     <a href="<?php echo url('siswa/rekamDidik') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
                                                                         <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
                                                                     </a>
-                                                                   
+
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -819,11 +819,11 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                                     <a href="<?php echo url('siswa/rekamDidik') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
                                                                         <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
                                                                     </a>
-                                                                   
+
                                                                 </div>
                                                             </td>
                                                         </tr>
-                                                      
+
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -832,10 +832,10 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                 </div>
                             </div>
 
-                            
+
                         </div>
                         <!-- End of Pembelajaran -->
-                        
+
                         <!-- Jadwal -->
                         <div class="tab-pane fade" id="pills-riwayat" role="tabpanel" aria-labelledby="pills-riwayat-tab" tabindex="0">
                             <div class="row">
@@ -844,12 +844,12 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                         <div class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
                                             <h6 class="text-lg mb-0">Jadwal Pembelajaran</h6>
                                             <button type="button" class="text-xl line-height-1">
-                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon> 
+                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon>
                                             </button>
                                         </div>
                                         <div class="card-body">
                                             <div class="table-responsive">
-                                                <table class="table bordered-table"  data-page-length='10'>
+                                                <table class="table bordered-table" data-page-length='10'>
                                                     <thead>
                                                         <tr>
                                                             <th scope="col">No</th>
@@ -872,7 +872,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                                     <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
                                                                         <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
                                                                     </a>
-                                                                   
+
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -887,7 +887,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                                     <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
                                                                         <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
                                                                     </a>
-                                                                   
+
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -902,7 +902,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                                     <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
                                                                         <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
                                                                     </a>
-                                                                   
+
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -917,7 +917,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                                     <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
                                                                         <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
                                                                     </a>
-                                                                   
+
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -932,7 +932,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                                     <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
                                                                         <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
                                                                     </a>
-                                                                   
+
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -947,7 +947,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                                     <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
                                                                         <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
                                                                     </a>
-                                                                   
+
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -962,14 +962,14 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                                     <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
                                                                         <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
                                                                     </a>
-                                                                   
+
                                                                 </div>
                                                             </td>
                                                         </tr>
                                                         <tr>
                                                             <td>8</td>
                                                             <td>Seni & Budaya</td>
-                                                            <td>XI -  Hanafi</td>
+                                                            <td>XI - Hanafi</td>
                                                             <td>Senin</td>
                                                             <td>08.00-09.20</td>
                                                             <td>
@@ -977,7 +977,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                                     <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
                                                                         <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
                                                                     </a>
-                                                                   
+
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -992,7 +992,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                                     <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
                                                                         <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
                                                                     </a>
-                                                                   
+
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -1006,6 +1006,58 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                         </div>
                         <!-- End of Jadwal -->
 
+                        <!-- catatan -->
+                        <div class="tab-pane fade" id="pills-catatan" role="tabpanel" aria-labelledby="pills-arsip-tab" tabindex="0">
+                            <div class="row mt-20">
+                                <div class="col-xl-12">
+                                    <div class="card basic-data-table shadow">
+                                        <div class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
+                                            <h6 class="text-lg mb-0">Catatan Pribadi</h6>
+                                            <button type="button" class="text-xl line-height-1">
+                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon>
+                                            </button>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <table class="table bordered-table " id="dataPribadi" data-page-length='5' style="width:100% !important">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">No</th>
+                                                            <th scope="col">Waktu</th>
+                                                            <th scope="col">Jenis Catatan</th>
+                                                            <th scope="col">Detail</th>
+                                                            <th scope="col">Keterangan</th>
+                                                            <th scope="col" class="text-center" style="max-width:130px !important">Berkas</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>1</td>
+                                                            <td>08.00 12 Mei 2025</td>
+                                                            <td>Pelanggaran</td>
+                                                            <td>Bolos Sekolah</td>
+                                                            <td><span class="float-left badge bg-success">Ditindak</span></td>
+                                                            <td style="max-width:130px !important">
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <button type="button" class="btn btn-info-100 text-info-600  align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#detailCatatan">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon></iconify-icon>
+                                                                    </button>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <!-- End of catatan -->
+
                         <!-- Arsip -->
                         <div class="tab-pane fade" id="pills-arsip" role="tabpanel" aria-labelledby="pills-arsip-tab" tabindex="0">
                             <div class="row mt-20">
@@ -1014,7 +1066,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                         <div class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
                                             <h6 class="text-lg mb-0">Data Pribadi</h6>
                                             <button type="button" class="text-xl line-height-1">
-                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon> 
+                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon>
                                             </button>
                                         </div>
                                         <div class="card-body">
@@ -1033,40 +1085,40 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                             <td><span class="float-left badge bg-success">Sudah Upload</span></td>
                                                             <td style="max-width:130px !important">
                                                                 <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <button type="button" class="btn rounded-pill btn-info-100 text-info-600 radius-8 px-20 py-11 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#detailIjazah"> 
+                                                                    <button type="button" class="btn rounded-pill btn-info-100 text-info-600 radius-8 px-20 py-11 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#detailIjazah">
                                                                         <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon></iconify-icon> Lihat
                                                                     </button>
 
-                                                                    
-                                                                    <button type="button" class="btn rounded-pill btn-success-100 text-success-600 radius-8 px-20 py-11 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#detailIjazah"> 
+
+                                                                    <button type="button" class="btn rounded-pill btn-success-100 text-success-600 radius-8 px-20 py-11 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#detailIjazah">
                                                                         <iconify-icon icon="lucide:edit" class="menu-icon"></iconify-icon></iconify-icon> Sunting
                                                                     </button>
                                                                 </div>
                                                             </td>
                                                         </tr>
-                                                       
+
                                                         <tr>
                                                             <td>Kartu Keluarga</td>
                                                             <td><span class="float-left badge bg-success">Sudah Upload</span></td>
                                                             <td style="max-width:130px !important">
                                                                 <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <button type="button" class="btn rounded-pill btn-info-100 text-info-600 radius-8 px-20 py-11 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#detailIjazah"> 
+                                                                    <button type="button" class="btn rounded-pill btn-info-100 text-info-600 radius-8 px-20 py-11 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#detailIjazah">
                                                                         <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon></iconify-icon> Lihat
                                                                     </button>
 
-                                                                    
-                                                                    <button type="button" class="btn rounded-pill btn-success-100 text-success-600 radius-8 px-20 py-11 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#detailIjazah"> 
+
+                                                                    <button type="button" class="btn rounded-pill btn-success-100 text-success-600 radius-8 px-20 py-11 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#detailIjazah">
                                                                         <iconify-icon icon="lucide:edit" class="menu-icon"></iconify-icon></iconify-icon> Sunting
                                                                     </button>
                                                                 </div>
                                                             </td>
                                                         </tr>
-                                                        
-                                                        
+
+
                                                     </tbody>
                                                 </table>
                                             </div>
-                                            
+
                                         </div>
                                     </div>
                                 </div>
@@ -1078,7 +1130,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                         <div class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
                                             <h6 class="text-lg mb-0">SK Pengangkatan</h6>
                                             <button type="button" class="text-xl line-height-1">
-                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon> 
+                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon>
                                             </button>
                                         </div>
                                         <div class="card-body">
@@ -1106,11 +1158,11 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                                     <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#detailIjazah">
                                                                         <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
                                                                     </button>
-                                                                   
+
                                                                 </div>
                                                             </td>
                                                         </tr>
-                                                       
+
                                                         <tr>
                                                             <td>2</td>
                                                             <td>SK Pengangkatan Yulianni 2021</td>
@@ -1122,16 +1174,16 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                                     <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#detailIjazah">
                                                                         <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
                                                                     </button>
-                                                                   
+
                                                                 </div>
                                                             </td>
                                                         </tr>
-                                                        
-                                                        
+
+
                                                     </tbody>
                                                 </table>
                                             </div>
-                                            
+
                                         </div>
                                     </div>
                                 </div>
@@ -1143,7 +1195,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                         <div class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
                                             <h6 class="text-lg mb-0">SK Tugas Mengajar</h6>
                                             <button type="button" class="text-xl line-height-1">
-                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon> 
+                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon>
                                             </button>
                                         </div>
                                         <div class="card-body">
@@ -1171,11 +1223,11 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                                     <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#detailIjazah">
                                                                         <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
                                                                     </button>
-                                                                   
+
                                                                 </div>
                                                             </td>
                                                         </tr>
-                                                       
+
                                                         <tr>
                                                             <td>2</td>
                                                             <td>SK Tugas Mengajar 2021</td>
@@ -1187,16 +1239,16 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                                     <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#detailIjazah">
                                                                         <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
                                                                     </button>
-                                                                   
+
                                                                 </div>
                                                             </td>
                                                         </tr>
-                                                        
-                                                        
+
+
                                                     </tbody>
                                                 </table>
                                             </div>
-                                            
+
                                         </div>
                                     </div>
                                 </div>
@@ -1208,7 +1260,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                         <!-- Setting -->
                         <div class="tab-pane fade" id="pills-setting" role="tabpanel"
                             aria-labelledby="pills-setting-tab" tabindex="0">
-                            
+
                             <div class="mb-24 mt-16">
                                 <div class="avatar-upload">
                                     <div
@@ -1360,8 +1412,8 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-24">
-                <object style="width: 100%;height: 100%;" data="<?php echo url('uploads/berkas.pdf')?>" type="application/pdf" id="pdf_content" style="pointer-events: none;">
-                    <iframe src="<?php echo url('uploads/berkas.pdf')?>&embedded=true"></iframe>
+                <object style="width: 100%;height: 100%;" data="<?php echo url('uploads/berkas.pdf') ?>" type="application/pdf" id="pdf_content" style="pointer-events: none;">
+                    <iframe src="<?php echo url('uploads/berkas.pdf') ?>&embedded=true"></iframe>
                 </object>
             </div>
         </div>
@@ -1369,25 +1421,43 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 </div>
 <!-- End of Modal Lihat Berkas -->
 
+<!-- Modal Lihat Berkas Catatan -->
+<div class="modal fade" id="detailCatatan" tabindex="-1" aria-labelledby="exampleModalEditLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen modal-dialog modal-dialog-centered">
+        <div class="modal-content radius-16 bg-base">
+            <div class="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0">
+                <h1 class="modal-title fs-5" id="exampleModalEditLabel">Lihat Berkas Catatan</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-24">
+                <object style="width: 100%;height: 100%;" data="<?php echo url('uploads/berkas.pdf') ?>" type="application/pdf" id="pdf_content" style="pointer-events: none;">
+                    <iframe src="<?php echo url('uploads/berkas.pdf') ?>&embedded=true"></iframe>
+                </object>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End of Modal Lihat Berkas Catatan -->
+
 <?php include viewPath('includes/footer'); ?>
 
 <script>
-    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]'); 
-    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl)); 
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 
     // Boxed Tooltip
     $(document).ready(function() {
-        $('.tooltip-dapo').each(function () {
+        $('.tooltip-dapo').each(function() {
             var tooltipButton = $(this);
-            var tooltipContent = $(this).siblings('.my-tooltip').html(); 
-    
+            var tooltipContent = $(this).siblings('.my-tooltip').html();
+
             // Initialize the tooltip
             tooltipButton.tooltip({
                 title: tooltipContent,
                 trigger: 'hover',
                 html: true
             });
-    
+
             // Optionally, reinitialize the tooltip if the content might change dynamically
             tooltipButton.on('mouseenter', function() {
                 tooltipButton.tooltip('dispose').tooltip({
@@ -1406,7 +1476,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
         if (input.files && input.files[0]) {
             var reader = new FileReader();
             reader.onload = function(e) {
-                $('#imagePreview').css('background-image', 'url('+e.target.result +')');
+                $('#imagePreview').css('background-image', 'url(' + e.target.result + ')');
                 $('#imagePreview').hide();
                 $('#imagePreview').fadeIn(650);
             }
@@ -1432,26 +1502,25 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
     }
     // Call the function
     initializePasswordToggle('.toggle-password');
-  // ========================= Password Show Hide Js End ===========================
+    // ========================= Password Show Hide Js End ===========================
 </script>
 
 
 <script>
-  let table = new DataTable('#dataTable');
-  let table2 = new DataTable('#skPengangkatan');
-  let table3 = new DataTable('#skTugas');
-  let table4 = new DataTable('#dataPribadi');
-
+    let table = new DataTable('#dataTable');
+    let table2 = new DataTable('#skPengangkatan');
+    let table3 = new DataTable('#skTugas');
+    let table4 = new DataTable('#dataPribadi');
 </script>
 
 <script>
     var rtlDirection = $('html').attr('dir') === 'rtl';
-  // ================================ Default Slider Start ================================ 
-  $('.default-carousel').slick({
+    // ================================ Default Slider Start ================================ 
+    $('.default-carousel').slick({
         infinite: true,
         slidesToShow: 1,
-        slidesToScroll: 1, 
-        arrows: false, 
+        slidesToScroll: 1,
+        arrows: false,
         dots: false,
         infinite: true,
         autoplay: false,
@@ -1461,11 +1530,11 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
     });
 
     // Arrow Carousel
-  $('.arrow-carousel').slick({
+    $('.arrow-carousel').slick({
         infinite: true,
         slidesToShow: 1,
-        slidesToScroll: 1, 
-        arrows: true, 
+        slidesToScroll: 1,
+        arrows: true,
         dots: false,
         infinite: true,
         autoplay: false,
@@ -1480,8 +1549,8 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
     $('.pagination-carousel').slick({
         infinite: true,
         slidesToShow: 1,
-        slidesToScroll: 1, 
-        arrows: false, 
+        slidesToScroll: 1,
+        arrows: false,
         dots: true,
         infinite: true,
         autoplay: false,
@@ -1491,13 +1560,13 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
         nextArrow: '<button type="button" class="slick-next"><iconify-icon icon="ic:outline-keyboard-arrow-right" class="menu-icon"></iconify-icon></button>',
         rtl: rtlDirection
     });
-    
+
     // multiple carousel
     $('.multiple-carousel').slick({
         infinite: true,
         slidesToShow: 4,
-        slidesToScroll: 1, 
-        arrows: false, 
+        slidesToScroll: 1,
+        arrows: false,
         dots: true,
         infinite: true,
         autoplay: false,
@@ -1507,23 +1576,22 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
         prevArrow: '<button type="button" class="slick-prev"><iconify-icon icon="ic:outline-keyboard-arrow-left" class="menu-icon"></iconify-icon></button>',
         nextArrow: '<button type="button" class="slick-next"><iconify-icon icon="ic:outline-keyboard-arrow-right" class="menu-icon"></iconify-icon></button>',
         rtl: rtlDirection,
-        responsive: [
-            {
+        responsive: [{
                 breakpoint: 1199,
                 settings: {
-                slidesToShow: 3,
+                    slidesToShow: 3,
                 }
             },
             {
                 breakpoint: 991,
                 settings: {
-                slidesToShow: 2,
+                    slidesToShow: 2,
                 }
             },
             {
                 breakpoint: 575,
                 settings: {
-                slidesToShow: 1,
+                    slidesToShow: 1,
                 }
             },
         ]
@@ -1546,11 +1614,11 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
             rtl: rtlDirection
         });
 
-        function progressBar(){
+        function progressBar() {
             $('.slider-progress').find('span').removeAttr('style');
             $('.slider-progress').find('span').removeClass('active');
-            setTimeout(function(){
-                $('.slider-progress').find('span').css('transition-duration', (sliderTimer/1000)+'s').addClass('active');
+            setTimeout(function() {
+                $('.slider-progress').find('span').css('transition-duration', (sliderTimer / 1000) + 's').addClass('active');
             }, 100);
         }
         progressBar();
@@ -1562,15 +1630,13 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
         });
 
         // Title Animation JS
-        function titleAnim(ele){
+        function titleAnim(ele) {
             $imageSlider.find('.slick-current').find('h1').addClass('show');
-            setTimeout(function(){
+            setTimeout(function() {
                 $imageSlider.find('.slick-current').find('h1').removeClass('show');
             }, sliderTimer - beforeEnd);
         }
         titleAnim();
     });
-  // ================================ Default Slider End ================================ 
+    // ================================ Default Slider End ================================ 
 </script>
-
-
