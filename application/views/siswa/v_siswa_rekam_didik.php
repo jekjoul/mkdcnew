@@ -25,7 +25,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                     <div class="row">
                         
                         <div class="col-md-12 ">
-                            <div class="row pt-20 pb-20 mb-40 py-16 px-24 bg-gradient-start-3 radius-10">
+                            <div class="row pt-20 pb-20 mb-40 py-16 px-24 bg-primary-success-gradient radius-10">
                                 <div class="col-md-2">
                                     <div class="user-grid-card position-relative border radius-16 overflow-hidden bg-base">
                                         <div class="">

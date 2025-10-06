@@ -1,329 +1,315 @@
-<?php 
+<?php
 
-if ( ! function_exists('tanggal_indo'))
-        {
-            function tanggal_indo($tgl)
-            {
-                $ubah = gmdate($tgl, time()+60*60*8);
-                $pecah = explode("-",$ubah);
-                $tanggal = $pecah[2];
-                $bulan = bulan($pecah[1]);
-                $tahun = $pecah[0];
-                return $tanggal.' '.$bulan.' '.$tahun;
-            }
-        }
-          
-        if ( ! function_exists('bulan'))
-        {
-            function bulan($bln)
-            {
-                switch ($bln)
-                {
-                    case 1:
-                        return "Januari";
-                        break;
-                    case 2:
-                        return "Februari";
-                        break;
-                    case 3:
-                        return "Maret";
-                        break;
-                    case 4:
-                        return "April";
-                        break;
-                    case 5:
-                        return "Mei";
-                        break;
-                    case 6:
-                        return "Juni";
-                        break;
-                    case 7:
-                        return "Juli";
-                        break;
-                    case 8:
-                        return "Agustus";
-                        break;
-                    case 9:
-                        return "September";
-                        break;
-                    case 10:
-                        return "Oktober";
-                        break;
-                    case 11:
-                        return "November";
-                        break;
-                    case 12:
-                        return "Desember";
-                        break;
-                }
-            }
-        }
- 
-        //Format Shortdate
-        if ( ! function_exists('shortdate_indo'))
-        {
-            function shortdate_indo($tgl)
-            {
-                $ubah = gmdate($tgl, time()+60*60*8);
-                $pecah = explode("-",$ubah);
-                $tanggal = $pecah[2];
-                $bulan = short_bulan($pecah[1]);
-                $tahun = $pecah[0];
-                return $tanggal.'/'.$bulan.'/'.$tahun;
-            }
-        }
-          
-        if ( ! function_exists('short_bulan'))
-        {
-            function short_bulan($bln)
-            {
-                switch ($bln)
-                {
-                    case 1:
-                        return "01";
-                        break;
-                    case 2:
-                        return "02";
-                        break;
-                    case 3:
-                        return "03";
-                        break;
-                    case 4:
-                        return "04";
-                        break;
-                    case 5:
-                        return "05";
-                        break;
-                    case 6:
-                        return "06";
-                        break;
-                    case 7:
-                        return "07";
-                        break;
-                    case 8:
-                        return "08";
-                        break;
-                    case 9:
-                        return "09";
-                        break;
-                    case 10:
-                        return "10";
-                        break;
-                    case 11:
-                        return "11";
-                        break;
-                    case 12:
-                        return "12";
-                        break;
-                }
-            }
-        }
- 
-        //Format Medium date
-        if ( ! function_exists('mediumdate_indo'))
-        {
-            function mediumdate_indo($tgl)
-            {
-                $ubah = gmdate($tgl, time()+60*60*8);
-                $pecah = explode("-",$ubah);
-                $tanggal = $pecah[2];
-                $bulan = medium_bulan($pecah[1]);
-                $tahun = $pecah[0];
-                return $tanggal.'-'.$bulan.'-'.$tahun;
-            }
-        }
-          
-        if ( ! function_exists('medium_bulan'))
-        {
-            function medium_bulan($bln)
-            {
-                switch ($bln)
-                {
-                    case 1:
-                        return "Jan";
-                        break;
-                    case 2:
-                        return "Feb";
-                        break;
-                    case 3:
-                        return "Mar";
-                        break;
-                    case 4:
-                        return "Apr";
-                        break;
-                    case 5:
-                        return "Mei";
-                        break;
-                    case 6:
-                        return "Jun";
-                        break;
-                    case 7:
-                        return "Jul";
-                        break;
-                    case 8:
-                        return "Ags";
-                        break;
-                    case 9:
-                        return "Sep";
-                        break;
-                    case 10:
-                        return "Okt";
-                        break;
-                    case 11:
-                        return "Nov";
-                        break;
-                    case 12:
-                        return "Des";
-                        break;
-                }
-            }
-        }
-         
-        //Long date indo Format
-        if ( ! function_exists('longdate_indo'))
-        {
-            function longdate_indo($tanggal)
-            {
-                $ubah = gmdate($tanggal, time()+60*60*8);
-                $pecah = explode("-",$ubah);
-                $tgl = $pecah[2];
-                $bln = $pecah[1];
-                $thn = $pecah[0];
-                $bulan = bulan($pecah[1]);
-          
-                $nama = date("l", mktime(0,0,0,$bln,$tgl,$thn));
-                $nama_hari = "";
-                if($nama=="Sunday") {$nama_hari="Minggu";}
-                else if($nama=="Monday") {$nama_hari="Senin";}
-                else if($nama=="Tuesday") {$nama_hari="Selasa";}
-                else if($nama=="Wednesday") {$nama_hari="Rabu";}
-                else if($nama=="Thursday") {$nama_hari="Kamis";}
-                else if($nama=="Friday") {$nama_hari="Jumat";}
-                else if($nama=="Saturday") {$nama_hari="Sabtu";}
-                return $nama_hari.', '.$tgl.' '.$bulan.' '.$thn;
-            }
-        }
+if (! function_exists('tanggal_indo')) {
+	function tanggal_indo($tgl)
+	{
+		$ubah = gmdate($tgl, time() + 60 * 60 * 8);
+		$pecah = explode("-", $ubah);
+		$tanggal = $pecah[2];
+		$bulan = bulan($pecah[1]);
+		$tahun = $pecah[0];
+		return $tanggal . ' ' . $bulan . ' ' . $tahun;
+	}
+}
+
+if (! function_exists('bulan')) {
+	function bulan($bln)
+	{
+		switch ($bln) {
+			case 1:
+				return "Januari";
+				break;
+			case 2:
+				return "Februari";
+				break;
+			case 3:
+				return "Maret";
+				break;
+			case 4:
+				return "April";
+				break;
+			case 5:
+				return "Mei";
+				break;
+			case 6:
+				return "Juni";
+				break;
+			case 7:
+				return "Juli";
+				break;
+			case 8:
+				return "Agustus";
+				break;
+			case 9:
+				return "September";
+				break;
+			case 10:
+				return "Oktober";
+				break;
+			case 11:
+				return "November";
+				break;
+			case 12:
+				return "Desember";
+				break;
+		}
+	}
+}
+
+//Format Shortdate
+if (! function_exists('shortdate_indo')) {
+	function shortdate_indo($tgl)
+	{
+		$ubah = gmdate($tgl, time() + 60 * 60 * 8);
+		$pecah = explode("-", $ubah);
+		$tanggal = $pecah[2];
+		$bulan = short_bulan($pecah[1]);
+		$tahun = $pecah[0];
+		return $tanggal . '/' . $bulan . '/' . $tahun;
+	}
+}
+
+if (! function_exists('short_bulan')) {
+	function short_bulan($bln)
+	{
+		switch ($bln) {
+			case 1:
+				return "01";
+				break;
+			case 2:
+				return "02";
+				break;
+			case 3:
+				return "03";
+				break;
+			case 4:
+				return "04";
+				break;
+			case 5:
+				return "05";
+				break;
+			case 6:
+				return "06";
+				break;
+			case 7:
+				return "07";
+				break;
+			case 8:
+				return "08";
+				break;
+			case 9:
+				return "09";
+				break;
+			case 10:
+				return "10";
+				break;
+			case 11:
+				return "11";
+				break;
+			case 12:
+				return "12";
+				break;
+		}
+	}
+}
+
+//Format Medium date
+if (! function_exists('mediumdate_indo')) {
+	function mediumdate_indo($tgl)
+	{
+		$ubah = gmdate($tgl, time() + 60 * 60 * 8);
+		$pecah = explode("-", $ubah);
+		$tanggal = $pecah[2];
+		$bulan = medium_bulan($pecah[1]);
+		$tahun = $pecah[0];
+		return $tanggal . '-' . $bulan . '-' . $tahun;
+	}
+}
+
+if (! function_exists('medium_bulan')) {
+	function medium_bulan($bln)
+	{
+		switch ($bln) {
+			case 1:
+				return "Jan";
+				break;
+			case 2:
+				return "Feb";
+				break;
+			case 3:
+				return "Mar";
+				break;
+			case 4:
+				return "Apr";
+				break;
+			case 5:
+				return "Mei";
+				break;
+			case 6:
+				return "Jun";
+				break;
+			case 7:
+				return "Jul";
+				break;
+			case 8:
+				return "Ags";
+				break;
+			case 9:
+				return "Sep";
+				break;
+			case 10:
+				return "Okt";
+				break;
+			case 11:
+				return "Nov";
+				break;
+			case 12:
+				return "Des";
+				break;
+		}
+	}
+}
+
+//Long date indo Format
+if (! function_exists('longdate_indo')) {
+	function longdate_indo($tanggal)
+	{
+		$ubah = gmdate($tanggal, time() + 60 * 60 * 8);
+		$pecah = explode("-", $ubah);
+		$tgl = $pecah[2];
+		$bln = $pecah[1];
+		$thn = $pecah[0];
+		$bulan = bulan($pecah[1]);
+
+		$nama = date("l", mktime(0, 0, 0, $bln, $tgl, $thn));
+		$nama_hari = "";
+		if ($nama == "Sunday") {
+			$nama_hari = "Minggu";
+		} else if ($nama == "Monday") {
+			$nama_hari = "Senin";
+		} else if ($nama == "Tuesday") {
+			$nama_hari = "Selasa";
+		} else if ($nama == "Wednesday") {
+			$nama_hari = "Rabu";
+		} else if ($nama == "Thursday") {
+			$nama_hari = "Kamis";
+		} else if ($nama == "Friday") {
+			$nama_hari = "Jumat";
+		} else if ($nama == "Saturday") {
+			$nama_hari = "Sabtu";
+		}
+		return $nama_hari . ', ' . $tgl . ' ' . $bulan . ' ' . $thn;
+	}
+}
 
 
 /**
 
-  * Function to create custom url
+ * Function to create custom url
 
-  * uses site_url() function
+ * uses site_url() function
 
-  *
+ *
 
-  * @param string $url any slug
+ * @param string $url any slug
 
-  *
+ *
 
-  * @return string site_url
+ * @return string site_url
 
-  * 
+ * 
 
-  */
+ */
 
 if (!function_exists('url')) {
 
 
 
-	function url($url='')
+	function url($url = '')
 
 	{
 
 		return site_url($url);
-
 	}
-
-
-
 }
 
 
 
 /**
 
-  * Function to get url of assets folder
+ * Function to get url of assets folder
 
-  *
+ *
 
-  * @param string $url any slug 
+ * @param string $url any slug 
 
-  *
+ *
 
-  * @return string url
+ * @return string url
 
-  * 
+ * 
 
-  */
+ */
 
 if (!function_exists('assets_url')) {
 
 
 
-	function assets_url($url='')
+	function assets_url($url = '')
 
 	{
 
-		return base_url('assets/'.$url);
-
+		return base_url('assets/' . $url);
 	}
-
-
-
 }
 
 
 
 /**
 
-  * Function to get url of upload folder
+ * Function to get url of upload folder
 
-  *
+ *
 
-  * @param string $url any slug 
+ * @param string $url any slug 
 
-  *
+ *
 
-  * @return string url
+ * @return string url
 
-  * 
+ * 
 
-  */
+ */
 
 if (!function_exists('urlUpload')) {
 
 
 
-	function urlUpload($url='', $time = false)
+	function urlUpload($url = '', $time = false)
 
 	{
 
-		return base_url('uploads/'.$url).($time ? '?'.time() : '');
-
+		return base_url('uploads/' . $url) . ($time ? '?' . time() : '');
 	}
-
-
-
 }
 
 
 
 /**
 
-  * Function for user profile url
+ * Function for user profile url
 
-  *
+ *
 
-  * @param string $id - user id of the user
+ * @param string $id - user id of the user
 
-  *
+ *
 
-  * @return string profile url
+ * @return string profile url
 
-  * 
+ * 
 
-  */
+ */
 
 if (!function_exists('userProfile')) {
 
@@ -333,26 +319,22 @@ if (!function_exists('userProfile')) {
 
 	{
 
-		$CI =& get_instance();
+		$CI = &get_instance();
 
 
 
-		$url = urlUpload('users/'.$id.'.png?'.time());
+		$url = urlUpload('users/' . $id . '.png?' . time());
 
 
 
-		if($id!='default')
+		if ($id != 'default')
 
-			$url = urlUpload('users/'.$id.'.'.$CI->users_model->getRowById($id, 'img_type').'?'.time());
+			$url = urlUpload('users/' . $id . '.' . $CI->users_model->getRowById($id, 'img_type') . '?' . time());
 
 
 
 		return $url;
-
 	}
-
-
-
 }
 
 
@@ -365,19 +347,19 @@ if (!function_exists('userProfile')) {
 
 /**
 
-  * Function to check and get 'post' request
+ * Function to check and get 'post' request
 
-  *
+ *
 
-  * @param string $key - key to check in 'post' request
+ * @param string $key - key to check in 'post' request
 
-  *
+ *
 
-  * @return string value - uses codeigniter Input library 
+ * @return string value - uses codeigniter Input library 
 
-  * 
+ * 
 
-  */
+ */
 
 if (!function_exists('post')) {
 
@@ -387,33 +369,29 @@ if (!function_exists('post')) {
 
 	{
 
-		$CI =& get_instance();
+		$CI = &get_instance();
 
 		return !empty($CI->input->post($key, true)) ? $CI->input->post($key, true) : false;
-
 	}
-
-
-
 }
 
 
 
 /**
 
-  * Function to check and get 'get' request
+ * Function to check and get 'get' request
 
-  *
+ *
 
-  * @param string $key - key to check in 'get' request
+ * @param string $key - key to check in 'get' request
 
-  *
+ *
 
-  * @return string value - uses codeigniter Input library 
+ * @return string value - uses codeigniter Input library 
 
-  * 
+ * 
 
-  */
+ */
 
 if (!function_exists('get')) {
 
@@ -423,31 +401,25 @@ if (!function_exists('get')) {
 
 	{
 
-		$CI =& get_instance();
+		$CI = &get_instance();
 
 		return !empty($CI->input->get($key, true)) ? $CI->input->get($key, true) : false;
-
 	}
-
-
-
-
-
 }
 
 
 
 /**
 
-  * Die/Stops the request if its not a 'post' requetst type
+ * Die/Stops the request if its not a 'post' requetst type
 
-  *
+ *
 
-  * @return boolean
+ * @return boolean
 
-  * 
+ * 
 
-  */
+ */
 
 if (!function_exists('postAllowed')) {
 
@@ -457,24 +429,16 @@ if (!function_exists('postAllowed')) {
 
 	{
 
-		$CI =& get_instance();
+		$CI = &get_instance();
 
-		if(count($CI->input->post()) <= 0)
+		if (count($CI->input->post()) <= 0)
 
 			die('Invalid Request');
 
 
 
 		return true;
-
-
-
 	}
-
-
-
-
-
 }
 
 
@@ -483,25 +447,25 @@ if (!function_exists('postAllowed')) {
 
 /**
 
-  * Function to dump the passed data
+ * Function to dump the passed data
 
-  * Die & Dumps the whole data passed
+ * Die & Dumps the whole data passed
 
-  *
+ *
 
-  * uses - var_dump & die together
+ * uses - var_dump & die together
 
-  *
+ *
 
-  * @param all $key - All Accepted - string,int,boolean,etc
+ * @param all $key - All Accepted - string,int,boolean,etc
 
-  *
+ *
 
-  * @return boolean
+ * @return boolean
 
-  * 
+ * 
 
-  */
+ */
 
 if (!function_exists('dd')) {
 
@@ -514,13 +478,7 @@ if (!function_exists('dd')) {
 		die(var_dump($key));
 
 		return true;
-
 	}
-
-
-
-
-
 }
 
 
@@ -529,15 +487,15 @@ if (!function_exists('dd')) {
 
 /**
 
-  * Function to check if the user is loggedIn
+ * Function to check if the user is loggedIn
 
-  *
+ *
 
-  * @return boolean
+ * @return boolean
 
-  * 
+ * 
 
-  */
+ */
 
 if (!function_exists('is_logged')) {
 
@@ -547,7 +505,7 @@ if (!function_exists('is_logged')) {
 
 	{
 
-		$CI =& get_instance();
+		$CI = &get_instance();
 
 
 
@@ -561,36 +519,28 @@ if (!function_exists('is_logged')) {
 
 
 
-		if(!$isLogged){
+		if (!$isLogged) {
 
-			$isLogged = get_cookie('login') && !empty(get_cookie('logged')) ? json_decode(get_cookie('logged')): false;
+			$isLogged = get_cookie('login') && !empty(get_cookie('logged')) ? json_decode(get_cookie('logged')) : false;
 
 			$_token = $isLogged && !empty(get_cookie('login_token')) ? get_cookie('login_token') : false;
-
 		}
 
 
 
-		if($isLogged){
+		if ($isLogged) {
 
-			$user = $CI->users_model->getById( $CI->db->escape((int) $isLogged->id) );
+			$user = $CI->users_model->getById($CI->db->escape((int) $isLogged->id));
 
 			// verify login_token
 
-			$login_token_match = (sha1($user->id.$user->password.$isLogged->time) == $_token);
-
+			$login_token_match = (sha1($user->id . $user->password . $isLogged->time) == $_token);
 		}
 
 
 
 		return $isLogged && $login_token_match;
-
 	}
-
-
-
-
-
 }
 
 
@@ -599,19 +549,19 @@ if (!function_exists('is_logged')) {
 
 /**
 
-  * Function that returns the data of loggedIn user
+ * Function that returns the data of loggedIn user
 
-  *
+ *
 
-  * @param string $key Any key/Column name that exists in users table
+ * @param string $key Any key/Column name that exists in users table
 
-  *
+ *
 
-  * @return boolean
+ * @return boolean
 
-  * 
+ * 
 
-  */
+ */
 
 if (!function_exists('logged')) {
 
@@ -621,11 +571,11 @@ if (!function_exists('logged')) {
 
 	{
 
-		$CI =& get_instance();
+		$CI = &get_instance();
 
 
 
-		if(!is_logged())
+		if (!is_logged())
 
 			return false;
 
@@ -635,43 +585,34 @@ if (!function_exists('logged')) {
 
 
 
-		if(!$logged){
+		if (!$logged) {
 
-			$logged = $CI->users_model->getById( json_decode(get_cookie('logged'))->id );
-
+			$logged = $CI->users_model->getById(json_decode(get_cookie('logged'))->id);
 		}
 
 
 
-		return (!$key)?$logged:$logged->{$key};
-
-
-
+		return (!$key) ? $logged : $logged->{$key};
 	}
-
-
-
-
-
 }
 
 
 
 /**
 
-  * Returns Path of view
+ * Returns Path of view
 
-  *
+ *
 
-  * @param string $path - path/file info
+ * @param string $path - path/file info
 
-  *
+ *
 
-  * @return boolean
+ * @return boolean
 
-  * 
+ * 
 
-  */
+ */
 
 if (!function_exists('viewPath')) {
 
@@ -680,30 +621,27 @@ if (!function_exists('viewPath')) {
 
 	{
 
-		return VIEWPATH.'/'.$path.'.php';
-
+		return VIEWPATH . '/' . $path . '.php';
 	}
-
-
 }
 
 
 
 /**
 
-  * Returns Path of view
+ * Returns Path of view
 
-  *
+ *
 
-  * @param string $date any format
+ * @param string $date any format
 
-  *
+ *
 
-  * @return string date format Y-m-d that most mysql db supports
+ * @return string date format Y-m-d that most mysql db supports
 
-  * 
+ * 
 
-  */
+ */
 
 if (!function_exists('DateFomatDb')) {
 
@@ -713,33 +651,27 @@ if (!function_exists('DateFomatDb')) {
 
 	{
 
-		return date( 'Y-m-d', strtotime($date));
-
+		return date('Y-m-d', strtotime($date));
 	}
-
-
-
-
-
 }
 
 
 
 /**
 
-  * Currency formating
+ * Currency formating
 
-  *
+ *
 
-  * @param int/float/string $amount
+ * @param int/float/string $amount
 
-  *
+ *
 
-  * @return string $amount formated amount with currency symbol
+ * @return string $amount formated amount with currency symbol
 
-  * 
+ * 
 
-  */
+ */
 
 if (!function_exists('currency')) {
 
@@ -749,33 +681,27 @@ if (!function_exists('currency')) {
 
 	{
 
-		return '$ '. $amount;
-
+		return '$ ' . $amount;
 	}
-
-
-
-
-
 }
 
 
 
 /**
 
-  * Find & returns the vlaue if exists in db
+ * Find & returns the vlaue if exists in db
 
-  *
+ *
 
-  * @param string $key key which is used to check in db - Refrence: settings table - key column
+ * @param string $key key which is used to check in db - Refrence: settings table - key column
 
-  *
+ *
 
-  * @return string/boolean $value if exists value else false
+ * @return string/boolean $value if exists value else false
 
-  * 
+ * 
 
-  */
+ */
 
 if (!function_exists('setting')) {
 
@@ -785,16 +711,10 @@ if (!function_exists('setting')) {
 
 	{
 
-		$CI =& get_instance();
+		$CI = &get_instance();
 
 		return !empty($value = $CI->settings_model->getValueByKey($key)) ? $value : false;
-
 	}
-
-
-
-
-
 }
 
 
@@ -803,15 +723,15 @@ if (!function_exists('setting')) {
 
 /**
 
-  * Generates teh html for breadcrumb - Supports AdminLte
+ * Generates teh html for breadcrumb - Supports AdminLte
 
-  *
+ *
 
-  * @param array $args Array of values
+ * @param array $args Array of values
 
-  * 
+ * 
 
-  */
+ */
 
 if (!function_exists('breadcrumb')) {
 
@@ -827,32 +747,25 @@ if (!function_exists('breadcrumb')) {
 
 		foreach ($args as $key => $value) {
 
-			if(count($args) < $i)
+			if (count($args) < $i)
 
-				$html .= '<li><a href="'.url($key).'">'.$value.'</a></li>';
+				$html .= '<li><a href="' . url($key) . '">' . $value . '</a></li>';
 
 			else
 
-				$html .= '<li class="active">'.$value.'</li>';
+				$html .= '<li class="active">' . $value . '</li>';
 
 			$i++;
-
 		}
 
-		    
 
-		    
+
+
 
 		$html .= '</ol>';
 
 		echo $html;
-
 	}
-
-
-
-
-
 }
 
 
@@ -861,79 +774,77 @@ if (!function_exists('breadcrumb')) {
 
 /**
 
-  * Finds and return the ipaddres of client user
+ * Finds and return the ipaddres of client user
 
-  *
+ *
 
-  * @param array $ipaddress IpAddress
+ * @param array $ipaddress IpAddress
 
-  * 
+ * 
 
-  */
+ */
 
 if (!function_exists('ip_address')) {
 
 
 
-	function ip_address() {
+	function ip_address()
+	{
 
-	    $ipaddress = '';
+		$ipaddress = '';
 
-	    if (isset($_SERVER['HTTP_CLIENT_IP']))
+		if (isset($_SERVER['HTTP_CLIENT_IP']))
 
-	        $ipaddress = $_SERVER['HTTP_CLIENT_IP'];
+			$ipaddress = $_SERVER['HTTP_CLIENT_IP'];
 
-	    else if(isset($_SERVER['HTTP_X_FORWARDED_FOR']))
+		else if (isset($_SERVER['HTTP_X_FORWARDED_FOR']))
 
-	        $ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR'];
+			$ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR'];
 
-	    else if(isset($_SERVER['HTTP_X_FORWARDED']))
+		else if (isset($_SERVER['HTTP_X_FORWARDED']))
 
-	        $ipaddress = $_SERVER['HTTP_X_FORWARDED'];
+			$ipaddress = $_SERVER['HTTP_X_FORWARDED'];
 
-	    else if(isset($_SERVER['HTTP_FORWARDED_FOR']))
+		else if (isset($_SERVER['HTTP_FORWARDED_FOR']))
 
-	        $ipaddress = $_SERVER['HTTP_FORWARDED_FOR'];
+			$ipaddress = $_SERVER['HTTP_FORWARDED_FOR'];
 
-	    else if(isset($_SERVER['HTTP_FORWARDED']))
+		else if (isset($_SERVER['HTTP_FORWARDED']))
 
-	        $ipaddress = $_SERVER['HTTP_FORWARDED'];
+			$ipaddress = $_SERVER['HTTP_FORWARDED'];
 
-	    else if(isset($_SERVER['REMOTE_ADDR']))
+		else if (isset($_SERVER['REMOTE_ADDR']))
 
-	        $ipaddress = $_SERVER['REMOTE_ADDR'];
+			$ipaddress = $_SERVER['REMOTE_ADDR'];
 
-	    else
+		else
 
-	        $ipaddress = 'UNKNOWN';
+			$ipaddress = 'UNKNOWN';
 
-	    return $ipaddress;
-
+		return $ipaddress;
 	}
-
-
-
 }
 
 
 
 /**
 
-  * Provides the shortcodes which are available in any email template
+ * Provides the shortcodes which are available in any email template
 
-  *
+ *
 
-  * @return array $data Array of shortcodes
+ * @return array $data Array of shortcodes
 
-  * 
+ * 
 
-  */
+ */
 
 if (!function_exists('getEmailShortCodes')) {
 
 
 
-	function getEmailShortCodes() {
+	function getEmailShortCodes()
+	{
 
 
 
@@ -948,54 +859,41 @@ if (!function_exists('getEmailShortCodes')) {
 
 
 		return $data;
-
 	}
-
-
-
 }
 
 if (!function_exists('duaKata')) {
 
 
-    function duaKata($s, $limit=2) 
-    {
-        return preg_replace('/((\w+\W*){'.($limit-1).'}(\w+))(.*)/', '${1}', $s);   
-
-    }
-
-
-
+	function duaKata($s, $limit = 2)
+	{
+		return preg_replace('/((\w+\W*){' . ($limit - 1) . '}(\w+))(.*)/', '${1}', $s);
+	}
 }
 
 if (!function_exists('namaDuaKata')) {
 
 
-    function namaDuaKata($kata ,$limit=2) 
-    {
-        $nama2Kata=preg_replace('/((\w+\W*){'.($limit-1).'}(\w+))(.*)/', '${1}', $kata);  
-        $jmlKata = str_word_count($kata);
-        $text_array = explode(' ', $kata); 
-        if($jmlKata>2)
-        {
-            $inisial=$text_array[2];
-        }else
-        {
-            $inisial="";
-        }
-       
-        $hasilInisial = mb_substr($inisial, 0, 1);
-        if($inisial==null)
-        {
-            $hasilNama=$nama2Kata;
-        }else{
-            $hasilNama=$nama2Kata.' '.$hasilInisial;
-        }
-        
-        return $hasilNama;
-    }
+	function namaDuaKata($kata, $limit = 2)
+	{
+		$nama2Kata = preg_replace('/((\w+\W*){' . ($limit - 1) . '}(\w+))(.*)/', '${1}', $kata);
+		$jmlKata = str_word_count($kata);
+		$text_array = explode(' ', $kata);
+		if ($jmlKata > 2) {
+			$inisial = $text_array[2];
+		} else {
+			$inisial = "";
+		}
 
+		$hasilInisial = mb_substr($inisial, 0, 1);
+		if ($inisial == null) {
+			$hasilNama = $nama2Kata;
+		} else {
+			$hasilNama = $nama2Kata . ' ' . $hasilInisial;
+		}
 
+		return $hasilNama;
+	}
 }
 
 
@@ -1009,41 +907,37 @@ if (!function_exists('namaDuaKata')) {
 
 /**
 
-  * Redirects with error if user doesnt have the permission to passed key/module
+ * Redirects with error if user doesnt have the permission to passed key/module
 
-  *
+ *
 
-  * @param string $code Code permissions
+ * @param string $code Code permissions
 
-  * 
+ * 
 
-  * @return boolean true/false
+ * @return boolean true/false
 
-  * 
+ * 
 
-  */
+ */
 
 if (!function_exists('ifPermissions')) {
 
 
 
-	function ifPermissions($code = '') {
+	function ifPermissions($code = '')
+	{
 
 
 
-		$CI =& get_instance();
+		$CI = &get_instance();
 
 
 
-		if ( hasPermissions($code) ) {
+		if (hasPermissions($code)) {
 
 			return true;
-
-		}
-
-
-
-		;
+		};
 
 
 
@@ -1054,92 +948,81 @@ if (!function_exists('ifPermissions')) {
 
 
 		return false;
-
 	}
-
-
-
 }
 
 
 
 /**
 
-  * Check and return boolean if user have the permission to passed key or not
+ * Check and return boolean if user have the permission to passed key or not
 
-  *
+ *
 
-  * @param string $code Code permissions
+ * @param string $code Code permissions
 
-  * 
+ * 
 
-  * @return boolean true/false
+ * @return boolean true/false
 
-  * 
+ * 
 
-  */
+ */
 
 if (!function_exists('hasPermissions')) {
 
 
 
-	function hasPermissions($code = '') {
+	function hasPermissions($code = '')
+	{
 
 
 
-		$CI =& get_instance();
+		$CI = &get_instance();
 
 
 
-		if ( !empty( $CI->role_permissions_model->getByWhere([ 'role' => logged('role'), 'permission' => $code ]) ) ) {
+		if (!empty($CI->role_permissions_model->getByWhere(['role' => logged('role'), 'permission' => $code]))) {
 
 
 
 			return true;
-
-			
-
 		}
 
 
 
 		return false;
-
-
-
 	}
-
-
-
 }
 
 
 
 /**
 
-  * Redirects with error if user doesnt have the permission to passed key/module
+ * Redirects with error if user doesnt have the permission to passed key/module
 
-  *
+ *
 
-  * @param string $code Code permissions
+ * @param string $code Code permissions
 
-  * 
+ * 
 
-  * @return boolean true/false
+ * @return boolean true/false
 
-  * 
+ * 
 
-  */
+ */
 
 if (!function_exists('notAllowedDemo')) {
 
 
 
-	function notAllowedDemo($url = '') {
+	function notAllowedDemo($url = '')
+	{
 
 
 
-		$CI =& get_instance();
+		$CI = &get_instance();
 
 
 
@@ -1154,55 +1037,46 @@ if (!function_exists('notAllowedDemo')) {
 
 
 		return false;
-
 	}
-
-
-
 }
 
 
 
 /**
 
-  * Hides Some Characters in Email. Basically Used in Forget Password System
+ * Hides Some Characters in Email. Basically Used in Forget Password System
 
-  *
+ *
 
-  * @param string $email Email 
+ * @param string $email Email 
 
-  * 
+ * 
 
-  * @return string
+ * @return string
 
-  * 
+ * 
 
-  */
+ */
 
 if (!function_exists('obfuscate_email')) {
 
 
 
-	function obfuscate_email($email) {
+	function obfuscate_email($email)
+	{
 
 
 
-		$em   = explode("@",$email);
+		$em   = explode("@", $email);
 
-	    $name = implode(array_slice($em, 0, count($em)-1), '@');
+		$name = implode(array_slice($em, 0, count($em) - 1), '@');
 
-	    $len  = floor(strlen($name)/2);
+		$len  = floor(strlen($name) / 2);
 
 
 
-	    return substr($name,0, $len) . str_repeat('*', $len) . "@" . end($em);  
-
-	
-
+		return substr($name, 0, $len) . str_repeat('*', $len) . "@" . end($em);
 	}
-
-
-
 }
 
 
@@ -1211,32 +1085,27 @@ if (!function_exists('obfuscate_email')) {
 
 /**
 
-  * return language code
+ * return language code
 
-  *
+ *
 
-  * @return string
+ * @return string
 
-  * 
+ * 
 
-  */
+ */
 
-  if (!function_exists('getUserlang')) {
-
-
-
-	function getUserlang() {
+if (!function_exists('getUserlang')) {
 
 
 
-	    return !empty( get_cookie('current_lang', true) ) ? get_cookie('current_lang', true) : setting('default_lang');
+	function getUserlang()
+	{
 
-	
 
+
+		return !empty(get_cookie('current_lang', true)) ? get_cookie('current_lang', true) : setting('default_lang');
 	}
-
-
-
 }
 
 
@@ -1245,34 +1114,32 @@ if (!function_exists('obfuscate_email')) {
 
 /**
 
-  * return language code
+ * return language code
 
-  *
+ *
 
-  * @return string
+ * @return string
 
-  * 
+ * 
 
-  */
+ */
 
-  if (!function_exists('setUserlang')) {
-
-
-
-	function setUserlang($code) {
+if (!function_exists('setUserlang')) {
 
 
 
-	    return set_cookie('current_lang', $code, 86400*30);
+	function setUserlang($code)
+	{
+
+
+
+		return set_cookie('current_lang', $code, 86400 * 30);
 
 		// set_cookie())
 
-	
+
 
 	}
-
-
-
 }
 
 
@@ -1313,7 +1180,7 @@ function supported_languages()
 
 	}');
 
-	
+
 
 
 
