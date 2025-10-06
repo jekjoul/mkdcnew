@@ -99,7 +99,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                         <table class="table bordered-table mb-0" >
                                             <thead>
                                                 <tr>
-                                                    <th scope="col" class="text-center">Persentasi Hadir</th>
+                                                    <th scope="col" class="text-center">Persentase Hadir</th>
                                                     <th scope="col" class="text-center">Sakit</th>
                                                     <th scope="col" class="text-center">Izin</th>
                                                     <th scope="col" class="text-center">Tanpa Keterangan</th>

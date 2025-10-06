@@ -48,6 +48,12 @@ class Siswa extends MY_Controller {
 		$this->load->view('siswa/v_siswa_rekam_didik', $this->page_data);
 	}
 
+	public function inputCatatan()
+	{
+		
+		$this->load->view('siswa/v_siswa_input_catatan');
+	}
+
 
 
 
