@@ -1,34 +1,31 @@
 <?php
 
-defined('BASEPATH') OR exit('No direct script access allowed'); ?>
+defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
 <?php include viewPath('includes/header'); ?>
 
 <!-- meta tags and other links -->
+
+
 <div class="dashboard-main-body">
     <div class="row gy-4">
         <div class="col-lg-4">
             <div class="user-grid-card position-relative border radius-16 overflow-hidden bg-base h-100">
-                <img src="<?php echo $url->assets ?>images/user-grid/user-grid-bg-siswa.jpg" alt=""
-                    class="w-100 object-fit-cover">
+                <img src="<?php echo $url->assets ?>images/user-grid/user-grid-bg-siswa.jpg" alt="" class="w-100 object-fit-cover">
                 <div class="ms-60 mb-24 me-60  mt--75">
                     <div class="text-center border border-top-0 border-start-0 border-end-0 mb-20">
                         <div class="card-body p-0 arrow-carousel ">
 
                             <div class="gradient-overlay bottom-0 start-0 h-100 radius-20">
-                                <img src="<?php echo $url->assets ?>images/user-grid/siswa.jpg" alt=""
-                                    class="w-100 h-100 object-fit-cover radius-20 ">
-                                <div
-                                    class="position-absolute start-50 translate-middle-x bottom-0 pb-10 z-1 text-center w-100 radius-20">
+                                <img src="<?php echo $url->assets ?>images/user-grid/siswa.jpg" alt="" class="w-100 h-100 object-fit-cover radius-20 ">
+                                <div class="position-absolute start-50 translate-middle-x bottom-0 pb-10 z-1 text-center w-100 radius-20">
                                     <p class="card-text text-white mx-auto text-sm">FOTO 2026</p>
                                 </div>
                             </div>
 
                             <div class="gradient-overlay bottom-0 start-0 h-100 radius-20">
-                                <img src="<?php echo $url->assets ?>images/user-grid/siswa.jpg" alt=""
-                                    class="w-100 h-100 object-fit-cover radius-20 ">
-                                <div
-                                    class="position-absolute start-50 translate-middle-x bottom-0 pb-10 z-1 text-center w-100 radius-20">
+                                <img src="<?php echo $url->assets ?>images/user-grid/siswa.jpg" alt="" class="w-100 h-100 object-fit-cover radius-20 ">
+                                <div class="position-absolute start-50 translate-middle-x bottom-0 pb-10 z-1 text-center w-100 radius-20">
                                     <p class="card-text text-white mx-auto text-sm">FOTO 2025</p>
                                 </div>
                             </div>
@@ -37,9 +34,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 
                         <h6 class="mb-0 mt-16">Mirna Rahmania</h6>
                         <span class="text-secondary-light mb-16">0778083335 / 2425010040</span><br>
-                        <span
-                            class="badge text-sm fw-semibold bg-dark-info-gradient px-20 py-9 radius-4 text-white  mb-20">VIII
-                            - Syafi'i</span>
+                        <span class="badge text-sm fw-semibold bg-dark-info-gradient px-20 py-9 radius-4 text-white  mb-20">VIII - Syafi'i</span>
                     </div>
                 </div>
                 <div class="ms-24 mb-24 me-24">
@@ -55,60 +50,49 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                 <span class="w-60 text-secondary-light fw-medium">: 20210720002017</span>
                             </li>
                             <li class="d-flex align-items-center gap-1 mb-12">
-                                <span class="w-40 text-md fw-semibold text-primary-light">
-                                    NIPD</span>
+                                <span class="w-40 text-md fw-semibold text-primary-light"> NIPD</span>
                                 <span class="w-60 text-secondary-light fw-medium">: 3207336003020001</span>
                             </li>
                             <li class="d-flex align-items-center gap-1 mb-12">
-                                <span class="w-40 text-md fw-semibold text-primary-light">
-                                    NIK</span>
-                                <span class="w-60 text-secondary-light fw-medium">: 5652780681230012
-                                </span>
+                                <span class="w-40 text-md fw-semibold text-primary-light"> NIK</span>
+                                <span class="w-60 text-secondary-light fw-medium">: 5652780681230012 </span>
                             </li>
                             <li class="d-flex align-items-center gap-1 mb-12">
-                                <span class="w-40 text-md fw-semibold text-primary-light">
-                                    No HP</span>
+                                <span class="w-40 text-md fw-semibold text-primary-light"> No HP</span>
                                 <span class="w-60 text-secondary-light fw-medium">: +6292240213444 &nbsp
-                                    <a class="text-success" data-bs-toggle="tooltip" data-bs-placement="top"
-                                        data-bs-custom-class="tooltip-success" data-bs-title="Kirim Pesan Whatsapp">
-                                        <iconify-icon icon="tabler:brand-whatsapp-filled" class="text-md">
-                                        </iconify-icon>
+                                    <a class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Kirim Pesan Whatsapp">
+                                        <iconify-icon icon="tabler:brand-whatsapp-filled" class="text-md"></iconify-icon>
                                     </a>
                                 </span>
 
                             </li>
                             <li class="d-flex align-items-center gap-1 mb-12">
-                                <span class="w-40 text-md fw-semibold text-primary-light">
-                                    Tempat Lahir</span>
+                                <span class="w-40 text-md fw-semibold text-primary-light"> Tempat Lahir</span>
                                 <span class="w-60 text-secondary-light fw-medium">: Ciamis</span>
                             </li>
                             <li class="d-flex align-items-center gap-1 mb-12">
-                                <span class="w-40 text-md fw-semibold text-primary-light">
-                                    Tgl. Lahir</span>
+                                <span class="w-40 text-md fw-semibold text-primary-light"> Tgl. Lahir</span>
                                 <span class="w-60 text-secondary-light fw-medium">: 20 Maret 2001</span>
                             </li>
                             <li class="d-flex align-items-center gap-1 mb-12">
-                                <span class="w-40 text-md fw-semibold text-primary-light">
-                                    Tgl Pendaftaran</span>
+                                <span class="w-40 text-md fw-semibold text-primary-light"> Tgl Pendaftaran</span>
                                 <span class="w-60 text-secondary-light fw-medium">: 07 Januari 2021</span>
                             </li>
                             <li class="d-flex align-items-center gap-1 mb-12">
-                                <span class="w-40 text-md fw-semibold text-primary-light">
-                                    Status Pendaftaran</span>
+                                <span class="w-40 text-md fw-semibold text-primary-light"> Status Pendaftaran</span>
                                 <span class="w-60 text-secondary-light fw-medium">: Siswa Baru
                             </li>
                             <li class="d-flex align-items-center gap-1">
-                                <span class="w-40 text-md fw-semibold text-primary-light">
-                                    Status Dapodik</span>
+                                <span class="w-40 text-md fw-semibold text-primary-light"> Status Dapodik</span>
                                 <span class="w-60 text-secondary-light fw-medium">
                                     : Sudah Dapodik
-                                    <button class="text-success " data-bs-toggle="tooltip" data-bs-placement="top"
-                                        data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                    <button class="text-success " data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
                                         <iconify-icon icon="material-symbols:check-box" class="text-md"></iconify-icon>
                                     </button>
                                 </span>
 
                             </li>
+
 
                         </ul>
                     </div>
@@ -141,7 +125,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link d-flex align-items-center px-24" id="pills-arsip-tab"
+                            <button class="nav-link d-flex align-items-center px-24" id="pills-catatan-tab"
                                 data-bs-toggle="pill" data-bs-target="#pills-catatan" type="button" role="tab"
                                 aria-controls="pills-catatan" aria-selected="false" tabindex="-1">
                                 Catatan
@@ -170,12 +154,10 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                             aria-labelledby="pills-profile-tab" tabindex="0">
                             <div class="card radius-12 h-100 shadow">
 
-                                <div
-                                    class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
+                                <div class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
                                     <h6 class="text-lg mb-0">Profil Siswa</h6>
                                     <button type="button" class="text-xl line-height-1">
-                                        <iconify-icon icon="icon-park-outline:user-business" class="text-xl">
-                                        </iconify-icon>
+                                        <iconify-icon icon="icon-park-outline:user-business" class="text-xl"></iconify-icon>
                                     </button>
                                 </div>
 
@@ -185,22 +167,17 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                             <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
                                                 <div class="align-items-center gap-3 d-flex justify-content-between">
                                                     <div>
-                                                        <span
-                                                            class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
                                                             Nama Lengkap :
                                                         </span>
                                                         <br>
-                                                        <span
-                                                            class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
                                                             Mirna Rahmania
                                                         </span>&nbsp
                                                     </div>
 
-                                                    <button class="text-success " data-bs-toggle="tooltip"
-                                                        data-bs-placement="top" data-bs-custom-class="tooltip-success"
-                                                        data-bs-title="Sesuai Dapodik">
-                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl">
-                                                        </iconify-icon>
+                                                    <button class="text-success " data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                     </button>
 
                                                 </div>
@@ -211,20 +188,15 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                             <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
                                                 <div class="align-items-center gap-3 d-flex justify-content-between">
                                                     <div>
-                                                        <span
-                                                            class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
                                                             Jenis Kelamin :
                                                         </span><br>
-                                                        <span
-                                                            class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
                                                             Perempuan
                                                         </span>
                                                     </div>
-                                                    <button class="text-success" data-bs-toggle="tooltip"
-                                                        data-bs-placement="top" data-bs-custom-class="tooltip-success"
-                                                        data-bs-title="Sesuai Dapodik">
-                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl">
-                                                        </iconify-icon>
+                                                    <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                     </button>
                                                 </div>
                                             </div>
@@ -234,20 +206,15 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                             <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
                                                 <div class="align-items-center gap-3 d-flex justify-content-between">
                                                     <div>
-                                                        <span
-                                                            class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
                                                             Tempat Tanggal Lahir :
                                                         </span><br>
-                                                        <span
-                                                            class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
                                                             Ciamis, 07 November 2011
                                                         </span>
                                                     </div>
-                                                    <button class="text-success" data-bs-toggle="tooltip"
-                                                        data-bs-placement="top" data-bs-custom-class="tooltip-success"
-                                                        data-bs-title="Sesuai Dapodik">
-                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl">
-                                                        </iconify-icon>
+                                                    <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                     </button>
                                                 </div>
                                             </div>
@@ -256,20 +223,15 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                             <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
                                                 <div class="align-items-center gap-3 d-flex justify-content-between">
                                                     <div>
-                                                        <span
-                                                            class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
                                                             Agama :
                                                         </span><br>
-                                                        <span
-                                                            class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
                                                             Islam
                                                         </span>
                                                     </div>
-                                                    <button class="text-success" data-bs-toggle="tooltip"
-                                                        data-bs-placement="top" data-bs-custom-class="tooltip-success"
-                                                        data-bs-title="Sesuai Dapodik">
-                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl">
-                                                        </iconify-icon>
+                                                    <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                     </button>
                                                 </div>
                                             </div>
@@ -278,20 +240,15 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                             <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
                                                 <div class="align-items-center gap-3 d-flex justify-content-between">
                                                     <div>
-                                                        <span
-                                                            class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
                                                             NIK :
                                                         </span><br>
-                                                        <span
-                                                            class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
                                                             3207084711110002
                                                         </span>
                                                     </div>
-                                                    <button class="text-success" data-bs-toggle="tooltip"
-                                                        data-bs-placement="top" data-bs-custom-class="tooltip-success"
-                                                        data-bs-title="Sesuai Dapodik">
-                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl">
-                                                        </iconify-icon>
+                                                    <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                     </button>
                                                 </div>
                                             </div>
@@ -300,18 +257,14 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                             <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
                                                 <div class="align-items-center gap-3 d-flex justify-content-between">
                                                     <div>
-                                                        <span
-                                                            class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
                                                             No Kartu Keluarga :
                                                         </span><br>
-                                                        <span
-                                                            class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
                                                             3207084711110002
                                                         </span>
                                                     </div>
-                                                    <button class="text-danger" data-bs-toggle="tooltip"
-                                                        data-bs-placement="top" data-bs-custom-class="tooltip-danger"
-                                                        data-bs-title="Tidak Sesuai Dapodik : Yani">
+                                                    <button class="text-danger" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-danger" data-bs-title="Tidak Sesuai Dapodik : Yani">
                                                         <iconify-icon icon="ion:warning" class="text-xl"></iconify-icon>
                                                     </button>
                                                 </div>
@@ -322,20 +275,15 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                             <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
                                                 <div class="align-items-center gap-3 d-flex justify-content-between">
                                                     <div>
-                                                        <span
-                                                            class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
                                                             NISN :
                                                         </span><br>
-                                                        <span
-                                                            class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
                                                             0778083335
                                                         </span>
                                                     </div>
-                                                    <button class="text-success" data-bs-toggle="tooltip"
-                                                        data-bs-placement="top" data-bs-custom-class="tooltip-success"
-                                                        data-bs-title="Sesuai Dapodik">
-                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl">
-                                                        </iconify-icon>
+                                                    <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                     </button>
                                                 </div>
                                             </div>
@@ -345,20 +293,15 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                             <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
                                                 <div class="align-items-center gap-3 d-flex justify-content-between">
                                                     <div>
-                                                        <span
-                                                            class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
                                                             NIPD :
                                                         </span><br>
-                                                        <span
-                                                            class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
                                                             2425010040
                                                         </span>
                                                     </div>
-                                                    <button class="text-success" data-bs-toggle="tooltip"
-                                                        data-bs-placement="top" data-bs-custom-class="tooltip-success"
-                                                        data-bs-title="Sesuai Dapodik">
-                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl">
-                                                        </iconify-icon>
+                                                    <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                     </button>
                                                 </div>
                                             </div>
@@ -368,20 +311,15 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                             <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
                                                 <div class="align-items-center gap-3 d-flex justify-content-between">
                                                     <div>
-                                                        <span
-                                                            class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
                                                             Tanggal Pendaftaran :
                                                         </span><br>
-                                                        <span
-                                                            class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
                                                             15 Juli 2024
                                                         </span>
                                                     </div>
-                                                    <button class="text-success" data-bs-toggle="tooltip"
-                                                        data-bs-placement="top" data-bs-custom-class="tooltip-success"
-                                                        data-bs-title="Sesuai Dapodik">
-                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl">
-                                                        </iconify-icon>
+                                                    <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                     </button>
                                                 </div>
                                             </div>
@@ -391,20 +329,15 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                             <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
                                                 <div class="align-items-center gap-3 d-flex justify-content-between">
                                                     <div>
-                                                        <span
-                                                            class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
                                                             Jenis Pendaftaran :
                                                         </span><br>
-                                                        <span
-                                                            class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
                                                             Siswa Baru
                                                         </span>
                                                     </div>
-                                                    <button class="text-success" data-bs-toggle="tooltip"
-                                                        data-bs-placement="top" data-bs-custom-class="tooltip-success"
-                                                        data-bs-title="Sesuai Dapodik">
-                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl">
-                                                        </iconify-icon>
+                                                    <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                     </button>
                                                 </div>
                                             </div>
@@ -414,20 +347,15 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                             <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
                                                 <div class="align-items-center gap-3 d-flex justify-content-between">
                                                     <div>
-                                                        <span
-                                                            class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
                                                             Asal Sekolah :
                                                         </span><br>
-                                                        <span
-                                                            class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
                                                             SD Negeri 1 Mandalare
                                                         </span>
                                                     </div>
-                                                    <button class="text-success" data-bs-toggle="tooltip"
-                                                        data-bs-placement="top" data-bs-custom-class="tooltip-success"
-                                                        data-bs-title="Sesuai Dapodik">
-                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl">
-                                                        </iconify-icon>
+                                                    <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                     </button>
                                                 </div>
                                             </div>
@@ -437,22 +365,15 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                             <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
                                                 <div class="align-items-center gap-3 d-flex justify-content-between">
                                                     <div>
-                                                        <span
-                                                            class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
                                                             Alamat :
                                                         </span><br>
-                                                        <span
-                                                            class="form-check-label line-height-1 fw-semibold text-primary-light ">
-                                                            Dusun Mandalare 008/004 RT RW Desa/Kel. Mandalare Kec.
-                                                            Panjalu Kab. Ciamis Prov.
-                                                            Jawa Barat
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                            Dusun Mandalare 008/004 RT RW Desa/Kel. Mandalare Kec. Panjalu Kab. Ciamis Prov. Jawa Barat
                                                         </span>
                                                     </div>
-                                                    <button class="text-success" data-bs-toggle="tooltip"
-                                                        data-bs-placement="top" data-bs-custom-class="tooltip-success"
-                                                        data-bs-title="Sesuai Dapodik">
-                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl">
-                                                        </iconify-icon>
+                                                    <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                     </button>
                                                 </div>
                                             </div>
@@ -462,43 +383,35 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                             <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
                                                 <div class="align-items-center gap-3 d-flex justify-content-between">
                                                     <div>
-                                                        <span
-                                                            class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
                                                             Siswa Induk :
                                                         </span><br>
-                                                        <span
-                                                            class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
                                                             Ya
                                                         </span>
                                                     </div>
-                                                    <button class="text-success" data-bs-toggle="tooltip"
-                                                        data-bs-placement="top" data-bs-custom-class="tooltip-success"
-                                                        data-bs-title="Sesuai Dapodik">
-                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl">
-                                                        </iconify-icon>
+                                                    <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                     </button>
                                                 </div>
                                             </div>
                                         </div>
+
+
 
                                         <div class="col-md-6">
                                             <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
                                                 <div class="align-items-center gap-3 d-flex justify-content-between">
                                                     <div>
-                                                        <span
-                                                            class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
                                                             Nomor Ponsel :
                                                         </span><br>
-                                                        <span
-                                                            class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
                                                             +6292240213444
                                                         </span>
                                                     </div>
-                                                    <button class="text-success" data-bs-toggle="tooltip"
-                                                        data-bs-placement="top" data-bs-custom-class="tooltip-success"
-                                                        data-bs-title="Sesuai Dapodik">
-                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl">
-                                                        </iconify-icon>
+                                                    <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                     </button>
                                                 </div>
                                             </div>
@@ -507,17 +420,16 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                     </div>
                                 </div>
 
+
                             </div>
 
                             <div class="row mt-20">
                                 <div class="col-xl-12">
                                     <div class="card shadow">
-                                        <div
-                                            class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
+                                        <div class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
                                             <h6 class="text-lg mb-0">Data Ayah</h6>
                                             <button type="button" class="text-xl line-height-1">
-                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl">
-                                                </iconify-icon>
+                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon>
                                             </button>
                                         </div>
                                         <div class="card-body">
@@ -525,191 +437,133 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                             <div class="row">
 
                                                 <div class="col-md-6">
-                                                    <div
-                                                        class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
-                                                        <div
-                                                            class="align-items-center gap-3 d-flex justify-content-between">
+                                                    <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
+                                                        <div class="align-items-center gap-3 d-flex justify-content-between">
                                                             <div>
-                                                                <span
-                                                                    class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                                <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
                                                                     Nama Lengkap Ayah :
                                                                 </span>
                                                                 <br>
-                                                                <span
-                                                                    class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                                <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
                                                                     Maman Maulana
                                                                 </span>&nbsp
                                                             </div>
-                                                            <button class="text-success " data-bs-toggle="tooltip"
-                                                                data-bs-placement="top"
-                                                                data-bs-custom-class="tooltip-success"
-                                                                data-bs-title="Sesuai Dapodik">
-                                                                <iconify-icon icon="material-symbols:check-box"
-                                                                    class="text-xl"></iconify-icon>
+                                                            <button class="text-success " data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                                <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                             </button>
                                                         </div>
                                                     </div>
                                                 </div>
 
                                                 <div class="col-md-6">
-                                                    <div
-                                                        class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
-                                                        <div
-                                                            class="align-items-center gap-3 d-flex justify-content-between">
+                                                    <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
+                                                        <div class="align-items-center gap-3 d-flex justify-content-between">
                                                             <div>
-                                                                <span
-                                                                    class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                                <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
                                                                     NIK Ayah :
                                                                 </span>
                                                                 <br>
-                                                                <span
-                                                                    class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                                <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
                                                                     3207084711110002
                                                                 </span>&nbsp
                                                             </div>
-                                                            <button class="text-success " data-bs-toggle="tooltip"
-                                                                data-bs-placement="top"
-                                                                data-bs-custom-class="tooltip-success"
-                                                                data-bs-title="Sesuai Dapodik">
-                                                                <iconify-icon icon="material-symbols:check-box"
-                                                                    class="text-xl"></iconify-icon>
+                                                            <button class="text-success " data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                                <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                             </button>
                                                         </div>
                                                     </div>
                                                 </div>
 
                                                 <div class="col-md-6">
-                                                    <div
-                                                        class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
-                                                        <div
-                                                            class="align-items-center gap-3 d-flex justify-content-between">
+                                                    <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
+                                                        <div class="align-items-center gap-3 d-flex justify-content-between">
                                                             <div>
-                                                                <span
-                                                                    class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                                <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
                                                                     Pekerjaan Ayah :
                                                                 </span>
                                                                 <br>
-                                                                <span
-                                                                    class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                                <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
                                                                     Wiraswasta
                                                                 </span>&nbsp
                                                             </div>
-                                                            <button class="text-success " data-bs-toggle="tooltip"
-                                                                data-bs-placement="top"
-                                                                data-bs-custom-class="tooltip-success"
-                                                                data-bs-title="Sesuai Dapodik">
-                                                                <iconify-icon icon="material-symbols:check-box"
-                                                                    class="text-xl"></iconify-icon>
+                                                            <button class="text-success " data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                                <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                             </button>
                                                         </div>
                                                     </div>
                                                 </div>
 
                                                 <div class="col-md-6">
-                                                    <div
-                                                        class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
-                                                        <div
-                                                            class="align-items-center gap-3 d-flex justify-content-between">
+                                                    <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
+                                                        <div class="align-items-center gap-3 d-flex justify-content-between">
                                                             <div>
-                                                                <span
-                                                                    class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                                <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
                                                                     Penghasilan Ayah :
                                                                 </span>
                                                                 <br>
-                                                                <span
-                                                                    class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                                <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
                                                                     Rp 500.000 - Rp 1.000.000
                                                                 </span>&nbsp
                                                             </div>
-                                                            <button class="text-success " data-bs-toggle="tooltip"
-                                                                data-bs-placement="top"
-                                                                data-bs-custom-class="tooltip-success"
-                                                                data-bs-title="Sesuai Dapodik">
-                                                                <iconify-icon icon="material-symbols:check-box"
-                                                                    class="text-xl"></iconify-icon>
+                                                            <button class="text-success " data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                                <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                             </button>
                                                         </div>
                                                     </div>
                                                 </div>
 
                                                 <div class="col-md-6">
-                                                    <div
-                                                        class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
-                                                        <div
-                                                            class="align-items-center gap-3 d-flex justify-content-between">
+                                                    <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
+                                                        <div class="align-items-center gap-3 d-flex justify-content-between">
                                                             <div>
-                                                                <span
-                                                                    class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                                <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
                                                                     Tahun Lahir Ayah :
                                                                 </span>
                                                                 <br>
-                                                                <span
-                                                                    class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                                <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
                                                                     1980
                                                                 </span>&nbsp
                                                             </div>
-                                                            <button class="text-success " data-bs-toggle="tooltip"
-                                                                data-bs-placement="top"
-                                                                data-bs-custom-class="tooltip-success"
-                                                                data-bs-title="Sesuai Dapodik">
-                                                                <iconify-icon icon="material-symbols:check-box"
-                                                                    class="text-xl"></iconify-icon>
+                                                            <button class="text-success " data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                                <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                             </button>
                                                         </div>
                                                     </div>
                                                 </div>
 
                                                 <div class="col-md-6">
-                                                    <div
-                                                        class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
-                                                        <div
-                                                            class="align-items-center gap-3 d-flex justify-content-between">
+                                                    <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
+                                                        <div class="align-items-center gap-3 d-flex justify-content-between">
                                                             <div>
-                                                                <span
-                                                                    class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                                <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
                                                                     Pendidikan Ayah :
                                                                 </span>
                                                                 <br>
-                                                                <span
-                                                                    class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                                <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
                                                                     SLTA Sederajat
                                                                 </span>&nbsp
                                                             </div>
-                                                            <button class="text-success " data-bs-toggle="tooltip"
-                                                                data-bs-placement="top"
-                                                                data-bs-custom-class="tooltip-success"
-                                                                data-bs-title="Sesuai Dapodik">
-                                                                <iconify-icon icon="material-symbols:check-box"
-                                                                    class="text-xl"></iconify-icon>
+                                                            <button class="text-success " data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                                <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                             </button>
                                                         </div>
                                                     </div>
                                                 </div>
 
                                                 <div class="col-md-12">
-                                                    <div
-                                                        class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
-                                                        <div
-                                                            class="align-items-center gap-3 d-flex justify-content-between">
+                                                    <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
+                                                        <div class="align-items-center gap-3 d-flex justify-content-between">
                                                             <div>
-                                                                <span
-                                                                    class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                                <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
                                                                     Alamat :
                                                                 </span>
                                                                 <br>
-                                                                <span
-                                                                    class="form-check-label line-height-1 fw-semibold text-primary-light ">
-                                                                    Dusun Mandalare 008/004 RT RW Desa/Kel. Mandalare
-                                                                    Kec. Panjalu Kab. Ciamis Prov.
-                                                                    Jawa Barat
+                                                                <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                                    Dusun Mandalare 008/004 RT RW Desa/Kel. Mandalare Kec. Panjalu Kab. Ciamis Prov. Jawa Barat
                                                                 </span>&nbsp
                                                             </div>
-                                                            <button class="text-success " data-bs-toggle="tooltip"
-                                                                data-bs-placement="top"
-                                                                data-bs-custom-class="tooltip-success"
-                                                                data-bs-title="Sesuai Dapodik">
-                                                                <iconify-icon icon="material-symbols:check-box"
-                                                                    class="text-xl"></iconify-icon>
+                                                            <button class="text-success " data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                                <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                             </button>
                                                         </div>
                                                     </div>
@@ -724,12 +578,10 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                             <div class="row mt-20">
                                 <div class="col-xl-12">
                                     <div class="card shadow">
-                                        <div
-                                            class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
+                                        <div class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
                                             <h6 class="text-lg mb-0">Data Ibu</h6>
                                             <button type="button" class="text-xl line-height-1">
-                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl">
-                                                </iconify-icon>
+                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon>
                                             </button>
                                         </div>
                                         <div class="card-body">
@@ -737,191 +589,133 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                             <div class="row">
 
                                                 <div class="col-md-6">
-                                                    <div
-                                                        class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
-                                                        <div
-                                                            class="align-items-center gap-3 d-flex justify-content-between">
+                                                    <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
+                                                        <div class="align-items-center gap-3 d-flex justify-content-between">
                                                             <div>
-                                                                <span
-                                                                    class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                                <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
                                                                     Nama Lengkap Ibu :
                                                                 </span>
                                                                 <br>
-                                                                <span
-                                                                    class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                                <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
                                                                     Cucu maryam
                                                                 </span>&nbsp
                                                             </div>
-                                                            <button class="text-success " data-bs-toggle="tooltip"
-                                                                data-bs-placement="top"
-                                                                data-bs-custom-class="tooltip-success"
-                                                                data-bs-title="Sesuai Dapodik">
-                                                                <iconify-icon icon="material-symbols:check-box"
-                                                                    class="text-xl"></iconify-icon>
+                                                            <button class="text-success " data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                                <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                             </button>
                                                         </div>
                                                     </div>
                                                 </div>
 
                                                 <div class="col-md-6">
-                                                    <div
-                                                        class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
-                                                        <div
-                                                            class="align-items-center gap-3 d-flex justify-content-between">
+                                                    <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
+                                                        <div class="align-items-center gap-3 d-flex justify-content-between">
                                                             <div>
-                                                                <span
-                                                                    class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                                <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
                                                                     NIK Ibu :
                                                                 </span>
                                                                 <br>
-                                                                <span
-                                                                    class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                                <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
                                                                     3207084711110002
                                                                 </span>&nbsp
                                                             </div>
-                                                            <button class="text-success " data-bs-toggle="tooltip"
-                                                                data-bs-placement="top"
-                                                                data-bs-custom-class="tooltip-success"
-                                                                data-bs-title="Sesuai Dapodik">
-                                                                <iconify-icon icon="material-symbols:check-box"
-                                                                    class="text-xl"></iconify-icon>
+                                                            <button class="text-success " data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                                <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                             </button>
                                                         </div>
                                                     </div>
                                                 </div>
 
                                                 <div class="col-md-6">
-                                                    <div
-                                                        class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
-                                                        <div
-                                                            class="align-items-center gap-3 d-flex justify-content-between">
+                                                    <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
+                                                        <div class="align-items-center gap-3 d-flex justify-content-between">
                                                             <div>
-                                                                <span
-                                                                    class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                                <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
                                                                     Pekerjaan Ibu :
                                                                 </span>
                                                                 <br>
-                                                                <span
-                                                                    class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                                <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
                                                                     Tidak Bekerja
                                                                 </span>&nbsp
                                                             </div>
-                                                            <button class="text-success " data-bs-toggle="tooltip"
-                                                                data-bs-placement="top"
-                                                                data-bs-custom-class="tooltip-success"
-                                                                data-bs-title="Sesuai Dapodik">
-                                                                <iconify-icon icon="material-symbols:check-box"
-                                                                    class="text-xl"></iconify-icon>
+                                                            <button class="text-success " data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                                <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                             </button>
                                                         </div>
                                                     </div>
                                                 </div>
 
                                                 <div class="col-md-6">
-                                                    <div
-                                                        class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
-                                                        <div
-                                                            class="align-items-center gap-3 d-flex justify-content-between">
+                                                    <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
+                                                        <div class="align-items-center gap-3 d-flex justify-content-between">
                                                             <div>
-                                                                <span
-                                                                    class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                                <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
                                                                     Penghasilan Ibu :
                                                                 </span>
                                                                 <br>
-                                                                <span
-                                                                    class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                                <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
                                                                     Tidak Berpenghasilan
                                                                 </span>&nbsp
                                                             </div>
-                                                            <button class="text-success " data-bs-toggle="tooltip"
-                                                                data-bs-placement="top"
-                                                                data-bs-custom-class="tooltip-success"
-                                                                data-bs-title="Sesuai Dapodik">
-                                                                <iconify-icon icon="material-symbols:check-box"
-                                                                    class="text-xl"></iconify-icon>
+                                                            <button class="text-success " data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                                <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                             </button>
                                                         </div>
                                                     </div>
                                                 </div>
 
                                                 <div class="col-md-6">
-                                                    <div
-                                                        class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
-                                                        <div
-                                                            class="align-items-center gap-3 d-flex justify-content-between">
+                                                    <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
+                                                        <div class="align-items-center gap-3 d-flex justify-content-between">
                                                             <div>
-                                                                <span
-                                                                    class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                                <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
                                                                     Tahun Lahir Ibu :
                                                                 </span>
                                                                 <br>
-                                                                <span
-                                                                    class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                                <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
                                                                     1980
                                                                 </span>&nbsp
                                                             </div>
-                                                            <button class="text-success " data-bs-toggle="tooltip"
-                                                                data-bs-placement="top"
-                                                                data-bs-custom-class="tooltip-success"
-                                                                data-bs-title="Sesuai Dapodik">
-                                                                <iconify-icon icon="material-symbols:check-box"
-                                                                    class="text-xl"></iconify-icon>
+                                                            <button class="text-success " data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                                <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                             </button>
                                                         </div>
                                                     </div>
                                                 </div>
 
                                                 <div class="col-md-6">
-                                                    <div
-                                                        class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
-                                                        <div
-                                                            class="align-items-center gap-3 d-flex justify-content-between">
+                                                    <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
+                                                        <div class="align-items-center gap-3 d-flex justify-content-between">
                                                             <div>
-                                                                <span
-                                                                    class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                                <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
                                                                     Pendidikan Ibu :
                                                                 </span>
                                                                 <br>
-                                                                <span
-                                                                    class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                                <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
                                                                     SLTA Sederajat
                                                                 </span>&nbsp
                                                             </div>
-                                                            <button class="text-success " data-bs-toggle="tooltip"
-                                                                data-bs-placement="top"
-                                                                data-bs-custom-class="tooltip-success"
-                                                                data-bs-title="Sesuai Dapodik">
-                                                                <iconify-icon icon="material-symbols:check-box"
-                                                                    class="text-xl"></iconify-icon>
+                                                            <button class="text-success " data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                                <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                             </button>
                                                         </div>
                                                     </div>
                                                 </div>
 
                                                 <div class="col-md-12">
-                                                    <div
-                                                        class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
-                                                        <div
-                                                            class="align-items-center gap-3 d-flex justify-content-between">
+                                                    <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
+                                                        <div class="align-items-center gap-3 d-flex justify-content-between">
                                                             <div>
-                                                                <span
-                                                                    class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
+                                                                <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
                                                                     Alamat Ibu :
                                                                 </span>
                                                                 <br>
-                                                                <span
-                                                                    class="form-check-label line-height-1 fw-semibold text-primary-light ">
-                                                                    Dusun Mandalare 008/004 RT RW Desa/Kel. Mandalare
-                                                                    Kec. Panjalu Kab. Ciamis Prov.
-                                                                    Jawa Barat
+                                                                <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
+                                                                    Dusun Mandalare 008/004 RT RW Desa/Kel. Mandalare Kec. Panjalu Kab. Ciamis Prov. Jawa Barat
                                                                 </span>&nbsp
                                                             </div>
-                                                            <button class="text-success " data-bs-toggle="tooltip"
-                                                                data-bs-placement="top"
-                                                                data-bs-custom-class="tooltip-success"
-                                                                data-bs-title="Sesuai Dapodik">
-                                                                <iconify-icon icon="material-symbols:check-box"
-                                                                    class="text-xl"></iconify-icon>
+                                                            <button class="text-success " data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
+                                                                <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
                                                             </button>
                                                         </div>
                                                     </div>
@@ -939,19 +733,16 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                     <div class="card shadow">
                                         <div class="card-body">
 
-                                            <div
-                                                class="card-footer text-center bg-transparent border border-end-0 border-start-0 border-bottom-0 py-16 px-24 ">
+                                            <div class="card-footer text-center bg-transparent border border-end-0 border-start-0 border-bottom-0 py-16 px-24 ">
                                                 <a href="javascript:void(0)" class="btn btn-success text-light  ">
                                                     <span class="d-flex">
-                                                        <iconify-icon icon="material-symbols:print-rounded"
-                                                            class="text-xl d-flex"></iconify-icon>
+                                                        <iconify-icon icon="material-symbols:print-rounded" class="text-xl d-flex"> </iconify-icon>
                                                         &nbsp Cetak Profil
                                                     </span>
                                                 </a>
                                                 <a href="javascript:void(0)" class="btn btn-success text-light  ">
                                                     <span class="d-flex">
-                                                        <iconify-icon icon="material-symbols:print-rounded"
-                                                            class="text-xl d-flex"></iconify-icon>
+                                                        <iconify-icon icon="material-symbols:print-rounded" class="text-xl d-flex"> </iconify-icon>
                                                         &nbsp Cetak Surat Keterangan Aktif
                                                     </span>
                                                 </a>
@@ -961,21 +752,20 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                 </div>
                             </div>
 
+
+
                         </div>
                         <!-- End of Profil -->
 
                         <!-- Rekam Didik -->
-                        <div class="tab-pane fade" id="pills-rekam-didik" role="tabpanel"
-                            aria-labelledby="pills-rekam-didik-tab" tabindex="0">
+                        <div class="tab-pane fade" id="pills-rekam-didik" role="tabpanel" aria-labelledby="pills-rekam-didik-tab" tabindex="0">
                             <div class="row">
                                 <div class="col-xl-12">
                                     <div class="card shadow">
-                                        <div
-                                            class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
+                                        <div class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
                                             <h6 class="text-lg mb-0">Rekam Didik</h6>
                                             <button type="button" class="text-xl line-height-1">
-                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl">
-                                                </iconify-icon>
+                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon>
                                             </button>
                                         </div>
                                         <div class="card-body">
@@ -997,15 +787,9 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                             <td>VIII</td>
                                                             <td>2025/2026 Ganjil</td>
                                                             <td>
-                                                                <div
-                                                                    class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('siswa/rekamDidik') ?>"
-                                                                        class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle"
-                                                                        data-bs-toggle="tooltip" data-bs-placement="top"
-                                                                        data-bs-custom-class="tooltip-primary"
-                                                                        data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill"
-                                                                            class="menu-icon"></iconify-icon>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('siswa/rekamDidik') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
                                                                     </a>
 
                                                                 </div>
@@ -1017,15 +801,9 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                             <td>VII</td>
                                                             <td>2024/2025 Genap</td>
                                                             <td>
-                                                                <div
-                                                                    class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('siswa/rekamDidik') ?>"
-                                                                        class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle"
-                                                                        data-bs-toggle="tooltip" data-bs-placement="top"
-                                                                        data-bs-custom-class="tooltip-primary"
-                                                                        data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill"
-                                                                            class="menu-icon"></iconify-icon>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('siswa/rekamDidik') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
                                                                     </a>
 
                                                                 </div>
@@ -1037,15 +815,9 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                             <td>VII</td>
                                                             <td>2024/2025 Ganjil</td>
                                                             <td>
-                                                                <div
-                                                                    class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('siswa/rekamDidik') ?>"
-                                                                        class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle"
-                                                                        data-bs-toggle="tooltip" data-bs-placement="top"
-                                                                        data-bs-custom-class="tooltip-primary"
-                                                                        data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill"
-                                                                            class="menu-icon"></iconify-icon>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('siswa/rekamDidik') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
                                                                     </a>
 
                                                                 </div>
@@ -1060,22 +832,20 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                 </div>
                             </div>
 
-                        </div>
-                        <!-- End of Rekam Didik -->
 
-                        <!-- Rekam Medis -->
-                        <div class="tab-pane fade" id="pills-riwayat" role="tabpanel"
-                            aria-labelledby="pills-riwayat-tab" tabindex="0">
+                        </div>
+                        <!-- End of Pembelajaran -->
+
+                        <!-- Jadwal -->
+                        <div class="tab-pane fade" id="pills-riwayat" role="tabpanel" aria-labelledby="pills-riwayat-tab" tabindex="0">
                             <div class="row">
                                 <div class="col-xl-12">
                                     <div class="card shadow">
-                                        <div
-                                            class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
-                                            <h6 class="text-lg mb-0">Riwayat Medis Siswa</h6>
-                                            <a href="<?php echo url('ptk/ptkTambah') ?>"
-                                                class="btn btn-sm btn-info-100 text-dark">
-                                                <i class="ri-add-line"></i>
-                                                Tambah Rekam Medis</a>
+                                        <div class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
+                                            <h6 class="text-lg mb-0">Jadwal Pembelajaran</h6>
+                                            <button type="button" class="text-xl line-height-1">
+                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon>
+                                            </button>
                                         </div>
                                         <div class="card-body">
                                             <div class="table-responsive">
@@ -1083,51 +853,144 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                     <thead>
                                                         <tr>
                                                             <th scope="col">No</th>
-                                                            <th scope="col">Pemeriksa</th>
-                                                            <th scope="col">Keterangan</th>
-                                                            <th scope="col">Tanggal</th>
-                                                            <th scope="col">Penyakit</th>
-                                                            <th scope="col" class="text-center">Detail</th>
+                                                            <th scope="col">Mata Pelajaran</th>
+                                                            <th scope="col">Rombel</th>
+                                                            <th scope="col">Hari</th>
+                                                            <th scope="col">Jam</th>
+                                                            <th scope="col" class="text-center">Aksi</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
                                                         <tr>
                                                             <td>1</td>
-                                                            <td>Puskesmas</td>
-                                                            <td>Cek Kesehatan Puskesmas</td>
-                                                            <td>04 September 2025</td>
-                                                            <td>-</td>
+                                                            <td>Seni & Budaya</td>
+                                                            <td>VII - Al Maturidi</td>
+                                                            <td>Senin</td>
+                                                            <td>08.00-09.20</td>
                                                             <td>
-                                                                <div
-                                                                    class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>"
-                                                                        class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle"
-                                                                        data-bs-toggle="tooltip" data-bs-placement="top"
-                                                                        data-bs-custom-class="tooltip-primary"
-                                                                        data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill"
-                                                                            class="menu-icon"></iconify-icon>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
                                                                     </a>
 
                                                                 </div>
                                                             </td>
                                                         </tr>
                                                         <tr>
-                                                            <td>2</td>
-                                                            <td>Sekolah</td>
-                                                            <td>Cek Tinggi & Berat Badan</td>
-                                                            <td>04 Agustus 2025</td>
-                                                            <td>-</td>
+                                                            <td class="bg-success-focus">2</td>
+                                                            <td class="bg-success-focus">Seni & Budaya</td>
+                                                            <td class="bg-success-focus">VII - Az Zahrawi</td>
+                                                            <td class="bg-success-focus">Senin</td>
+                                                            <td class="bg-success-focus">09.40-10.20</td>
+                                                            <td class="bg-success-focus">
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </a>
+
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>3</td>
+                                                            <td>Seni & Budaya</td>
+                                                            <td>VIII - Maliki</td>
+                                                            <td>Selasa</td>
+                                                            <td>08.00-09.20</td>
                                                             <td>
-                                                                <div
-                                                                    class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>"
-                                                                        class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle"
-                                                                        data-bs-toggle="tooltip" data-bs-placement="top"
-                                                                        data-bs-custom-class="tooltip-primary"
-                                                                        data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill"
-                                                                            class="menu-icon"></iconify-icon>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </a>
+
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>4</td>
+                                                            <td>Seni & Budaya</td>
+                                                            <td>VII - Syafi'i</td>
+                                                            <td>Senin</td>
+                                                            <td>08.00-09.20</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </a>
+
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>5</td>
+                                                            <td>Seni & Budaya</td>
+                                                            <td>IX - Az Zarnuji</td>
+                                                            <td>Senin</td>
+                                                            <td>08.00-09.20</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </a>
+
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>6</td>
+                                                            <td>Seni & Budaya</td>
+                                                            <td>IX - Sonhaji</td>
+                                                            <td>Senin</td>
+                                                            <td>08.00-09.20</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </a>
+
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>7</td>
+                                                            <td>Seni & Budaya</td>
+                                                            <td>X - Al Jazari</td>
+                                                            <td>Senin</td>
+                                                            <td>08.00-09.20</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </a>
+
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>8</td>
+                                                            <td>Seni & Budaya</td>
+                                                            <td>XI - Hanafi</td>
+                                                            <td>Senin</td>
+                                                            <td>08.00-09.20</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </a>
+
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>9</td>
+                                                            <td>Seni & Budaya</td>
+                                                            <td>XII - Khalid</td>
+                                                            <td>Senin</td>
+                                                            <td>08.00-09.20</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
                                                                     </a>
 
                                                                 </div>
@@ -1141,55 +1004,43 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                 </div>
                             </div>
                         </div>
-                        <!-- End of Rekam Medis -->
+                        <!-- End of Jadwal -->
 
-                        <!-- Catatan -->
-                        <div class="tab-pane fade" id="pills-catatan" role="tabpanel"
-                            aria-labelledby="pills-catatan-tab" tabindex="0">
+                        <!-- catatan -->
+                        <div class="tab-pane fade" id="pills-catatan" role="tabpanel" aria-labelledby="pills-arsip-tab" tabindex="0">
                             <div class="row mt-20">
                                 <div class="col-xl-12">
                                     <div class="card basic-data-table shadow">
-                                        <div
-                                            class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
-                                            <h6 class="text-lg mb-0">Catatan Siswas</h6>
-                                            <button type="button" class="btn btn-sm btn-info-100 text-dark"
-                                                data-bs-toggle="modal" data-bs-target="#myAjaxModal"
-                                                data-url="<?php echo url('siswa/inputCatatan') ?>">
-                                                <i class="ri-add-line"></i>
-                                                Tambah Catatan
+                                        <div class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
+                                            <h6 class="text-lg mb-0">Catatan Pribadi</h6>
+                                            <button type="button" class="text-xl line-height-1">
+                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon>
                                             </button>
                                         </div>
                                         <div class="card-body">
                                             <div class="table-responsive">
-                                                <table class="table bordered-table " id="dataPribadi"
-                                                    data-page-length='5' style="width:100% !important">
+                                                <table class="table bordered-table " id="dataPribadi" data-page-length='5' style="width:100% !important">
                                                     <thead>
                                                         <tr>
+                                                            <th scope="col">No</th>
+                                                            <th scope="col">Waktu</th>
                                                             <th scope="col">Jenis Catatan</th>
-                                                            <th scope="col">Tanggal</th>
+                                                            <th scope="col">Detail</th>
                                                             <th scope="col">Keterangan</th>
-                                                            <th scope="col" class="text-center"
-                                                                style="max-width:130px !important">Detail</th>
+                                                            <th scope="col" class="text-center" style="max-width:130px !important">Berkas</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
                                                         <tr>
+                                                            <td>1</td>
+                                                            <td>08.00 12 Mei 2025</td>
                                                             <td>Pelanggaran</td>
-                                                            <td>21 Agustus 2025</td>
-                                                            <td>
-                                                                <span class="float-left badge bg-warning">Bolos
-                                                                    Sekolah</span></td>
+                                                            <td>Bolos Sekolah</td>
+                                                            <td><span class="float-left badge bg-success">Ditindak</span></td>
                                                             <td style="max-width:130px !important">
-                                                                <div
-                                                                    class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <button type="button"
-                                                                        class="btn rounded-pill btn-info-100 text-info-600 radius-8 px-20 py-11 d-flex align-items-center gap-2"
-                                                                        data-bs-toggle="modal"
-                                                                        data-bs-target="#detailIjazah">
-                                                                        <iconify-icon icon="bi:display-fill"
-                                                                            class="menu-icon"></iconify-icon>
-                                                                        </iconify-icon>
-                                                                        Lihat
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <button type="button" class="btn btn-info-100 text-info-600  align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#detailCatatan">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon></iconify-icon>
                                                                     </button>
                                                                 </div>
                                                             </td>
@@ -1203,62 +1054,44 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                     </div>
                                 </div>
                             </div>
+
                         </div>
                         <!-- End of catatan -->
 
                         <!-- Arsip -->
-                        <div class="tab-pane fade" id="pills-arsip" role="tabpanel" aria-labelledby="pills-arsip-tab"
-                            tabindex="0">
+                        <div class="tab-pane fade" id="pills-arsip" role="tabpanel" aria-labelledby="pills-arsip-tab" tabindex="0">
                             <div class="row mt-20">
                                 <div class="col-xl-12">
                                     <div class="card basic-data-table shadow">
-                                        <div
-                                            class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
+                                        <div class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
                                             <h6 class="text-lg mb-0">Data Pribadi</h6>
-                                            <a href="<?php echo url('ptk/ptkTambah') ?>"
-                                                class="btn btn-sm btn-info-100 text-dark">
-                                                <i class="ri-add-line"></i>
-                                                Tambah Arsip</a>
+                                            <button type="button" class="text-xl line-height-1">
+                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon>
+                                            </button>
                                         </div>
                                         <div class="card-body">
                                             <div class="table-responsive">
-                                                <table class="table bordered-table " id="dataPribadi"
-                                                    data-page-length='5' style="width:100% !important">
+                                                <table class="table bordered-table " id="dataPribadi" data-page-length='5' style="width:100% !important">
                                                     <thead>
                                                         <tr>
                                                             <th scope="col">Nama Dokumen</th>
                                                             <th scope="col">Status Dokumen</th>
-                                                            <th scope="col" class="text-center"
-                                                                style="max-width:130px !important">Berkas</th>
+                                                            <th scope="col" class="text-center" style="max-width:130px !important">Berkas</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
                                                         <tr>
                                                             <td>KTP</td>
-                                                            <td>
-                                                                <span class="float-left badge bg-success">Sudah
-                                                                    Upload</span></td>
+                                                            <td><span class="float-left badge bg-success">Sudah Upload</span></td>
                                                             <td style="max-width:130px !important">
-                                                                <div
-                                                                    class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <button type="button"
-                                                                        class="btn rounded-pill btn-info-100 text-info-600 radius-8 px-20 py-11 d-flex align-items-center gap-2"
-                                                                        data-bs-toggle="modal"
-                                                                        data-bs-target="#detailIjazah">
-                                                                        <iconify-icon icon="bi:display-fill"
-                                                                            class="menu-icon"></iconify-icon>
-                                                                        </iconify-icon>
-                                                                        Lihat
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <button type="button" class="btn rounded-pill btn-info-100 text-info-600 radius-8 px-20 py-11 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#detailIjazah">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon></iconify-icon> Lihat
                                                                     </button>
 
-                                                                    <button type="button"
-                                                                        class="btn rounded-pill btn-success-100 text-success-600 radius-8 px-20 py-11 d-flex align-items-center gap-2"
-                                                                        data-bs-toggle="modal"
-                                                                        data-bs-target="#detailIjazah">
-                                                                        <iconify-icon icon="lucide:edit"
-                                                                            class="menu-icon"></iconify-icon>
-                                                                        </iconify-icon>
-                                                                        Sunting
+
+                                                                    <button type="button" class="btn rounded-pill btn-success-100 text-success-600 radius-8 px-20 py-11 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#detailIjazah">
+                                                                        <iconify-icon icon="lucide:edit" class="menu-icon"></iconify-icon></iconify-icon> Sunting
                                                                     </button>
                                                                 </div>
                                                             </td>
@@ -1266,34 +1099,151 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 
                                                         <tr>
                                                             <td>Kartu Keluarga</td>
-                                                            <td>
-                                                                <span class="float-left badge bg-success">Sudah
-                                                                    Upload</span></td>
+                                                            <td><span class="float-left badge bg-success">Sudah Upload</span></td>
                                                             <td style="max-width:130px !important">
-                                                                <div
-                                                                    class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <button type="button"
-                                                                        class="btn rounded-pill btn-info-100 text-info-600 radius-8 px-20 py-11 d-flex align-items-center gap-2"
-                                                                        data-bs-toggle="modal"
-                                                                        data-bs-target="#detailIjazah">
-                                                                        <iconify-icon icon="bi:display-fill"
-                                                                            class="menu-icon"></iconify-icon>
-                                                                        </iconify-icon>
-                                                                        Lihat
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <button type="button" class="btn rounded-pill btn-info-100 text-info-600 radius-8 px-20 py-11 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#detailIjazah">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon></iconify-icon> Lihat
                                                                     </button>
 
-                                                                    <button type="button"
-                                                                        class="btn rounded-pill btn-success-100 text-success-600 radius-8 px-20 py-11 d-flex align-items-center gap-2"
-                                                                        data-bs-toggle="modal"
-                                                                        data-bs-target="#detailIjazah">
-                                                                        <iconify-icon icon="lucide:edit"
-                                                                            class="menu-icon"></iconify-icon>
-                                                                        </iconify-icon>
-                                                                        Sunting
+
+                                                                    <button type="button" class="btn rounded-pill btn-success-100 text-success-600 radius-8 px-20 py-11 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#detailIjazah">
+                                                                        <iconify-icon icon="lucide:edit" class="menu-icon"></iconify-icon></iconify-icon> Sunting
                                                                     </button>
                                                                 </div>
                                                             </td>
                                                         </tr>
+
+
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-20">
+                                <div class="col-xl-12">
+                                    <div class="card basic-data-table shadow">
+                                        <div class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
+                                            <h6 class="text-lg mb-0">SK Pengangkatan</h6>
+                                            <button type="button" class="text-xl line-height-1">
+                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon>
+                                            </button>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <table class="table bordered-table " id="skPengangkatan" data-page-length='5' style="width:100% !important">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">No</th>
+                                                            <th scope="col">Nama Dokumen</th>
+                                                            <th scope="col">Tanggal Dokumen</th>
+                                                            <th scope="col">Penandatangan</th>
+                                                            <th scope="col">Jenis TTD</th>
+                                                            <th scope="col" class="text-center">Aksi</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>1</td>
+                                                            <td>SK Pengangkatan Yulianni 2025</td>
+                                                            <td>30 Juni 2025</td>
+                                                            <td>Dr. Siti Julaeha, M.Pd.</td>
+                                                            <td>Tanda Tangan Digital</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#detailIjazah">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </button>
+
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td>2</td>
+                                                            <td>SK Pengangkatan Yulianni 2021</td>
+                                                            <td>30 Juni 2021</td>
+                                                            <td>Dr. Siti Julaeha, M.Pd.</td>
+                                                            <td>Tanda Tangan Basah</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#detailIjazah">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </button>
+
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+
+
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-20">
+                                <div class="col-xl-12">
+                                    <div class="card basic-data-table shadow">
+                                        <div class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
+                                            <h6 class="text-lg mb-0">SK Tugas Mengajar</h6>
+                                            <button type="button" class="text-xl line-height-1">
+                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon>
+                                            </button>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <table class="table bordered-table " id="skTugas" data-page-length='5' style="width:100% !important">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">No</th>
+                                                            <th scope="col">Nama Dokumen</th>
+                                                            <th scope="col">Tanggal Dokumen</th>
+                                                            <th scope="col">Penandatangan</th>
+                                                            <th scope="col">Jenis TTD</th>
+                                                            <th scope="col" class="text-center">Aksi</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>1</td>
+                                                            <td>SK Tugas Mengajar 2025</td>
+                                                            <td>30 Juni 2025</td>
+                                                            <td>Dr. Siti Julaeha, M.Pd.</td>
+                                                            <td>Tanda Tangan Digital</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#detailIjazah">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </button>
+
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td>2</td>
+                                                            <td>SK Tugas Mengajar 2021</td>
+                                                            <td>30 Juni 2021</td>
+                                                            <td>Dr. Siti Julaeha, M.Pd.</td>
+                                                            <td>Tanda Tangan Basah</td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                                    <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#detailIjazah">
+                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                                    </button>
+
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+
 
                                                     </tbody>
                                                 </table>
@@ -1315,14 +1265,15 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                 <div class="avatar-upload">
                                     <div
                                         class="avatar-edit position-absolute bottom-0 end-0 me-24 mt-16 z-1 cursor-pointer">
-                                        <input type='file' id="imageUpload" accept=".png, .jpg, .jpeg" hidden="hidden">
+                                        <input type='file' id="imageUpload" accept=".png, .jpg, .jpeg" hidden>
                                         <label for="imageUpload"
                                             class="w-32-px h-32-px d-flex justify-content-center align-items-center bg-primary-50 text-primary-600 border border-primary-600 bg-hover-primary-100 text-lg rounded-circle">
                                             <iconify-icon icon="solar:camera-outline" class="icon"></iconify-icon>
                                         </label>
                                     </div>
                                     <div class="avatar-preview">
-                                        <div id="imagePreview"></div>
+                                        <div id="imagePreview">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1359,13 +1310,10 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                         <div class="mb-20">
                                             <label for="depart"
                                                 class="form-label fw-semibold text-primary-light text-sm mb-8">Department
-                                                <span class="text-danger-600">*</span>
-                                            </label>
+                                                <span class="text-danger-600">*</span> </label>
                                             <select class="form-control radius-8 form-select" id="depart">
-                                                <option>Enter Event Title
-                                                </option>
-                                                <option>Enter Event Title One
-                                                </option>
+                                                <option>Enter Event Title </option>
+                                                <option>Enter Event Title One </option>
                                                 <option>Enter Event Title Two</option>
                                             </select>
                                         </div>
@@ -1374,13 +1322,10 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                         <div class="mb-20">
                                             <label for="desig"
                                                 class="form-label fw-semibold text-primary-light text-sm mb-8">Designation
-                                                <span class="text-danger-600">*</span>
-                                            </label>
+                                                <span class="text-danger-600">*</span> </label>
                                             <select class="form-control radius-8 form-select" id="desig">
-                                                <option>Enter Designation Title
-                                                </option>
-                                                <option>Enter Designation Title One
-                                                </option>
+                                                <option>Enter Designation Title </option>
+                                                <option>Enter Designation Title One </option>
                                                 <option>Enter Designation Title Two</option>
                                             </select>
                                         </div>
@@ -1389,18 +1334,12 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                         <div class="mb-20">
                                             <label for="Language"
                                                 class="form-label fw-semibold text-primary-light text-sm mb-8">Language
-                                                <span class="text-danger-600">*</span>
-                                            </label>
+                                                <span class="text-danger-600">*</span> </label>
                                             <select class="form-control radius-8 form-select" id="Language">
-                                                <option>
-                                                    English</option>
-                                                <option>
-                                                    Bangla
-                                                </option>
-                                                <option>
-                                                    Hindi</option>
-                                                <option>
-                                                    Arabic</option>
+                                                <option> English</option>
+                                                <option> Bangla </option>
+                                                <option> Hindi</option>
+                                                <option> Arabic</option>
                                             </select>
                                         </div>
                                     </div>
@@ -1421,12 +1360,13 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                 </div>
                             </form>
 
+
                             <hr class="mt-40 mb-20">
                             <h6>Ganti Password</h6>
                             <div class="mb-20 mt-2">
                                 <label for="your-password"
-                                    class="form-label fw-semibold text-primary-light text-sm mb-8">New Password
-                                    <span class="text-danger-600">*</span></label>
+                                    class="form-label fw-semibold text-primary-light text-sm mb-8">New Password <span
+                                        class="text-danger-600">*</span></label>
                                 <div class="position-relative">
                                     <input type="password" class="form-control radius-8" id="your-password"
                                         placeholder="Enter New Password*">
@@ -1472,7 +1412,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-24">
-                <object style="pointer-events: none; width:100%; height:100%" data="<?php echo url('uploads/berkas.pdf')?>"
+                <object style="pointer-events: none;" data="<?php echo url('uploads/berkas.pdf')?>"
                     type="application/pdf" id="pdf_content">
                     <iframe src="<?php echo url('uploads/berkas.pdf')?>&embedded=true"></iframe>
                 </object>
@@ -1482,68 +1422,35 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 </div>
 <!-- End of Modal Lihat Berkas -->
 
-<!-- Modal Ajax input catatan -->
-
-<div class="modal fade" id="myAjaxModal" tabindex="-1" aria-labelledby="myAjaxModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <form action="">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="myAjaxModalLabel">Tambah Catatan Siswa</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- Content loaded via AJAX will go here -->
-                    <p>Loading...</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Simpan</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <!-- Optional: Add a submit button if the modal contains a form -->
-                </div>
-            </form>
+<!-- Modal Lihat Berkas Catatan -->
+<div class="modal fade" id="detailCatatan" tabindex="-1" aria-labelledby="exampleModalEditLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen modal-dialog modal-dialog-centered">
+        <div class="modal-content radius-16 bg-base">
+            <div class="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0">
+                <h1 class="modal-title fs-5" id="exampleModalEditLabel">Lihat Berkas Catatan</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-24">
+                <object style="width: 100%;height: 100%;" data="<?php echo url('uploads/berkas.pdf') ?>" type="application/pdf" id="pdf_content" style="pointer-events: none;">
+                    <iframe src="<?php echo url('uploads/berkas.pdf') ?>&embedded=true"></iframe>
+                </object>
+            </div>
         </div>
     </div>
 </div>
-
-<!-- End of Modal Ajax input catatan -->
+<!-- End of Modal Lihat Berkas Catatan -->
 
 <?php include viewPath('includes/footer'); ?>
 
 <script>
-    const myAjaxModal = document.getElementById('myAjaxModal');
-    myAjaxModal.addEventListener('show.bs.modal', event => {
-        const button = event.relatedTarget; // Button that triggered the modal
-        const url = button.getAttribute('data-url'); // Extract info from data-url attribute
-
-        const modalBody = myAjaxModal.querySelector('.modal-body');
-        modalBody.innerHTML = '<p>Loading...</p>'; // Show a loading indicator
-
-        fetch(url)
-            .then(response => response.text())
-            .then(data => {
-                modalBody.innerHTML = data; // Inject the fetched content into the modal body
-            })
-            .catch(error => {
-                console.error('Error loading modal content:', error);
-                modalBody.innerHTML = '<p class="text-danger">Failed to load content.</p>';
-            });
-    });
-</script>
-
-<script>
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-    const tooltipList = [...tooltipTriggerList].map(
-        tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl)
-    );
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 
     // Boxed Tooltip
-    $(document).ready(function () {
-        $('.tooltip-dapo').each(function () {
+    $(document).ready(function() {
+        $('.tooltip-dapo').each(function() {
             var tooltipButton = $(this);
-            var tooltipContent = $(this)
-                .siblings('.my-tooltip')
-                .html();
+            var tooltipContent = $(this).siblings('.my-tooltip').html();
 
             // Initialize the tooltip
             tooltipButton.tooltip({
@@ -1553,15 +1460,12 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
             });
 
             // Optionally, reinitialize the tooltip if the content might change dynamically
-            tooltipButton.on('mouseenter', function () {
-                tooltipButton
-                    .tooltip('dispose')
-                    .tooltip({
-                        title: tooltipContent,
-                        trigger: 'hover',
-                        html: true
-                    })
-                    .tooltip('show');
+            tooltipButton.on('mouseenter', function() {
+                tooltipButton.tooltip('dispose').tooltip({
+                    title: tooltipContent,
+                    trigger: 'hover',
+                    html: true
+                }).tooltip('show');
             });
         });
     });
@@ -1572,7 +1476,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
     function readURL(input) {
         if (input.files && input.files[0]) {
             var reader = new FileReader();
-            reader.onload = function (e) {
+            reader.onload = function(e) {
                 $('#imagePreview').css('background-image', 'url(' + e.target.result + ')');
                 $('#imagePreview').hide();
                 $('#imagePreview').fadeIn(650);
@@ -1580,13 +1484,14 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
             reader.readAsDataURL(input.files[0]);
         }
     }
-    $("#imageUpload").change(function () {
+    $("#imageUpload").change(function() {
         readURL(this);
     });
     // ======================== Upload Image End =====================
+
     // ================== Password Show Hide Js Start ==========
     function initializePasswordToggle(toggleSelector) {
-        $(toggleSelector).on('click', function () {
+        $(toggleSelector).on('click', function() {
             $(this).toggleClass("ri-eye-off-line");
             var input = $($(this).attr("data-toggle"));
             if (input.attr("type") === "password") {
@@ -1598,9 +1503,9 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
     }
     // Call the function
     initializePasswordToggle('.toggle-password');
-    // ========================= Password Show Hide Js End
-    // ===========================
+    // ========================= Password Show Hide Js End ===========================
 </script>
+
 
 <script>
     let table = new DataTable('#dataTable');
@@ -1611,8 +1516,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 
 <script>
     var rtlDirection = $('html').attr('dir') === 'rtl';
-    // ================================ Default Slider Start
-    // ================================
+    // ================================ Default Slider Start ================================ 
     $('.default-carousel').slick({
         infinite: true,
         slidesToShow: 1,
@@ -1637,10 +1541,8 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
         autoplay: false,
         autoplaySpeed: 2000,
         speed: 600,
-        prevArrow: '<button type="button" class="slick-prev"><iconify-icon icon="ic:outline-keyboa' +
-            'rd-arrow-left" class="menu-icon"></iconify-icon></button>',
-        nextArrow: '<button type="button" class="slick-next"><iconify-icon icon="ic:outline-keyboa' +
-            'rd-arrow-right" class="menu-icon"></iconify-icon></button>',
+        prevArrow: '<button type="button" class="slick-prev"><iconify-icon icon="ic:outline-keyboard-arrow-left" class="menu-icon"></iconify-icon></button>',
+        nextArrow: '<button type="button" class="slick-next"><iconify-icon icon="ic:outline-keyboard-arrow-right" class="menu-icon"></iconify-icon></button>',
         rtl: rtlDirection
     });
 
@@ -1655,10 +1557,8 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
         autoplay: false,
         autoplaySpeed: 2000,
         speed: 600,
-        prevArrow: '<button type="button" class="slick-prev"><iconify-icon icon="ic:outline-keyboa' +
-            'rd-arrow-left" class="menu-icon"></iconify-icon></button>',
-        nextArrow: '<button type="button" class="slick-next"><iconify-icon icon="ic:outline-keyboa' +
-            'rd-arrow-right" class="menu-icon"></iconify-icon></button>',
+        prevArrow: '<button type="button" class="slick-prev"><iconify-icon icon="ic:outline-keyboard-arrow-left" class="menu-icon"></iconify-icon></button>',
+        nextArrow: '<button type="button" class="slick-next"><iconify-icon icon="ic:outline-keyboard-arrow-right" class="menu-icon"></iconify-icon></button>',
         rtl: rtlDirection
     });
 
@@ -1674,31 +1574,32 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
         autoplaySpeed: 2000,
         speed: 600,
         gap: 24,
-        prevArrow: '<button type="button" class="slick-prev"><iconify-icon icon="ic:outline-keyboa' +
-            'rd-arrow-left" class="menu-icon"></iconify-icon></button>',
-        nextArrow: '<button type="button" class="slick-next"><iconify-icon icon="ic:outline-keyboa' +
-            'rd-arrow-right" class="menu-icon"></iconify-icon></button>',
+        prevArrow: '<button type="button" class="slick-prev"><iconify-icon icon="ic:outline-keyboard-arrow-left" class="menu-icon"></iconify-icon></button>',
+        nextArrow: '<button type="button" class="slick-next"><iconify-icon icon="ic:outline-keyboard-arrow-right" class="menu-icon"></iconify-icon></button>',
         rtl: rtlDirection,
         responsive: [{
-            breakpoint: 1199,
-            settings: {
-                slidesToShow: 3
-            }
-        }, {
-            breakpoint: 991,
-            settings: {
-                slidesToShow: 2
-            }
-        }, {
-            breakpoint: 575,
-            settings: {
-                slidesToShow: 1
-            }
-        }]
+                breakpoint: 1199,
+                settings: {
+                    slidesToShow: 3,
+                }
+            },
+            {
+                breakpoint: 991,
+                settings: {
+                    slidesToShow: 2,
+                }
+            },
+            {
+                breakpoint: 575,
+                settings: {
+                    slidesToShow: 1,
+                }
+            },
+        ]
     });
 
     // carousel with progress bar
-    jQuery(document).ready(function ($) {
+    jQuery(document).ready(function($) {
         var sliderTimer = 5000;
         var beforeEnd = 500;
         var $imageSlider = $('.progress-carousel');
@@ -1715,42 +1616,28 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
         });
 
         function progressBar() {
-            $('.slider-progress')
-                .find('span')
-                .removeAttr('style');
-            $('.slider-progress')
-                .find('span')
-                .removeClass('active');
-            setTimeout(function () {
-                $('.slider-progress')
-                    .find('span')
-                    .css('transition-duration', (sliderTimer / 1000) + 's')
-                    .addClass('active');
+            $('.slider-progress').find('span').removeAttr('style');
+            $('.slider-progress').find('span').removeClass('active');
+            setTimeout(function() {
+                $('.slider-progress').find('span').css('transition-duration', (sliderTimer / 1000) + 's').addClass('active');
             }, 100);
         }
         progressBar();
-        $imageSlider.on('beforeChange', function (e, slick) {
+        $imageSlider.on('beforeChange', function(e, slick) {
             progressBar();
         });
-        $imageSlider.on('afterChange', function (e, slick, nextSlide) {
+        $imageSlider.on('afterChange', function(e, slick, nextSlide) {
             titleAnim(nextSlide);
         });
 
         // Title Animation JS
         function titleAnim(ele) {
-            $imageSlider
-                .find('.slick-current')
-                .find('h1')
-                .addClass('show');
-            setTimeout(function () {
-                $imageSlider
-                    .find('.slick-current')
-                    .find('h1')
-                    .removeClass('show');
+            $imageSlider.find('.slick-current').find('h1').addClass('show');
+            setTimeout(function() {
+                $imageSlider.find('.slick-current').find('h1').removeClass('show');
             }, sliderTimer - beforeEnd);
         }
         titleAnim();
     });
-    // ================================ Default Slider End
-    // ================================
+    // ================================ Default Slider End ================================ 
 </script>

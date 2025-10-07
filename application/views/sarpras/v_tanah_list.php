@@ -1,6 +1,6 @@
 <?php
 
-defined('BASEPATH') OR exit('No direct script access allowed'); ?>
+defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
 <?php include viewPath('includes/header'); ?>
 
@@ -13,7 +13,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
             <div class="card">
                 <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-3 bg-warning-400">
                     <div class="d-flex flex-wrap align-items-center gap-3">
-                       <h6>Data Tanah</h6>
+                        <h6>Data Tanah</h6>
                     </div>
                     <div class="d-flex flex-wrap align-items-center gap-3">
                         <select class="form-select form-select-sm w-auto">
@@ -40,36 +40,47 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>24231/2/BC.2332</td>
-                                    <td>Yayasan Miftahul Khoer El-Istohary</td>
-                                    <td>9.242 m<sup>2</sup></td>
-                                    <td class="text-center"> 
-                                        <span class="bg-success-focus text-success-main px-24 py-4 rounded-pill fw-medium text-sm">Milik</span>
-                                    </td>
-                                    <td class="text-center">
-                                        <button type="button" class="btn btn-info-100 text-info-600 radius-8 px-14 py-6 text-sm" data-bs-toggle="modal" data-bs-target="#LihatBerkas">Lihat Berkas</button>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex align-items-center gap-10 justify-content-center">
-                                            <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#TanahDetail">
-                                                <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                            </button>
+                                <?php
+                                $no = 1;
+                                foreach ($tanah as $row):
+                                ?>
+                                    <tr>
+                                        <td><?= $no ?></td>
+                                        <td><?= $row->nomor_sertifikat ?></td>
+                                        <td><?= $row->atas_nama ?></td>
+                                        <td><?= $row->luas ?> m<sup>2</sup></td>
+                                        <td class="text-center"><?= $row->status ?> </td>
+                                        <td class="text-center">
+                                            <?php if ($row->berkas != null) { ?>
+                                                <button type="button" class="btn btn-info-100 text-info-600 radius-8 px-14 py-6 text-sm" data-bs-toggle="modal" data-bs-target="#LihatBerkas">Lihat Berkas</button>
+                                            <?php } else { ?>
+                                                <button type="button" class="btn btn-success-100 text-success-600 radius-8 px-14 py-6 text-sm" data-bs-toggle="modal" data-bs-target="#UnggahBerkas">Unggah Berkas</button>
+                                            <?php } ?>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#TanahDetail">
+                                                    <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                </button>
 
-                                            <button type="button" class="bg-success-100 text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#TanahEdit">
-                                                <iconify-icon icon="lucide:edit" class="menu-icon"></iconify-icon>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
+                                                <button type="button" class="bg-success-100 text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#TanahEdit">
+                                                    <iconify-icon icon="lucide:edit" class="menu-icon"></iconify-icon>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php
+                                    $no++;
+                                endforeach
+                                ?>
+
                                 <tr>
                                     <td>2</td>
                                     <td>10021/2/DS.0012</td>
                                     <td>Siti Robiah</td>
                                     <td>1.242 m<sup>2</sup></td>
-                                    <td class="text-center"> <span
-                                            class="bg-warning-focus text-warning-main px-24 py-4 rounded-pill fw-medium text-sm">Pinjam</span>
+                                    <td class="text-center">
+                                        <span class="bg-warning-focus text-warning-main px-24 py-4 rounded-pill fw-medium text-sm">Pinjam</span>
                                     </td>
                                     <td class="text-center">
                                         <button type="button" class="btn btn-success-100 text-success-600 radius-8 px-14 py-6 text-sm" data-bs-toggle="modal" data-bs-target="#UnggahBerkas">Unggah Berkas</button>
@@ -106,7 +117,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
             </div>
             <div class="modal-body p-24">
                 <form action="#">
-                    <div class="row">   
+                    <div class="row">
                         <div class="col-6 mb-20">
                             <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Name </label>
                             <input type="text" class="form-control radius-8" id="editname" placeholder="Enter Name" disabled>
@@ -139,10 +150,10 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                             </select>
                         </div>
                         <div class="d-flex align-items-center justify-content-center gap-3 mt-24">
-                            <button type="reset" class="border border-danger-600 bg-hover-danger-200 text-danger-600 text-md px-50 py-11 radius-8"> 
+                            <button type="reset" class="border border-danger-600 bg-hover-danger-200 text-danger-600 text-md px-50 py-11 radius-8">
                                 Cancel
                             </button>
-                            <button type="submit" class="btn btn-primary border border-primary-600 text-md px-50 py-12 radius-8"> 
+                            <button type="submit" class="btn btn-primary border border-primary-600 text-md px-50 py-12 radius-8">
                                 Update
                             </button>
                         </div>
@@ -164,7 +175,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
             </div>
             <div class="modal-body p-24">
                 <form action="#">
-                    <div class="row">   
+                    <div class="row">
                         <div class="col-6 mb-20">
                             <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Nomor Sertifikat</label>
                             <input type="text" class="form-control radius-8" id="editname" value="24231/2/BC.2332">
@@ -217,13 +228,13 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                             <input type="text" class="form-control radius-8" id="editname" value="Tanah Warga">
                         </div>
 
-                        
-                       
+
+
                         <div class="d-flex align-items-center justify-content-center gap-3 mt-24">
-                            <button type="reset" data-bs-dismiss="modal" class="border border-danger-600 bg-hover-danger-200 text-danger-600 text-md px-50 py-11 radius-8"> 
+                            <button type="reset" data-bs-dismiss="modal" class="border border-danger-600 bg-hover-danger-200 text-danger-600 text-md px-50 py-11 radius-8">
                                 Cancel
                             </button>
-                            <button type="submit" class="btn btn-primary border border-primary-600 text-md px-50 py-12 radius-8"> 
+                            <button type="submit" class="btn btn-primary border border-primary-600 text-md px-50 py-12 radius-8">
                                 Update
                             </button>
                         </div>
@@ -244,8 +255,8 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-24">
-                <object style="width: 100%;height: 100%;" data="<?php echo url('uploads/berkas.pdf')?>" type="application/pdf" id="pdf_content" style="pointer-events: none;">
-                    <iframe src="<?php echo url('uploads/berkas.pdf')?>&embedded=true"></iframe>
+                <object style="width: 100%;height: 100%;" data="<?php echo url('uploads/berkas.pdf') ?>" type="application/pdf" id="pdf_content" style="pointer-events: none;">
+                    <iframe src="<?php echo url('uploads/berkas.pdf') ?>&embedded=true"></iframe>
                 </object>
             </div>
         </div>
@@ -263,7 +274,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-24">
-                
+
             </div>
         </div>
     </div>

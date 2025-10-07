@@ -1,6 +1,6 @@
 <?php
 
-defined('BASEPATH') OR exit('No direct script access allowed'); ?>
+defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
 <?php include viewPath('includes/header'); ?>
 
@@ -12,22 +12,22 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
             <div class="responsive-padding-40-150 bg-success-50">
                 <div class="row gy-4 align-items-center">
                     <div class="col-xl-7">
-                        <h4 class="mb-20">SMA Miftahul Khoer Boarding School</h4>
+                        <h4 class="mb-20"><?= $lembaga->nama_lembaga ?></h4>
                         <table>
                             <tr>
                                 <td>Kepala Sekolah </td>
                                 <td style="width: 20px; text-align: center;">:</td>
-                                <td class="fw-semibold">Kiki Baehaqi Saepul Millah</td>
+                                <td class="fw-semibold">[hc]</td>
                             </tr>
                             <tr>
                                 <td>NPSN</td>
                                 <td style="width: 20px; text-align: center;">:</td>
-                                <td class="fw-semibold">6854587956</td>
+                                <td class="fw-semibold"><?= $lembaga->npsn ?></td>
                             </tr>
                         </table>
                     </div>
                     <div class="col-xl-5 d-xl-block d-none">
-                        <img src="<?php echo $url->assets ?>logo_sma.png" alt="">
+                        <img src="<?= urlUpload('logo_lembaga/'); ?><?= $lembaga->logo ?>" alt="">
                     </div>
                 </div>
             </div>
@@ -75,23 +75,28 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                             <table>
                                                 <tr>
                                                     <td style="min-width: 150px;">NPSN</td>
-                                                    <td  style="min-width: 15px;">:</td>
-                                                    <td>69948104</td>
+                                                    <td style="min-width: 15px;">:</td>
+                                                    <td><?= $lembaga->npsn ?></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Bentuk Pendidikan</td>
                                                     <td>:</td>
-                                                    <td>SMA</td>
+                                                    <td><?= $lembaga->bentuk_pendidikan ?></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Status</td>
                                                     <td>:</td>
-                                                    <td>Swasta</td>
+                                                    <td><?= $lembaga->status ?></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Akreditasi</td>
                                                     <td>:</td>
-                                                    <td>B (Maret 2024)</td>
+                                                    <td><?= $lembaga->akreditasi ?></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>SK Akreditasi</td>
+                                                    <td>:</td>
+                                                    <td><?= $lembaga->no_sk_akreditasi ?></td>
                                                 </tr>
                                             </table>
                                         </div>
@@ -112,27 +117,27 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                 <tr>
                                                     <td style="min-width: 150px;">Alamat</td>
                                                     <td style="min-width: 15px;">:</td>
-                                                    <td>Dusun Mandala RT 018 RW 006</td>
+                                                    <td><?= $lembaga->alamat ?> RT <?= $lembaga->rt ?> RW <?= $lembaga->rw ?></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Desa/Kel.</td>
                                                     <td>:</td>
-                                                    <td>Kertamandala</td>
+                                                    <td>Kertamandala[hc]</td>
                                                 </tr>
                                                 <tr>
                                                     <td>Kecamatan</td>
                                                     <td>:</td>
-                                                    <td>Panjalu</td>
+                                                    <td>Panjalu[hc]</td>
                                                 </tr>
                                                 <tr>
                                                     <td>Kabupaten</td>
                                                     <td>:</td>
-                                                    <td>Ciamis</td>
+                                                    <td>Ciamis[hc]</td>
                                                 </tr>
                                                 <tr>
                                                     <td>Provinsi</td>
                                                     <td>:</td>
-                                                    <td>Jawa Barat</td>
+                                                    <td>Jawa Barat[hc]</td>
                                                 </tr>
                                             </table>
                                         </div>
@@ -153,32 +158,32 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                 <tr>
                                                     <td style="min-width: 150px;">Telp./Whatsapp</td>
                                                     <td style="min-width: 15px;">:</td>
-                                                    <td>+6282240213444</td>
+                                                    <td><?= $lembaga->telepon ?></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Email</td>
                                                     <td>:</td>
-                                                    <td>sma@miftahulkhoer.org</td>
+                                                    <td><?= $lembaga->email ?></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Website</td>
                                                     <td>:</td>
-                                                    <td>http://sma.miftahulkhoer.org</td>
+                                                    <td><?= $lembaga->website ?></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Instagram</td>
                                                     <td>:</td>
-                                                    <td>@miftahulkhoermedia</td>
+                                                    <td><?= $lembaga->instagram ?></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Tiktok</td>
                                                     <td>:</td>
-                                                    <td>miftahulkhoermedia</td>
+                                                    <td><?= $lembaga->tiktok ?></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Youtube</td>
                                                     <td>:</td>
-                                                    <td>Miftahul Khoer Media Official</td>
+                                                    <td><?= $lembaga->youtube ?></td>
                                                 </tr>
                                             </table>
                                         </div>
