@@ -1472,7 +1472,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-24">
-                <object style="pointer-events: none;" data="<?php echo url('uploads/berkas.pdf')?>"
+                <object style="pointer-events: none; width:100%; height:100%" data="<?php echo url('uploads/berkas.pdf')?>"
                     type="application/pdf" id="pdf_content">
                     <iframe src="<?php echo url('uploads/berkas.pdf')?>&embedded=true"></iframe>
                 </object>
