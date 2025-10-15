@@ -74,29 +74,6 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                 endforeach
                                 ?>
 
-                                <tr>
-                                    <td>2</td>
-                                    <td>10021/2/DS.0012</td>
-                                    <td>Siti Robiah</td>
-                                    <td>1.242 m<sup>2</sup></td>
-                                    <td class="text-center">
-                                        <span class="bg-warning-focus text-warning-main px-24 py-4 rounded-pill fw-medium text-sm">Pinjam</span>
-                                    </td>
-                                    <td class="text-center">
-                                        <button type="button" class="btn btn-success-100 text-success-600 radius-8 px-14 py-6 text-sm" data-bs-toggle="modal" data-bs-target="#UnggahBerkas">Unggah Berkas</button>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex align-items-center gap-10 justify-content-center">
-                                            <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#TanahDetail">
-                                                <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                            </button>
-
-                                            <button type="button" class="bg-success-100 text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#TanahEdit">
-                                                <iconify-icon icon="lucide:edit" class="menu-icon"></iconify-icon>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
 
                             </tbody>
                         </table>
@@ -173,7 +150,7 @@ foreach ($tanah as $row):
 
                         <div class="d-flex align-items-center justify-content-center gap-3 mt-24">
                             <button type="reset" data-bs-dismiss="modal" class="border border-danger-600 bg-hover-danger-200 text-danger-600 text-md px-50 py-11 radius-8">
-                                Close
+                                Tutup
                             </button>
 
                         </div>
@@ -197,54 +174,55 @@ foreach ($tanah as $row):
                         <div class="row">
                             <div class="col-6 mb-20">
                                 <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Nomor Sertifikat</label>
-                                <input type="text" class="form-control radius-8" id="editname" value="24231/2/BC.2332">
+                                <input type="text" class="form-control radius-8" id="editname" value="<?= $row->nomor_sertifikat ?>">
                             </div>
 
                             <div class="col-6 mb-20">
                                 <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Atas Nama Sertifikat</label>
-                                <input type="text" class="form-control radius-8" id="editname" value="Yayasan Miftahul Khoer El-Istohary">
+                                <input type="text" class="form-control radius-8" id="editname" value="<?= $row->atas_nama ?>">
                             </div>
 
                             <div class="col-6 mb-20">
                                 <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Luas (m<sup>2</sup>)</label>
-                                <input type="text" class="form-control radius-8" id="editname" value="9.242 ">
+                                <input type="text" class="form-control radius-8" id="editname" value="<?= $row->luas ?>">
                             </div>
 
                             <div class="col-6 mb-20">
                                 <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">No. Surat Ukur</label>
-                                <input type="text" class="form-control radius-8" id="editname" value="Yayasan Miftahul Khoer El-Istohary">
+                                <input type="text" class="form-control radius-8" id="editname" value="<?= $row->no_surat_ukur ?>">
                             </div>
 
                             <div class="col-6 mb-20">
                                 <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Tgl. Pembukuan</label>
-                                <input type="text" class="form-control radius-8" id="editname" value="9.242 ">
+                                <input type="date" class="form-control radius-8" id="editname" value="<?= $row->tgl_pembukuan ?> ">
                             </div>
 
                             <div class="col-6 mb-20">
                                 <label for="editcountry" class="form-label fw-semibold text-primary-light text-sm mb-8">Status </label>
                                 <select class="form-control radius-8 form-select" id="editcountry">
-                                    <option>Milik</option>
-                                    <option>Pinjam</option>
-                                    <option>Sewa</option>
+                                    <option value="<?= $row->status ?>"><?= $row->status ?></option>
+                                    <option value="Milik">Milik</option>
+                                    <option value="Pinjam">Pinjam</option>
+                                    <option value="Sewa">Sewa</option>
                                 </select>
                             </div>
 
                             <div class="col-6 mb-20">
                                 <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Batas Sebelah Utara</label>
-                                <input type="text" class="form-control radius-8" id="editname" value="Sungai">
+                                <input type="text" class="form-control radius-8" id="editname" value="<?= $row->batas_utara ?>">
                             </div>
 
                             <div class="col-6 mb-20">
                                 <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Batas Sebelah Barat</label>
-                                <input type="text" class="form-control radius-8" id="editname" value="Tanah Warga">
+                                <input type="text" class="form-control radius-8" id="editname" value="<?= $row->batas_barat ?>">
                             </div>
                             <div class="col-6 mb-20">
                                 <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Batas Sebelah Selatan</label>
-                                <input type="text" class="form-control radius-8" id="editname" value="Tanah Warga">
+                                <input type="text" class="form-control radius-8" id="editname" value="<?= $row->batas_selatan ?>">
                             </div>
                             <div class="col-6 mb-20">
                                 <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Batas Sebelah Timur</label>
-                                <input type="text" class="form-control radius-8" id="editname" value="Tanah Warga">
+                                <input type="text" class="form-control radius-8" id="editname" value="<?= $row->batas_timur ?>">
                             </div>
 
 
