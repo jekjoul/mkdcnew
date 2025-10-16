@@ -52,11 +52,17 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                         <td class="text-center"><?= $row->status ?> </td>
                                         <td class="text-center">
                                             <?php if ($row->berkas != null) { ?>
-                                                <button type="button" class="btn btn-info-100 text-info-600 radius-8 px-14 py-6 text-sm" data-bs-toggle="modal" data-bs-target="#LihatBerkas<?= $no ?>">Lihat Berkas</button>
-                                                <button type="button" class="btn btn-warning-100 text-warning-600 radius-8 px-14 py-6 text-sm" data-bs-toggle="modal" data-bs-target="#UnggahBerkas<?= $no ?>">Ubah Berkas</button>
+                                                <button type="button" class="btn btn-info-100 text-info-700 radius-8 px-14 py-6 mb-1 mx-auto text-sm d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#LihatBerkas<?= $no ?>">
+                                                    <iconify-icon icon="line-md:clipboard-list-twotone" class="text-xl"></iconify-icon>Lihat Berkas
+                                                </button>
+                                                <button type="button" class="btn btn-warning-200 text-warning-800 radius-8 px-14 py-6 mx-auto text-sm d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#UnggahBerkas<?= $no ?>">
+                                                    <iconify-icon icon="line-md:edit-filled" class="text-xl"></iconify-icon>Ubah Berkas
+                                                </button>
 
                                             <?php } else { ?>
-                                                <button type="button" class="btn btn-success-100 text-success-600 radius-8 px-14 py-6 text-sm" data-bs-toggle="modal" data-bs-target="#UnggahBerkas<?= $no ?>">Unggah Berkas</button>
+                                                <button type="button" class="btn btn-success-200 text-success-700 radius-8 px-14 py-6 mx-auto text-sm d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#UnggahBerkas<?= $no ?>">
+                                                    <iconify-icon icon="line-md:upload-loop" class="text-xl"></iconify-icon>Unggah Berkas
+                                                </button>
                                             <?php } ?>
                                         </td>
                                         <td>
