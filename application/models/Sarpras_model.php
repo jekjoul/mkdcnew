@@ -21,4 +21,12 @@ class Sarpras_model extends MY_Model
         $query = $this->db->get();
         return $query->result();
     }
+
+    public function getAllBangunan()
+    {
+        $this->db->select('*');
+        $this->db->from($this->bangunan);
+        $query = $this->db->get();
+        return $query->result();
+    }
 }

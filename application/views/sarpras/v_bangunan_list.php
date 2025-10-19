@@ -1,6 +1,6 @@
 <?php
 
-defined('BASEPATH') OR exit('No direct script access allowed'); ?>
+defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
 <?php include viewPath('includes/header'); ?>
 
@@ -11,9 +11,9 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
     <div class="row gy-4 mb-24">
         <div class="col-lg-12">
             <div class="card basic-data-table">
-                <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-3 bg-warning-400" >
+                <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-3 bg-warning-400">
                     <div class="d-flex flex-wrap align-items-center gap-3">
-                      <h6>Data Bangunan</h6>
+                        <h6>Data Bangunan</h6>
                     </div>
                     <div class="d-flex flex-wrap align-items-center gap-3">
                         <a href="<?php echo url('sarpras/bangunanTambah') ?>" class="btn btn-sm btn-primary-600"><i class="ri-add-line"></i> Tambah Bangunan</a>
@@ -34,52 +34,46 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>Ruang Kelas 7</td>
-                                    <td>24231/2/BC.2332</td>
-                                    <td>9.242 m<sup>2</sup></td>
-                                    <td class="text-center"> 
-                                        <span class="bg-success-focus text-success-main px-24 py-4 rounded-pill fw-medium text-sm">Milik</span>
-                                    </td>
-                                    <td class="text-center">
-                                        <button type="button" class="btn btn-info-100 text-info-600 radius-8 px-14 py-6 text-sm" data-bs-toggle="modal" data-bs-target="#LihatBerkas">Lihat Berkas</button>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex align-items-center gap-10 justify-content-center">
-                                            <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#TanahDetail">
-                                                <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                            </button>
+                                <?php
+                                $no = 1;
+                                foreach ($tanah as $row):
+                                ?>
+                                    <tr>
+                                        <td><?= $no ?></td>
+                                        <td><?= $row->nama_bangunan ?></td>
+                                        <td>
+                                            <?php
+                                            if (isset($row->no_pbg)) {
+                                                echo "Belum PBG";
+                                            } else {
+                                                echo $row->no_pbg;
+                                            }
 
-                                            <button type="button" class="bg-success-100 text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#TanahEdit">
-                                                <iconify-icon icon="lucide:edit" class="menu-icon"></iconify-icon>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>Ruang Kelas 8</td>
-                                    <td>-</td>
-                                    <td>1.242 m<sup>2</sup></td>
-                                    <td class="text-center"> <span
-                                            class="bg-warning-focus text-warning-main px-24 py-4 rounded-pill fw-medium text-sm">Pinjam</span>
-                                    </td>
-                                    <td class="text-center">
-                                        <button type="button" class="btn btn-success-100 text-success-600 radius-8 px-14 py-6 text-sm" data-bs-toggle="modal" data-bs-target="#UnggahBerkas">Unggah Berkas</button>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex align-items-center gap-10 justify-content-center">
-                                            <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#TanahDetail">
-                                                <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                            </button>
+                                            ?>
+                                        </td>
+                                        <td><?= $row->luas_tapak ?> m<sup>2</sup></td>
+                                        <td class="text-center">
+                                            <?= $row->status ?>
+                                        </td>
+                                        <td class="text-center">
+                                            <button type="button" class="btn btn-info-100 text-info-600 radius-8 px-14 py-6 text-sm" data-bs-toggle="modal" data-bs-target="#LihatBerkas<?= $no ?>">Lihat Berkas</button>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#BangunanDetail<?= $no ?>">
+                                                    <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                </button>
 
-                                            <button type="button" class="bg-success-100 text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#TanahEdit">
-                                                <iconify-icon icon="lucide:edit" class="menu-icon"></iconify-icon>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
+                                                <button type="button" class="bg-success-100 text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#BangunanEdit<?= $no ?>">
+                                                    <iconify-icon icon="lucide:edit" class="menu-icon"></iconify-icon>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php
+                                    $no++;
+                                endforeach
+                                ?>
 
                             </tbody>
                         </table>
@@ -90,16 +84,21 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
     </div>
 </div>
 
-<!--Modal Detail Bangunan -->
-<div class="modal fade" id="TanahDetail" tabindex="-1" aria-labelledby="exampleModalEditLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog modal-dialog-centered">
-        <div class="modal-content radius-16 bg-base">
-            <div class="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0">
-                <h1 class="modal-title fs-5" id="exampleModalEditLabel">Detail Bangunan</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-24">
-                <form action="#">
+<?php
+$no = 1;
+foreach ($tanah as $row):
+?>
+
+    <!--Modal Detail Bangunan -->
+    <div class="modal fade" id="BangunanDetail<?= $no ?>" tabindex="-1" aria-labelledby="exampleModalEditLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog modal-dialog-centered">
+            <div class="modal-content radius-16 bg-base">
+                <div class="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0">
+                    <h1 class="modal-title fs-5" id="exampleModalEditLabel">Detail Bangunan</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-24">
+                    <form action="#">
                         <div class="row">
                             <div class="col-md-6 mb-20 was-validated">
                                 <label for="editname"
@@ -108,7 +107,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                             </div>
 
                             <div class="col-md-6 mb-20 was-validated">
-                                <label for="editname"class="form-label fw-semibold text-primary-light text-sm mb-8">Berdiri diatas Tanah</label>
+                                <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Berdiri diatas Tanah</label>
                                 <p>Yayasan Miftahul Khoer El-Istohary</p>
 
                             </div>
@@ -159,22 +158,22 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                             </div>
                         </div>
                     </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<!-- End of Modal Detail bangunan -->
+    <!-- End of Modal Detail bangunan -->
 
-<!-- Modal Sunting bangunan -->
-<div class="modal fade" id="TanahEdit" tabindex="-1" aria-labelledby="exampleModalEditLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog modal-dialog-centered">
-        <div class="modal-content radius-16 bg-base">
-            <div class="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0">
-                <h1 class="modal-title fs-5" id="exampleModalEditLabel">Sunting Bangunan</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-24">
-                <form action="#">
+    <!-- Modal Sunting bangunan -->
+    <div class="modal fade" id="BangunanEdit<?= $no ?>" tabindex="-1" aria-labelledby="exampleModalEditLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog modal-dialog-centered">
+            <div class="modal-content radius-16 bg-base">
+                <div class="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0">
+                    <h1 class="modal-title fs-5" id="exampleModalEditLabel">Sunting Bangunan</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-24">
+                    <form action="#">
                         <div class="row">
                             <div class="col-md-6 mb-20 was-validated">
                                 <label for="editname"
@@ -259,51 +258,54 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                             </div>
                         </div>
                     </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<!-- End of Modal Sunting bangunan -->
+    <!-- End of Modal Sunting bangunan -->
 
-<!-- Modal Lihat Berkas -->
-<div class="modal fade" id="LihatBerkas" tabindex="-1" aria-labelledby="exampleModalEditLabel" aria-hidden="true">
-    <div class="modal-dialog modal-fullscreen modal-dialog modal-dialog-centered">
-        <div class="modal-content radius-16 bg-base">
-            <div class="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0">
-                <h1 class="modal-title fs-5" id="exampleModalEditLabel">Lihat Berkas</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-24">
-                <object style="width: 100%;height: 100%;" data="<?php echo url('uploads/berkas.pdf')?>" type="application/pdf" id="pdf_content" style="pointer-events: none;">
-                    <iframe src="<?php echo url('uploads/berkas.pdf')?>&embedded=true"></iframe>
-                </object>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- End of Modal Lihat Berkas -->
-
-
-<!-- Modal Upload Berkas -->
-<div class="modal fade" id="UnggahBerkas" tabindex="-1" aria-labelledby="exampleModalEditLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog modal-dialog-centered">
-        <div class="modal-content radius-16 bg-base">
-            <div class="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0">
-                <h1 class="modal-title fs-5" id="exampleModalEditLabel">Unggah Berkas</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-24">
-                
+    <!-- Modal Lihat Berkas -->
+    <div class="modal fade" id="LihatBerkas<?= $no ?>" tabindex="-1" aria-labelledby="exampleModalEditLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen modal-dialog modal-dialog-centered">
+            <div class="modal-content radius-16 bg-base">
+                <div class="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0">
+                    <h1 class="modal-title fs-5" id="exampleModalEditLabel">Lihat Berkas</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-24">
+                    <object style="width: 100%;height: 100%;" data="<?php echo url('uploads/berkas.pdf') ?>" type="application/pdf" id="pdf_content" style="pointer-events: none;">
+                        <iframe src="<?php echo url('uploads/berkas.pdf') ?>&embedded=true"></iframe>
+                    </object>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<!-- End of Modal Upload Berkas -->
+    <!-- End of Modal Lihat Berkas -->
 
 
+    <!-- Modal Upload Berkas -->
+    <div class="modal fade" id="UnggahBerkas<?= $no ?>" tabindex="-1" aria-labelledby="exampleModalEditLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog modal-dialog-centered">
+            <div class="modal-content radius-16 bg-base">
+                <div class="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0">
+                    <h1 class="modal-title fs-5" id="exampleModalEditLabel">Unggah Berkas</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-24">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End of Modal Upload Berkas -->
+
+<?php
+    $no++;
+endforeach
+?>
 
 
 <?php include viewPath('includes/footer'); ?>
 <script>
-  let table = new DataTable('#dataTable');
+    let table = new DataTable('#dataTable');
 </script>
