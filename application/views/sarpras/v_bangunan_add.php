@@ -1,6 +1,6 @@
 <?php
 
-defined('BASEPATH') OR exit('No direct script access allowed'); ?>
+defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
 <?php include viewPath('includes/header'); ?>
 
@@ -18,12 +18,12 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                     </div>
                 </div>
                 <div class="card-body mt-3">
-                    <form action="#">
+                    <form action="<?php echo url('sarpras/bangunanSimpan') ?>" method="post">
                         <div class="row">
                             <div class="col-md-6 mb-20 was-validated">
                                 <label for="editname"
                                     class="form-label fw-semibold text-primary-light text-sm mb-8">Nama Bangunan</label>
-                                <input type="text" class="form-control radius-8" id="editname" required>
+                                <input type="text" class="form-control radius-8" id="editname" name="nama_bangunan" required>
                                 <div class="invalid-feedback">
                                     Silahkan masukan Nama Bangunan.
                                 </div>
@@ -33,9 +33,10 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                 <label for="editname"
                                     class="form-label fw-semibold text-primary-light text-sm mb-8">Berdiri diatas
                                     Tanah</label>
-                                <select class="form-control radius-8 form-select" id="editcountry">
-                                    <option>Yayasan Miftahul Khoer El-Istohary</option>
-                                    <option>Siti Robiah</option>
+                                <select class="form-control radius-8 form-select" id="editcountry" name="tanah">
+                                    <?php foreach ($tanah as $rowt): ?>
+                                        <option value=" <?= $rowt->id_tanah ?>"><?= $rowt->atas_nama ?></option>
+                                    <?php endforeach; ?>
                                 </select>
 
                             </div>
@@ -43,7 +44,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                             <div class="col-md-6 mb-20 was-validated">
                                 <label for="editname"
                                     class="form-label fw-semibold text-primary-light text-sm mb-8">Panjang (m)</label>
-                                <input type="text" class="form-control radius-8" id="editname" required>
+                                <input type="text" class="form-control radius-8" id="editname" name="panjang" required>
                                 <div class="invalid-feedback">
                                     Silahkan masukan Panjang Bangunan.
                                 </div>
@@ -52,7 +53,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                             <div class="col-md-6 mb-20 was-validated">
                                 <label for="editname"
                                     class="form-label fw-semibold text-primary-light text-sm mb-8">Lebar (m)</label>
-                                <input type="text" class="form-control radius-8" id="editname" required>
+                                <input type="text" class="form-control radius-8" id="editname" name="lebar" required>
                                 <div class="invalid-feedback">
                                     Silahkan masukan Lebar Bangunan.
                                 </div>
@@ -62,7 +63,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                 <label for="editname"
                                     class="form-label fw-semibold text-primary-light text-sm mb-8">Luas Tapak Bangunan
                                     (m<sup>2</sup>)</label>
-                                <input type="text" class="form-control radius-8" id="editname" required>
+                                <input type="text" class="form-control radius-8" id="editname" name="luas_tapak" required>
 
                             </div>
 
@@ -70,7 +71,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                 <label for="editname"
                                     class="form-label fw-semibold text-primary-light text-sm mb-8">Tgl.
                                     Pendirian</label>
-                                <input type="date" class="form-control radius-8" id="editname" required>
+                                <input type="date" class="form-control radius-8" id="editname" name="tgl_pendirian" required>
                                 <div class="invalid-feedback">
                                     Silahkan masukan Tanggal Pendirian Bangunan.
                                 </div>
@@ -80,14 +81,14 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                             <div class="col-md-6 mb-20">
                                 <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">No.
                                     IMB/PBG</label>
-                                <input type="text" class="form-control radius-8" id="editname">
+                                <input type="text" class="form-control radius-8" id="editname" name="no_pbg">
                             </div>
 
 
                             <div class="col-md-6 mb-20">
                                 <label for="editcountry"
                                     class="form-label fw-semibold text-primary-light text-sm mb-8">Status </label>
-                                <select class="form-control radius-8 form-select" id="editcountry">
+                                <select class="form-control radius-8 form-select" id="editcountry" name="status_bangunan">
                                     <option>Milik Sekolah</option>
                                     <option>Milik Yayasan</option>
                                     <option>Milik Perorangan</option>

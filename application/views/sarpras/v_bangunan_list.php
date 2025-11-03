@@ -29,14 +29,14 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                     <th scope="col">Nomor PBG/IMB</th>
                                     <th scope="col">Luas Bangunan</th>
                                     <th scope="col" class="text-center">Status</th>
-                                    <th scope="col" class="text-center">Berkas</th>
+                                    <th scope="col" class="text-center">Berkas PBG</th>
                                     <th scope="col" class="text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php
                                 $no = 1;
-                                foreach ($tanah as $row):
+                                foreach ($bangunan as $row):
                                 ?>
                                     <tr>
                                         <td><?= $no ?></td>
@@ -53,10 +53,26 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                         </td>
                                         <td><?= $row->luas_tapak ?> m<sup>2</sup></td>
                                         <td class="text-center">
-                                            <?= $row->status ?>
+                                            <?= $row->status_bangunan ?>
                                         </td>
                                         <td class="text-center">
-                                            <button type="button" class="btn btn-info-100 text-info-600 radius-8 px-14 py-6 text-sm" data-bs-toggle="modal" data-bs-target="#LihatBerkas<?= $no ?>">Lihat Berkas</button>
+                                            <?php if ($row->berkas_bangunan != null) { ?>
+                                                <div class="">
+                                                    <button type="button" class="btn btn-outline-info-600 text-info-700 radius-8 px-14 py-6 mb-1 mx-auto text-sm d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#LihatBerkas<?= $no ?>">
+                                                        <iconify-icon icon="line-md:clipboard-list-twotone" class="text-xl"></iconify-icon>Lihat
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-warning-600 text-warning-600 radius-8 px-14 py-6 mx-auto text-sm d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#UnggahBerkas<?= $no ?>">
+                                                        <iconify-icon icon="line-md:edit-filled" class="text-xl"></iconify-icon>Ubah
+                                                    </button>
+                                                </div>
+
+
+                                            <?php } else { ?>
+                                                <button type="button" class="btn btn-success-100 text-success-600 radius-8 px-14 py-6 mx-auto text-sm d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#UnggahBerkas<?= $no ?>">
+                                                    <iconify-icon icon="line-md:upload-loop" class="text-xl"></iconify-icon>Unggah Berkas
+                                                </button>
+                                            <?php } ?>
+
                                         </td>
                                         <td>
                                             <div class="d-flex align-items-center gap-10 justify-content-center">
@@ -86,7 +102,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
 <?php
 $no = 1;
-foreach ($tanah as $row):
+foreach ($bangunan as $row):
 ?>
 
     <!--Modal Detail Bangunan -->
@@ -103,25 +119,25 @@ foreach ($tanah as $row):
                             <div class="col-md-6 mb-20 was-validated">
                                 <label for="editname"
                                     class="form-label fw-semibold text-primary-light text-sm mb-8">Nama Bangunan</label>
-                                <p>Bangunan Kelas 7</p>
+                                <p><?= $row->nama_bangunan ?></p>
                             </div>
 
                             <div class="col-md-6 mb-20 was-validated">
                                 <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Berdiri diatas Tanah</label>
-                                <p>Yayasan Miftahul Khoer El-Istohary</p>
+                                <p><?= $row->atas_nama ?></p>
 
                             </div>
 
                             <div class="col-md-6 mb-20 was-validated">
                                 <label for="editname"
                                     class="form-label fw-semibold text-primary-light text-sm mb-8">Panjang (m)</label>
-                                <p>23</p>
+                                <p><?= $row->panjang ?></p>
                             </div>
 
                             <div class="col-md-6 mb-20 was-validated">
                                 <label for="editname"
                                     class="form-label fw-semibold text-primary-light text-sm mb-8">Lebar (m)</label>
-                                <p>25</p>
+                                <p><?= $row->lebar ?></p>
                             </div>
 
                             <div class="col-md-6 mb-20">
@@ -133,28 +149,25 @@ foreach ($tanah as $row):
                                 <label for="editname"
                                     class="form-label fw-semibold text-primary-light text-sm mb-8">Tgl.
                                     Pendirian</label>
-                                <p>25 Agustus 2025</p>
+                                <p><?= $row->tgl_pendirian ?></p>
                             </div>
 
 
                             <div class="col-md-6 mb-20">
                                 <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">No.
                                     IMB/PBG</label>
-                                <p>24231/2/BC.2332</p>
+                                <p><?php if (isset($row->no_pbg)) {
+                                        echo $row->no_pbg;
+                                    } else {
+                                        echo "Belum PBG";
+                                    } ?></p>
                             </div>
 
 
                             <div class="col-md-6 mb-20">
                                 <label for="editcountry"
                                     class="form-label fw-semibold text-primary-light text-sm mb-8">Status </label>
-                                <p>Milik Yayasan</p>
-                            </div>
-
-                            <div class="d-flex align-items-center justify-content-center gap-3 mt-24">
-                                <button type="submit"
-                                    class="btn btn-primary border border-primary-600 text-md px-50 py-12 radius-8">
-                                    Simpan
-                                </button>
+                                <p><?= $row->status_bangunan ?></p>
                             </div>
                         </div>
                     </form>
@@ -173,12 +186,12 @@ foreach ($tanah as $row):
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-24">
-                    <form action="#">
+                    <form action="<?php echo url('sarpras/bangunanUpdate/' . $row->id_bangunan) ?>" method="post" id="BangunanEdit<?= $no ?>">
                         <div class="row">
                             <div class="col-md-6 mb-20 was-validated">
                                 <label for="editname"
                                     class="form-label fw-semibold text-primary-light text-sm mb-8">Nama Bangunan</label>
-                                <input type="text" class="form-control radius-8" id="editname" required>
+                                <input type="text" class="form-control radius-8" id="editname" name="nama_bangunan" value="<?= $row->nama_bangunan ?>" required>
                                 <div class="invalid-feedback">
                                     Silahkan masukan Nama Bangunan.
                                 </div>
@@ -188,9 +201,11 @@ foreach ($tanah as $row):
                                 <label for="editname"
                                     class="form-label fw-semibold text-primary-light text-sm mb-8">Berdiri diatas
                                     Tanah</label>
-                                <select class="form-control radius-8 form-select" id="editcountry">
-                                    <option>Yayasan Miftahul Khoer El-Istohary</option>
-                                    <option>Siti Robiah</option>
+                                <select class="form-control radius-8 form-select" id="editcountry" name="tanah">
+                                    <option value="<?= $row->id_tanah ?>"><?= $row->atas_nama ?></option>
+                                    <?php foreach ($tanah as $rowt): ?>
+                                        <option value=" <?= $rowt->id_tanah ?>"><?= $rowt->atas_nama ?></option>
+                                    <?php endforeach; ?>
                                 </select>
 
                             </div>
@@ -198,7 +213,7 @@ foreach ($tanah as $row):
                             <div class="col-md-6 mb-20 was-validated">
                                 <label for="editname"
                                     class="form-label fw-semibold text-primary-light text-sm mb-8">Panjang (m)</label>
-                                <input type="text" class="form-control radius-8" id="editname" required>
+                                <input type="text" class="form-control radius-8" id="editname" name="panjang" value="<?= $row->panjang ?>" required>
                                 <div class="invalid-feedback">
                                     Silahkan masukan Panjang Bangunan.
                                 </div>
@@ -207,7 +222,7 @@ foreach ($tanah as $row):
                             <div class="col-md-6 mb-20 was-validated">
                                 <label for="editname"
                                     class="form-label fw-semibold text-primary-light text-sm mb-8">Lebar (m)</label>
-                                <input type="text" class="form-control radius-8" id="editname" required>
+                                <input type="text" class="form-control radius-8" id="editname" name="lebar" value="<?= $row->lebar ?>" required>
                                 <div class="invalid-feedback">
                                     Silahkan masukan Lebar Bangunan.
                                 </div>
@@ -217,7 +232,7 @@ foreach ($tanah as $row):
                                 <label for="editname"
                                     class="form-label fw-semibold text-primary-light text-sm mb-8">Luas Tapak Bangunan
                                     (m<sup>2</sup>)</label>
-                                <input type="text" class="form-control radius-8" id="editname" required>
+                                <input type="text" class="form-control radius-8" id="editname" name="luas_tapak" value="<?= $row->luas_tapak ?>" required>
 
                             </div>
 
@@ -225,7 +240,7 @@ foreach ($tanah as $row):
                                 <label for="editname"
                                     class="form-label fw-semibold text-primary-light text-sm mb-8">Tgl.
                                     Pendirian</label>
-                                <input type="date" class="form-control radius-8" id="editname" required>
+                                <input type="date" class="form-control radius-8" id="editname" name="tgl_pendirian" value="<?= $row->tgl_pendirian ?>" required>
                                 <div class="invalid-feedback">
                                     Silahkan masukan Tanggal Pendirian Bangunan.
                                 </div>
@@ -235,18 +250,18 @@ foreach ($tanah as $row):
                             <div class="col-md-6 mb-20">
                                 <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">No.
                                     IMB/PBG</label>
-                                <input type="text" class="form-control radius-8" id="editname">
+                                <input type="text" class="form-control radius-8" id="editname" name="no_pbg" value="<?= $row->no_pbg ?>">
                             </div>
 
 
                             <div class="col-md-6 mb-20">
                                 <label for="editcountry"
                                     class="form-label fw-semibold text-primary-light text-sm mb-8">Status </label>
-                                <select class="form-control radius-8 form-select" id="editcountry">
-                                    <option>Milik Sekolah</option>
-                                    <option>Milik Yayasan</option>
-                                    <option>Milik Perorangan</option>
-                                    <option>Milik Perusahaan/Swasta</option>
+                                <select class="form-control radius-8 form-select" id="editcountry" name="status_bangunan">
+                                    <option value="Milik Sekolah">Milik Sekolah</option>
+                                    <option value="Milik Yayasan">Milik Yayasan</option>
+                                    <option value="Milik Perorangan">Milik Perorangan</option>
+                                    <option value="Milik Perusahaan/Swasta">Milik Perusahaan/Swasta</option>
                                 </select>
                             </div>
 
@@ -273,8 +288,8 @@ foreach ($tanah as $row):
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-24">
-                    <object style="width: 100%;height: 100%;" data="<?php echo url('uploads/berkas.pdf') ?>" type="application/pdf" id="pdf_content" style="pointer-events: none;">
-                        <iframe src="<?php echo url('uploads/berkas.pdf') ?>&embedded=true"></iframe>
+                    <object style="width: 100%;height: 100%;" data="<?php echo url('uploads/bangunan_berkas/' . $row->berkas_bangunan) ?>" type="application/pdf" id="pdf_content" style="pointer-events: none;">
+                        <iframe src="<?php echo url('uploads/bangunan_berkas/' . $row->berkas_bangunan) ?>&embedded=true"></iframe>
                     </object>
                 </div>
             </div>
@@ -288,11 +303,23 @@ foreach ($tanah as $row):
         <div class="modal-dialog modal-lg modal-dialog modal-dialog-centered">
             <div class="modal-content radius-16 bg-base">
                 <div class="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0">
-                    <h1 class="modal-title fs-5" id="exampleModalEditLabel">Unggah Berkas</h1>
+                    <h1 class="modal-title fs-5" id="exampleModalEditLabel">Unggah Berkas PBG</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-24">
-
+                    <div class="row gy-3">
+                        <?php echo form_open_multipart('sarpras/bangunanBerkasUpdate/' . $row->id_bangunan) ?>
+                        <div class="col-12">
+                            <input type="file" name="berkas" class="form-control form-control-lg">
+                            <small>Unggah dalam format .pdf dengan ukuran maksimal 10 MB</small>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary border border-primary-600 text-md px-50 py-12 radius-8" for="UnggahBerkas<?= $no ?>">
+                                Simpan
+                            </button>
+                        </div>
+                        <?php echo form_close(); ?>
+                    </div>
                 </div>
             </div>
         </div>
