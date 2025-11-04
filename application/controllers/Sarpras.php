@@ -12,7 +12,7 @@ class Sarpras extends MY_Controller
 	public $tanah = 'sarpras_tanah';
 	public $bangunan = 'sarpras_bangunan';
 	public $ruangan = 'sarpras_ruangan';
-	public $alat = 'sarpras_alat';
+	public $alat = 'sarpras_sarana';
 
 
 	public function tanah()
@@ -277,6 +277,19 @@ class Sarpras extends MY_Controller
 		$this->load->view('sarpras/v_ruangan_list', $this->page_data);
 	}
 
+	public function ruanganDetail($id)
+	{
+		$this->page_data['row'] = $this->sarpras_model->getDetailRuangan($id);
+		$this->page_data['page']->title = 'Sarpras';
+		$this->page_data['page']->titleUrl = 'sarpras/ruangan';
+		$this->page_data['page']->subtitle = 'Ruangan';
+		$this->page_data['page']->subtitleUrl = 'sarpras/ruangan';
+		$this->page_data['page']->subsubtitle = $this->page_data['row']->nama_ruangan;
+		$this->page_data['page']->subsubtitleUrl = 'sarpras/ruangan';
+		$this->page_data['page']->icon = 'hugeicons:maps-square-01';
+		$this->load->view('sarpras/v_ruangan_detail', $this->page_data);
+	}
+
 	public function ruanganTambah()
 	{
 		$this->page_data['page']->title = 'Sarpras';
@@ -340,10 +353,10 @@ class Sarpras extends MY_Controller
 	{
 		$this->page_data['page']->title = 'Sarpras';
 		$this->page_data['page']->titleUrl = 'sarpras/alat';
-		$this->page_data['page']->subtitle = 'Ruangan';
+		$this->page_data['page']->subtitle = 'Alat';
 		$this->page_data['page']->subtitleUrl = 'sarpras/alat';
-
 		$this->page_data['page']->icon = 'hugeicons:maps-square-01';
+		$this->page_data['sarana'] = $this->sarpras_model->getAllSarana();
 		$this->load->view('sarpras/v_alat_list', $this->page_data);
 	}
 
@@ -351,12 +364,84 @@ class Sarpras extends MY_Controller
 	{
 		$this->page_data['page']->title = 'Sarpras';
 		$this->page_data['page']->titleUrl = 'sarpras/alat';
-		$this->page_data['page']->subtitle = 'Ruangan';
+		$this->page_data['page']->subtitle = 'Alat';
 		$this->page_data['page']->subtitleUrl = 'sarpras/alat';
 		$this->page_data['page']->subsubtitle = 'Tambah';
 		$this->page_data['page']->subsubtitleUrl = 'sarpras/alatTambah';
 		$this->page_data['page']->icon = 'hugeicons:maps-square-01';
+		$this->page_data['jenis_sarana'] = $this->master_model->getJenisSaranaAktif();
 		$this->load->view('sarpras/v_alat_add', $this->page_data);
+	}
+
+	public function alatSimpan()
+	{
+		$nama_sarana = $this->input->post('nama_ruangan');
+		$data = array(
+			'nama_sarana' => $this->input->post('nama_sarana'),
+			'kode_sarana' => $this->input->post('kode_sarana'),
+			'spesifikasi_sarana' => $this->input->post('spesifikasi_sarana'),
+			'jumlah_sarana' => $this->input->post('jumlah_sarana'),
+			'jumlah_laik' => $this->input->post('jumlah_laik'),
+			'tgl_pengadaan' => $this->input->post('tgl_pengadaan'),
+			'sumber_pengadaan' => $this->input->post('sumber_pengadaan'),
+			'id_jenis_sarana' => $this->input->post('id_jenis_sarana'),
+		);
+		$this->db->insert($this->alat, $data);
+
+		$dbaseerror = $this->db->error();
+		$numbererror = $dbaseerror['code'];
+		$messagerror = $dbaseerror['message'];
+
+		if (!$numbererror) {
+			$this->activity_model->add(logged('name') . ' (' . logged('username') . ') Melakukan input data sarana baru - ' . $nama_sarana, logged('id'));
+			$this->session->set_flashdata('alert-type', 'success');
+			$this->session->set_flashdata('alert', 'Input Sarana Berhasil');
+		} else {
+			$this->session->set_flashdata('alert-type', 'danger');
+			$this->session->set_flashdata('alert', 'Input Sarana Gagal!');
+		}
+
+		redirect('sarpras/alat');
+	}
+
+	public function alatEdit($id)
+	{
+		$this->page_data['jenis_sarana'] = $this->master_model->getJenisSaranaAktif();
+		$this->page_data['sarana'] = $this->sarpras_model->getDetailSarana($id);
+		$html_content = $this->load->view('sarpras/v_alat_update_form', $this->page_data, TRUE);
+		echo $html_content;
+	}
+
+	public function alatUpdate($id)
+	{
+		$nama_sarana = $this->input->post('nama_ruangan');
+		$data = array(
+			'nama_sarana' => $this->input->post('nama_sarana'),
+			'kode_sarana' => $this->input->post('kode_sarana'),
+			'spesifikasi_sarana' => $this->input->post('spesifikasi_sarana'),
+			'jumlah_sarana' => $this->input->post('jumlah_sarana'),
+			'jumlah_laik' => $this->input->post('jumlah_laik'),
+			'tgl_pengadaan' => $this->input->post('tgl_pengadaan'),
+			'sumber_pengadaan' => $this->input->post('sumber_pengadaan'),
+			'id_jenis_sarana' => $this->input->post('id_jenis_sarana'),
+		);
+		$this->db->where('id_sarana', $id);
+		$this->db->update($this->alat, $data);
+
+		$dbaseerror = $this->db->error();
+		$numbererror = $dbaseerror['code'];
+		$messagerror = $dbaseerror['message'];
+
+		if (!$numbererror) {
+			$this->activity_model->add(logged('name') . ' (' . logged('username') . ') Melakukan input data sarana baru - ' . $nama_sarana, logged('id'));
+			$this->session->set_flashdata('alert-type', 'success');
+			$this->session->set_flashdata('alert', 'Update Sarana Berhasil');
+		} else {
+			$this->session->set_flashdata('alert-type', 'danger');
+			$this->session->set_flashdata('alert', 'Update Sarana Gagal!');
+		}
+
+		redirect('sarpras/alat');
 	}
 }
 

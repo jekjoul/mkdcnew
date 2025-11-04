@@ -52,6 +52,10 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                                     <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
                                                 </button>
 
+                                                <a href="<?php echo url('sarpras/ruanganDetail/' . $row->id_ruangan) ?>" class="bg-neutral-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle">
+                                                    <iconify-icon icon="material-symbols:list-alt-outline-sharp" class="menu-icon"></iconify-icon>
+                                                </a>
+
                                                 <button type="button" class="bg-success-100 text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#TanahEdit<?= $no ?>">
                                                     <iconify-icon icon="lucide:edit" class="menu-icon"></iconify-icon>
                                                 </button>

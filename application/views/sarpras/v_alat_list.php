@@ -1,6 +1,6 @@
 <?php
 
-defined('BASEPATH') OR exit('No direct script access allowed'); ?>
+defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
 <?php include viewPath('includes/header'); ?>
 
@@ -11,9 +11,9 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
     <div class="row gy-4 mb-24">
         <div class="col-lg-12">
             <div class="card basic-data-table">
-                <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-3 bg-warning-400" >
+                <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-3 bg-warning-400">
                     <div class="d-flex flex-wrap align-items-center gap-3">
-                      <h6>Data Alat, Buku & Kendaraan</h6>
+                        <h6>Data Alat, Buku & Kendaraan</h6>
                     </div>
                     <div class="d-flex flex-wrap align-items-center gap-3">
                         <a href="<?php echo url('sarpras/alatTambah') ?>" class="btn btn-sm btn-primary-600"><i class="ri-add-line"></i> Tambah Alat</a>
@@ -27,73 +27,44 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                     <th scope="col">No</th>
                                     <th scope="col">Jenis Sarana</th>
                                     <th scope="col">Nama Sarana</th>
-                                    <th scope="col" class="text-center">Spesifikasi</th>
+                                    <th scope="col">Kode</th>
                                     <th scope="col">Jumlah</th>
                                     <th scope="col">Jumlah Laik</th>
-                                    <th scope="col">Status</th>
+                                    <th scope="col">Digunakan</th>
                                     <th scope="col" class="text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>Kursi Siswa</td>
-                                    <td>Kursi Siswa Kayu</td>
-                                    <td>Kayu</td>
-                                    <td>150</td>
-                                    <td>136</td>
-                                    <td><span class="bg-danger-focus text-danger-main px-24 py-4 rounded-pill fw-medium text-sm">Kurang 24 Kursi</span></td>
-                                    <td>
-                                        <div class="d-flex align-items-center gap-10 justify-content-center">
-                                            <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#TanahDetail">
-                                                <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                            </button>
-                                            <button type="button" class="bg-success-100 text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#TanahEdit">
-                                                <iconify-icon icon="lucide:edit" class="menu-icon"></iconify-icon>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>Kursi Guru</td>
-                                    <td>Kursi Guru Kaki besi</td>
-                                    <td>Kayu & Besi</td>
-                                    <td>20</td>
-                                    <td>13</td>
-                                    <td><span class="bg-warning-focus text-warning-main px-24 py-4 rounded-pill fw-medium text-sm">Cukup</span></td>
-                                    <td>
-                                        <div class="d-flex align-items-center gap-10 justify-content-center">
-                                            <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#TanahDetail">
-                                                <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                            </button>
-                                            <button type="button" class="bg-success-100 text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#TanahEdit">
-                                                <iconify-icon icon="lucide:edit" class="menu-icon"></iconify-icon>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
+                                <?php
+                                $no = 1;
 
-                                <tr>
-                                    <td>2</td>
-                                    <td>Meja Siswa</td>
-                                    <td>Meja Siswa Kayu</td>
-                                    <td>Kayu</td>
-                                    <td>75</td>
-                                    <td>60</td>
-                                    <td><span class="bg-success-focus text-success-main px-24 py-4 rounded-pill fw-medium text-sm">Lebih 4 Meja</span></td>
-                                    <td>
-                                        <div class="d-flex align-items-center gap-10 justify-content-center">
-                                            <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#TanahDetail">
-                                                <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                            </button>
-                                            <button type="button" class="bg-success-100 text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#TanahEdit">
-                                                <iconify-icon icon="lucide:edit" class="menu-icon"></iconify-icon>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-
+                                foreach ($sarana as $row):
+                                ?>
+                                    <tr>
+                                        <td><?= $no ?></td>
+                                        <td><?= $row->nama_jenis_sarana ?></td>
+                                        <td><?= $row->nama_sarana ?></td>
+                                        <td><?= $row->kode_sarana ?></td>
+                                        <td><?= $row->jumlah_sarana ?></td>
+                                        <td><?= $row->jumlah_laik ?></td>
+                                        <td>
+                                            <?php $digunakan = 42;
+                                            echo $digunakan ?>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#SaranaDetail<?= $no ?>">
+                                                    <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                </button>
+                                                <button type="button" class="bg-success-100 text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" onclick="tampilkanModal(<?= $no ?>)">
+                                                    <iconify-icon icon="lucide:edit" class="menu-icon"></iconify-icon>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php
+                                    $no++;
+                                endforeach ?>
                             </tbody>
                         </table>
                     </div>
@@ -103,210 +74,143 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
     </div>
 </div>
 
-<!--Modal Detail Ruangan -->
-<div class="modal fade" id="TanahDetail" tabindex="-1" aria-labelledby="exampleModalEditLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog modal-dialog-centered">
-        <div class="modal-content radius-16 bg-base">
-            <div class="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0">
-                <h1 class="modal-title fs-5" id="exampleModalEditLabel">Detail Ruangan</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-24">
-                <form action="#">
+<?php
+$no = 1;
+
+foreach ($sarana as $row):
+    $digunakan = 42;
+    $jumlah = $row->jumlah_laik;
+    $hasil = $jumlah - $digunakan;
+    $tidakLaik = $row->jumlah_sarana - $jumlah;
+?>
+    <!--Modal Detail Ruangan -->
+    <div class="modal fade" id="SaranaDetail<?= $no ?>" tabindex="-1" aria-labelledby="exampleModalEditLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog modal-dialog-centered">
+            <div class="modal-content radius-16 bg-base">
+                <div class="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0">
+                    <h1 class="modal-title fs-5" id="exampleModalEditLabel">Detail Ruangan</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-24">
+                    <form action="#">
                         <div class="row">
                             <div class="col-md-6 mb-20 was-validated">
                                 <label for="editname"
                                     class="form-label fw-semibold text-primary-light text-sm mb-8">Jenis Sarana</label>
-                                <p>Kursi Siswa</p>
+                                <p><?= $row->nama_jenis_sarana ?></p>
                             </div>
 
                             <div class="col-md-6 mb-20 was-validated">
-                                <label for="editname"class="form-label fw-semibold text-primary-light text-sm mb-8">Nama Sarana</label>
-                                <p>Kursi Siswa Kayu</p>
+                                <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Nama Sarana</label>
+                                <p><?= $row->nama_sarana ?></p>
 
+                            </div>
+
+                            <div class="col-md-6 mb-20 was-validated">
+                                <label for="editname"
+                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Kode Sarana</label>
+                                <p><?= $row->kode_sarana ?></p>
                             </div>
 
                             <div class="col-md-6 mb-20 was-validated">
                                 <label for="editname"
                                     class="form-label fw-semibold text-primary-light text-sm mb-8">Spesifikasi</label>
-                                <p>Kayu</p>
+                                <p><?= $row->spesifikasi_sarana ?></p>
                             </div>
 
                             <div class="col-md-6 mb-20 was-validated">
                                 <label for="editname"
                                     class="form-label fw-semibold text-primary-light text-sm mb-8">Jumlah</label>
-                                <p>150</p>
+                                <p><?= $row->jumlah_sarana ?></p>
                             </div>
 
                             <div class="col-md-6 mb-20">
                                 <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Jumlah Laik</label>
-                                <p>120</p>
+                                <p><?= $row->jumlah_laik ?></p>
                             </div>
 
                             <div class="col-md-6 mb-20">
-                                <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Jumlah Digunakan </label>
-                                <p>120</p>
+                                <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Tanggal Pengadaan</label>
+                                <p><?= tanggal_indo($row->tgl_pengadaan) ?></p>
                             </div>
 
                             <div class="col-md-6 mb-20">
-                                <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Jumlah Tidak Digunakan </label>
-                                <p>0</p>
+                                <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Sumber Pengadaan</label>
+                                <p><?= $row->sumber_pengadaan  ?></p>
                             </div>
 
                             <div class="col-md-6 mb-20">
-                                <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Status </label>
-                                <p><span class="bg-danger-focus text-danger-main px-24 py-4 rounded-pill fw-medium text-sm">Kurang 24 Kursi</span></p>
+                                <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Jumlah Digunakan</label>
+                                <p><?= $digunakan ?> Unit</p>
                             </div>
 
-                           
-                           
+                            <div class="col-md-6 mb-20">
+                                <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Jumlah Laik Tidak Digunakan</label>
+                                <p><?= $hasil ?> Unit</p>
+                            </div>
+
+                            <div class="col-md-6 mb-20">
+                                <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Jumlah Tidak Laik</label>
+                                <p><?= $tidakLaik ?> Unit</p>
+                            </div>
+
+
+
+
                         </div>
                     </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<!-- End of Modal Detail Ruangan -->
+    <!-- End of Modal Detail Ruangan -->
 
-<!-- Modal Sunting Ruangan -->
-<div class="modal fade" id="TanahEdit" tabindex="-1" aria-labelledby="exampleModalEditLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog modal-dialog-centered">
-        <div class="modal-content radius-16 bg-base">
-            <div class="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0">
-                <h1 class="modal-title fs-5" id="exampleModalEditLabel">Sunting Ruangan</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-24">
-                <form action="#">
-                        <div class="row">
-                            <div class="col-md-6 mb-20 was-validated">
-                                <label for="editname"
-                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Nama Ruangan</label>
-                                <input type="text" class="form-control radius-8" id="editname" required>
-                                <div class="invalid-feedback">
-                                    Silahkan masukan Nama Ruangan.
-                                </div>
-                            </div>
+    <!-- Modal Sunting Ruangan -->
+    <div class="modal fade" id="SaranaEdit<?= $row->id_sarana ?>" tabindex="-1" aria-labelledby="exampleModalEditLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog modal-dialog-centered">
+            <div class="modal-content radius-16 bg-base">
+                <div class="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0">
+                    <h1 class="modal-title fs-5" id="exampleModalEditLabel">Sunting Sarana</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-24" id="modal-body<?= $row->id_sarana ?>">
 
-                            <div class="col-md-6 mb-20 was-validated">
-                                <label for="editname"
-                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Berdiri diatas
-                                    Tanah</label>
-                                <select class="form-control radius-8 form-select" id="editcountry">
-                                    <option>Yayasan Miftahul Khoer El-Istohary</option>
-                                    <option>Siti Robiah</option>
-                                </select>
-
-                            </div>
-
-                            <div class="col-md-6 mb-20 was-validated">
-                                <label for="editname"
-                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Panjang (m)</label>
-                                <input type="text" class="form-control radius-8" id="editname" required>
-                                <div class="invalid-feedback">
-                                    Silahkan masukan Panjang Ruangan.
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 mb-20 was-validated">
-                                <label for="editname"
-                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Lebar (m)</label>
-                                <input type="text" class="form-control radius-8" id="editname" required>
-                                <div class="invalid-feedback">
-                                    Silahkan masukan Lebar Ruangan.
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 mb-20">
-                                <label for="editname"
-                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Luas Tapak Ruangan
-                                    (m<sup>2</sup>)</label>
-                                <input type="text" class="form-control radius-8" id="editname" required>
-
-                            </div>
-
-                            <div class="col-md-6 mb-20 was-validated">
-                                <label for="editname"
-                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Tgl.
-                                    Pendirian</label>
-                                <input type="date" class="form-control radius-8" id="editname" required>
-                                <div class="invalid-feedback">
-                                    Silahkan masukan Tanggal Pendirian Ruangan.
-                                </div>
-                            </div>
-
-
-                            <div class="col-md-6 mb-20">
-                                <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">No.
-                                    IMB/PBG</label>
-                                <input type="text" class="form-control radius-8" id="editname">
-                            </div>
-
-
-                            <div class="col-md-6 mb-20">
-                                <label for="editcountry"
-                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Status </label>
-                                <select class="form-control radius-8 form-select" id="editcountry">
-                                    <option>Milik Sekolah</option>
-                                    <option>Milik Yayasan</option>
-                                    <option>Milik Perorangan</option>
-                                    <option>Milik Perusahaan/Swasta</option>
-                                </select>
-                            </div>
-
-                            <div class="d-flex align-items-center justify-content-center gap-3 mt-24">
-                                <button type="submit"
-                                    class="btn btn-primary border border-primary-600 text-md px-50 py-12 radius-8">
-                                    Simpan
-                                </button>
-                            </div>
-                        </div>
-                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<!-- End of Modal Sunting Ruangan -->
-
-<!-- Modal Lihat Berkas -->
-<div class="modal fade" id="LihatBerkas" tabindex="-1" aria-labelledby="exampleModalEditLabel" aria-hidden="true">
-    <div class="modal-dialog modal-fullscreen modal-dialog modal-dialog-centered">
-        <div class="modal-content radius-16 bg-base">
-            <div class="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0">
-                <h1 class="modal-title fs-5" id="exampleModalEditLabel">Lihat Berkas</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-24">
-                <object style="width: 100%;height: 100%;" data="<?php echo url('uploads/berkas.pdf')?>" type="application/pdf" id="pdf_content" style="pointer-events: none;">
-                    <iframe src="<?php echo url('uploads/berkas.pdf')?>&embedded=true"></iframe>
-                </object>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- End of Modal Lihat Berkas -->
+    <!-- End of Modal Sunting Ruangan -->
 
 
-<!-- Modal Upload Berkas -->
-<div class="modal fade" id="UnggahBerkas" tabindex="-1" aria-labelledby="exampleModalEditLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog modal-dialog-centered">
-        <div class="modal-content radius-16 bg-base">
-            <div class="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0">
-                <h1 class="modal-title fs-5" id="exampleModalEditLabel">Unggah Berkas</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-24">
-                
-            </div>
-        </div>
-    </div>
-</div>
-<!-- End of Modal Upload Berkas -->
-
+    <!-- Script Modal Edit -->
+    <script>
+        function tampilkanModal(id) {
+            // Permintaan Ajax
+            $.ajax({
+                url: '<?php echo base_url("sarpras/alatEdit/"); ?>' + id, // Sesuaikan URL controller Anda
+                type: 'GET',
+                success: function(response) {
+                    // Masukkan konten HTML yang dikembalikan ke dalam body modal
+                    $('#modal-body<?= $row->id_sarana ?>').html(response);
+                    // Tampilkan modal
+                    $('#SaranaEdit<?= $row->id_sarana ?>').modal('show');
+                },
+                error: function(xhr, status, error) {
+                    // Tangani error jika terjadi
+                    console.error("Terjadi kesalahan: " + error);
+                    alert("Gagal memuat konten modal.");
+                }
+            });
+        }
+    </script>
+    <!-- End of Script Modal Edit -->
+<?php
+    $no++;
+endforeach ?>
 
 
 
 <?php include viewPath('includes/footer'); ?>
 <script>
-  let table = new DataTable('#dataTable');
+    let table = new DataTable('#dataTable');
 </script>
