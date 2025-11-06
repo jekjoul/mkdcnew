@@ -160,6 +160,72 @@
             </li>
 
 
+            <li class="sidebar-menu-group-title">Master Data</li>
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="material-symbols:database" class="menu-icon"></iconify-icon>
+                    <span>Master Sarana</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li>
+                        <a href="<?php echo url('master/jenisRuangan') ?>">
+                            <i class="ri-circle-fill circle-icon text-default-600 w-auto"></i> Jenis Ruangan
+                        </a>
+                    </li>
+                    <li>
+                        <a href="<?php echo url('master/jenisSarana') ?>">
+                            <i class="ri-circle-fill circle-icon text-default-600 w-auto"></i> Jenis Sarana
+                        </a>
+                    </li>
+                    <li>
+                        <a href="<?php echo url('master/standarSarana') ?>">
+                            <i class="ri-circle-fill circle-icon text-default-600 w-auto"></i> Standar Sarana
+                        </a>
+                    </li>
+                    
+
+                </ul>
+            </li>
+
+
+            <li class="sidebar-menu-group-title">Manajeman Akun</li>
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="clarity:users-solid" class="menu-icon"></iconify-icon>
+                    <span>Akun</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li>
+                        <a href="index-2.html"><i class="ri-circle-fill circle-icon text-default-600 w-auto"></i>
+                            Daftar Akun</a>
+                    </li>
+                    <li>
+                        <a href="index-2.html"><i class="ri-circle-fill circle-icon text-default-main w-auto"></i>
+                            Tambah Akun</a>
+                    </li>
+                    
+
+                </ul>
+            </li>
+
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="simple-icons:openaccess" class="menu-icon"></iconify-icon>
+                    <span>Hak Akses</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li>
+                        <a href="index-2.html"><i class="ri-circle-fill circle-icon text-default-600 w-auto"></i>
+                            Roles</a>
+                    </li>
+                    <li>
+                        <a href="index-2.html"><i class="ri-circle-fill circle-icon text-default-main w-auto"></i>
+                            Permission</a>
+                    </li>
+                    
+
+                </ul>
+            </li>
 
 
             <li class="sidebar-menu-group-title">contoh</li>
