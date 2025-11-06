@@ -46,6 +46,23 @@ class Master_model extends MY_Model
         return $count;
     }
 
+    public function getJenisSarana()
+    {
+        $this->db->select('*');
+        $this->db->from($this->jenis_sarana);
+        $query = $this->db->get();
+        return $query->result();
+    }
+
+    public function getDetailJenisSarana($id)
+    {
+        $this->db->select('*');
+        $this->db->from($this->jenis_sarana);
+        $this->db->where('id_jenis_sarana', $id);
+        $query = $this->db->get();
+        return $query->row();
+    }
+
     public function getJenisSaranaAktif()
     {
         $this->db->select('*');
@@ -53,5 +70,19 @@ class Master_model extends MY_Model
         $this->db->where('status', 'Aktif');
         $query = $this->db->get();
         return $query->result();
+    }
+
+    public function jenisSaranaExist($id)
+    {
+        $this->db->where('id_jenis_sarana', $id);
+        $count = $this->db->count_all_results('sarpras_sarana');
+        return $count;
+    }
+
+    public function jenisSaranaNamaExist($nama)
+    {
+        $this->db->where('nama_jenis_sarana', $nama);
+        $count = $this->db->count_all_results($this->jenis_sarana);
+        return $count;
     }
 }
