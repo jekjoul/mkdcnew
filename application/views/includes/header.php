@@ -355,15 +355,14 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                         <div class="dropdown">
                             <button class="d-flex justify-content-center align-items-center rounded-circle"
                                 type="button" data-bs-toggle="dropdown">
-                                <img src="<?php echo $url->assets ?>images/user.png" alt="image"
+                                <img src="<?php echo userProfile(logged('id')) ?>" alt="image"
                                     class="w-40-px h-40-px object-fit-cover rounded-circle">
                             </button>
                             <div class="dropdown-menu to-top dropdown-menu-sm">
                                 <div
                                     class="py-12 px-16 radius-8 bg-primary-50 mb-16 d-flex align-items-center justify-content-between gap-2">
                                     <div>
-                                        <h6 class="text-lg text-primary-light fw-semibold mb-2">Shaidul Islam</h6>
-                                        <span class="text-secondary-light fw-medium text-sm">Admin</span>
+                                        <h6 class="text-lg text-primary-light fw-semibold mb-2"><?php echo logged('name') ?></h6>
                                     </div>
                                     <button type="button" class="hover-text-danger">
                                         <iconify-icon icon="radix-icons:cross-1" class="icon text-xl">
@@ -373,7 +372,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                 <ul class="to-top-list">
                                     <li>
                                         <a class="dropdown-item text-black px-0 py-8 hover-bg-transparent hover-text-primary d-flex align-items-center gap-3"
-                                            href="view-profile.html">
+                                            href="<?php echo url('profile') ?>">
                                             <iconify-icon icon="solar:user-linear" class="icon text-xl">
                                             </iconify-icon> My Profile
                                         </a>

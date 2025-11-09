@@ -40,25 +40,34 @@ class Master extends MY_Controller
     public function jenisRuanganSimpan()
     {
         $nama = $this->input->post('nama_jenis_ruangan');
-        $data = array(
-            'nama_jenis_ruangan' => $this->input->post('nama_jenis_ruangan'),
-            'status' => $this->input->post('status'),
-        );
-        $this->db->insert($this->jenis_ruangan, $data);
 
-        $dbaseerror = $this->db->error();
-        $numbererror = $dbaseerror['code'];
-        $messagerror = $dbaseerror['message'];
+        $caridata = $this->master_model->jenisRuanganNamaExist($nama);
 
-        if (!$numbererror) {
-            $this->activity_model->add(logged('name') . ' (' . logged('username') . ') Melakukan input data jenis ruangan baru - ' . $nama, logged('id'));
-            $this->session->set_flashdata('alert-type', 'success');
-            $this->session->set_flashdata('alert', 'Tambah Jenis Ruangan Berhasil');
-        } else {
+        if ($caridata > 0) {
             $this->session->set_flashdata('alert-type', 'danger');
-            $this->session->set_flashdata('alert', 'Tambah Jenis Ruangan Gagal!');
-        }
+            $this->session->set_flashdata('alert', 'Update Gagal! Jenis ' . $nama . ' sudah tersedia.');
+            redirect('master/jenisRuangan');
+        } else {
 
+            $data = array(
+                'nama_jenis_ruangan' => $this->input->post('nama_jenis_ruangan'),
+                'status' => $this->input->post('status'),
+            );
+            $this->db->insert($this->jenis_ruangan, $data);
+
+            $dbaseerror = $this->db->error();
+            $numbererror = $dbaseerror['code'];
+            $messagerror = $dbaseerror['message'];
+
+            if (!$numbererror) {
+                $this->activity_model->add(logged('name') . ' (' . logged('username') . ') Melakukan input data jenis ruangan baru - ' . $nama, logged('id'));
+                $this->session->set_flashdata('alert-type', 'success');
+                $this->session->set_flashdata('alert', 'Tambah Jenis Ruangan Berhasil');
+            } else {
+                $this->session->set_flashdata('alert-type', 'danger');
+                $this->session->set_flashdata('alert', 'Tambah Jenis Ruangan Gagal!');
+            }
+        }
         redirect('master/jenisRuangan');
     }
 

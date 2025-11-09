@@ -182,7 +182,7 @@
                             <i class="ri-circle-fill circle-icon text-default-600 w-auto"></i> Standar Sarana
                         </a>
                     </li>
-                    
+
 
                 </ul>
             </li>
@@ -196,14 +196,14 @@
                 </a>
                 <ul class="sidebar-submenu">
                     <li>
-                        <a href="index-2.html"><i class="ri-circle-fill circle-icon text-default-600 w-auto"></i>
+                        <a href="<?php echo url('users') ?>"><i class="ri-circle-fill circle-icon text-default-600 w-auto"></i>
                             Daftar Akun</a>
                     </li>
                     <li>
-                        <a href="index-2.html"><i class="ri-circle-fill circle-icon text-default-main w-auto"></i>
+                        <a href="<?php echo url('users/add') ?>"><i class="ri-circle-fill circle-icon text-default-main w-auto"></i>
                             Tambah Akun</a>
                     </li>
-                    
+
 
                 </ul>
             </li>
@@ -215,14 +215,14 @@
                 </a>
                 <ul class="sidebar-submenu">
                     <li>
-                        <a href="index-2.html"><i class="ri-circle-fill circle-icon text-default-600 w-auto"></i>
+                        <a href="<?php echo url('roles') ?>"><i class="ri-circle-fill circle-icon text-default-600 w-auto"></i>
                             Roles</a>
                     </li>
                     <li>
-                        <a href="index-2.html"><i class="ri-circle-fill circle-icon text-default-main w-auto"></i>
+                        <a href="<?php echo url('permissions') ?>"><i class="ri-circle-fill circle-icon text-default-main w-auto"></i>
                             Permission</a>
                     </li>
-                    
+
 
                 </ul>
             </li>

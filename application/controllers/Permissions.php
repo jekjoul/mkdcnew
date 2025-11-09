@@ -1,7 +1,8 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class Permissions extends MY_Controller {
+class Permissions extends MY_Controller
+{
 
 
 	public function __construct()
@@ -13,16 +14,23 @@ class Permissions extends MY_Controller {
 
 	public function index()
 	{
-		
+		$this->page_data['page']->title = 'Permission';
+		$this->page_data['page']->titleUrl = 'permissions';
+		$this->page_data['page']->subtitle = 'Permisions';
+		$this->page_data['page']->subtitleUrl = 'permissions';
+		$this->page_data['page']->icon = 'simple-icons:openaccess';
 		ifPermissions('permissions_list');
-
 		$this->page_data['permissions'] = $this->permissions_model->getSortByName();
 		$this->load->view('permissions/list', $this->page_data);
 	}
 
 	public function add()
 	{
-
+		$this->page_data['page']->title = 'Permission';
+		$this->page_data['page']->titleUrl = 'permissions';
+		$this->page_data['page']->subtitle = 'Permisions';
+		$this->page_data['page']->subtitleUrl = 'permissions';
+		$this->page_data['page']->icon = 'simple-icons:openaccess';
 		ifPermissions('permissions_add');
 
 		$this->load->view('permissions/add', $this->page_data);
@@ -30,17 +38,20 @@ class Permissions extends MY_Controller {
 
 	public function edit($id)
 	{
-
+		$this->page_data['page']->title = 'Permission';
+		$this->page_data['page']->titleUrl = 'permissions';
+		$this->page_data['page']->subtitle = 'Permisions';
+		$this->page_data['page']->subtitleUrl = 'permissions';
+		$this->page_data['page']->icon = 'simple-icons:openaccess';
 		ifPermissions('permissions_edit');
 
 		$this->page_data['permission'] = $this->permissions_model->getById($id);
 		$this->load->view('permissions/edit', $this->page_data);
-
 	}
 
 	public function save()
 	{
-		
+
 		postAllowed();
 
 		ifPermissions('permissions_add');
@@ -50,18 +61,17 @@ class Permissions extends MY_Controller {
 			'code' => $this->input->post('code'),
 		]);
 
-		$this->activity_model->add("New Permission #$permission Created by User: #".logged('id'));
+		$this->activity_model->add("New Permission #$permission Created by User: #" . logged('id'));
 
 		$this->session->set_flashdata('alert-type', 'success');
 		$this->session->set_flashdata('alert', 'New Permission Created Successfully');
-		
-		redirect('permissions');
 
+		redirect('permissions');
 	}
 
 	public function update($id)
 	{
-		
+
 		postAllowed();
 
 		ifPermissions('permissions_edit');
@@ -73,13 +83,12 @@ class Permissions extends MY_Controller {
 
 		$permission = $this->permissions_model->update($id, $data);
 
-		$this->activity_model->add("Permission #$id Updated by User: #".logged('id'));
+		$this->activity_model->add("Permission #$id Updated by User: #" . logged('id'));
 
 		$this->session->set_flashdata('alert-type', 'success');
 		$this->session->set_flashdata('alert', 'Permission has been Updated Successfully');
-		
-		redirect('permissions');
 
+		redirect('permissions');
 	}
 
 	public function delete($id)
@@ -92,35 +101,31 @@ class Permissions extends MY_Controller {
 		$this->session->set_flashdata('alert-type', 'success');
 		$this->session->set_flashdata('alert', 'Permission has been Deleted Successfully');
 
-		$this->activity_model->add("Permission #$permission Deleted by User: #".logged('id'));
+		$this->activity_model->add("Permission #$permission Deleted by User: #" . logged('id'));
 
 		redirect('permissions');
-
 	}
 
 	public function checkIfUnique()
 	{
-		
+
 		$code = get('code');
 
-		if(!$code)
+		if (!$code)
 			die('Invalid Request');
 
-		$arg = [ 'code' => $code ];
+		$arg = ['code' => $code];
 
-		if(!empty(get('notId')))
+		if (!empty(get('notId')))
 			$arg['id !='] = get('notId');
 
 		$query = $this->permissions_model->getByWhere($arg);
 
-		if(!empty($query))
+		if (!empty($query))
 			die('false');
 		else
 			die('true');
-		
-
 	}
-
 }
 
 /* End of file Permissions.php */
