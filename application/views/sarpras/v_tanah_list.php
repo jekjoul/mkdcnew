@@ -52,16 +52,25 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                         <td class="text-center"><?= $row->status ?> </td>
                                         <td class="text-center">
                                             <?php if ($row->berkas != null) { ?>
-                                                <button type="button" class="btn btn-info-100 text-info-600 radius-8 px-14 py-6 text-sm" data-bs-toggle="modal" data-bs-target="#LihatBerkas<?= $no ?>">Lihat Berkas</button>
-                                                <button type="button" class="btn btn-warning-100 text-warning-600 radius-8 px-14 py-6 text-sm" data-bs-toggle="modal" data-bs-target="#UnggahBerkas<?= $no ?>">Ubah Berkas</button>
+                                                <div class="">
+                                                    <button type="button" class="btn btn-outline-info-600 text-info-700 radius-8 px-14 py-6 mb-1 mx-auto text-sm d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#LihatBerkas<?= $no ?>">
+                                                        <iconify-icon icon="line-md:clipboard-list-twotone" class="text-xl"></iconify-icon>Lihat
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-warning-600 text-warning-600 radius-8 px-14 py-6 mx-auto text-sm d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#UnggahBerkas<?= $no ?>">
+                                                        <iconify-icon icon="line-md:edit-filled" class="text-xl"></iconify-icon>Ubah
+                                                    </button>
+                                                </div>
+
 
                                             <?php } else { ?>
-                                                <button type="button" class="btn btn-success-100 text-success-600 radius-8 px-14 py-6 text-sm" data-bs-toggle="modal" data-bs-target="#UnggahBerkas<?= $no ?>">Unggah Berkas</button>
+                                                <button type="button" class="btn btn-success-100 text-success-600 radius-8 px-14 py-6 mx-auto text-sm d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#UnggahBerkas<?= $no ?>">
+                                                    <iconify-icon icon="line-md:upload-loop" class="text-xl"></iconify-icon>Unggah Berkas
+                                                </button>
                                             <?php } ?>
                                         </td>
                                         <td>
                                             <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#TanahDetail<?= $no ?>">
+                                                <button type="button" class="btn btn-outline-info-600 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#TanahDetail<?= $no ?>">
                                                     <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
                                                 </button>
 
@@ -283,7 +292,7 @@ foreach ($tanah as $row):
                                 </div>
                                 <div class="col-12">
                                     <button type="submit" class="btn btn-primary border border-primary-600 text-md px-50 py-12 radius-8" for="UnggahBerkas<?= $no ?>">
-                                        Unggah
+                                        Simpan
                                     </button>
                                 </div>
                                 <?php echo form_close(); ?>

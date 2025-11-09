@@ -1,6 +1,6 @@
 <?php
 
-defined('BASEPATH') OR exit('No direct script access allowed'); ?>
+defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
 <?php include viewPath('includes/header'); ?>
 
@@ -11,9 +11,9 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
     <div class="row gy-4 mb-24">
         <div class="col-lg-12">
             <div class="card basic-data-table">
-                <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-3 bg-warning-400" >
+                <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-3 bg-warning-400">
                     <div class="d-flex flex-wrap align-items-center gap-3">
-                      <h6>Data Ruangan</h6>
+                        <h6>Data Ruangan</h6>
                     </div>
                     <div class="d-flex flex-wrap align-items-center gap-3">
                         <a href="<?php echo url('sarpras/ruanganTambah') ?>" class="btn btn-sm btn-primary-600"><i class="ri-add-line"></i> Tambah Ruangan</a>
@@ -25,8 +25,8 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                             <thead>
                                 <tr>
                                     <th scope="col">No</th>
-                                    <th scope="col">Jenis Prasarana/Ruangan</th>
-                                    <th scope="col" class="text-center">Bangunan</th>
+                                    <th scope="col">Jenis Prasarana</th>
+                                    <th scope="col">Bangunan</th>
                                     <th scope="col">Nama Ruangan</th>
                                     <th scope="col">Luas Ruangan</th>
                                     <th scope="col" class="text-center">Kapasitas</th>
@@ -34,47 +34,38 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>Ruang Kelas</td>
-                                    <td>Bangunan Kelas 7</td>
-                                    <td>Ruang Kelas 7A</td>
-                                    <td class="text-center">63<sup>2</sup></td>
-                                    <td class="text-center">35</td>
-                                    
-                                    <td>
-                                        <div class="d-flex align-items-center gap-10 justify-content-center">
-                                            <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#TanahDetail">
-                                                <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                            </button>
+                                <?php
+                                $no = 1;
+                                foreach ($ruangan as $row):
+                                ?>
+                                    <tr>
+                                        <td><?= $no; ?></td>
+                                        <td><?= $row->nama_jenis_ruangan ?></td>
+                                        <td><?= $row->nama_bangunan ?></td>
+                                        <td><?= $row->nama_ruangan ?></td>
+                                        <td class="text-center"><?= $row->luas_tapak_ruangan ?><sup>2</sup></td>
+                                        <td class="text-center"><?= $row->kapasitas ?></td>
 
-                                            <button type="button" class="bg-success-100 text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#TanahEdit">
-                                                <iconify-icon icon="lucide:edit" class="menu-icon"></iconify-icon>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>1</td>
-                                    <td>Ruang Guru</td>
-                                    <td>Bangunan Yayasan</td>
-                                    <td>Ruang Guru</td>
-                                    <td class="text-center">63<sup>2</sup></td>
-                                    <td class="text-center">35</td>
-                                    
-                                    <td>
-                                        <div class="d-flex align-items-center gap-10 justify-content-center">
-                                            <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#TanahDetail">
-                                                <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                            </button>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#TanahDetail<?= $no ?>">
+                                                    <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                </button>
 
-                                            <button type="button" class="bg-success-100 text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#TanahEdit">
-                                                <iconify-icon icon="lucide:edit" class="menu-icon"></iconify-icon>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
+                                                <a href="<?php echo url('sarpras/ruanganDetail/' . $row->id_ruangan) ?>" class="bg-neutral-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle">
+                                                    <iconify-icon icon="material-symbols:list-alt-outline-sharp" class="menu-icon"></iconify-icon>
+                                                </a>
 
+                                                <button type="button" class="bg-success-100 text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#TanahEdit<?= $no ?>">
+                                                    <iconify-icon icon="lucide:edit" class="menu-icon"></iconify-icon>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php
+                                    $no++;
+                                endforeach
+                                ?>
                             </tbody>
                         </table>
                     </div>
@@ -84,76 +75,95 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
     </div>
 </div>
 
-<!--Modal Detail Ruangan -->
-<div class="modal fade" id="TanahDetail" tabindex="-1" aria-labelledby="exampleModalEditLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog modal-dialog-centered">
-        <div class="modal-content radius-16 bg-base">
-            <div class="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0">
-                <h1 class="modal-title fs-5" id="exampleModalEditLabel">Detail Ruangan</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-24">
-                <form action="#">
+<?php
+$no = 1;
+foreach ($ruangan as $row):
+?>
+    <!--Modal Detail Ruangan -->
+    <div class="modal fade" id="TanahDetail<?= $no ?>" tabindex="-1" aria-labelledby="exampleModalEditLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog modal-dialog-centered">
+            <div class="modal-content radius-16 bg-base">
+                <div class="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0">
+                    <h1 class="modal-title fs-5" id="exampleModalEditLabel">Detail Ruangan</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-24">
+                    <form action="#">
                         <div class="row">
                             <div class="col-md-6 mb-20 was-validated">
                                 <label for="editname"
                                     class="form-label fw-semibold text-primary-light text-sm mb-8">Nama Ruangan</label>
-                                <p>Ruangan Kelas 7</p>
+                                <p><?= $row->nama_ruangan ?></p>
                             </div>
 
                             <div class="col-md-6 mb-20 was-validated">
-                                <label for="editname"class="form-label fw-semibold text-primary-light text-sm mb-8">Berdiri diatas Tanah</label>
-                                <p>Yayasan Miftahul Khoer El-Istohary</p>
+                                <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Jenis Ruangan</label>
+                                <p><?= $row->nama_jenis_ruangan ?></p>
 
+                            </div>
+
+                            <div class="col-md-6 mb-20 was-validated">
+                                <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Bangunan</label>
+                                <p><?= $row->nama_bangunan ?></p>
+
+                            </div>
+
+                            <div class="col-md-6 mb-20">
+                                <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Luas Ruangan (m<sup>2</sup>)</label>
+                                <p><?= $row->luas_tapak_ruangan ?></p>
                             </div>
 
                             <div class="col-md-6 mb-20 was-validated">
                                 <label for="editname"
                                     class="form-label fw-semibold text-primary-light text-sm mb-8">Panjang (m)</label>
-                                <p>23</p>
+                                <p><?= $row->panjang_ruangan ?></p>
                             </div>
 
                             <div class="col-md-6 mb-20 was-validated">
                                 <label for="editname"
                                     class="form-label fw-semibold text-primary-light text-sm mb-8">Lebar (m)</label>
-                                <p>25</p>
-                            </div>
-
-                            <div class="col-md-6 mb-20">
-                                <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Luas Ruangan (m<sup>2</sup>)</label>
-                                <p>243</p>
+                                <p><?= $row->lebar_ruangan ?></p>
                             </div>
 
                             <div class="col-md-6 mb-20">
                                 <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Kapasitas </label>
-                                <p>35</p>
+                                <p><?= $row->kapasitas ?></p>
                             </div>
 
-                           
-                           
+                            <div class="col-md-6 mb-20">
+                                <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Kondisi </label>
+                                <p><?= $row->kondisi ?></p>
+                            </div>
+
+                            <div class="col-md-6 mb-20">
+                                <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Status </label>
+                                <p><?= $row->status ?></p>
+                            </div>
+
+
                         </div>
                     </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<!-- End of Modal Detail Ruangan -->
+    <!-- End of Modal Detail Ruangan -->
 
-<!-- Modal Sunting Ruangan -->
-<div class="modal fade" id="TanahEdit" tabindex="-1" aria-labelledby="exampleModalEditLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog modal-dialog-centered">
-        <div class="modal-content radius-16 bg-base">
-            <div class="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0">
-                <h1 class="modal-title fs-5" id="exampleModalEditLabel">Sunting Ruangan</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-24">
-                <form action="#">
+    <!-- Modal Sunting Ruangan -->
+    <div class="modal fade" id="TanahEdit<?= $no ?>" tabindex="-1" aria-labelledby="exampleModalEditLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog modal-dialog-centered">
+            <div class="modal-content radius-16 bg-base">
+                <div class="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0">
+                    <h1 class="modal-title fs-5" id="exampleModalEditLabel">Sunting Ruangan</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-24">
+                    <form action="<?php echo url('sarpras/ruanganUpdate/' . $row->id_ruangan) ?>" method="post">
                         <div class="row">
-                            <div class="col-md-6 mb-20 was-validated">
+                            <div class="col-md-12 mb-20 was-validated">
                                 <label for="editname"
                                     class="form-label fw-semibold text-primary-light text-sm mb-8">Nama Ruangan</label>
-                                <input type="text" class="form-control radius-8" id="editname" required>
+                                <input type="text" class="form-control radius-8" id="editname" name="nama_ruangan" value="<?= $row->nama_ruangan ?>" required>
                                 <div class="invalid-feedback">
                                     Silahkan masukan Nama Ruangan.
                                 </div>
@@ -161,11 +171,24 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 
                             <div class="col-md-6 mb-20 was-validated">
                                 <label for="editname"
-                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Berdiri diatas
-                                    Tanah</label>
-                                <select class="form-control radius-8 form-select" id="editcountry">
-                                    <option>Yayasan Miftahul Khoer El-Istohary</option>
-                                    <option>Siti Robiah</option>
+                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Jenis Ruangan</label>
+                                <select class="form-control radius-8 form-select" id="editcountry" name="id_jenis_ruangan">
+                                    <option value=" <?= $row->id_jenis_ruangan ?>"><?= $row->nama_jenis_ruangan ?></option>
+                                    <?php foreach ($jenis_ruangan as $rowt): ?>
+                                        <option value=" <?= $rowt->id_jenis_ruangan ?>"><?= $rowt->nama_jenis_ruangan ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+
+                            </div>
+
+                            <div class="col-md-6 mb-20 was-validated">
+                                <label for="editname"
+                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Bangunan</label>
+                                <select class="form-control radius-8 form-select" id="editcountry" name="id_bangunan">
+                                    <option value=" <?= $row->id_bangunan ?>"><?= $row->nama_bangunan ?></option>
+                                    <?php foreach ($bangunan as $rowt): ?>
+                                        <option value=" <?= $rowt->id_bangunan ?>"><?= $rowt->nama_bangunan ?></option>
+                                    <?php endforeach; ?>
                                 </select>
 
                             </div>
@@ -173,7 +196,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                             <div class="col-md-6 mb-20 was-validated">
                                 <label for="editname"
                                     class="form-label fw-semibold text-primary-light text-sm mb-8">Panjang (m)</label>
-                                <input type="text" class="form-control radius-8" id="editname" required>
+                                <input type="text" class="form-control radius-8" id="editname" name="panjang_ruangan" value="<?= $row->panjang_ruangan ?>" required>
                                 <div class="invalid-feedback">
                                     Silahkan masukan Panjang Ruangan.
                                 </div>
@@ -182,48 +205,52 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                             <div class="col-md-6 mb-20 was-validated">
                                 <label for="editname"
                                     class="form-label fw-semibold text-primary-light text-sm mb-8">Lebar (m)</label>
-                                <input type="text" class="form-control radius-8" id="editname" required>
+                                <input type="text" class="form-control radius-8" id="editname" name="lebar_ruangan" value="<?= $row->lebar_ruangan ?>" required>
                                 <div class="invalid-feedback">
                                     Silahkan masukan Lebar Ruangan.
                                 </div>
                             </div>
 
-                            <div class="col-md-6 mb-20">
+                            <div class="col-md-6 mb-20 was-validated">
                                 <label for="editname"
                                     class="form-label fw-semibold text-primary-light text-sm mb-8">Luas Tapak Ruangan
                                     (m<sup>2</sup>)</label>
-                                <input type="text" class="form-control radius-8" id="editname" required>
-
+                                <input type="text" class="form-control radius-8" id="editname" name="luas_tapak_ruangan" value="<?= $row->luas_tapak_ruangan ?>" required>
+                                <div class="invalid-feedback">
+                                    Silahkan masukan Luas Tapak.
+                                </div>
                             </div>
 
                             <div class="col-md-6 mb-20 was-validated">
                                 <label for="editname"
-                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Tgl.
-                                    Pendirian</label>
-                                <input type="date" class="form-control radius-8" id="editname" required>
+                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Kapasitas</label>
+                                <input type="text" class="form-control radius-8" id="editname" name="kapasitas" value="<?= $row->kapasitas ?>" required>
                                 <div class="invalid-feedback">
                                     Silahkan masukan Tanggal Pendirian Ruangan.
                                 </div>
                             </div>
 
-
-                            <div class="col-md-6 mb-20">
-                                <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">No.
-                                    IMB/PBG</label>
-                                <input type="text" class="form-control radius-8" id="editname">
-                            </div>
-
-
-                            <div class="col-md-6 mb-20">
-                                <label for="editcountry"
-                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Status </label>
-                                <select class="form-control radius-8 form-select" id="editcountry">
-                                    <option>Milik Sekolah</option>
-                                    <option>Milik Yayasan</option>
-                                    <option>Milik Perorangan</option>
-                                    <option>Milik Perusahaan/Swasta</option>
+                            <div class="col-md-6 mb-20 was-validated">
+                                <label for="editname"
+                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Kondisi</label>
+                                <select class="form-control radius-8 form-select" id="editcountry" name="kondisi" value="<?= $row->kondisi ?>" required>
+                                    <option value="Baik">Baik</option>
+                                    <option value="Rusak Ringan">Rusak Ringan</option>
+                                    <option value="Rusak Sedang">Rusak Sedang</option>
+                                    <option value="Rusak Berat">Rusak Berat</option>
                                 </select>
                             </div>
+
+                            <div class="col-md-6 mb-20 was-validated">
+                                <label for="editname"
+                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Status</label>
+                                <select class="form-control radius-8 form-select" id="editcountry" name="status" value="<?= $row->status ?>" required>
+                                    <option value="Aktif">Aktif</option>
+                                    <option value="Nonaktif">Nonaktif</option>
+                                </select>
+                            </div>
+
+
 
                             <div class="d-flex align-items-center justify-content-center gap-3 mt-24">
                                 <button type="submit"
@@ -233,51 +260,18 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                             </div>
                         </div>
                     </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<!-- End of Modal Sunting Ruangan -->
-
-<!-- Modal Lihat Berkas -->
-<div class="modal fade" id="LihatBerkas" tabindex="-1" aria-labelledby="exampleModalEditLabel" aria-hidden="true">
-    <div class="modal-dialog modal-fullscreen modal-dialog modal-dialog-centered">
-        <div class="modal-content radius-16 bg-base">
-            <div class="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0">
-                <h1 class="modal-title fs-5" id="exampleModalEditLabel">Lihat Berkas</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-24">
-                <object style="width: 100%;height: 100%;" data="<?php echo url('uploads/berkas.pdf')?>" type="application/pdf" id="pdf_content" style="pointer-events: none;">
-                    <iframe src="<?php echo url('uploads/berkas.pdf')?>&embedded=true"></iframe>
-                </object>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- End of Modal Lihat Berkas -->
-
-
-<!-- Modal Upload Berkas -->
-<div class="modal fade" id="UnggahBerkas" tabindex="-1" aria-labelledby="exampleModalEditLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog modal-dialog-centered">
-        <div class="modal-content radius-16 bg-base">
-            <div class="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0">
-                <h1 class="modal-title fs-5" id="exampleModalEditLabel">Unggah Berkas</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-24">
-                
-            </div>
-        </div>
-    </div>
-</div>
-<!-- End of Modal Upload Berkas -->
-
-
+    <!-- End of Modal Sunting Ruangan -->
+<?php
+    $no++;
+endforeach
+?>
 
 
 <?php include viewPath('includes/footer'); ?>
 <script>
-  let table = new DataTable('#dataTable');
+    let table = new DataTable('#dataTable');
 </script>

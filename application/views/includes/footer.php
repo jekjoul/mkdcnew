@@ -55,12 +55,12 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                     // If no instance exists (e.g., alert already dismissed manually), create one and close
                     new bootstrap.Alert(myAlert).close();
                 }
-            }, 4000); // 3000 milliseconds = 3 seconds
+            }, 7000); // 3000 milliseconds = 3 seconds
         }
     });
 
     // Toggle fade in/out
-    $('#myAlert').fadeToggle(6000); // 500 milliseconds duration
+    $('#myAlert').fadeToggle(8000); // 500 milliseconds duration
 </script>
 </body>
 

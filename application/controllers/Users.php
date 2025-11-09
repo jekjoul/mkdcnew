@@ -1,7 +1,8 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class Users extends MY_Controller {
+class Users extends MY_Controller
+{
 
 	public function __construct()
 	{
@@ -13,6 +14,12 @@ class Users extends MY_Controller {
 	public function index()
 	{
 		ifPermissions('users_list');
+		$this->page_data['page']->title = 'Akun';
+		$this->page_data['page']->titleUrl = 'users';
+		$this->page_data['page']->subtitle = 'Daftar Akun';
+		$this->page_data['page']->subtitleUrl = 'users';
+		$this->page_data['page']->icon = 'fa7-solid:users';
+
 		$this->page_data['users'] = $this->users_model->get();
 		$this->load->view('users/list', $this->page_data);
 	}
@@ -20,6 +27,11 @@ class Users extends MY_Controller {
 	public function add()
 	{
 		ifPermissions('users_add');
+		$this->page_data['page']->title = 'Akun';
+		$this->page_data['page']->titleUrl = 'users';
+		$this->page_data['page']->subtitle = 'Tambah Akun';
+		$this->page_data['page']->subtitleUrl = 'users/add';
+		$this->page_data['page']->icon = 'fa7-solid:users';
 		$this->load->view('users/add', $this->page_data);
 	}
 
@@ -36,7 +48,7 @@ class Users extends MY_Controller {
 			'phone' => post('phone'),
 			'address' => post('address'),
 			'status' => (int) post('status'),
-			'password' => hash( "sha256", post('password') ),
+			'password' => hash("sha256", post('password')),
 		]);
 
 		if (!empty($_FILES['image']['name'])) {
@@ -44,55 +56,58 @@ class Users extends MY_Controller {
 			$path = $_FILES['image']['name'];
 			$ext = pathinfo($path, PATHINFO_EXTENSION);
 			$this->uploadlib->initialize([
-				'file_name' => $id.'.'.$ext
+				'file_name' => $id . '.' . $ext
 			]);
 			$image = $this->uploadlib->uploadImage('image', '/users');
 
-			if($image['status']){
+			if ($image['status']) {
 				$this->users_model->update($id, ['img_type' => $ext]);
-			}else{
-				copy(FCPATH.'uploads/users/default.png', 'uploads/users/'.$id.'.png');
+			} else {
+				copy(FCPATH . 'uploads/users/default.png', 'uploads/users/' . $id . '.png');
 			}
+		} else {
 
-		}else{
-
-			copy(FCPATH.'uploads/users/default.png', 'uploads/users/'.$id.'.png');
-
+			copy(FCPATH . 'uploads/users/default.png', 'uploads/users/' . $id . '.png');
 		}
 
-		$this->activity_model->add('New User $'.$id.' Created by User:'.logged('name'), logged('id'));
+		$this->activity_model->add('New User $' . $id . ' Created by User:' . logged('name'), logged('id'));
 
 		$this->session->set_flashdata('alert-type', 'success');
 		$this->session->set_flashdata('alert', 'New User Created Successfully');
-		
-		redirect('users');
 
+		redirect('users');
 	}
 
 	public function view($id)
 	{
-
+		$this->page_data['page']->title = 'Akun';
+		$this->page_data['page']->titleUrl = 'users';
+		$this->page_data['page']->subtitle = 'Detail Akun';
+		$this->page_data['page']->subtitleUrl = 'users';
+		$this->page_data['page']->icon = 'fa7-solid:users';
 		ifPermissions('users_view');
 
 		$this->page_data['User'] = $this->users_model->getById($id);
 		$this->page_data['User']->role = $this->roles_model->getByWhere([
-			'id'=> $this->page_data['User']->role
+			'id' => $this->page_data['User']->role
 		])[0];
 		$this->page_data['User']->activity = $this->activity_model->getByWhere([
-			'user'=> $id
-		], [ 'order' => ['id', 'desc'] ]);
+			'user' => $id
+		], ['order' => ['id', 'desc']]);
 		$this->load->view('users/view', $this->page_data);
-
 	}
 
 	public function edit($id)
 	{
-
+		$this->page_data['page']->title = 'Akun';
+		$this->page_data['page']->titleUrl = 'users';
+		$this->page_data['page']->subtitle = 'Sunting Akun';
+		$this->page_data['page']->subtitleUrl = 'users';
+		$this->page_data['page']->icon = 'fa7-solid:users';
 		ifPermissions('users_edit');
 
 		$this->page_data['User'] = $this->users_model->getById($id);
 		$this->load->view('users/edit', $this->page_data);
-
 	}
 
 
@@ -100,7 +115,7 @@ class Users extends MY_Controller {
 	{
 
 		ifPermissions('users_edit');
-		
+
 		postAllowed();
 
 		$data = [
@@ -114,11 +129,11 @@ class Users extends MY_Controller {
 
 		$password = post('password');
 
-		if(logged('id')!=$id)
-			$data['status'] = post('status')==1;
+		if (logged('id') != $id)
+			$data['status'] = post('status') == 1;
 
-		if(!empty($password))
-			$data['password'] = hash( "sha256", $password );
+		if (!empty($password))
+			$data['password'] = hash("sha256", $password);
 
 		$id = $this->users_model->update($id, $data);
 
@@ -127,23 +142,21 @@ class Users extends MY_Controller {
 			$path = $_FILES['image']['name'];
 			$ext = pathinfo($path, PATHINFO_EXTENSION);
 			$this->uploadlib->initialize([
-				'file_name' => $id.'.'.$ext
+				'file_name' => $id . '.' . $ext
 			]);
 			$image = $this->uploadlib->uploadImage('image', '/users');
 
-			if($image['status']){
+			if ($image['status']) {
 				$this->users_model->update($id, ['img_type' => $ext]);
 			}
-
 		}
 
-		$this->activity_model->add("User #$id Updated by User:".logged('name'));
+		$this->activity_model->add("User #$id Disunting oleh:" . logged('name'));
 
 		$this->session->set_flashdata('alert-type', 'success');
-		$this->session->set_flashdata('alert', 'Client Profile has been Updated Successfully');
-		
-		redirect('users');
+		$this->session->set_flashdata('alert', 'Profil berhasil disunting!');
 
+		redirect('users');
 	}
 
 	public function check()
@@ -152,17 +165,17 @@ class Users extends MY_Controller {
 		$username = !empty(get('username')) ? get('username') : false;
 		$notId = !empty($this->input->get('notId')) ? $this->input->get('notId') : 0;
 
-		if($email)
+		if ($email)
 			$exists = count($this->users_model->getByWhere([
-					'email' => $email,
-					'id !=' => $notId,
-				])) > 0 ? true : false;
+				'email' => $email,
+				'id !=' => $notId,
+			])) > 0 ? true : false;
 
-		if($username)
+		if ($username)
 			$exists = count($this->users_model->getByWhere([
-					'username' => $username,
-					'id !=' => $notId,
-				])) > 0 ? true : false;
+				'username' => $username,
+				'id !=' => $notId,
+			])) > 0 ? true : false;
 
 		echo $exists ? 'false' : 'true';
 	}
@@ -172,28 +185,27 @@ class Users extends MY_Controller {
 
 		ifPermissions('users_delete');
 
-		if($id!==1 && $id!=logged($id)){ }else{
-			redirect('/','refresh');
+		if ($id !== 1 && $id != logged($id)) {
+		} else {
+			redirect('/', 'refresh');
 			return;
 		}
 
 		$id = $this->users_model->delete($id);
 
-		$this->activity_model->add("User #$id Deleted by User:".logged('name'));
+		$this->activity_model->add("User #$id Deleted by User:" . logged('name'));
 
 		$this->session->set_flashdata('alert-type', 'success');
 		$this->session->set_flashdata('alert', 'User has been Deleted Successfully');
-		
-		redirect('users');
 
+		redirect('users');
 	}
 
 	public function change_status($id)
 	{
-		$this->users_model->update($id, ['status' => get('status') == 'true' ? 1 : 0 ]);
+		$this->users_model->update($id, ['status' => get('status') == 'true' ? 1 : 0]);
 		echo 'done';
 	}
-
 }
 
 /* End of file Users.php */

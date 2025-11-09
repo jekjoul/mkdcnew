@@ -1,127 +1,128 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed'); ?>
+defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
 <?php include viewPath('includes/header'); ?>
 
 
-<!-- Content Header (Page header) -->
-<section class="content-header">
-  <div class="container-fluid">
-    <div class="row mb-2">
-      <div class="col-sm-6">
-        <h1><?php echo lang('users') ?></h1>
-      </div>
-      <div class="col-sm-6">
-        <ol class="breadcrumb float-sm-right">
-          <li class="breadcrumb-item"><a href="<?php echo url('/') ?>"><?php echo lang('home') ?></a></li>
-          <li class="breadcrumb-item active"><?php echo lang('users') ?></li>
-        </ol>
-      </div>
-    </div>
-  </div><!-- /.container-fluid -->
-</section>
 
-    <!-- Main content -->
-    <section class="content">
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-12">
-            <div class="card">
-              <div class="card-header d-flex p-0">
-                <h3 class="card-title p-3"><?php echo lang('users') ?></h3>
-                <div class="ml-auto p-2">
-                    <?php if (hasPermissions('users_add')): ?>
-                      <a href="<?php echo url('users/add') ?>" class="btn btn-primary btn-sm"><span class="pr-1"><i class="fa fa-plus"></i></span> <?php echo lang('new_user') ?></a>
-                    <?php endif ?>
-                </div>
-              </div>
-              
-              <!-- /.card-header -->
-              <div class="card-body">
-                <table id="example1" class="table table-bordered table-hover table-striped">
-                  <thead>
+<div class="dashboard-main-body">
+  <div class="row gy-4 mb-24">
+    <div class="col-lg-12">
+      <div class="card h-100 p-0 radius-12  basic-data-table">
+        <div class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
+          <div class="d-flex align-items-center flex-wrap gap-3">
+            <h3 class="card-title">Daftar Akun</h3>
+          </div>
+          <a href="add-user.html" class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2">
+            <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
+            Add New User
+          </a>
+        </div>
+        <div class="card-body p-24">
+          <div class="table-responsive scroll-sm">
+            <table class="table bordered-table sm-table mb-0" id="dataTable" data-page-length='10'>
+              <thead>
+                <tr>
+                  <th scope="col">
+                    <div class="d-flex align-items-center gap-10">
+                      No
+                    </div>
+                  </th>
+                  <th scope="col">Foto</th>
+                  <th scope="col">Nama</th>
+                  <th scope="col">Email</th>
+                  <th scope="col">Role</th>
+                  <th scope="col">Terakhir Login</th>
+                  <th scope="col" class="text-center">Status</th>
+                  <th scope="col" class="text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php $no = 1;
+                foreach ($users as $row): ?>
                   <tr>
-                    <th><?php echo lang('id') ?></th>
-                    <th><?php echo lang('user_image') ?></th>
-                    <th><?php echo lang('user_name') ?></th>
-                    <th><?php echo lang('user_email') ?></th>
-                    <th><?php echo lang('user_role') ?></th>
-                    <th><?php echo lang('user_last_login') ?></th>
-                    <th><?php echo lang('user_status') ?></th>
-                    <th><?php echo lang('action') ?></th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  <?php foreach ($users as $row): ?>
-                    <tr>
-                      <td width="60"><?php echo $row->id ?></td>
-                      <td width="50" class="text-center">
-                        <img src="<?php echo userProfile($row->id) ?>" width="40" height="40" alt="" class="img-avtar">
+                    <td><?php echo $no ?></td>
+                    <td width="50" class="text-center">
+                      <img src="<?php echo userProfile($row->id) ?>" width="40" height="40" alt="" class="img-avtar">
 
-                      </td>
-                      <td>
-                        <?php echo $row->name ?>
-                      </td>
-                      <td><?php echo $row->email ?></td>
-                      <td><?php echo ucfirst($this->roles_model->getById($row->role)->title) ?></td>
-                      <td><?php echo ($row->last_login!='0000-00-00 00:00:00')?date( setting('date_format'), strtotime($row->last_login)):'No Record' ?></td>
-                      <td>
-                        <?php if (logged('id')!==$row->id): ?>
-                          <input type="checkbox" name="my-checkbox"  onchange="updateUserStatus('<?php echo $row->id ?>', $(this).is(':checked') )" <?php echo ($row->status) ? 'checked' : '' ?> data-bootstrap-switch  data-off-color="secondary" data-on-color="success"  data-off-text="<?php echo lang('user_inactive') ?>" data-on-text="<?php echo lang('user_active') ?>">
-                        <?php else: ?>
-                          <input type="checkbox" name="my-checkbox" disabled data-bootstrap-switch  data-off-color="secondary" data-on-color="success"  data-off-text="<?php echo lang('user_inactive') ?>" data-on-text="<?php echo lang('user_active') ?>">
-                        <?php endif ?>
-                      </td>
-                      <td>
+                    </td>
+                    <td>
+                      <?php echo $row->name ?>
+                    </td>
+                    <td><?php echo $row->email ?></td>
+                    <td><?php echo ucfirst($this->roles_model->getById($row->role)->title) ?></td>
+                    <td><?php echo ($row->last_login != '0000-00-00 00:00:00') ? date(setting('date_format'), strtotime($row->last_login)) : 'No Record' ?></td>
+                    <td>
+                      <?php if ($row->status == 1): ?>
+                        Aktif
+                      <?php else: ?>
+                        Nonaktif
+                      <?php endif ?>
+                    </td>
+                    <td>
+                      <div class="d-flex align-items-center gap-10 justify-content-center">
                         <?php if (hasPermissions('users_edit')): ?>
-                          <a href="<?php echo url('users/edit/'.$row->id) ?>" class="btn btn-sm btn-primary" title="<?php echo lang('edit_user') ?>" data-toggle="tooltip"><i class="fas fa-edit"></i></a>
+                          <a href="<?php echo url('users/edit/' . $row->id) ?>" class="bg-success-100 text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sunting Data PTK">
+                            <iconify-icon icon="lucide:edit" class="menu-icon"></iconify-icon></a>
                         <?php endif ?>
                         <?php if (hasPermissions('users_view')): ?>
-                          <a href="<?php echo url('users/view/'.$row->id) ?>" class="btn btn-sm btn-info" title="<?php echo lang('view_user') ?>" data-toggle="tooltip"><i class="fa fa-eye"></i></a>
+
+                          <a href="<?php echo url('users/view/' . $row->id) ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Data PTK">
+                            <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                          </a>
                         <?php endif ?>
                         <?php if (hasPermissions('users_delete')): ?>
-                          <?php if ($row->id!=1 && logged('id')!=$row->id): ?>
-                            <a href="<?php echo url('users/delete/'.$row->id) ?>" class="btn btn-sm btn-danger" onclick="return confirm('Do you really want to delete this user ?')" title="<?php echo lang('delete_user') ?>" data-toggle="tooltip"><i class="fa fa-trash"></i></a>
+                          <?php if ($row->id != 1 && logged('id') != $row->id): ?>
+                            <a href="<?php echo url('users/delete/' . $row->id) ?>" class="bg-danger-100 text-danger-600 bg-hover-danger-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" onclick="return confirm('Do you really want to delete this user ?')">
+                              <iconify-icon icon="material-symbols:delete" class="menu-icon"></iconify-icon>
+                            </a>
                           <?php else: ?>
-                            <a href="#" class="btn btn-sm btn-danger" title="<?php echo lang('delete_user_cannot') ?>" data-toggle="tooltip" disabled><i class="fa fa-trash"></i></a>
+                            <a href="#" class="bg-light-100 text-dark-100 bg-hover-light-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle disabled">
+                              <iconify-icon icon="material-symbols:delete" class="menu-icon"></iconify-icon>
+                            </a>
                           <?php endif ?>
                         <?php endif ?>
-                      </td>
-                    </tr>
-                  <?php endforeach ?>
-                  </tbody>
-                </table>
-              </div>
-              <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
+                      </div>
+                    </td>
+                  </tr>
+                <?php $no++;
+                endforeach ?>
+
+
+              </tbody>
+            </table>
           </div>
-          <!-- /.col -->
+
+
         </div>
-        <!-- /.row -->
       </div>
-      <!-- /.container-fluid -->
-    </section>
-    <!-- /.content -->
+    </div>
+  </div>
+</div>
+
+
+
+
+
 
 
 
 <?php include viewPath('includes/footer'); ?>
 
 <script>
-
-window.updateUserStatus = (id, status) => {
-  $.get( '<?php echo url('users/change_status') ?>/'+id, {
-    status: status
-  }, (data, status) => {
-    if (data=='done') {
-      // code
-    }else{
-      alert('<?php echo lang('user_unable_change_status') ?>');
-    }
-  })
-}
-
+  let table = new DataTable('#dataTable');
 </script>
 
-
+<script>
+  window.updateUserStatus = (id, status) => {
+    $.get('<?php echo url('users/change_status') ?>/' + id, {
+      status: status
+    }, (data, status) => {
+      if (data == 'done') {
+        // code
+      } else {
+        alert('<?php echo lang('user_unable_change_status') ?>');
+      }
+    })
+  }
+</script>

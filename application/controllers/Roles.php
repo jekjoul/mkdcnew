@@ -1,7 +1,8 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class Roles extends MY_Controller {
+class Roles extends MY_Controller
+{
 
 	public function __construct()
 	{
@@ -12,6 +13,11 @@ class Roles extends MY_Controller {
 
 	public function index()
 	{
+		$this->page_data['page']->title = 'Roles';
+		$this->page_data['page']->titleUrl = 'roles';
+		$this->page_data['page']->subtitle = 'Roles';
+		$this->page_data['page']->subtitleUrl = 'Roles';
+		$this->page_data['page']->icon = 'simple-icons:openaccess';
 		ifPermissions('roles_list');
 		$this->page_data['roles'] = $this->roles_model->get();
 		$this->load->view('roles/list', $this->page_data);
@@ -20,6 +26,11 @@ class Roles extends MY_Controller {
 	public function add()
 	{
 		ifPermissions('roles_add');
+		$this->page_data['page']->title = 'Roles';
+		$this->page_data['page']->titleUrl = 'roles';
+		$this->page_data['page']->subtitle = 'Roles';
+		$this->page_data['page']->subtitleUrl = 'Tambah Roles';
+		$this->page_data['page']->icon = 'simple-icons:openaccess';
 		$this->load->view('roles/add', $this->page_data);
 	}
 
@@ -27,7 +38,7 @@ class Roles extends MY_Controller {
 	{
 
 		ifPermissions('roles_add');
-		
+
 		postAllowed();
 
 		$role = $this->roles_model->create([
@@ -47,19 +58,22 @@ class Roles extends MY_Controller {
 		$this->session->set_flashdata('alert-type', 'success');
 		$this->session->set_flashdata('alert', 'New Role Created Successfully');
 
-		$this->activity_model->add("New Role #$role Created by User: #".logged('id'));
-		
-		redirect('roles');
+		$this->activity_model->add("New Role #$role Created by User: #" . logged('id'));
 
+		redirect('roles');
 	}
 
 	public function edit($id)
 	{
-
+		$this->page_data['page']->title = 'Roles';
+		$this->page_data['page']->titleUrl = 'roles';
+		$this->page_data['page']->subtitle = 'Roles';
+		$this->page_data['page']->subtitleUrl = 'Sunting Roles';
+		$this->page_data['page']->icon = 'simple-icons:openaccess';
 		ifPermissions('roles_edit');
 
 		$this->page_data['role'] = $this->roles_model->getById($id);
-		$ids=$this->page_data['role']->id;
+		$ids = $this->page_data['role']->id;
 		$permissions = $this->role_permissions_model->getByWhereSort($ids);
 
 		// $permissions = $this->role_permissions_model->getByWhereSort([
@@ -68,15 +82,13 @@ class Roles extends MY_Controller {
 
 		// print_r($permissions);
 
-		$permissions = array_map(function($data)
-		{
+		$permissions = array_map(function ($data) {
 			return $data->permission;
 		}, $permissions);
 
 
 		$this->page_data['role_permissions'] = $permissions;
 		$this->load->view('roles/edit', $this->page_data);
-
 	}
 
 
@@ -84,15 +96,15 @@ class Roles extends MY_Controller {
 	{
 
 		ifPermissions('roles_edit');
-		
+
 		postAllowed();
 
 		$data = [
 			'title' => $this->input->post('name'),
 		];
 
-		if(!empty($password = post('password')))
-			$data['password'] = hash( "sha256", $password );
+		if (!empty($password = post('password')))
+			$data['password'] = hash("sha256", $password);
 
 		$role = $this->roles_model->update($id, $data);
 
@@ -100,7 +112,8 @@ class Roles extends MY_Controller {
 		// Data which will be added
 		$Data = [];
 		foreach (post('permission') as $permission) {
-			if( !empty($this->role_permissions_model->getByWhere([ 'role' => $id, 'permission' => $permission ])) ){ }else{
+			if (!empty($this->role_permissions_model->getByWhere(['role' => $id, 'permission' => $permission]))) {
+			} else {
 				array_push($Data, [
 					'role' => $role,
 					'permission' => $permission,
@@ -108,33 +121,30 @@ class Roles extends MY_Controller {
 			}
 		}
 
-		if(!empty($Data))
+		if (!empty($Data))
 			$this->role_permissions_model->create_batch($Data);
 
 		$all_permissions = $this->role_permissions_model->getByWhere([
 			'role' =>  $role
 		]);
 
-		if(!empty($all_permissions)){
+		if (!empty($all_permissions)) {
 			// Permissions which will be deleted
 			foreach ($all_permissions as $data) {
-				
-				if(!in_array($data->permission, post('permission'))){
+
+				if (!in_array($data->permission, post('permission'))) {
 					$this->role_permissions_model->delete($data->id);
 				}
-			
 			}
 		}
-		
-		$this->activity_model->add("Role #$role Updated by User: #".logged('id'));
-		
+
+		$this->activity_model->add("Role #$role Updated by User: #" . logged('id'));
+
 		$this->session->set_flashdata('alert-type', 'success');
 		$this->session->set_flashdata('alert', 'User Role has been Updated Successfully');
-		
+
 		redirect('roles');
-
 	}
-
 }
 
 /* End of file Roles.php */

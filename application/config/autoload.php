@@ -142,5 +142,6 @@ $autoload['model'] = array(
 	'templates_model',
 	'lembaga_model',
 	'sarpras_model',
+	'master_model',
 
 );

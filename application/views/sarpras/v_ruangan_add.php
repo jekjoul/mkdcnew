@@ -1,6 +1,6 @@
 <?php
 
-defined('BASEPATH') OR exit('No direct script access allowed'); ?>
+defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
 <?php include viewPath('includes/header'); ?>
 
@@ -18,12 +18,12 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                     </div>
                 </div>
                 <div class="card-body mt-3">
-                    <form action="#">
+                    <form action="<?php echo url('sarpras/ruanganSimpan') ?>" method="post">
                         <div class="row">
-                            <div class="col-md-6 mb-20 was-validated">
+                            <div class="col-md-12 mb-20 was-validated">
                                 <label for="editname"
                                     class="form-label fw-semibold text-primary-light text-sm mb-8">Nama Ruangan</label>
-                                <input type="text" class="form-control radius-8" id="editname" required>
+                                <input type="text" class="form-control radius-8" id="editname" name="nama_ruangan" required>
                                 <div class="invalid-feedback">
                                     Silahkan masukan Nama Ruangan.
                                 </div>
@@ -31,10 +31,22 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 
                             <div class="col-md-6 mb-20 was-validated">
                                 <label for="editname"
+                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Jenis Ruangan</label>
+                                <select class="form-control radius-8 form-select" id="editcountry" name="id_jenis_ruangan">
+                                    <?php foreach ($jenis_ruangan as $rowt): ?>
+                                        <option value=" <?= $rowt->id_jenis_ruangan ?>"><?= $rowt->nama_jenis_ruangan ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+
+                            </div>
+
+                            <div class="col-md-6 mb-20 was-validated">
+                                <label for="editname"
                                     class="form-label fw-semibold text-primary-light text-sm mb-8">Bangunan</label>
-                                <select class="form-control radius-8 form-select" id="editcountry">
-                                    <option>Bangunan Kelas 7</option>
-                                    <option>Bangunan Administrasi</option>
+                                <select class="form-control radius-8 form-select" id="editcountry" name="id_bangunan">
+                                    <?php foreach ($bangunan as $rowt): ?>
+                                        <option value=" <?= $rowt->id_bangunan ?>"><?= $rowt->nama_bangunan ?></option>
+                                    <?php endforeach; ?>
                                 </select>
 
                             </div>
@@ -42,7 +54,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                             <div class="col-md-6 mb-20 was-validated">
                                 <label for="editname"
                                     class="form-label fw-semibold text-primary-light text-sm mb-8">Panjang (m)</label>
-                                <input type="text" class="form-control radius-8" id="editname" required>
+                                <input type="text" class="form-control radius-8" id="editname" name="panjang_ruangan" required>
                                 <div class="invalid-feedback">
                                     Silahkan masukan Panjang Ruangan.
                                 </div>
@@ -51,7 +63,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                             <div class="col-md-6 mb-20 was-validated">
                                 <label for="editname"
                                     class="form-label fw-semibold text-primary-light text-sm mb-8">Lebar (m)</label>
-                                <input type="text" class="form-control radius-8" id="editname" required>
+                                <input type="text" class="form-control radius-8" id="editname" name="lebar_ruangan" required>
                                 <div class="invalid-feedback">
                                     Silahkan masukan Lebar Ruangan.
                                 </div>
@@ -59,9 +71,18 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 
                             <div class="col-md-6 mb-20 was-validated">
                                 <label for="editname"
-                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Luas Ruangan
+                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Luas Tapak Ruangan
                                     (m<sup>2</sup>)</label>
-                                <input type="text" class="form-control radius-8" id="editname" required>
+                                <input type="text" class="form-control radius-8" id="editname" name="luas_tapak_ruangan" required>
+                                <div class="invalid-feedback">
+                                    Silahkan masukan Luas Tapak.
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-20 was-validated">
+                                <label for="editname"
+                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Kapasitas</label>
+                                <input type="text" class="form-control radius-8" id="editname" name="kapasitas" required>
                                 <div class="invalid-feedback">
                                     Silahkan masukan Tanggal Pendirian Ruangan.
                                 </div>
@@ -69,15 +90,25 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 
                             <div class="col-md-6 mb-20 was-validated">
                                 <label for="editname"
-                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Kapasitas</label>
-                                <input type="text" class="form-control radius-8" id="editname" required>
-                                <div class="invalid-feedback">
-                                    Silahkan masukan Tanggal Pendirian Ruangan.
-                                </div>
+                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Kondisi</label>
+                                <select class="form-control radius-8 form-select" id="editcountry" name="kondisi">
+                                    <option value="Baik">Baik</option>
+                                    <option value="Rusak Ringan">Rusak Ringan</option>
+                                    <option value="Rusak Sedang">Rusak Sedang</option>
+                                    <option value="Rusak Berat">Rusak Berat</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-20 was-validated">
+                                <label for="editname"
+                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Status</label>
+                                <select class="form-control radius-8 form-select" id="editcountry" name="status">
+                                    <option value="Aktif">Aktif</option>
+                                    <option value="Nonaktif">Nonaktif</option>
+                                </select>
                             </div>
 
 
-                           
 
                             <div class="d-flex align-items-center justify-content-center gap-3 mt-24">
                                 <button type="submit"
