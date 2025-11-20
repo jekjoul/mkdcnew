@@ -280,6 +280,8 @@ class Sarpras extends MY_Controller
 	public function ruanganDetail($id)
 	{
 		$this->page_data['row'] = $this->sarpras_model->getDetailRuangan($id);
+		$this->page_data['jenis_sarana'] = $this->sarpras_model->getJenisSaranaHave();
+		$this->page_data['sarana'] = $this->sarpras_model->getRuanganSarana($id);
 		$this->page_data['page']->title = 'Sarpras';
 		$this->page_data['page']->titleUrl = 'sarpras/ruangan';
 		$this->page_data['page']->subtitle = 'Ruangan';
@@ -287,6 +289,7 @@ class Sarpras extends MY_Controller
 		$this->page_data['page']->subsubtitle = $this->page_data['row']->nama_ruangan;
 		$this->page_data['page']->subsubtitleUrl = 'sarpras/ruangan';
 		$this->page_data['page']->icon = 'hugeicons:maps-square-01';
+
 		$this->load->view('sarpras/v_ruangan_detail', $this->page_data);
 	}
 
@@ -347,6 +350,61 @@ class Sarpras extends MY_Controller
 		redirect('sarpras/ruangan');
 	}
 
+	public function ruanganSaranaSimpan($id)
+	{
+		$data = array(
+			'id_ruangan' => $id,
+			'id_jenis_sarana' => $this->input->post('id_jenis_sarana'),
+			'id_sarana' => $this->input->post('id_sarana'),
+			'jumlah_sarana_ruangan' => $this->input->post('jumlah'),
+		);
+		$this->db->insert('sarpras_ruangan_sarana', $data);
+		$dbaseerror = $this->db->error();
+		$numbererror = $dbaseerror['code'];
+		$messagerror = $dbaseerror['message'];
+
+		if (!$numbererror) {
+			$this->activity_model->add(logged('name') . ' (' . logged('username') . ') Melakukan input data sarana pada ruanganruangan ' . $id, logged('id'));
+			$this->session->set_flashdata('alert-type', 'success');
+			$this->session->set_flashdata('alert', 'Input Sarana Berhasil');
+		} else {
+			$this->session->set_flashdata('alert-type', 'danger');
+			$this->session->set_flashdata('alert', 'Update Sarana Gagal!' . $messagerror);
+		}
+
+		redirect('sarpras/ruanganDetail/' . $id);
+	}
+
+	public function ruanganSaranaUpdate($id, $id_ruangan)
+	{
+		$data = array(
+			'jumlah_sarana_ruangan' => $this->input->post('jumlah'),
+		);
+		$this->db->where('id_ruangan_sarana', $id);
+		$this->db->update('sarpras_ruangan_sarana', $data);
+		$dbaseerror = $this->db->error();
+		$numbererror = $dbaseerror['code'];
+		$messagerror = $dbaseerror['message'];
+
+		if (!$numbererror) {
+			$this->activity_model->add(logged('name') . ' (' . logged('username') . ') Melakukan input data sarana pada ruanganruangan ' . $id, logged('id'));
+			$this->session->set_flashdata('alert-type', 'success');
+			$this->session->set_flashdata('alert', 'Input Sarana Berhasil');
+		} else {
+			$this->session->set_flashdata('alert-type', 'danger');
+			$this->session->set_flashdata('alert', 'Update Sarana Gagal!' . $messagerror);
+		}
+
+		redirect('sarpras/ruanganDetail/' . $id_ruangan);
+	}
+
+
+	public function alatGetSome()
+	{
+		$id = $this->input->post('id');
+		$sarana = $this->sarpras_model->getSomeSarana($id);
+		echo json_encode($sarana);
+	}
 
 
 	public function alat()
