@@ -70,7 +70,7 @@ class Users extends MY_Controller
 			copy(FCPATH . 'uploads/users/default.png', 'uploads/users/' . $id . '.png');
 		}
 
-		$this->activity_model->add('New User $' . $id . ' Created by User:' . logged('name'), logged('id'));
+		$this->activity_model->add('New User #' . $id . ' Created by User:' . logged('name'), logged('id'));
 
 		$this->session->set_flashdata('alert-type', 'success');
 		$this->session->set_flashdata('alert', 'New User Created Successfully');

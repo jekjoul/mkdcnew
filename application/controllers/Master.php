@@ -193,7 +193,7 @@ class Master extends MY_Controller
             $this->session->set_flashdata('alert', 'Tambah Jenis Sarana Gagal!');
         }
 
-        redirect('master/jenisRuangan');
+        redirect('master/jenisSarana');
     }
 
     public function jenisSaranaEdit($id)
@@ -246,30 +246,30 @@ class Master extends MY_Controller
     public function jenisSaranaDelete($id)
     {
 
-        $caridata = $this->master_model->jenisRuanganExist($id);
+        $caridata = $this->master_model->jenisSaranaNamaExist($id);
 
         if ($caridata > 0) {
             $this->session->set_flashdata('alert-type', 'danger');
-            $this->session->set_flashdata('alert', "Tidak bisa dihapus! Terdapat " . $caridata . " ruangan yang menggunakan jenis ini.");
-            redirect('master/jenisRuangan');
+            $this->session->set_flashdata('alert', "Tidak bisa dihapus! Jenis ini masih digunakan.");
+            redirect('master/jenisSarana');
         } else {
-            $this->db->where('id_jenis_ruangan', $id);
-            $this->db->delete($this->jenis_ruangan);
+            $this->db->where('id_jenis_sarana', $id);
+            $this->db->delete($this->jenis_sarana);
 
             $dbaseerror = $this->db->error();
             $numbererror = $dbaseerror['code'];
             $messagerror = $dbaseerror['message'];
 
             if (!$numbererror) {
-                $this->activity_model->add(logged('name') . ' (' . logged('username') . ') Melakukan hapus data jenis ruangan', logged('id'));
+                $this->activity_model->add(logged('name') . ' (' . logged('username') . ') Melakukan hapus data jenis sarana', logged('id'));
                 $this->session->set_flashdata('alert-type', 'success');
-                $this->session->set_flashdata('alert', 'Jenis Ruangan Berhasil Dihapus');
+                $this->session->set_flashdata('alert', 'Jenis Sarana Berhasil Dihapus');
             } else {
                 $this->session->set_flashdata('alert-type', 'danger');
-                $this->session->set_flashdata('alert', 'Jenis Ruangan Gagal Dihapus!');
+                $this->session->set_flashdata('alert', 'Jenis Sarana Gagal Dihapus!');
             }
 
-            redirect('master/jenisRuangan');
+            redirect('master/jenisSarana');
         }
     }
 }

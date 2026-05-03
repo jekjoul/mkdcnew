@@ -53,6 +53,76 @@ INSERT INTO `activity_logs` (`id`, `title`, `user`, `siswa`, `ip_address`, `crea
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `ptk_riwayat_pendidikan`
+--
+
+CREATE TABLE `ptk_riwayat_pendidikan` (
+  `id_pendidikan` int(11) NOT NULL AUTO_INCREMENT,
+  `id_ptk` int(11) NOT NULL,
+  `jenjang` varchar(50) NOT NULL,
+  `satuan_pendidikan` varchar(200) NOT NULL,
+  `jurusan` varchar(150) DEFAULT NULL,
+  `tahun_masuk` year(4) DEFAULT NULL,
+  `tahun_lulus` year(4) DEFAULT NULL,
+  `tanggal_lulus` date DEFAULT NULL,
+  `no_ijazah` varchar(100) DEFAULT NULL,
+  `keterangan` text,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_pendidikan`),
+  KEY `idx_ptk_riwayat_pendidikan_id_ptk` (`id_ptk`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `master_jenis_dokumen_ptk`
+--
+
+CREATE TABLE `master_jenis_dokumen_ptk` (
+  `id_jenis_dokumen` int(11) NOT NULL AUTO_INCREMENT,
+  `nama_jenis_dokumen` varchar(150) NOT NULL,
+  `status` varchar(20) NOT NULL DEFAULT 'Aktif',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_jenis_dokumen`),
+  UNIQUE KEY `nama_jenis_dokumen` (`nama_jenis_dokumen`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `master_jenis_dokumen_ptk`
+--
+
+INSERT INTO `master_jenis_dokumen_ptk` (`id_jenis_dokumen`, `nama_jenis_dokumen`, `status`) VALUES
+(1, 'KTP', 'Aktif'),
+(2, 'Kartu Keluarga', 'Aktif'),
+(3, 'Akta Kelahiran', 'Aktif'),
+(4, 'NPWP', 'Aktif');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ptk_dokumen_pribadi`
+--
+
+CREATE TABLE `ptk_dokumen_pribadi` (
+  `id_dokumen` int(11) NOT NULL AUTO_INCREMENT,
+  `id_ptk` int(11) NOT NULL,
+  `id_jenis_dokumen` int(11) NOT NULL,
+  `nomor_dokumen` varchar(100) DEFAULT NULL,
+  `tanggal_dokumen` date DEFAULT NULL,
+  `berkas` varchar(255) NOT NULL,
+  `keterangan` text,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_dokumen`),
+  KEY `idx_ptk_dokumen_pribadi_id_ptk` (`id_ptk`),
+  KEY `idx_ptk_dokumen_pribadi_id_jenis` (`id_jenis_dokumen`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `lembaga`
 --
 

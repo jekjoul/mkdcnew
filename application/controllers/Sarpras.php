@@ -174,7 +174,7 @@ class Sarpras extends MY_Controller
 		$this->db->where('id_bangunan', $id);
 		$this->db->update($this->bangunan, $data);
 
-		$this->activity_model->add(logged('name') . ' (' . logged('username') . ') Melakukan update data tanah ' . $no_sertifikat, logged('id'));
+		$this->activity_model->add(logged('name') . ' (' . logged('username') . ') Melakukan update data bangunan ' . $data['nama_bangunan'], logged('id'));
 		$this->session->set_flashdata('alert-type', 'success');
 		$this->session->set_flashdata('alert', 'Update Bangunan Berhasil');
 		redirect('sarpras/bangunan');
