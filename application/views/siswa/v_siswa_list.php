@@ -15,6 +15,9 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                     <div class="d-flex flex-wrap align-items-center gap-3">
                         <h6 class="text-light">Data Siswa</h6>
                     </div>
+                    <a href="<?php echo url('siswa/siswaAdd'); ?>" class="btn btn-primary-600 radius-8 px-20 py-11 d-flex align-items-center gap-2">
+                        <iconify-icon icon="lucide:plus" class="text-xl"></iconify-icon> Tambah Siswa
+                    </a>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -39,8 +42,14 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                             <td><?php echo $s->rombel ?: '-'; ?></td>
                                             <td>
                                                 <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                    <a href="<?php echo url('siswa/detail/' . $s->id_siswa); ?>" class="btn rounded-pill btn-info-100 text-info-600 radius-8 px-20 py-11 d-flex align-items-center gap-2">
-                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon> Lihat
+                                                    <a href="<?php echo url('siswa/detail/' . $s->id_siswa); ?>" class="w-32-px h-32-px bg-info-focus text-info-main rounded-circle d-inline-flex align-items-center justify-content-center" data-bs-toggle="tooltip" title="Lihat Detail">
+                                                        <iconify-icon icon="lucide:eye"></iconify-icon>
+                                                    </a>
+                                                    <a href="<?php echo url('siswa/edit/' . $s->id_siswa); ?>" class="w-32-px h-32-px bg-success-focus text-success-main rounded-circle d-inline-flex align-items-center justify-content-center" data-bs-toggle="tooltip" title="Sunting">
+                                                        <iconify-icon icon="lucide:edit"></iconify-icon>
+                                                    </a>
+                                                    <a href="<?php echo url('siswa/hapus/' . $s->id_siswa); ?>" class="w-32-px h-32-px bg-danger-focus text-danger-main rounded-circle d-inline-flex align-items-center justify-content-center" data-bs-toggle="tooltip" title="Hapus" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                                        <iconify-icon icon="lucide:trash-2"></iconify-icon>
                                                     </a>
                                                 </div>
                                             </td>

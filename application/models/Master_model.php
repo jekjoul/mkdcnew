@@ -6,6 +6,7 @@ class Master_model extends MY_Model
     public $jenis_ruangan = 'master_jenis_ruangan';
     public $jenis_sarana = 'master_jenis_sarana';
     public $lembaga = 'lembaga';
+    public $mapel = 'mapel';
 
     public function getAllLembaga()
     {
@@ -95,5 +96,15 @@ class Master_model extends MY_Model
         $this->db->where('nama_jenis_sarana', $nama);
         $count = $this->db->count_all_results($this->jenis_sarana);
         return $count;
+    }
+
+    public function getMapel()
+    {
+        return $this->db->get($this->mapel)->result();
+    }
+
+    public function getDetailMapel($id)
+    {
+        return $this->db->get_where($this->mapel, ['id_mapel' => $id])->row();
     }
 }

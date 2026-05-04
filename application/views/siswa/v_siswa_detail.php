@@ -165,10 +165,11 @@
                                                     <td><?php echo $d->nomor_dokumen ?: '-' ?></td>
                                                     <td><?php echo $d->tanggal_dokumen ?: '-' ?></td>
                                                     <td>
+                                                      
                                                         <div class="d-flex gap-2 justify-content-center">
-                                                            <button class="btn btn-info-100 text-info-600 btn-lihat-dokumen" data-bs-toggle="modal" data-bs-target="#detailIjazah" data-file="<?php echo url('uploads/siswa_dokumen/' . $d->berkas) ?>">Lihat</button>
-                                                            <button class="btn btn-success-100 text-success-600 btn-edit-dokumen" data-bs-toggle="modal" data-bs-target="#modalEditDokumen" data-action="<?php echo url('siswa/dokumenUpdate/' . $d->id_dokumen) ?>" data-jenis="<?php echo $d->id_jenis_dokumen ?>" data-nomor="<?php echo htmlspecialchars($d->nomor_dokumen, ENT_QUOTES, 'UTF-8') ?>" data-tanggal="<?php echo $d->tanggal_dokumen ?>" data-keterangan="<?php echo htmlspecialchars($d->keterangan, ENT_QUOTES, 'UTF-8') ?>">Sunting</button>
-                                                            <a class="btn btn-danger-100 text-danger-600" href="<?php echo url('siswa/dokumenHapus/' . $d->id_dokumen) ?>" onclick="return confirm('Hapus dokumen ini?')">Hapus</a>
+                                                            <button class="btn btn-info-100 text-info-600 btn-lihat-dokumen" data-bs-toggle="modal" data-bs-target="#detailIjazah" data-file="<?php echo url('uploads/siswa_dokumen/' . $d->berkas) ?>"><iconify-icon icon="lucide:eye"></iconify-icon></button>
+                                                            <button class="btn btn-success-100 text-success-600 btn-edit-dokumen" data-bs-toggle="modal" data-bs-target="#modalEditDokumen" data-action="<?php echo url('siswa/dokumenUpdate/' . $d->id_dokumen) ?>" data-jenis="<?php echo $d->id_jenis_dokumen ?>" data-nomor="<?php echo htmlspecialchars($d->nomor_dokumen, ENT_QUOTES, 'UTF-8') ?>" data-tanggal="<?php echo $d->tanggal_dokumen ?>" data-keterangan="<?php echo htmlspecialchars($d->keterangan, ENT_QUOTES, 'UTF-8') ?>"><iconify-icon icon="lucide:edit"></iconify-icon></button>
+                                                            <a class="btn btn-danger-100 text-danger-600" href="<?php echo url('siswa/dokumenHapus/' . $d->id_dokumen) ?>" onclick="return confirm('Hapus dokumen ini?')"><iconify-icon icon="lucide:trash-2"></iconify-icon></a>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -199,7 +200,9 @@
         slidesToShow: 1,
         slidesToScroll: 1,
         arrows: true,
-        dots: false
+        dots: false,
+        prevArrow: '<button type="button" class="slick-prev"><iconify-icon icon="ic:outline-keyboard-arrow-left" class="menu-icon"></iconify-icon></button>',
+        nextArrow: '<button type="button" class="slick-next"><iconify-icon icon="ic:outline-keyboard-arrow-right" class="menu-icon"></iconify-icon></button>'
     });
     $('.btn-lihat-dokumen').on('click', function() {
         $('#pdf_content').attr('data', $(this).data('file'));

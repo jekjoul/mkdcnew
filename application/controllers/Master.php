@@ -13,6 +13,7 @@ class Master extends MY_Controller
     public $jenis_sarana = 'master_jenis_sarana';
     public $standar_sarana = 'master_standar_sarana';
     public $rombel = 'rombel';
+    public $mapel = 'mapel';
     public $lembaga = 'lembaga';
 
     public function lembaga()
@@ -460,7 +461,7 @@ class Master extends MY_Controller
         $this->page_data['page']->titleUrl = 'master/rombel';
         $this->page_data['page']->subtitle = 'Rombongan Belajar';
         $this->page_data['page']->subtitleUrl = 'master/rombel';
-        $this->page_data['page']->icon = 'hugeicons: Schubert-circle';
+        $this->page_data['page']->icon = 'solar:users-group-two-rounded-linear';
         $this->page_data['rombel'] = $this->db->get($this->rombel)->result();
         $this->load->view('master/v_rombel_list', $this->page_data);
     }
@@ -489,8 +490,10 @@ class Master extends MY_Controller
     public function rombelEdit($id)
     {
         $this->page_data['page']->title = 'Master Data';
+        $this->page_data['page']->titleUrl = 'master/rombel';
         $this->page_data['page']->subtitle = 'Edit Rombel';
-        $this->page_data['page']->icon = 'hugeicons:edit-01';
+        $this->page_data['page']->subtitleUrl = 'master/rombelEdit/' . $id;
+        $this->page_data['page']->icon = 'solar:users-group-two-rounded-linear';
         $this->page_data['row'] = $this->db->get_where($this->rombel, ['id_rombel' => $id])->row();
 
         if (!$this->page_data['row']) {
@@ -549,5 +552,77 @@ class Master extends MY_Controller
             $this->session->set_flashdata('alert', 'Gagal Menghapus Rombel');
         }
         redirect('master/rombel');
+    }
+
+    public function mapel()
+    {
+        $this->page_data['page']->title = 'Master Data';
+        $this->page_data['page']->titleUrl = 'master/mapel';
+        $this->page_data['page']->subtitle = 'Mata Pelajaran';
+        $this->page_data['page']->subtitleUrl = 'master/mapel';
+        $this->page_data['page']->icon = 'solar:notebook-linear';
+        $this->page_data['mapel'] = $this->master_model->getMapel();
+        $this->load->view('mapel/v_mapel_list', $this->page_data);
+    }
+
+    public function mapelTambah()
+    {
+        $this->page_data['page']->title = 'Master Data';
+        $this->page_data['page']->titleUrl = 'master/mapel';
+        $this->page_data['page']->subtitle = 'Tambah Mapel';
+        $this->page_data['page']->subtitleUrl = 'master/mapelTambah';
+        $this->page_data['page']->icon = 'solar:notebook-linear';
+        $this->page_data['row'] = null;
+        $this->load->view('mapel/v_mapel_form', $this->page_data);
+    }
+
+    public function mapelEdit($id)
+    {
+        $this->page_data['row'] = $this->master_model->getDetailMapel($id);
+        if (!$this->page_data['row']) show_404();
+
+        $this->page_data['page']->title = 'Master Data';
+        $this->page_data['page']->titleUrl = 'master/mapel';
+        $this->page_data['page']->subtitle = 'Edit Mapel';
+        $this->page_data['page']->subtitleUrl = 'master/mapelEdit/' . $id;
+        $this->page_data['page']->icon = 'solar:notebook-linear';
+        $this->load->view('mapel/v_mapel_form', $this->page_data);
+    }
+
+    public function mapelSimpan()
+    {
+        postAllowed();
+        $data = [
+            'nama_mapel'    => post('nama_mapel'),
+            'mapel_singkat' => post('mapel_singkat'),
+            'status'        => post('status'),
+        ];
+
+        $id = post('id_mapel');
+        if ($id) {
+            $this->db->where('id_mapel', $id);
+            $this->db->update($this->mapel, $data);
+            $this->activity_model->add(logged('name') . ' Mengubah Mapel: ' . $data['nama_mapel'], logged('id'));
+            $this->session->set_flashdata('alert', 'Data Mapel berhasil diperbarui');
+        } else {
+            $this->db->insert($this->mapel, $data);
+            $this->activity_model->add(logged('name') . ' Menambah Mapel: ' . $data['nama_mapel'], logged('id'));
+            $this->session->set_flashdata('alert', 'Data Mapel berhasil ditambahkan');
+        }
+
+        $this->session->set_flashdata('alert-type', 'success');
+        redirect('master/mapel');
+    }
+
+    public function mapelDelete($id)
+    {
+        $row = $this->master_model->getDetailMapel($id);
+        if ($row) {
+            $this->db->delete($this->mapel, ['id_mapel' => $id]);
+            $this->activity_model->add(logged('name') . ' Menghapus Mapel: ' . $row->nama_mapel, logged('id'));
+            $this->session->set_flashdata('alert-type', 'success');
+            $this->session->set_flashdata('alert', 'Data Mapel berhasil dihapus');
+        }
+        redirect('master/mapel');
     }
 }
