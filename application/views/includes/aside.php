@@ -123,13 +123,6 @@
 
             <li class="sidebar-menu-group-title">Pembelajaran</li>
 
-            <li>
-                <a href="<?php echo url('datasiswa') ?>">
-                    <iconify-icon icon="material-symbols:location-home-outline" class="menu-icon"></iconify-icon>
-                    <span>Rombongan Belajar</span>
-                </a>
-            </li>
-
 
             <li>
                 <a href="<?php echo url('datasiswa') ?>">
@@ -145,12 +138,6 @@
                 </a>
             </li>
 
-            <li>
-                <a href="<?php echo url('datasiswa') ?>">
-                    <iconify-icon icon="material-symbols:menu-book-outline" class="menu-icon"></iconify-icon>
-                    <span>Mata Pelajaran</span>
-                </a>
-            </li>
 
             <li>
                 <a href="<?php echo url('datasiswa') ?>">
@@ -161,11 +148,31 @@
 
 
             <li class="sidebar-menu-group-title">Master Data</li>
+            <li>
+                <a href="<?php echo url('master/mapel') ?>">
+                    <iconify-icon icon="material-symbols:database" class="menu-icon"></iconify-icon>
+                    <span>Master Mata Pelajaran</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="<?php echo url('master/lembaga') ?>">
+                    <iconify-icon icon="material-symbols:database" class="menu-icon"></iconify-icon>
+                    <span>Master Lembaga</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="<?php echo url('master/rombel') ?>" class="sidebar-menu-link">
+                    <iconify-icon icon="material-symbols:database" class="menu-icon"></iconify-icon>
+                    <span>Master Rombel</span>
+                </a>
+            </li>
             <li class="dropdown">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="material-symbols:database" class="menu-icon"></iconify-icon>
                     <span>Master Sarana</span>
                 </a>
+
                 <ul class="sidebar-submenu">
                     <li>
                         <a href="<?php echo url('master/jenisRuangan') ?>">

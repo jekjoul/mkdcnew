@@ -5,6 +5,17 @@ class Master_model extends MY_Model
 {
     public $jenis_ruangan = 'master_jenis_ruangan';
     public $jenis_sarana = 'master_jenis_sarana';
+    public $lembaga = 'lembaga';
+
+    public function getAllLembaga()
+    {
+        return $this->db->get($this->lembaga)->result();
+    }
+
+    public function getDetailLembaga($id)
+    {
+        return $this->db->get_where($this->lembaga, ['id_lembaga' => $id])->row();
+    }
 
     public function getJenisRuangan()
     {
