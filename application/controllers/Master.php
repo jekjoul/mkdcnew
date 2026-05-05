@@ -7,6 +7,7 @@ class Master extends MY_Controller
     public function __construct()
     {
         parent::__construct();
+        $this->load->model('Master_model', 'master_model');
     }
 
     public $jenis_ruangan = 'master_jenis_ruangan';
@@ -15,6 +16,92 @@ class Master extends MY_Controller
     public $rombel = 'rombel';
     public $mapel = 'mapel';
     public $lembaga = 'lembaga';
+    public $tingkat_sekolah = 'master_tingkat_sekolah';
+
+    public function tingkatSekolah()
+    {
+        $this->page_data['page']->title = 'Master Data';
+        $this->page_data['page']->titleUrl = 'master/tingkatSekolah';
+        $this->page_data['page']->subtitle = 'Tingkat Sekolah';
+        $this->page_data['page']->subtitleUrl = 'master/tingkatSekolah';
+        $this->page_data['page']->icon = 'solar:layers-linear';
+        $this->page_data['tingkat'] = $this->master_model->getTingkatSekolah();
+        $this->load->view('master/v_tingkat_sekolah_list', $this->page_data);
+    }
+
+    public function tingkatSekolahTambah()
+    {
+        $this->page_data['page']->title = 'Master Data';
+        $this->page_data['page']->titleUrl = 'master/tingkatSekolah';
+        $this->page_data['page']->subtitle = 'Tambah Tingkat Sekolah';
+        $this->page_data['page']->subtitleUrl = 'master/tingkatSekolah';
+        $this->page_data['page']->icon = 'solar:layers-linear';
+        $this->page_data['row'] = null;
+        $this->load->view('master/v_tingkat_sekolah_form', $this->page_data);
+    }
+
+    public function tingkatSekolahEdit($id)
+    {
+        $this->page_data['row'] = $this->master_model->getDetailTingkatSekolah($id);
+        if (!$this->page_data['row']) show_404();
+
+        $this->page_data['page']->title = 'Master Data';
+        $this->page_data['page']->titleUrl = 'master/tingkatSekolah';
+        $this->page_data['page']->subtitle = 'Edit Tingkat Sekolah';
+        $this->page_data['page']->subtitleUrl = 'master/tingkatSekolah';
+        $this->page_data['page']->icon = 'solar:layers-linear';
+        $this->load->view('master/v_tingkat_sekolah_form', $this->page_data);
+    }
+
+    public function tingkatSekolahSimpan()
+    {
+        postAllowed();
+        $id = post('id_tingkat_sekolah');
+        $nama = post('nama_tingkat');
+
+        // Cek duplikat
+        $this->db->where('nama_tingkat', $nama);
+        if ($id) $this->db->where('id_tingkat_sekolah !=', $id);
+        $check = $this->db->get($this->tingkat_sekolah);
+        if ($check && $check->num_rows() > 0) {
+            $this->session->set_flashdata('alert-type', 'danger');
+            $this->session->set_flashdata('alert', "Gagal! Tingkat '$nama' sudah ada.");
+            redirect('master/tingkatSekolah');
+            return;
+        }
+
+        $data = [
+            'nama_tingkat'  => $nama,
+            'tingkat_angka' => post('tingkat_angka'),
+            'status'        => post('status'),
+        ];
+
+        if ($id) {
+            $this->db->where('id_tingkat_sekolah', $id);
+            $this->db->update($this->tingkat_sekolah, $data);
+            $this->activity_model->add(logged('name') . ' Mengubah Tingkat Sekolah: ' . $nama);
+            $this->session->set_flashdata('alert', 'Data berhasil diperbarui');
+        } else {
+            $this->db->insert($this->tingkat_sekolah, $data);
+            $this->activity_model->add(logged('name') . ' Menambah Tingkat Sekolah: ' . $nama);
+            $this->session->set_flashdata('alert', 'Data berhasil ditambahkan');
+        }
+
+        $this->session->set_flashdata('alert-type', 'success');
+        redirect('master/tingkatSekolah');
+    }
+
+    public function tingkatSekolahDelete($id)
+    {
+        $row = $this->master_model->getDetailTingkatSekolah($id);
+        if ($row) {
+            $this->db->delete($this->tingkat_sekolah, ['id_tingkat_sekolah' => $id]);
+            $this->activity_model->add(logged('name') . ' Menghapus Tingkat Sekolah: ' . $row->nama_tingkat);
+            $this->session->set_flashdata('alert-type', 'success');
+            $this->session->set_flashdata('alert', 'Data berhasil dihapus');
+        }
+        redirect('master/tingkatSekolah');
+    }
 
     public function lembaga()
     {
@@ -592,13 +679,27 @@ class Master extends MY_Controller
     public function mapelSimpan()
     {
         postAllowed();
+        $nama = post('nama_mapel');
+        $id = post('id_mapel');
+
+        // Cek Duplikat Nama Mapel
+        $this->db->where('nama_mapel', $nama);
+        if ($id) $this->db->where('id_mapel !=', $id);
+        $exists = $this->db->get($this->mapel)->num_rows();
+
+        if ($exists > 0) {
+            $this->session->set_flashdata('alert-type', 'danger');
+            $this->session->set_flashdata('alert', "Gagal! Mata Pelajaran '$nama' sudah terdaftar.");
+            redirect('master/mapel');
+            return;
+        }
+
         $data = [
-            'nama_mapel'    => post('nama_mapel'),
+            'nama_mapel'    => $nama,
             'mapel_singkat' => post('mapel_singkat'),
             'status'        => post('status'),
         ];
 
-        $id = post('id_mapel');
         if ($id) {
             $this->db->where('id_mapel', $id);
             $this->db->update($this->mapel, $data);

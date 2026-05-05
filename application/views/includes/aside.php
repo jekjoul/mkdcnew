@@ -124,11 +124,25 @@
             <li class="sidebar-menu-group-title">Pembelajaran</li>
 
 
-            <li>
-                <a href="<?php echo url('datasiswa') ?>">
+            <li class="dropdown">
+                <a href="#">
                     <iconify-icon icon="material-symbols:bookmark-added-outline" class="menu-icon"></iconify-icon>
                     <span>Pembelajaran</span>
                 </a>
+                <ul class="sidebar-submenu">
+                    <li>
+                        <a href="<?php echo url('pembelajaran') ?>">
+                            <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
+                            Daftar Pembelajaran
+                        </a>
+                    </li>
+                    <li>
+                        <a href="<?php echo url('pembelajaran/tambah') ?>">
+                            <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
+                            Atur Pembelajaran Baru
+                        </a>
+                    </li>
+                </ul>
             </li>
 
             <li>
@@ -140,7 +154,7 @@
 
 
             <li>
-                <a href="<?php echo url('datasiswa') ?>">
+                <a href="<?php echo url('tahun_pelajaran') ?>">
                     <iconify-icon icon="material-symbols:punch-clock-outline-sharp" class="menu-icon"></iconify-icon>
                     <span>Tahun Pelajaran</span>
                 </a>
@@ -148,12 +162,7 @@
 
 
             <li class="sidebar-menu-group-title">Master Data</li>
-            <li>
-                <a href="<?php echo url('master/mapel') ?>">
-                    <iconify-icon icon="material-symbols:database" class="menu-icon"></iconify-icon>
-                    <span>Master Mata Pelajaran</span>
-                </a>
-            </li>
+
 
             <li>
                 <a href="<?php echo url('master/lembaga') ?>">
@@ -161,12 +170,29 @@
                     <span>Master Lembaga</span>
                 </a>
             </li>
+
+            <li class="sidebar-menu-item">
+                <a href="<?php echo url('master/tingkatSekolah') ?>" class="sidebar-menu-link">
+                    <iconify-icon icon="material-symbols:database" class="menu-icon"></iconify-icon>
+                    <span>Master Tingkat</span>
+                </a>
+            </li>
+
+
             <li class="sidebar-menu-item">
                 <a href="<?php echo url('master/rombel') ?>" class="sidebar-menu-link">
                     <iconify-icon icon="material-symbols:database" class="menu-icon"></iconify-icon>
                     <span>Master Rombel</span>
                 </a>
             </li>
+
+            <li>
+                <a href="<?php echo url('master/mapel') ?>">
+                    <iconify-icon icon="material-symbols:database" class="menu-icon"></iconify-icon>
+                    <span>Master Mata Pelajaran</span>
+                </a>
+            </li>
+
             <li class="dropdown">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="material-symbols:database" class="menu-icon"></iconify-icon>

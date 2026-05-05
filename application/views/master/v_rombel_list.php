@@ -5,9 +5,9 @@
     <div class="row gy-4 mb-24">
         <div class="col-lg-12">
             <div class="card basic-data-table">
-                <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-3 bg-info-600">
-                    <h6 class="text-light">Daftar Rombongan Belajar</h6>
-                    <button type="button" class="btn btn-sm btn-success-100 text-success" data-bs-toggle="modal" data-bs-target="#modalTambahRombel">
+                <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-3 bg-neutral-300">
+                    <h6 class="text-dark">Daftar Rombongan Belajar</h6>
+                    <button type="button" class="btn btn-sm btn-info text-light" data-bs-toggle="modal" data-bs-target="#modalTambahRombel">
                         <i class="ri-add-line"></i> Tambah Rombel
                     </button>
                 </div>
@@ -66,7 +66,7 @@
                 <div class="modal-body p-24">
                     <div class="mb-20">
                         <label class="form-label fw-semibold text-sm mb-8">Nama Rombel <span class="text-danger-600">*</span></label>
-                        <input type="text" class="form-control radius-8" name="nama_rombel" required placeholder="Contoh: VII - Al Farabi">
+                        <input type="text" class="form-control radius-8" name="nama_rombel" required placeholder="Contoh: Al Farabi (tanpa tingkat)">
                     </div>
                     <div class="mb-20">
                         <label class="form-label fw-semibold text-sm mb-8">Status</label>
