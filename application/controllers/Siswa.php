@@ -21,6 +21,38 @@ class Siswa extends MY_Controller
         $this->load->view('siswa/v_siswa_list', $this->page_data);
     }
 
+    public function pembelajaran($id_pembelajaran = null)
+    {
+        if (!$id_pembelajaran) {
+            redirect('siswa/all');
+        }
+
+        $pembelajaran = $this->getPembelajaranDetail($id_pembelajaran);
+        if (!$pembelajaran) {
+            show_404();
+        }
+
+        $rombel_label = $this->formatRombelPembelajaran($pembelajaran);
+
+        $this->page_data['page']->title = 'Siswa';
+        $this->page_data['page']->titleUrl = 'siswa/all';
+        $this->page_data['page']->subtitle = $pembelajaran->nama_lembaga . ' - ' . $rombel_label;
+        $this->page_data['page']->subtitleUrl = 'siswa/pembelajaran/' . $id_pembelajaran;
+        $this->page_data['page']->icon = 'icon-park-outline:user-business';
+
+        $this->db->select('s.*');
+        $this->db->from('pembelajaran_siswa ps');
+        $this->db->join('siswa s', 's.id_siswa = ps.peserta_didik_id');
+        $this->db->where('ps.id_pembelajaran', $id_pembelajaran);
+        $this->db->order_by('s.nama_siswa', 'ASC');
+        $this->page_data['siswa'] = $this->db->get()->result();
+        $this->page_data['judul_tabel'] = 'Data Siswa ' . $rombel_label;
+        $this->page_data['tambah_url'] = 'pembelajaran/daftar_siswa/' . $id_pembelajaran;
+        $this->page_data['tambah_label'] = 'Atur Siswa';
+
+        $this->load->view('siswa/v_siswa_list', $this->page_data);
+    }
+
     public function detail($id = null)
     {
         if (!$id) {
@@ -387,5 +419,25 @@ class Siswa extends MY_Controller
         if (is_file($path)) {
             unlink($path);
         }
+    }
+
+    private function getPembelajaranDetail($id)
+    {
+        $this->db->select('p.*, l.nama_lembaga, t.nama_tingkat, t.tingkat_angka, r.nama_rombel, tp.tahun_pelajaran, tp.semester');
+        $this->db->from('pembelajaran p');
+        $this->db->join('lembaga l', 'p.id_lembaga = l.id_lembaga');
+        $this->db->join('master_tingkat_sekolah t', 'p.id_tingkat_sekolah = t.id_tingkat_sekolah');
+        $this->db->join('rombel r', 'p.id_rombel = r.id_rombel');
+        $this->db->join('pembelajaran_tahun_pelajaran tp', 'p.id_tahun_pelajaran = tp.id_tahun_pelajaran');
+        $this->db->where('p.id_pembelajaran', $id);
+        return $this->db->get()->row();
+    }
+
+    private function formatRombelPembelajaran($pembelajaran)
+    {
+        $tingkat = trim((string) $pembelajaran->nama_tingkat);
+        $rombel = trim((string) $pembelajaran->nama_rombel);
+
+        return $tingkat !== '' ? $tingkat . ' - ' . $rombel : $rombel;
     }
 }

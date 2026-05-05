@@ -75,6 +75,12 @@
                     <span>Data PTK Nonaktif</span>
                 </a>
             </li>
+            <li>
+                <a href="<?php echo url('sync_dapodik_ptk') ?>">
+                    <iconify-icon icon="lucide:refresh-cw" class="menu-icon"></iconify-icon>
+                    <span>Sinkron Dapodik GTK</span>
+                </a>
+            </li>
 
             <li class="sidebar-menu-group-title">Kesiswaan</li>
 
@@ -86,39 +92,47 @@
                 </a>
             </li>
 
-            <li class="dropdown">
-                <a href="javascript:void(0)">
-                    <iconify-icon icon="material-symbols:article-person-outline" class="menu-icon"></iconify-icon>
-                    <span>Data Siswa SMP</span>
+            <li>
+                <a href="<?php echo url('sync_dapodik') ?>">
+                    <iconify-icon icon="lucide:refresh-cw" class="menu-icon"></iconify-icon>
+                    <span>Sinkron Dapodik</span>
                 </a>
-                <ul class="sidebar-submenu">
-                    <li>
-                        <a href="index-2.html">
-                            <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
-                            Kelas VII - Al Maturidi
-                        </a>
-                    </li>
-                    <li>
-                        <a href="index-2.html">
-                            <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
-                            Kelas VII - Al Zahrawi
-                        </a>
-                    </li>
-                    <li>
-                        <a href="index-2.html">
-                            <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
-                            Kelas VIII - Maliki
-                        </a>
-                    </li>
-                    <li>
-                        <a href="index-2.html">
-                            <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
-                            Kelas VIII - Syafi'i
-                        </a>
-                    </li>
-
-                </ul>
             </li>
+
+            <?php
+            $CI = &get_instance();
+            $CI->db->select('p.id_pembelajaran, l.nama_lembaga, t.nama_tingkat, t.tingkat_angka, r.nama_rombel');
+            $CI->db->from('pembelajaran p');
+            $CI->db->join('lembaga l', 'p.id_lembaga = l.id_lembaga');
+            $CI->db->join('master_tingkat_sekolah t', 'p.id_tingkat_sekolah = t.id_tingkat_sekolah');
+            $CI->db->join('rombel r', 'p.id_rombel = r.id_rombel');
+            $CI->db->order_by('l.nama_lembaga', 'ASC');
+            $CI->db->order_by('t.tingkat_angka', 'ASC');
+            $CI->db->order_by('r.nama_rombel', 'ASC');
+            $menu_pembelajaran_siswa = $CI->db->get()->result();
+            $menu_siswa_lembaga = [];
+            foreach ($menu_pembelajaran_siswa as $menu_row) {
+                $menu_siswa_lembaga[$menu_row->nama_lembaga][] = $menu_row;
+            }
+            ?>
+            <?php foreach ($menu_siswa_lembaga as $nama_lembaga => $menu_rows): ?>
+                <li class="dropdown">
+                    <a href="javascript:void(0)">
+                        <iconify-icon icon="material-symbols:article-person-outline" class="menu-icon"></iconify-icon>
+                        <span>Data Siswa <?php echo $nama_lembaga ?></span>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <?php foreach ($menu_rows as $menu_row): ?>
+                            <li>
+                                <a href="<?php echo url('siswa/pembelajaran/' . $menu_row->id_pembelajaran) ?>">
+                                    <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
+                                    <?php echo $menu_row->nama_tingkat . ' - ' . $menu_row->nama_rombel ?>
+                                </a>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                </li>
+            <?php endforeach; ?>
 
 
             <li class="sidebar-menu-group-title">Pembelajaran</li>

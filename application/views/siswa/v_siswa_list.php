@@ -13,10 +13,10 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
             <div class="card basic-data-table">
                 <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-3 bg-info-600">
                     <div class="d-flex flex-wrap align-items-center gap-3">
-                        <h6 class="text-light">Data Siswa</h6>
+                        <h6 class="text-light"><?php echo isset($judul_tabel) ? $judul_tabel : 'Data Siswa'; ?></h6>
                     </div>
-                    <a href="<?php echo url('siswa/siswaAdd'); ?>" class="btn btn-primary-600 radius-8 px-20 py-11 d-flex align-items-center gap-2">
-                        <iconify-icon icon="lucide:plus" class="text-xl"></iconify-icon> Tambah Siswa
+                    <a href="<?php echo url(isset($tambah_url) ? $tambah_url : 'siswa/siswaAdd'); ?>" class="btn btn-primary-600 radius-8 px-20 py-11 d-flex align-items-center gap-2">
+                        <iconify-icon icon="lucide:plus" class="text-xl"></iconify-icon> <?php echo isset($tambah_label) ? $tambah_label : 'Tambah Siswa'; ?>
                     </a>
                 </div>
                 <div class="card-body">

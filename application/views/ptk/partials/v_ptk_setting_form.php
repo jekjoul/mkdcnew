@@ -172,7 +172,7 @@
         <div class="col-sm-6">
             <div class="mb-20">
                 <label for="setting_provinsi" class="form-label fw-semibold text-primary-light text-sm mb-8">Provinsi <span class="text-danger-600">*</span></label>
-                <select class="form-control radius-8 form-select" id="setting_provinsi" name="provinsi" required>
+                <select class="form-control radius-8 form-select" id="setting_provinsi" name="provinsi" >
                     <option value="<?php echo htmlspecialchars($row->provinsi, ENT_QUOTES, 'UTF-8') ?>"><?php echo $row->provinsi ?: 'Pilih Provinsi' ?></option>
                     <?php foreach ($provinsi as $p): ?>
                         <option value="<?php echo $p->id_prov ?>"><?php echo $p->nama ?></option>
@@ -183,7 +183,7 @@
         <div class="col-sm-6">
             <div class="mb-20">
                 <label for="setting_kabupaten" class="form-label fw-semibold text-primary-light text-sm mb-8">Kabupaten <span class="text-danger-600">*</span></label>
-                <select class="form-control radius-8 form-select" id="setting_kabupaten" name="kabupaten" required>
+                <select class="form-control radius-8 form-select" id="setting_kabupaten" name="kabupaten" >
                     <option value="<?php echo htmlspecialchars($row->kabupaten, ENT_QUOTES, 'UTF-8') ?>"><?php echo $row->kabupaten ?: 'Pilih Kabupaten' ?></option>
                 </select>
             </div>
@@ -191,7 +191,7 @@
         <div class="col-sm-6">
             <div class="mb-20">
                 <label for="setting_kecamatan" class="form-label fw-semibold text-primary-light text-sm mb-8">Kecamatan <span class="text-danger-600">*</span></label>
-                <select class="form-control radius-8 form-select" id="setting_kecamatan" name="kecamatan" required>
+                <select class="form-control radius-8 form-select" id="setting_kecamatan" name="kecamatan" >
                     <option value="<?php echo htmlspecialchars($row->kecamatan, ENT_QUOTES, 'UTF-8') ?>"><?php echo $row->kecamatan ?: 'Pilih Kecamatan' ?></option>
                 </select>
             </div>
@@ -199,7 +199,7 @@
         <div class="col-sm-6">
             <div class="mb-20">
                 <label for="setting_kelurahan_desa" class="form-label fw-semibold text-primary-light text-sm mb-8">Kelurahan/Desa <span class="text-danger-600">*</span></label>
-                <select class="form-control radius-8 form-select" id="setting_kelurahan_desa" name="kelurahan_desa" required>
+                <select class="form-control radius-8 form-select" id="setting_kelurahan_desa" name="kelurahan_desa" >
                     <option value="<?php echo htmlspecialchars($row->kelurahan_desa, ENT_QUOTES, 'UTF-8') ?>"><?php echo $row->kelurahan_desa ?: 'Pilih Kelurahan' ?></option>
                 </select>
             </div>
