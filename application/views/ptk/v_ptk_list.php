@@ -27,7 +27,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                     <th scope="col">No</th>
                                     <th scope="col">Jenis PTK</th>
                                     <th scope="col">Nama PTK</th>
-                                    <th scope="col">NIK</th>
+                                    <th scope="col">NUPTK</th>
                                     <th scope="col">NIY</th>
                                     <th scope="col" class="text-center">Aksi</th>
                                 </tr>
@@ -40,7 +40,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                         <td><?php echo $no++; ?></td>
                                         <td><?php echo $row->status_pegawai; ?></td>
                                         <td><?php echo $row->nama_ptk; ?></td>
-                                        <td><?php echo $row->nik; ?></td>
+                                        <td><?php echo $row->nuptk; ?></td>
                                         <td><?php echo $row->niy; ?></td>
                                         <td>
                                             <div class="d-flex align-items-center gap-10 justify-content-center">

@@ -46,13 +46,18 @@
     </div>
     <div class="auth-right py-32 px-24 d-flex flex-column justify-content-center">
         <div class="max-w-464-px mx-auto w-100">
-            <div>
+                <div>
                 <a href="index.html" class="mb-40 max-w-290-px">
                     <img src="<?php echo $assets ?>images/logodc.png" alt="">
                 </a>
                 <h4 class="mb-12">Selamat datang</h4>
                 <p class="mb-32 text-secondary-light text-lg">Silahkan login menggunakan akun anda</p>
             </div>
+            <?php if (!empty($message)): ?>
+                <div class="alert alert-<?php echo !empty($message_type) ? $message_type : 'danger' ?> mb-16">
+                    <?php echo $message ?>
+                </div>
+            <?php endif; ?>
             <form action="<?php echo url('/login/check') ?>" method="POST">
                 <div class="icon-field mb-16">
                     <span class="icon top-50 translate-middle-y">
@@ -85,10 +90,10 @@
                     <span class="bg-base z-1 px-4">Atau login menggunakan</span>
                 </div>
                 <div class="mt-32 d-flex align-items-center gap-3">
-                    <button type="button" class="fw-semibold text-primary-light py-16 px-24 w-100 border radius-12 text-md d-flex align-items-center justify-content-center gap-12 line-height-1 bg-hover-primary-50"> 
+                    <a href="<?php echo url('login/google') ?>" class="fw-semibold text-primary-light py-16 px-24 w-100 border radius-12 text-md d-flex align-items-center justify-content-center gap-12 line-height-1 bg-hover-primary-50"> 
                         <iconify-icon icon="logos:google-icon" class="text-primary-600 text-xl line-height-1"></iconify-icon>
-                        Akun belajar.id
-                    </button>
+                        Google / Akun belajar.id
+                    </a>
                 </div>
                 
                 

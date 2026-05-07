@@ -39,7 +39,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                     <div class="card-body p-20">
                                         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                                             <div>
-                                                <p class="fw-medium text-primary-light mb-1">Guru</p>
+                                                <p class="fw-medium text-primary-light mb-1">Pegawai</p>
                                                 <h5 class="mb-0">21</h5>
                                             </div>
                                             <div
@@ -57,7 +57,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                     <div class="card-body p-20">
                                         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                                             <div>
-                                                <p class="fw-medium text-primary-light mb-1">Tenaga Administrasi</p>
+                                                <p class="fw-medium text-primary-light mb-1">Alumni</p>
                                                 <h5 class="mb-0">18</h5>
                                             </div>
                                             <div

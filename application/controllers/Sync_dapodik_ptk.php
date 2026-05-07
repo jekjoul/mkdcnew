@@ -355,7 +355,6 @@ class Sync_dapodik_ptk extends MY_Controller
             'tgl_sk_pengangkatan' => 'Tanggal SK/Penugasan',
             'status_pegawai' => 'Status Pegawai',
             'penugasan' => 'Penugasan',
-            'status_keaktifan' => 'Status Keaktifan',
         ];
     }
 

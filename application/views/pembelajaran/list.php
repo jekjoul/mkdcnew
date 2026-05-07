@@ -42,6 +42,9 @@
                                         <a href="<?php echo url('jadwal_pelajaran/semua') ?>" class="btn btn-sm btn-outline-warning d-inline-flex align-items-center gap-1">
                                             <iconify-icon icon="akar-icons:schedule"></iconify-icon> Jadwal
                                         </a>
+                                        <a href="<?php echo url('nilai_siswa') ?>" class="btn btn-sm btn-outline-info d-inline-flex align-items-center gap-1">
+                                            <iconify-icon icon="solar:clipboard-list-linear"></iconify-icon> Nilai
+                                        </a>
                                     </div>
                                 </td>
                             </tr>

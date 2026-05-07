@@ -7,6 +7,8 @@ class Users extends MY_Controller
 	public function __construct()
 	{
 		parent::__construct();
+		$this->ensureUsersPtkColumn();
+		$this->ensureGuruRole();
 		$this->page_data['page']->title = 'Users Management';
 		$this->page_data['page']->menu = 'users';
 	}
@@ -49,6 +51,7 @@ class Users extends MY_Controller
 			'address' => post('address'),
 			'status' => (int) post('status'),
 			'password' => hash("sha256", post('password')),
+			'id_ptk' => post('id_ptk') ?: null,
 		]);
 
 		if (!empty($_FILES['image']['name'])) {
@@ -125,6 +128,7 @@ class Users extends MY_Controller
 			'email' => post('email'),
 			'phone' => post('phone'),
 			'address' => post('address'),
+			'id_ptk' => post('id_ptk') ?: null,
 		];
 
 		$password = post('password');
@@ -205,6 +209,24 @@ class Users extends MY_Controller
 	{
 		$this->users_model->update($id, ['status' => get('status') == 'true' ? 1 : 0]);
 		echo 'done';
+	}
+
+	private function ensureUsersPtkColumn()
+	{
+		$this->load->dbforge();
+		if (!$this->db->field_exists('id_ptk', 'users')) {
+			$this->dbforge->add_column('users', [
+				'id_ptk' => ['type' => 'INT', 'constraint' => 11, 'null' => true, 'after' => 'role'],
+			]);
+		}
+	}
+
+	private function ensureGuruRole()
+	{
+		$this->db->where('LOWER(title)', 'guru');
+		if (!$this->db->get('roles')->row()) {
+			$this->db->insert('roles', ['title' => 'Guru']);
+		}
 	}
 }
 

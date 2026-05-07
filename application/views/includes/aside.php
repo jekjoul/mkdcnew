@@ -11,6 +11,55 @@
     </div>
     <div class="sidebar-menu-area">
         <ul class="sidebar-menu" id="sidebar-menu">
+            <?php
+            $CI = &get_instance();
+            $role_title_row = $CI->db->get_where('roles', ['id' => logged('role')])->row();
+            $role_title = $role_title_row ? strtolower((string) $role_title_row->title) : '';
+            $is_guru_portal = strpos($role_title, 'guru') !== false;
+            ?>
+            <?php if ($is_guru_portal): ?>
+                <li>
+                    <a href="<?php echo url('guru') ?>">
+                        <iconify-icon icon="solar:home-angle-2-linear" class="menu-icon"></iconify-icon>
+                        <span>Dashboard Guru</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-group-title">Portal Guru</li>
+                <li>
+                    <a href="<?php echo url('guru/siswa') ?>">
+                        <iconify-icon icon="solar:users-group-two-rounded-linear" class="menu-icon"></iconify-icon>
+                        <span>Data Siswa</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="<?php echo url('guru/pembelajaran') ?>">
+                        <iconify-icon icon="solar:notebook-bookmark-linear" class="menu-icon"></iconify-icon>
+                        <span>Pembelajaran Saya</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="<?php echo url('guru/jadwal') ?>">
+                        <iconify-icon icon="akar-icons:schedule" class="menu-icon"></iconify-icon>
+                        <span>Jadwal Saya</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="<?php echo url('guru/nilai') ?>">
+                        <iconify-icon icon="solar:clipboard-list-linear" class="menu-icon"></iconify-icon>
+                        <span>Input Nilai</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="<?php echo url('guru/profil') ?>">
+                        <iconify-icon icon="icon-park-outline:user-business" class="menu-icon"></iconify-icon>
+                        <span>Profil PTK</span>
+                    </a>
+                </li>
+        </ul>
+    </div>
+</aside>
+<?php return; ?>
+            <?php endif; ?>
 
             <li>
                 <a href="<?php echo url('') ?>">
@@ -100,7 +149,6 @@
             </li>
 
             <?php
-            $CI = &get_instance();
             $CI->db->select('p.id_pembelajaran, l.nama_lembaga, t.nama_tingkat, t.tingkat_angka, r.nama_rombel');
             $CI->db->from('pembelajaran p');
             $CI->db->join('lembaga l', 'p.id_lembaga = l.id_lembaga');
@@ -166,6 +214,34 @@
                 </a>
             </li>
 
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="solar:clipboard-list-linear" class="menu-icon"></iconify-icon>
+                    <span>Nilai Siswa</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li>
+                        <a href="<?php echo url('nilai_siswa') ?>">
+                            <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
+                            Input Nilai
+                        </a>
+                    </li>
+                    <li>
+                        <a href="<?php echo url('nilai_siswa/setting/0') ?>">
+                            <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
+                            Setting Persentase
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+             <li>
+                <a href="<?php echo url('tahun_pelajaran') ?>">
+                    <iconify-icon icon="material-symbols:punch-clock-outline-sharp" class="menu-icon"></iconify-icon>
+                    <span>Tahun Pelajaran</span>
+                </a>
+            </li>
+
             <li class="sidebar-menu-group-title">Persuratan</li>
 
             <li class="dropdown">
@@ -202,12 +278,7 @@
             </li>
 
 
-            <li>
-                <a href="<?php echo url('tahun_pelajaran') ?>">
-                    <iconify-icon icon="material-symbols:punch-clock-outline-sharp" class="menu-icon"></iconify-icon>
-                    <span>Tahun Pelajaran</span>
-                </a>
-            </li>
+           
 
 
             <li class="sidebar-menu-group-title">Master Data</li>
