@@ -16,6 +16,8 @@
                             <th>Lembaga</th>
                             <th>Tingkat</th>
                             <th>Rombel</th>
+                            <th class="text-center">Mapel</th>
+                            <th class="text-center">Siswa</th>
                             <th class="text-center">Aksi</th>
                         </tr>
                     </thead>
@@ -26,6 +28,8 @@
                                 <td><?php echo $row->nama_lembaga ?></td>
                                 <td><?php echo $row->nama_tingkat ?></td>
                                 <td><span class="badge bg-info-100 text-info-600"><?php echo $row->nama_rombel ?></span></td>
+                                <td class="text-center"><span class="badge bg-primary-100 text-primary-600"><?php echo $row->jumlah_mapel ?> Mapel</span></td>
+                                <td class="text-center"><span class="badge bg-success-100 text-success-600"><?php echo $row->jumlah_siswa ?> Siswa</span></td>
                                 <td class="text-center">
                                     <a href="#" class="btn btn-sm btn-outline-primary">Detail</a>
                                 </td>

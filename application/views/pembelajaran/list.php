@@ -16,6 +16,7 @@
                             <th>Lembaga</th>
                             <th>Tingkat</th>
                             <th>Rombel</th>
+                            <th>Wali Kelas</th>
                             <th class="text-center">Aksi</th>
                         </tr>
                     </thead>
@@ -26,13 +27,20 @@
                                 <td><?php echo $row->nama_lembaga ?></td>
                                 <td><?php echo $row->nama_tingkat ?></td>
                                 <td><span class="badge bg-info-100 text-info-600"><?php echo $row->nama_rombel ?></span></td>
+                                <td><?php echo $row->nama_wali_kelas ?: '-' ?></td>
                                 <td>
                                     <div class="d-flex justify-content-center gap-2">
+                                        <a href="<?php echo url('pembelajaran/edit/' . $row->id_pembelajaran) ?>" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1">
+                                            <iconify-icon icon="solar:pen-linear"></iconify-icon> Edit
+                                        </a>
                                         <a href="<?php echo url('pembelajaran/tambah_mapel/' . $row->id_pembelajaran) ?>" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1">
                                             <iconify-icon icon="solar:notebook-linear"></iconify-icon> Tambah Mapel
                                         </a>
                                         <a href="<?php echo url('pembelajaran/daftar_siswa/' . $row->id_pembelajaran) ?>" class="btn btn-sm btn-outline-success d-inline-flex align-items-center gap-1">
                                             <iconify-icon icon="solar:users-group-two-rounded-linear"></iconify-icon> Daftar Siswa
+                                        </a>
+                                        <a href="<?php echo url('jadwal_pelajaran/semua') ?>" class="btn btn-sm btn-outline-warning d-inline-flex align-items-center gap-1">
+                                            <iconify-icon icon="akar-icons:schedule"></iconify-icon> Jadwal
                                         </a>
                                     </div>
                                 </td>

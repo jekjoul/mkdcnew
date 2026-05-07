@@ -20,7 +20,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                 <div class="card-body">
 
                     <!-- Upload Image End -->
-                    <form action="<?php echo url('ptk/ptkSimpan') ?>" method="post">
+                    <form action="<?php echo url('ptk/ptkSimpan') ?>" method="post" id="formTambahPtk">
                         <div class="row">
 
                             <div class="col-sm-6">
@@ -130,6 +130,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                         <span class="text-danger-600">*</span></label>
                                     <input type="text" class="form-control radius-8" id="nik" name="nik" required
                                         placeholder="Masukan NIK">
+                                    <div class="invalid-feedback" id="nik-feedback">NIK sudah terdaftar.</div>
                                 </div>
                             </div>
 
@@ -177,8 +178,10 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                 <div class="mb-20">
                                     <label for="email"
                                         class="form-label fw-semibold text-primary-light text-sm mb-8">Email</label>
+                                    <span class="text-danger-600">*</span> </label>
                                     <input type="email" class="form-control radius-8" id="email" name="email"
                                         placeholder="Enter email address">
+                                    <div class="invalid-feedback" id="email-feedback">Email sudah terdaftar.</div>
                                 </div>
                             </div>
                             <div class="col-sm-6">
@@ -316,7 +319,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                             </div>
                         </div>
                         <div class="d-flex align-items-center justify-content-center gap-3">
-                            <button type="submit"
+                            <button type="submit" id="btnSimpanPtk"
                                 class="btn btn-success border border-success-600 text-md px-56 py-12 radius-8">
                                 Simpan PTK
                             </button>
@@ -336,6 +339,79 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
 <?php include viewPath('includes/footer'); ?>
 <script>
     $(document).ready(function() {
+        var duplicateState = {
+            nik: false,
+            email: false,
+            checking: false
+        };
+        var duplicateTimer = null;
+        var duplicateRequest = null;
+
+        function setDuplicateFeedback(field, isDuplicate) {
+            var input = $('#' + field);
+            var feedback = $('#' + field + '-feedback');
+            var label = field === 'nik' ? 'NIK' : 'Email';
+
+            duplicateState[field] = isDuplicate;
+            input.toggleClass('is-invalid', isDuplicate);
+            input[0].setCustomValidity(isDuplicate ? label + ' sudah terdaftar.' : '');
+            feedback.text(label + ' sudah terdaftar.');
+            $('#btnSimpanPtk').prop('disabled', duplicateState.nik || duplicateState.email || duplicateState.checking);
+        }
+
+        function cekDuplikatPtk() {
+            var nik = $.trim($('#nik').val());
+            var email = $.trim($('#email').val());
+
+            if (!nik && !email) {
+                setDuplicateFeedback('nik', false);
+                setDuplicateFeedback('email', false);
+                return;
+            }
+
+            if (duplicateRequest) {
+                duplicateRequest.abort();
+            }
+
+            duplicateState.checking = true;
+            $('#btnSimpanPtk').prop('disabled', true);
+
+            duplicateRequest = $.ajax({
+                url: "<?php echo url('ptk/ptkCekDuplikat') ?>",
+                type: "POST",
+                data: {
+                    nik: nik,
+                    email: email
+                },
+                dataType: "json",
+                success: function(response) {
+                    var duplicates = response && response.duplicates ? response.duplicates : {};
+                    setDuplicateFeedback('nik', !!duplicates.nik);
+                    setDuplicateFeedback('email', !!duplicates.email);
+                },
+                complete: function(xhr, status) {
+                    if (status !== 'abort') {
+                        duplicateState.checking = false;
+                        $('#btnSimpanPtk').prop('disabled', duplicateState.nik || duplicateState.email);
+                    }
+                }
+            });
+        }
+
+        function jadwalkanCekDuplikat() {
+            clearTimeout(duplicateTimer);
+            duplicateTimer = setTimeout(cekDuplikatPtk, 400);
+        }
+
+        $('#nik, #email').on('input blur', jadwalkanCekDuplikat);
+        $('#formTambahPtk').on('submit', function(event) {
+            if (duplicateState.nik || duplicateState.email || duplicateState.checking) {
+                event.preventDefault();
+                cekDuplikatPtk();
+                this.reportValidity();
+            }
+        });
+
         // Provinsi ke Kabupaten
         $('#provinsi').on('change', function() {
             var id_prov = $(this).val();

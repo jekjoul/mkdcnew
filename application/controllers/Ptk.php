@@ -397,9 +397,55 @@ class Ptk extends MY_Controller
 		echo json_encode($data);
 	}
 
+	public function ptkCekDuplikat()
+	{
+		$nik = trim((string) post('nik'));
+		$email = trim((string) post('email'));
+		$result = [
+			'nik' => false,
+			'email' => false,
+		];
+
+		if ($nik !== '') {
+			$result['nik'] = (bool) $this->db->get_where($this->table, ['nik' => $nik])->row();
+		}
+
+		if ($email !== '') {
+			$this->db->where('LOWER(email)', strtolower($email));
+			$result['email'] = (bool) $this->db->get($this->table)->row();
+		}
+
+		$this->output
+			->set_content_type('application/json')
+			->set_output(json_encode([
+				'status' => true,
+				'duplicates' => $result,
+			]));
+	}
+
 	public function ptkSimpan()
 	{
 		postAllowed();
+
+		$nik = trim((string) post('nik'));
+		$email = trim((string) post('email'));
+
+		if ($nik !== '' && $this->db->get_where($this->table, ['nik' => $nik])->row()) {
+			$this->session->set_flashdata('alert-type', 'danger');
+			$this->session->set_flashdata('alert', 'NIK sudah terdaftar. Silakan gunakan NIK lain.');
+			redirect('ptk/ptkTambah');
+			return;
+		}
+
+		if ($email !== '') {
+			$this->db->where('LOWER(email)', strtolower($email));
+			if ($this->db->get($this->table)->row()) {
+				$this->session->set_flashdata('alert-type', 'danger');
+				$this->session->set_flashdata('alert', 'Email sudah terdaftar. Silakan gunakan email lain.');
+				redirect('ptk/ptkTambah');
+				return;
+			}
+		}
 
 		$data = [
 			'nama_ptk' => post('nama_ptk'),
@@ -411,12 +457,12 @@ class Ptk extends MY_Controller
 			'agama' => post('agama'),
 			'status_perkawinan' => post('status_perkawinan'),
 			'nama_ibu_kandung' => post('nama_ibu_kandung'),
-			'nik' => post('nik'),
+			'nik' => $nik,
 			'niy' => post('niy'),
 			'nuptk' => post('nuptk'),
 			'no_sk_pengangkatan' => post('no_sk_pengangkatan'),
 			'tgl_sk_pengangkatan' => post('tgl_sk_pengangkatan'),
-			'email' => post('email'),
+			'email' => $email,
 			'telepon' => post('telepon'),
 			'status_pegawai' => post('status_pegawai'),
 			'penugasan' => post('penugasan'),
@@ -518,6 +564,7 @@ class Ptk extends MY_Controller
 		$this->page_data['page']->subtitle = 'Daftar PTK Nonaktif';
 		$this->page_data['page']->subtitleUrl = 'ptk/ptkNonaktif';
 		$this->page_data['page']->icon = 'icon-park-outline:user-business';
+		$this->db->order_by('nama_ptk', 'ASC');
 		$this->page_data['ptk'] = $this->db->get_where($this->table, ['status_keaktifan' => 'Nonaktif'])->result();
 		$this->load->view('ptk/v_ptk_nonaktif_list', $this->page_data);
 	}

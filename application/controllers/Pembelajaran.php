@@ -7,6 +7,7 @@ class Pembelajaran extends MY_Controller
     {
         parent::__construct();
         $this->load->model('Master_model', 'master_model');
+        $this->ensurePembelajaranColumns();
         $this->ensurePembelajaranMapelColumns();
     }
 
@@ -18,12 +19,13 @@ class Pembelajaran extends MY_Controller
         $this->page_data['page']->subtitleUrl = 'pembelajaran';
         $this->page_data['page']->icon = 'solar:notebook-bookmark-linear';
 
-        $this->db->select('p.*, l.nama_lembaga, t.nama_tingkat, r.nama_rombel, tp.tahun_pelajaran, tp.semester');
+        $this->db->select('p.*, l.nama_lembaga, t.nama_tingkat, r.nama_rombel, tp.tahun_pelajaran, tp.semester, wali.nama_ptk AS nama_wali_kelas');
         $this->db->from('pembelajaran p');
         $this->db->join('lembaga l', 'p.id_lembaga = l.id_lembaga');
         $this->db->join('master_tingkat_sekolah t', 'p.id_tingkat_sekolah = t.id_tingkat_sekolah');
         $this->db->join('rombel r', 'p.id_rombel = r.id_rombel');
         $this->db->join('pembelajaran_tahun_pelajaran tp', 'p.id_tahun_pelajaran = tp.id_tahun_pelajaran');
+        $this->db->join('ptk wali', 'wali.id_ptk = p.id_ptk_wali', 'left');
         $this->page_data['pembelajaran'] = $this->db->get()->result();
 
         $this->load->view('pembelajaran/list', $this->page_data);
@@ -45,10 +47,37 @@ class Pembelajaran extends MY_Controller
             return;
         }
 
-        $this->page_data['lembaga'] = $this->master_model->getAllLembaga();
-        $this->page_data['tingkat'] = $this->master_model->getTingkatSekolah();
-        $this->page_data['rombel']  = ($q = $this->db->get('rombel')) ? $q->result() : [];
+        $this->setFormOptions();
         $this->page_data['ta_aktif'] = $ta_aktif;
+        $this->page_data['row'] = null;
+        $this->page_data['form_action'] = url('pembelajaran/simpan');
+        $this->page_data['submit_label'] = 'Simpan Pembelajaran';
+
+        $this->load->view('pembelajaran/form', $this->page_data);
+    }
+
+    public function edit($id)
+    {
+        $pembelajaran = $this->getPembelajaranDetail($id);
+        if (!$pembelajaran) {
+            show_404();
+        }
+
+        $this->page_data['page']->title = 'Pembelajaran';
+        $this->page_data['page']->titleUrl = 'pembelajaran';
+        $this->page_data['page']->subtitle = 'Edit Pembelajaran';
+        $this->page_data['page']->subtitleUrl = 'pembelajaran/edit/' . $id;
+        $this->page_data['page']->icon = 'solar:notebook-bookmark-linear';
+
+        $this->setFormOptions();
+        $this->page_data['ta_aktif'] = (object) [
+            'id_tahun_pelajaran' => $pembelajaran->id_tahun_pelajaran,
+            'tahun_pelajaran' => $pembelajaran->tahun_pelajaran,
+            'semester' => $pembelajaran->semester,
+        ];
+        $this->page_data['row'] = $pembelajaran;
+        $this->page_data['form_action'] = url('pembelajaran/simpan');
+        $this->page_data['submit_label'] = 'Update Pembelajaran';
 
         $this->load->view('pembelajaran/form', $this->page_data);
     }
@@ -62,12 +91,37 @@ class Pembelajaran extends MY_Controller
             'id_lembaga'         => post('id_lembaga'),
             'id_tingkat_sekolah' => post('id_tingkat_sekolah'),
             'id_rombel'          => post('id_rombel'),
+            'id_ptk_wali'        => post('id_ptk_wali') !== '' ? post('id_ptk_wali') : null,
         ];
 
-        $this->db->insert('pembelajaran', $pembelajaran_data);
+        $id_pembelajaran = (int) post('id_pembelajaran');
+        $this->db->where('id_tahun_pelajaran', $pembelajaran_data['id_tahun_pelajaran']);
+        $this->db->where('id_lembaga', $pembelajaran_data['id_lembaga']);
+        $this->db->where('id_tingkat_sekolah', $pembelajaran_data['id_tingkat_sekolah']);
+        $this->db->where('id_rombel', $pembelajaran_data['id_rombel']);
+        if ($id_pembelajaran > 0) {
+            $this->db->where('id_pembelajaran !=', $id_pembelajaran);
+        }
+        $duplikat = $this->db->get('pembelajaran')->row();
+        if ($duplikat) {
+            $this->session->set_flashdata('alert-type', 'danger');
+            $this->session->set_flashdata('alert', 'Gagal! Pembelajaran untuk tahun, lembaga, tingkat, dan rombel tersebut sudah ada.');
+            redirect($id_pembelajaran > 0 ? 'pembelajaran/edit/' . $id_pembelajaran : 'pembelajaran/tambah');
+            return;
+        }
+
+        if ($id_pembelajaran > 0) {
+            $this->db->where('id_pembelajaran', $id_pembelajaran);
+            $this->db->update('pembelajaran', $pembelajaran_data);
+            $this->updateSiswaRombel($id_pembelajaran);
+            $message = 'Pembelajaran berhasil diperbarui.';
+        } else {
+            $this->db->insert('pembelajaran', $pembelajaran_data);
+            $message = 'Pembelajaran berhasil disimpan. Silakan tambah mapel dan daftar siswa dari list.';
+        }
 
         $this->session->set_flashdata('alert-type', 'success');
-        $this->session->set_flashdata('alert', 'Pembelajaran berhasil disimpan. Silakan tambah mapel dan daftar siswa dari list.');
+        $this->session->set_flashdata('alert', $message);
         redirect('pembelajaran');
     }
 
@@ -188,14 +242,41 @@ class Pembelajaran extends MY_Controller
 
     private function getPembelajaranDetail($id)
     {
-        $this->db->select('p.*, l.nama_lembaga, t.nama_tingkat, r.nama_rombel, tp.tahun_pelajaran, tp.semester');
+        $this->db->select('p.*, l.nama_lembaga, t.nama_tingkat, r.nama_rombel, tp.tahun_pelajaran, tp.semester, wali.nama_ptk AS nama_wali_kelas');
         $this->db->from('pembelajaran p');
         $this->db->join('lembaga l', 'p.id_lembaga = l.id_lembaga');
         $this->db->join('master_tingkat_sekolah t', 'p.id_tingkat_sekolah = t.id_tingkat_sekolah');
         $this->db->join('rombel r', 'p.id_rombel = r.id_rombel');
         $this->db->join('pembelajaran_tahun_pelajaran tp', 'p.id_tahun_pelajaran = tp.id_tahun_pelajaran');
+        $this->db->join('ptk wali', 'wali.id_ptk = p.id_ptk_wali', 'left');
         $this->db->where('p.id_pembelajaran', $id);
         return $this->db->get()->row();
+    }
+
+    private function setFormOptions()
+    {
+        $this->page_data['lembaga'] = $this->master_model->getAllLembaga();
+        $this->page_data['tingkat'] = $this->master_model->getTingkatSekolah();
+        $this->page_data['rombel']  = ($q = $this->db->get('rombel')) ? $q->result() : [];
+        $this->db->where('status_keaktifan', 'Aktif');
+        $this->db->order_by('nama_ptk', 'ASC');
+        $this->page_data['ptk'] = $this->db->get('ptk')->result();
+    }
+
+    private function updateSiswaRombel($id_pembelajaran)
+    {
+        $pembelajaran = $this->getPembelajaranDetail($id_pembelajaran);
+        if (!$pembelajaran) {
+            return;
+        }
+
+        $siswa = $this->getSelectedValues('pembelajaran_siswa', 'peserta_didik_id', $id_pembelajaran);
+        if (empty($siswa)) {
+            return;
+        }
+
+        $this->db->where_in('id_siswa', $siswa);
+        $this->db->update('siswa', ['rombel' => $this->formatRombelPembelajaran($pembelajaran)]);
     }
 
     private function getSelectedValues($table, $column, $id_pembelajaran)
@@ -238,6 +319,17 @@ class Pembelajaran extends MY_Controller
         if (!$this->db->field_exists('id_ptk', 'pembelajaran_mapel')) {
             $this->dbforge->add_column('pembelajaran_mapel', [
                 'id_ptk' => ['type' => 'INT', 'constraint' => 11, 'null' => true, 'after' => 'jumlah_jam'],
+            ]);
+        }
+    }
+
+    private function ensurePembelajaranColumns()
+    {
+        $this->load->dbforge();
+
+        if (!$this->db->field_exists('id_ptk_wali', 'pembelajaran')) {
+            $this->dbforge->add_column('pembelajaran', [
+                'id_ptk_wali' => ['type' => 'INT', 'constraint' => 11, 'null' => true, 'after' => 'id_rombel'],
             ]);
         }
     }

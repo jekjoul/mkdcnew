@@ -160,10 +160,45 @@
             </li>
 
             <li>
-                <a href="<?php echo url('datasiswa') ?>">
+                <a href="<?php echo url('jadwal_pelajaran') ?>">
                     <iconify-icon icon="akar-icons:schedule" class="menu-icon"></iconify-icon>
                     <span>Jadwal Pelajaran</span>
                 </a>
+            </li>
+
+            <li class="sidebar-menu-group-title">Persuratan</li>
+
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="solar:letter-linear" class="menu-icon"></iconify-icon>
+                    <span>Surat Menyurat</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li>
+                        <a href="<?php echo url('surat/masuk') ?>">
+                            <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
+                            Surat Masuk
+                        </a>
+                    </li>
+                    <li>
+                        <a href="<?php echo url('surat/keluar') ?>">
+                            <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
+                            Surat Keluar
+                        </a>
+                    </li>
+                    <li>
+                        <a href="<?php echo url('surat/kode') ?>">
+                            <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
+                            Kode Surat
+                        </a>
+                    </li>
+                    <li>
+                        <a href="<?php echo url('surat/template') ?>">
+                            <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
+                            Template Surat
+                        </a>
+                    </li>
+                </ul>
             </li>
 
 
