@@ -57,16 +57,26 @@ function siswa_value($row, $field, $default = '')
         <div class="col-sm-4 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Rombel</label><input type="text" class="form-control radius-8" name="rombel" value="<?php echo siswa_value($row, 'rombel') ?>"></div>
         <div class="col-sm-4 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Tanggal Pendaftaran</label><input type="date" class="form-control radius-8" name="tanggal_pendaftaran" value="<?php echo siswa_value($row, 'tanggal_pendaftaran') ?>"></div>
         <div class="col-sm-4 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Status Pendaftaran</label><input type="text" class="form-control radius-8" name="status_pendaftaran" value="<?php echo siswa_value($row, 'status_pendaftaran') ?>"></div>
+        <div class="col-sm-4 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">No Ijazah</label><input type="text" class="form-control radius-8" name="no_ijazah" value="<?php echo siswa_value($row, 'no_ijazah') ?>"></div>
+        <div class="col-sm-4 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Kewarganegaraan</label><input type="text" class="form-control radius-8" name="kewarganegaraan" value="<?php echo siswa_value($row, 'kewarganegaraan', 'Indonesia') ?>"></div>
+        <div class="col-sm-4 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Anak Ke</label><input type="number" min="1" class="form-control radius-8" name="anak_ke" value="<?php echo siswa_value($row, 'anak_ke') ?>"></div>
+        <div class="col-sm-4 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Sekolah Asal</label><input type="text" class="form-control radius-8" name="sekolah_asal" value="<?php echo siswa_value($row, 'sekolah_asal') ?>"></div>
         <div class="col-sm-4 mb-20">
             <label class="form-label fw-semibold text-primary-light text-sm mb-8">Status Keaktifan</label>
             <select class="form-control radius-8 form-select" name="status_keaktifan">
-                <option value="Aktif" <?php echo siswa_value($row, 'status_keaktifan', 'Aktif') == 'Aktif' ? 'selected' : '' ?>>Aktif</option>
-                <option value="Nonaktif" <?php echo siswa_value($row, 'status_keaktifan') == 'Nonaktif' ? 'selected' : '' ?>>Nonaktif</option>
+                <?php foreach (['Aktif', 'Nonaktif', 'Lulus', 'Pindah', 'Keluar'] as $status): ?>
+                    <option value="<?php echo $status ?>" <?php echo siswa_value($row, 'status_keaktifan', 'Aktif') == $status ? 'selected' : '' ?>><?php echo $status ?></option>
+                <?php endforeach; ?>
             </select>
+            <small class="text-secondary-light">Status Lulus, Pindah, atau Keluar akan memindahkan data siswa ke Alumni.</small>
         </div>
         <div class="col-sm-12 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Alamat Siswa</label><input type="text" class="form-control radius-8" name="alamat" value="<?php echo siswa_value($row, 'alamat') ?>"></div>
         <div class="col-sm-3 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">RT</label><input type="text" class="form-control radius-8" name="rt" value="<?php echo siswa_value($row, 'rt') ?>"></div>
         <div class="col-sm-3 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">RW</label><input type="text" class="form-control radius-8" name="rw" value="<?php echo siswa_value($row, 'rw') ?>"></div>
+        <div class="col-sm-3 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Jenis Tempat Tinggal</label><input type="text" class="form-control radius-8" name="jenis_tempat_tinggal" value="<?php echo siswa_value($row, 'jenis_tempat_tinggal') ?>"></div>
+        <div class="col-sm-3 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Alat Transportasi</label><input type="text" class="form-control radius-8" name="alat_transportasi" value="<?php echo siswa_value($row, 'alat_transportasi') ?>"></div>
+        <div class="col-sm-6 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Jarak ke Sekolah</label><input type="text" class="form-control radius-8" name="jarak_ke_sekolah" value="<?php echo siswa_value($row, 'jarak_ke_sekolah') ?>"></div>
+        <div class="col-sm-6 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Koordinat</label><input type="text" class="form-control radius-8" name="koordinat" value="<?php echo siswa_value($row, 'koordinat') ?>"></div>
         <?php foreach (['' => 'Siswa', '_ayah' => 'Ayah', '_ibu' => 'Ibu'] as $suffix => $label): ?>
             <?php if ($suffix): ?>
                 <div class="col-sm-12"><hr><h6>Data <?php echo $label ?></h6></div>
@@ -95,6 +105,14 @@ function siswa_value($row, $field, $default = '')
             <div class="col-sm-6 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Kelurahan <?php echo $label ?></label><select class="form-control radius-8 form-select" name="id_kelurahan<?php echo $suffix ?>" id="id_kelurahan<?php echo $suffix ?>"><option value="<?php echo siswa_value($row, 'id_kelurahan' . $suffix) ?>"><?php echo siswa_value($row, 'id_kelurahan' . $suffix, 'Pilih Kelurahan') ?></option></select></div>
         <?php endforeach; ?>
         <div class="col-sm-12"><hr><h6>Foto Siswa</h6></div>
+        <div class="col-sm-6 mb-20">
+            <label class="form-label fw-semibold text-primary-light text-sm mb-8">Riwayat Penyakit</label>
+            <textarea class="form-control radius-8" name="riwayat_penyakit" rows="3" placeholder="Satu penyakit per baris"><?php echo siswa_value($row, 'riwayat_penyakit') ?></textarea>
+        </div>
+        <div class="col-sm-6 mb-20">
+            <label class="form-label fw-semibold text-primary-light text-sm mb-8">Prestasi Siswa</label>
+            <textarea class="form-control radius-8" name="prestasi_siswa" rows="3" placeholder="Format: Nama prestasi | Tingkat"><?php echo siswa_value($row, 'prestasi_siswa') ?></textarea>
+        </div>
         <div class="col-sm-6 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Label Foto</label><input type="text" class="form-control radius-8" name="label_foto" placeholder="Contoh: Foto 2026"></div>
         <div class="col-sm-6 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Upload Foto</label><input type="file" class="form-control radius-8" name="foto[]" accept=".jpg,.jpeg,.png" multiple><small class="text-secondary-light">Bisa pilih lebih dari satu foto.</small></div>
     </div>

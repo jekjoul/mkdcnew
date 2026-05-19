@@ -6,10 +6,18 @@
         <div class="col-lg-12">
             <div class="card basic-data-table">
                 <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-3 bg-neutral-300">
-                    <h6 class="text-dark">Daftar Rombongan Belajar</h6>
-                    <button type="button" class="btn btn-sm btn-info text-light" data-bs-toggle="modal" data-bs-target="#modalTambahRombel">
-                        <i class="ri-add-line"></i> Tambah Rombel
-                    </button>
+                    <h6 class="text-dark"><?php echo !empty($is_nonaktif) ? 'Daftar Rombongan Belajar Nonaktif' : 'Daftar Rombongan Belajar Aktif'; ?></h6>
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                        <a href="<?php echo url(!empty($is_nonaktif) ? 'master/rombel' : 'master/rombelNonaktif') ?>" class="btn btn-sm btn-warning-600 text-light">
+                            <i class="<?php echo !empty($is_nonaktif) ? 'ri-arrow-left-line' : 'ri-archive-line'; ?>"></i>
+                            <?php echo !empty($is_nonaktif) ? 'Kembali ke Aktif' : 'Data Nonaktif'; ?>
+                        </a>
+                        <?php if (empty($is_nonaktif)): ?>
+                            <button type="button" class="btn btn-sm btn-info text-light" data-bs-toggle="modal" data-bs-target="#modalTambahRombel">
+                                <i class="ri-add-line"></i> Tambah Rombel
+                            </button>
+                        <?php endif; ?>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">

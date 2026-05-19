@@ -45,7 +45,13 @@
 
     <div class="card mt-3">
         <div class="card-header bg-warning-900">
-            <h6 class="mb-0 text-light">Daftar Mata Pelajaran Pembelajaran</h6>
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                <h6 class="mb-0 text-light"><?php echo !empty($is_nonaktif) ? 'Daftar Nilai Tahun Tidak Aktif' : 'Daftar Mata Pelajaran Pembelajaran Aktif'; ?></h6>
+                <a href="<?php echo url(!empty($is_nonaktif) ? 'nilai_siswa' : 'nilai_siswa/nonaktif') ?>" class="btn btn-sm btn-warning-600 d-inline-flex align-items-center gap-2">
+                    <iconify-icon icon="<?php echo !empty($is_nonaktif) ? 'solar:arrow-left-linear' : 'solar:archive-linear'; ?>"></iconify-icon>
+                    <?php echo !empty($is_nonaktif) ? 'Kembali ke Aktif' : 'Data Tidak Aktif'; ?>
+                </a>
+            </div>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -53,6 +59,7 @@
                     <thead>
                         <tr>
                             <th>Kelas</th>
+                            <th>Tahun/Sem</th>
                             <th>Mata Pelajaran</th>
                             <th>Guru</th>
                             <th class="text-center">Siswa</th>
@@ -65,6 +72,7 @@
                         <?php foreach ($items as $row): ?>
                             <tr>
                                 <td><?php echo html_escape(trim($row->nama_tingkat . ' - ' . $row->nama_rombel)) ?></td>
+                                <td><?php echo html_escape($row->tahun_pelajaran . ' (' . $row->semester . ')') ?></td>
                                 <td>
                                     <span class="fw-semibold"><?php echo html_escape($row->nama_mapel) ?></span>
                                     <?php if (!empty($row->mapel_singkat)): ?>

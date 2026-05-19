@@ -20,6 +20,69 @@ class Tahun_pelajaran extends MY_Controller
         $this->load->view('tahun_pelajaran/list', $this->page_data);
     }
 
+    public function hari_efektif($id)
+    {
+        $row = $this->tahun_pelajaran_model->getById($id);
+        if (!$row) show_404();
+
+        $this->page_data['page']->title = 'Pembelajaran';
+        $this->page_data['page']->titleUrl = 'tahun_pelajaran';
+        $this->page_data['page']->subtitle = 'Hari Efektif';
+        $this->page_data['page']->subtitleUrl = 'tahun_pelajaran/hari_efektif/' . $id;
+        $this->page_data['page']->icon = 'solar:calendar-date-linear';
+        $this->page_data['row'] = $row;
+        $this->page_data['periode'] = $this->tahun_pelajaran_model->getSemesterRange($row);
+        $this->page_data['summary'] = $this->tahun_pelajaran_model->getHariEfektifSummary($id);
+        $this->page_data['hari_efektif'] = $this->tahun_pelajaran_model->getHariEfektif($id);
+        $this->load->view('tahun_pelajaran/hari_efektif', $this->page_data);
+    }
+
+    public function generate_hari_efektif($id)
+    {
+        postAllowed();
+        $row = $this->tahun_pelajaran_model->getById($id);
+        if (!$row) show_404();
+
+        if ($row->status !== 'Aktif') {
+            $this->session->set_flashdata('alert-type', 'danger');
+            $this->session->set_flashdata('alert', 'Generate hari efektif hanya bisa dilakukan untuk tahun pelajaran aktif.');
+            redirect('tahun_pelajaran');
+            return;
+        }
+
+        $hari_libur = $this->input->post('hari_libur', true);
+        $jumlah = $this->tahun_pelajaran_model->generateHariEfektif($row, $hari_libur ?: []);
+
+        if ($jumlah > 0) {
+            $this->activity_model->add(logged('name') . ' Generate Hari Efektif: ' . $row->tahun_pelajaran . ' ' . $row->semester);
+            $this->session->set_flashdata('alert-type', 'success');
+            $this->session->set_flashdata('alert', 'Hari efektif berhasil digenerate sebanyak ' . $jumlah . ' hari.');
+            redirect('tahun_pelajaran/hari_efektif/' . $id);
+            return;
+        }
+
+        $this->session->set_flashdata('alert-type', 'danger');
+        $this->session->set_flashdata('alert', 'Hari efektif sudah pernah digenerate.');
+        redirect('tahun_pelajaran');
+    }
+
+    public function update_hari_efektif($id)
+    {
+        postAllowed();
+        $row = $this->tahun_pelajaran_model->getById($id);
+        if (!$row) show_404();
+
+        $updated = $this->tahun_pelajaran_model->updateHariEfektif(
+            $this->input->post('status', true),
+            $this->input->post('keterangan', true)
+        );
+
+        $this->activity_model->add(logged('name') . ' Mengubah Hari Efektif: ' . $row->tahun_pelajaran . ' ' . $row->semester);
+        $this->session->set_flashdata('alert-type', 'success');
+        $this->session->set_flashdata('alert', 'Hari efektif berhasil diperbarui (' . $updated . ' data).');
+        redirect('tahun_pelajaran/hari_efektif/' . $id);
+    }
+
     public function add()
     {
         $this->page_data['page']->title = 'Pembelajaran';
@@ -111,6 +174,8 @@ class Tahun_pelajaran extends MY_Controller
     {
         $row = $this->tahun_pelajaran_model->getById($id);
         if ($row) {
+            $this->tahun_pelajaran_model->ensureHariEfektifTable();
+            $this->db->delete($this->tahun_pelajaran_model->hari_efektif_table, ['id_tahun_pelajaran' => $id]);
             $this->db->delete('pembelajaran_tahun_pelajaran', ['id_tahun_pelajaran' => $id]);
             $this->activity_model->add(logged('name') . ' Menghapus Tahun Pelajaran: ' . $row->tahun_pelajaran);
             $this->session->set_flashdata('alert-type', 'success');

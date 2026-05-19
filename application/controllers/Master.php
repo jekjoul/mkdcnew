@@ -8,6 +8,7 @@ class Master extends MY_Controller
     {
         parent::__construct();
         $this->load->model('Master_model', 'master_model');
+        $this->load->model('tahun_pelajaran_model');
     }
 
     public $jenis_ruangan = 'master_jenis_ruangan';
@@ -544,12 +545,26 @@ class Master extends MY_Controller
 
     public function rombel()
     {
+        $this->loadRombelList('Aktif');
+    }
+
+    public function rombelNonaktif()
+    {
+        $this->loadRombelList('Nonaktif');
+    }
+
+    private function loadRombelList($status)
+    {
+        $is_nonaktif = $status !== 'Aktif';
         $this->page_data['page']->title = 'Master Data';
-        $this->page_data['page']->titleUrl = 'master/rombel';
-        $this->page_data['page']->subtitle = 'Rombongan Belajar';
-        $this->page_data['page']->subtitleUrl = 'master/rombel';
+        $this->page_data['page']->titleUrl = $is_nonaktif ? 'master/rombelNonaktif' : 'master/rombel';
+        $this->page_data['page']->subtitle = $is_nonaktif ? 'Rombongan Belajar Nonaktif' : 'Rombongan Belajar';
+        $this->page_data['page']->subtitleUrl = $is_nonaktif ? 'master/rombelNonaktif' : 'master/rombel';
         $this->page_data['page']->icon = 'solar:users-group-two-rounded-linear';
+        $this->db->where('status', $status);
+        $this->db->order_by('nama_rombel', 'ASC');
         $this->page_data['rombel'] = $this->db->get($this->rombel)->result();
+        $this->page_data['is_nonaktif'] = $is_nonaktif;
         $this->load->view('master/v_rombel_list', $this->page_data);
     }
 
@@ -650,6 +665,115 @@ class Master extends MY_Controller
         $this->page_data['page']->icon = 'solar:notebook-linear';
         $this->page_data['mapel'] = $this->master_model->getMapel();
         $this->load->view('mapel/v_mapel_list', $this->page_data);
+    }
+
+    public function tahunPelajaran()
+    {
+        $this->page_data['page']->title = 'Master Data';
+        $this->page_data['page']->titleUrl = 'master/tahunPelajaran';
+        $this->page_data['page']->subtitle = 'Tahun Pelajaran';
+        $this->page_data['page']->subtitleUrl = 'master/tahunPelajaran';
+        $this->page_data['page']->icon = 'solar:calendar-date-linear';
+        $this->page_data['tahun_pelajaran'] = $this->tahun_pelajaran_model->get();
+        $this->load->view('master/v_tahun_pelajaran_list', $this->page_data);
+    }
+
+    public function tahunPelajaranTambah()
+    {
+        $this->page_data['page']->title = 'Master Data';
+        $this->page_data['page']->titleUrl = 'master/tahunPelajaran';
+        $this->page_data['page']->subtitle = 'Tambah Tahun Pelajaran';
+        $this->page_data['page']->subtitleUrl = 'master/tahunPelajaran';
+        $this->page_data['page']->icon = 'solar:calendar-date-linear';
+        $this->page_data['row'] = null;
+        $this->load->view('master/v_tahun_pelajaran_form', $this->page_data);
+    }
+
+    public function tahunPelajaranEdit($id)
+    {
+        $this->page_data['row'] = $this->tahun_pelajaran_model->getById($id);
+        if (!$this->page_data['row']) show_404();
+
+        $this->page_data['page']->title = 'Master Data';
+        $this->page_data['page']->titleUrl = 'master/tahunPelajaran';
+        $this->page_data['page']->subtitle = 'Edit Tahun Pelajaran';
+        $this->page_data['page']->subtitleUrl = 'master/tahunPelajaran';
+        $this->page_data['page']->icon = 'solar:calendar-date-linear';
+        $this->load->view('master/v_tahun_pelajaran_form', $this->page_data);
+    }
+
+    public function tahunPelajaranSimpan()
+    {
+        postAllowed();
+        $tahun = post('tahun_pelajaran');
+        $semester = post('semester');
+        $status = post('status');
+
+        $exists = $this->db->get_where('pembelajaran_tahun_pelajaran', ['tahun_pelajaran' => $tahun, 'semester' => $semester])->num_rows();
+        if ($exists > 0) {
+            $this->session->set_flashdata('alert-type', 'danger');
+            $this->session->set_flashdata('alert', "Data Gagal Disimpan! Tahun Pelajaran $tahun Semester $semester sudah tersedia.");
+            redirect('master/tahunPelajaran');
+            return;
+        }
+
+        if ($status == 'Aktif') {
+            $this->db->update('pembelajaran_tahun_pelajaran', ['status' => 'Nonaktif']);
+        }
+
+        $data = ['tahun_pelajaran' => $tahun, 'semester' => $semester, 'status' => $status];
+        if ($this->db->insert('pembelajaran_tahun_pelajaran', $data)) {
+            $this->activity_model->add(logged('name') . ' Menambah Tahun Pelajaran: ' . $data['tahun_pelajaran']);
+            $this->session->set_flashdata('alert-type', 'success');
+            $this->session->set_flashdata('alert', 'Tahun Pelajaran Berhasil Ditambahkan');
+        }
+
+        redirect('master/tahunPelajaran');
+    }
+
+    public function tahunPelajaranUpdate($id)
+    {
+        postAllowed();
+        $tahun = post('tahun_pelajaran');
+        $semester = post('semester');
+        $status = post('status');
+
+        $exists = $this->db->get_where('pembelajaran_tahun_pelajaran', ['tahun_pelajaran' => $tahun, 'semester' => $semester, 'id_tahun_pelajaran !=' => $id])->num_rows();
+        if ($exists > 0) {
+            $this->session->set_flashdata('alert-type', 'danger');
+            $this->session->set_flashdata('alert', "Update Gagal! Tahun Pelajaran $tahun Semester $semester sudah tersedia.");
+            redirect('master/tahunPelajaran');
+            return;
+        }
+
+        if ($status == 'Aktif') {
+            $this->db->update('pembelajaran_tahun_pelajaran', ['status' => 'Nonaktif']);
+        }
+
+        $data = ['tahun_pelajaran' => $tahun, 'semester' => $semester, 'status' => $status];
+        $this->db->where('id_tahun_pelajaran', $id);
+        if ($this->db->update('pembelajaran_tahun_pelajaran', $data)) {
+            $this->activity_model->add(logged('name') . ' Mengubah Tahun Pelajaran: ' . $data['tahun_pelajaran']);
+            $this->session->set_flashdata('alert-type', 'success');
+            $this->session->set_flashdata('alert', 'Tahun Pelajaran Berhasil Diperbarui');
+        }
+
+        redirect('master/tahunPelajaran');
+    }
+
+    public function tahunPelajaranDelete($id)
+    {
+        $row = $this->tahun_pelajaran_model->getById($id);
+        if ($row) {
+            $this->tahun_pelajaran_model->ensureHariEfektifTable();
+            $this->db->delete($this->tahun_pelajaran_model->hari_efektif_table, ['id_tahun_pelajaran' => $id]);
+            $this->db->delete('pembelajaran_tahun_pelajaran', ['id_tahun_pelajaran' => $id]);
+            $this->activity_model->add(logged('name') . ' Menghapus Tahun Pelajaran: ' . $row->tahun_pelajaran);
+            $this->session->set_flashdata('alert-type', 'success');
+            $this->session->set_flashdata('alert', 'Tahun Pelajaran Berhasil Dihapus');
+        }
+
+        redirect('master/tahunPelajaran');
     }
 
     public function mapelTambah()

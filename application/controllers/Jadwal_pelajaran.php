@@ -13,15 +13,27 @@ class Jadwal_pelajaran extends MY_Controller
 
     public function index()
     {
+        $this->loadJadwalIndex('Aktif');
+    }
+
+    public function nonaktif()
+    {
+        $this->loadJadwalIndex('Nonaktif');
+    }
+
+    private function loadJadwalIndex($status_tahun)
+    {
+        $is_nonaktif = $status_tahun !== 'Aktif';
         $this->page_data['page']->title = 'Jadwal Pelajaran';
-        $this->page_data['page']->titleUrl = 'jadwal_pelajaran';
-        $this->page_data['page']->subtitle = 'Jadwal Mingguan';
-        $this->page_data['page']->subtitleUrl = 'jadwal_pelajaran';
+        $this->page_data['page']->titleUrl = $is_nonaktif ? 'jadwal_pelajaran/nonaktif' : 'jadwal_pelajaran';
+        $this->page_data['page']->subtitle = $is_nonaktif ? 'Jadwal Tahun Tidak Aktif' : 'Jadwal Mingguan';
+        $this->page_data['page']->subtitleUrl = $is_nonaktif ? 'jadwal_pelajaran/nonaktif' : 'jadwal_pelajaran';
         $this->page_data['page']->icon = 'akar-icons:schedule';
 
-        $this->page_data['pembelajaran'] = $this->getAllPembelajaran();
+        $this->page_data['pembelajaran'] = $this->getAllPembelajaran($status_tahun);
         $this->page_data['settings'] = $this->getSettings(0);
         $this->page_data['menit_jp'] = $this->getMenitJp($this->page_data['settings']);
+        $this->page_data['is_nonaktif'] = $is_nonaktif;
 
         $this->load->view('jadwal_pelajaran/list', $this->page_data);
     }
@@ -61,7 +73,7 @@ class Jadwal_pelajaran extends MY_Controller
         $this->page_data['page']->icon = 'akar-icons:schedule';
 
         $settings = $this->getSettings(0);
-        $pembelajaran = $this->getAllPembelajaran();
+        $pembelajaran = $this->getAllPembelajaran('Aktif');
         $mapel_by_pembelajaran = [];
         $items = [];
 
@@ -84,7 +96,7 @@ class Jadwal_pelajaran extends MY_Controller
     {
         postAllowed();
 
-        $pembelajaran = $this->getAllPembelajaran();
+        $pembelajaran = $this->getAllPembelajaran('Aktif');
         $valid_ids = [];
         $mapel_limits = [];
         foreach ($pembelajaran as $row) {
@@ -212,7 +224,7 @@ class Jadwal_pelajaran extends MY_Controller
         return $this->db->get()->row();
     }
 
-    private function getAllPembelajaran()
+    private function getAllPembelajaran($status_tahun = 'Aktif')
     {
         $this->db->select('p.*, l.nama_lembaga, t.nama_tingkat, t.tingkat_angka, r.nama_rombel, tp.tahun_pelajaran, tp.semester, COUNT(pm.id_mapel) AS jumlah_mapel');
         $this->db->from('pembelajaran p');
@@ -221,6 +233,11 @@ class Jadwal_pelajaran extends MY_Controller
         $this->db->join('rombel r', 'p.id_rombel = r.id_rombel');
         $this->db->join('pembelajaran_tahun_pelajaran tp', 'p.id_tahun_pelajaran = tp.id_tahun_pelajaran');
         $this->db->join('pembelajaran_mapel pm', 'pm.id_pembelajaran = p.id_pembelajaran', 'left');
+        if ($status_tahun === 'Aktif') {
+            $this->db->where('tp.status', 'Aktif');
+        } else {
+            $this->db->where('tp.status !=', 'Aktif');
+        }
         $this->db->group_by('p.id_pembelajaran');
         $this->db->order_by('t.tingkat_angka', 'ASC');
         $this->db->order_by('r.nama_rombel', 'ASC');

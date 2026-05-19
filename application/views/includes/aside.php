@@ -38,6 +38,12 @@
                     </a>
                 </li>
                 <li>
+                    <a href="<?php echo url('guru/perangkat') ?>">
+                        <iconify-icon icon="solar:document-add-linear" class="menu-icon"></iconify-icon>
+                        <span>Perangkat Pembelajaran</span>
+                    </a>
+                </li>
+                <li>
                     <a href="<?php echo url('guru/jadwal') ?>">
                         <iconify-icon icon="akar-icons:schedule" class="menu-icon"></iconify-icon>
                         <span>Jadwal Saya</span>
@@ -142,6 +148,20 @@
             </li>
 
             <li>
+                <a href="<?php echo url('buku_induk_siswa') ?>">
+                    <iconify-icon icon="solar:book-bookmark-linear" class="menu-icon"></iconify-icon>
+                    <span>Buku Induk Siswa</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="<?php echo url('alumni') ?>">
+                    <iconify-icon icon="solar:archive-linear" class="menu-icon"></iconify-icon>
+                    <span>Alumni</span>
+                </a>
+            </li>
+
+            <li>
                 <a href="<?php echo url('sync_dapodik') ?>">
                     <iconify-icon icon="lucide:refresh-cw" class="menu-icon"></iconify-icon>
                     <span>Sinkron Dapodik</span>
@@ -154,6 +174,8 @@
             $CI->db->join('lembaga l', 'p.id_lembaga = l.id_lembaga');
             $CI->db->join('master_tingkat_sekolah t', 'p.id_tingkat_sekolah = t.id_tingkat_sekolah');
             $CI->db->join('rombel r', 'p.id_rombel = r.id_rombel');
+            $CI->db->join('pembelajaran_tahun_pelajaran tp', 'p.id_tahun_pelajaran = tp.id_tahun_pelajaran');
+            $CI->db->where('tp.status', 'Aktif');
             $CI->db->order_by('l.nama_lembaga', 'ASC');
             $CI->db->order_by('t.tingkat_angka', 'ASC');
             $CI->db->order_by('r.nama_rombel', 'ASC');
@@ -182,6 +204,13 @@
                 </li>
             <?php endforeach; ?>
 
+            <li>
+                <a href="<?php echo url('siswa/nonaktif') ?>">
+                    <iconify-icon icon="material-symbols:archive-outline" class="menu-icon"></iconify-icon>
+                    <span>Data Siswa Tidak Aktif</span>
+                </a>
+            </li>
+
 
             <li class="sidebar-menu-group-title">Pembelajaran</li>
 
@@ -199,6 +228,12 @@
                         </a>
                     </li>
                     <li>
+                        <a href="<?php echo url('pembelajaran/nonaktif') ?>">
+                            <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
+                            Data Tidak Aktif
+                        </a>
+                    </li>
+                    <li>
                         <a href="<?php echo url('pembelajaran/tambah') ?>">
                             <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
                             Atur Pembelajaran Baru
@@ -213,6 +248,18 @@
                     <span>Jadwal Pelajaran</span>
                 </a>
             </li>
+            <li>
+                <a href="<?php echo url('jadwal_pelajaran/nonaktif') ?>">
+                    <iconify-icon icon="solar:archive-linear" class="menu-icon"></iconify-icon>
+                    <span>Jadwal Tidak Aktif</span>
+                </a>
+            </li>
+            <li>
+                <a href="<?php echo url('perangkat_pembelajaran') ?>">
+                    <iconify-icon icon="solar:document-add-linear" class="menu-icon"></iconify-icon>
+                    <span>Perangkat Pembelajaran</span>
+                </a>
+            </li>
 
             <li class="dropdown">
                 <a href="javascript:void(0)">
@@ -224,6 +271,12 @@
                         <a href="<?php echo url('nilai_siswa') ?>">
                             <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
                             Input Nilai
+                        </a>
+                    </li>
+                    <li>
+                        <a href="<?php echo url('nilai_siswa/nonaktif') ?>">
+                            <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
+                            Data Tidak Aktif
                         </a>
                     </li>
                     <li>
@@ -303,6 +356,12 @@
                 <a href="<?php echo url('master/rombel') ?>" class="sidebar-menu-link">
                     <iconify-icon icon="material-symbols:database" class="menu-icon"></iconify-icon>
                     <span>Master Rombel</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="<?php echo url('master/rombelNonaktif') ?>" class="sidebar-menu-link">
+                    <iconify-icon icon="material-symbols:archive-outline" class="menu-icon"></iconify-icon>
+                    <span>Master Rombel Nonaktif</span>
                 </a>
             </li>
 

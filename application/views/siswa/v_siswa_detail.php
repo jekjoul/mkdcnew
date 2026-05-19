@@ -47,11 +47,17 @@
         <div class="col-lg-8">
             <div class="card h-100">
                 <div class="card-body p-24">
-                    <ul class="nav border-gradient-tab nav-pills mb-20 d-inline-flex" role="tablist">
-                        <li class="nav-item"><button class="nav-link px-24 active" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button">Profil</button></li>
-                        <li class="nav-item"><button class="nav-link px-24" data-bs-toggle="pill" data-bs-target="#pills-arsip" type="button">Arsip</button></li>
-                        <li class="nav-item"><button class="nav-link px-24" data-bs-toggle="pill" data-bs-target="#pills-setting" type="button">Setting</button></li>
-                    </ul>
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-20">
+                        <ul class="nav border-gradient-tab nav-pills d-inline-flex" role="tablist">
+                            <li class="nav-item"><button class="nav-link px-24 active" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button">Profil</button></li>
+                            <li class="nav-item"><button class="nav-link px-24" data-bs-toggle="pill" data-bs-target="#pills-arsip" type="button">Arsip</button></li>
+                            <li class="nav-item"><button class="nav-link px-24" data-bs-toggle="pill" data-bs-target="#pills-setting" type="button">Setting</button></li>
+                        </ul>
+                        <button type="button" class="btn btn-warning-600 text-light radius-8 px-20 py-11 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalMutasiSiswa">
+                            <iconify-icon icon="solar:logout-3-linear" class="text-xl"></iconify-icon>
+                            Keluar / Mutasi
+                        </button>
+                    </div>
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="pills-profile">
                             <div class="card shadow">
@@ -65,9 +71,17 @@
                                             'Jenis Kelamin' => $row->jenis_kelamin,
                                             'Agama' => $row->agama,
                                             'No KK' => $row->no_kk,
+                                            'No Ijazah' => isset($row->no_ijazah) ? $row->no_ijazah : null,
+                                            'Kewarganegaraan' => isset($row->kewarganegaraan) ? $row->kewarganegaraan : null,
+                                            'Anak Ke' => isset($row->anak_ke) ? $row->anak_ke : null,
                                             'Tanggal Pendaftaran' => $row->tanggal_pendaftaran,
                                             'Status Pendaftaran' => $row->status_pendaftaran,
+                                            'Sekolah Asal' => isset($row->sekolah_asal) ? $row->sekolah_asal : null,
                                             'Status Keaktifan' => $row->status_keaktifan,
+                                            'Jenis Tempat Tinggal' => isset($row->jenis_tempat_tinggal) ? $row->jenis_tempat_tinggal : null,
+                                            'Alat Transportasi' => isset($row->alat_transportasi) ? $row->alat_transportasi : null,
+                                            'Jarak ke Sekolah' => isset($row->jarak_ke_sekolah) ? $row->jarak_ke_sekolah : null,
+                                            'Koordinat' => isset($row->koordinat) ? $row->koordinat : null,
                                         ];
                                         foreach ($items as $label => $value): ?>
                                             <div class="col-md-6">
@@ -185,6 +199,34 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalMutasiSiswa" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content radius-16 bg-base">
+            <div class="modal-header py-16 px-24">
+                <h1 class="modal-title fs-5">Keluar / Mutasi Siswa</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="<?php echo url('siswa/mutasi/' . $row->id_siswa) ?>" method="post">
+                <div class="modal-body p-24">
+                    <label class="form-label fw-semibold text-primary-light text-sm mb-8">Status Alumni</label>
+                    <select class="form-control radius-8 form-select" name="status_alumni" required>
+                        <option value="Keluar">Keluar</option>
+                        <option value="Pindah">Pindah / Mutasi</option>
+                        <option value="Lulus">Lulus</option>
+                    </select>
+                    <div class="alert alert-warning mt-16 mb-0">
+                        Data siswa, foto, dokumen, nilai, dan riwayat pembelajaran akan dipindahkan ke data alumni.
+                    </div>
+                </div>
+                <div class="modal-footer py-16 px-24">
+                    <button type="button" class="btn btn-outline-secondary radius-8" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-warning-600 text-light radius-8" onclick="return confirm('Pindahkan siswa ini ke data alumni?')">Pindahkan</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

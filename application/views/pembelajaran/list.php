@@ -2,9 +2,10 @@
 <div class="dashboard-main-body">
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center bg-warning-900">
-            <h6 class="mb-0 text-light">Daftar Pembelajaran</h6>
-            <a href="<?php echo url('pembelajaran/tambah') ?>" class="btn btn-warning-600 btn-sm d-flex align-items-center gap-2">
-                <iconify-icon icon="solar:add-circle-linear"></iconify-icon> Atur Baru
+            <h6 class="mb-0 text-light"><?php echo !empty($is_nonaktif) ? 'Data Pembelajaran Tidak Aktif' : 'Daftar Pembelajaran Aktif'; ?></h6>
+            <a href="<?php echo url(!empty($is_nonaktif) ? 'pembelajaran' : 'pembelajaran/nonaktif') ?>" class="btn btn-warning-600 btn-sm d-flex align-items-center gap-2">
+                <iconify-icon icon="<?php echo !empty($is_nonaktif) ? 'solar:arrow-left-linear' : 'solar:archive-linear'; ?>"></iconify-icon>
+                <?php echo !empty($is_nonaktif) ? 'Kembali ke Aktif' : 'Data Tidak Aktif'; ?>
             </a>
         </div>
         <div class="card-body">
@@ -44,6 +45,9 @@
                                         </a>
                                         <a href="<?php echo url('nilai_siswa') ?>" class="btn btn-sm btn-outline-info d-inline-flex align-items-center gap-1">
                                             <iconify-icon icon="solar:clipboard-list-linear"></iconify-icon> Nilai
+                                        </a>
+                                        <a href="<?php echo url('perangkat_pembelajaran') ?>" class="btn btn-sm btn-outline-success d-inline-flex align-items-center gap-1">
+                                            <iconify-icon icon="solar:document-add-linear"></iconify-icon> Perangkat
                                         </a>
                                     </div>
                                 </td>

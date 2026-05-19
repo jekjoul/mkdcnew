@@ -10,6 +10,8 @@ class Guru extends MY_Controller
         parent::__construct();
         $this->ensureUsersPtkColumn();
         $this->ensureNilaiTables();
+        $this->load->model('Perangkat_pembelajaran_model', 'perangkat_model');
+        $this->perangkat_model->ensureTables();
     }
 
     public function index()
@@ -51,6 +53,93 @@ class Guru extends MY_Controller
         $this->page_data['ptk'] = $ptk;
         $this->page_data['items'] = $this->getPembelajaranMapel($ptk->id_ptk);
         $this->load->view('guru/pembelajaran', $this->page_data);
+    }
+
+    public function perangkat()
+    {
+        $ptk = $this->currentPtk();
+        if (!$ptk) {
+            return $this->notLinked();
+        }
+
+        $this->setPage('Portal Guru', 'Perangkat Pembelajaran', 'guru/perangkat', 'solar:document-add-linear');
+        $this->page_data['ptk'] = $ptk;
+        $this->page_data['items'] = $this->perangkat_model->getGuruItems($ptk->id_ptk);
+        $this->load->view('guru/perangkat', $this->page_data);
+    }
+
+    public function perangkat_detail($id_pembelajaran_mapel)
+    {
+        $ptk = $this->currentPtk();
+        if (!$ptk) {
+            return $this->notLinked();
+        }
+
+        $item = $this->perangkat_model->getPembelajaranMapel($id_pembelajaran_mapel);
+        if (!$item || (int) $item->id_ptk !== (int) $ptk->id_ptk) {
+            show_404();
+        }
+
+        $perangkat = $this->perangkat_model->getPerangkatByMapel($id_pembelajaran_mapel);
+        $this->setPage('Portal Guru', 'Detail Perangkat', 'guru/perangkat_detail/' . $id_pembelajaran_mapel, 'solar:document-add-linear');
+        $this->page_data['ptk'] = $ptk;
+        $this->page_data['item'] = $item;
+        $this->page_data['perangkat'] = $perangkat;
+        $this->page_data['materi'] = $perangkat ? $this->perangkat_model->getMateri($perangkat->id_perangkat) : [];
+        $this->page_data['back_url'] = url('guru/perangkat');
+        $this->page_data['generate_url'] = url('guru/generate_perangkat/' . $id_pembelajaran_mapel);
+        $this->page_data['save_url'] = $perangkat ? url('guru/simpan_perangkat/' . $perangkat->id_perangkat) : '#';
+        $this->load->view('perangkat_pembelajaran/detail', $this->page_data);
+    }
+
+    public function generate_perangkat($id_pembelajaran_mapel)
+    {
+        postAllowed();
+        $ptk = $this->currentPtk();
+        if (!$ptk) {
+            return $this->notLinked();
+        }
+
+        $item = $this->perangkat_model->getPembelajaranMapel($id_pembelajaran_mapel);
+        if (!$item || (int) $item->id_ptk !== (int) $ptk->id_ptk) {
+            show_404();
+        }
+
+        $cadangan_hari = post('cadangan_hari') !== false ? (int) post('cadangan_hari') : 28;
+        $this->perangkat_model->generate($id_pembelajaran_mapel, $cadangan_hari);
+        $this->session->set_flashdata('alert-type', 'success');
+        $this->session->set_flashdata('alert', 'Perangkat pembelajaran berhasil digenerate.');
+        redirect('guru/perangkat_detail/' . $id_pembelajaran_mapel);
+    }
+
+    public function simpan_perangkat($id_perangkat)
+    {
+        postAllowed();
+        $ptk = $this->currentPtk();
+        if (!$ptk) {
+            return $this->notLinked();
+        }
+
+        $row = $this->db->get_where('perangkat_pembelajaran', ['id_perangkat' => (int) $id_perangkat])->row();
+        if (!$row) {
+            show_404();
+        }
+
+        $item = $this->perangkat_model->getPembelajaranMapel($row->id_pembelajaran_mapel);
+        if (!$item || (int) $item->id_ptk !== (int) $ptk->id_ptk) {
+            show_404();
+        }
+
+        $this->perangkat_model->savePerangkat($id_perangkat, [
+            'cp' => post('cp'),
+            'atp' => post('atp'),
+            'modul_ajar' => post('modul_ajar'),
+        ]);
+        $this->perangkat_model->saveMateri($this->input->post('materi', true));
+
+        $this->session->set_flashdata('alert-type', 'success');
+        $this->session->set_flashdata('alert', 'Perangkat pembelajaran berhasil disimpan.');
+        redirect('guru/perangkat_detail/' . $row->id_pembelajaran_mapel);
     }
 
     public function jadwal()

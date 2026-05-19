@@ -29,6 +29,9 @@
                                     <a href="<?php echo url('guru/input_nilai/' . $row->id_pembelajaran_mapel) ?>" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1">
                                         <iconify-icon icon="solar:clipboard-list-linear"></iconify-icon> Input Nilai
                                     </a>
+                                    <a href="<?php echo url('guru/perangkat_detail/' . $row->id_pembelajaran_mapel) ?>" class="btn btn-sm btn-outline-success d-inline-flex align-items-center gap-1">
+                                        <iconify-icon icon="solar:document-add-linear"></iconify-icon> Perangkat
+                                    </a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

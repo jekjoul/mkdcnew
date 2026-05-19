@@ -15,9 +15,17 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                     <div class="d-flex flex-wrap align-items-center gap-3">
                         <h6 class="text-light"><?php echo isset($judul_tabel) ? $judul_tabel : 'Data Siswa'; ?></h6>
                     </div>
-                    <a href="<?php echo url(isset($tambah_url) ? $tambah_url : 'siswa/siswaAdd'); ?>" class="btn btn-primary-600 radius-8 px-20 py-11 d-flex align-items-center gap-2">
-                        <iconify-icon icon="lucide:plus" class="text-xl"></iconify-icon> <?php echo isset($tambah_label) ? $tambah_label : 'Tambah Siswa'; ?>
-                    </a>
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                        <a href="<?php echo url(!empty($is_nonaktif) ? 'siswa/all' : 'siswa/nonaktif') ?>" class="btn btn-warning-600 radius-8 px-20 py-11 d-flex align-items-center gap-2">
+                            <iconify-icon icon="<?php echo !empty($is_nonaktif) ? 'solar:arrow-left-linear' : 'solar:archive-linear'; ?>" class="text-xl"></iconify-icon>
+                            <?php echo !empty($is_nonaktif) ? 'Kembali ke Aktif' : 'Data Tidak Aktif'; ?>
+                        </a>
+                        <?php if (empty($is_nonaktif)): ?>
+                            <a href="<?php echo url(isset($tambah_url) ? $tambah_url : 'siswa/siswaAdd'); ?>" class="btn btn-primary-600 radius-8 px-20 py-11 d-flex align-items-center gap-2">
+                                <iconify-icon icon="lucide:plus" class="text-xl"></iconify-icon> <?php echo isset($tambah_label) ? $tambah_label : 'Tambah Siswa'; ?>
+                            </a>
+                        <?php endif; ?>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">

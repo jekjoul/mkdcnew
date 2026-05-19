@@ -13,10 +13,21 @@ class Pembelajaran extends MY_Controller
 
     public function index()
     {
+        $this->loadPembelajaranList('Aktif');
+    }
+
+    public function nonaktif()
+    {
+        $this->loadPembelajaranList('Nonaktif');
+    }
+
+    private function loadPembelajaranList($status_tahun)
+    {
+        $is_nonaktif = $status_tahun !== 'Aktif';
         $this->page_data['page']->title = 'Pembelajaran';
-        $this->page_data['page']->titleUrl = 'pembelajaran';
-        $this->page_data['page']->subtitle = 'Daftar Pembelajaran';
-        $this->page_data['page']->subtitleUrl = 'pembelajaran';
+        $this->page_data['page']->titleUrl = $is_nonaktif ? 'pembelajaran/nonaktif' : 'pembelajaran';
+        $this->page_data['page']->subtitle = $is_nonaktif ? 'Data Pembelajaran Tidak Aktif' : 'Daftar Pembelajaran';
+        $this->page_data['page']->subtitleUrl = $is_nonaktif ? 'pembelajaran/nonaktif' : 'pembelajaran';
         $this->page_data['page']->icon = 'solar:notebook-bookmark-linear';
 
         $this->db->select('p.*, l.nama_lembaga, t.nama_tingkat, r.nama_rombel, tp.tahun_pelajaran, tp.semester, wali.nama_ptk AS nama_wali_kelas');
@@ -26,7 +37,17 @@ class Pembelajaran extends MY_Controller
         $this->db->join('rombel r', 'p.id_rombel = r.id_rombel');
         $this->db->join('pembelajaran_tahun_pelajaran tp', 'p.id_tahun_pelajaran = tp.id_tahun_pelajaran');
         $this->db->join('ptk wali', 'wali.id_ptk = p.id_ptk_wali', 'left');
+        if ($status_tahun === 'Aktif') {
+            $this->db->where('tp.status', 'Aktif');
+        } else {
+            $this->db->where('tp.status !=', 'Aktif');
+        }
+        $this->db->order_by('tp.id_tahun_pelajaran', 'DESC');
+        $this->db->order_by('l.nama_lembaga', 'ASC');
+        $this->db->order_by('t.tingkat_angka', 'ASC');
+        $this->db->order_by('r.nama_rombel', 'ASC');
         $this->page_data['pembelajaran'] = $this->db->get()->result();
+        $this->page_data['is_nonaktif'] = $is_nonaktif;
 
         $this->load->view('pembelajaran/list', $this->page_data);
     }
@@ -257,6 +278,8 @@ class Pembelajaran extends MY_Controller
     {
         $this->page_data['lembaga'] = $this->master_model->getAllLembaga();
         $this->page_data['tingkat'] = $this->master_model->getTingkatSekolah();
+        $this->db->where('status', 'Aktif');
+        $this->db->order_by('nama_rombel', 'ASC');
         $this->page_data['rombel']  = ($q = $this->db->get('rombel')) ? $q->result() : [];
         $this->db->where('status_keaktifan', 'Aktif');
         $this->db->order_by('nama_ptk', 'ASC');

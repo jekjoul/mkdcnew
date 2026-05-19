@@ -12,14 +12,26 @@ class Nilai_siswa extends MY_Controller
 
     public function index()
     {
+        $this->loadNilaiList('Aktif');
+    }
+
+    public function nonaktif()
+    {
+        $this->loadNilaiList('Nonaktif');
+    }
+
+    private function loadNilaiList($status_tahun)
+    {
+        $is_nonaktif = $status_tahun !== 'Aktif';
         $this->page_data['page']->title = 'Nilai Siswa';
-        $this->page_data['page']->titleUrl = 'nilai_siswa';
-        $this->page_data['page']->subtitle = 'Daftar Nilai';
-        $this->page_data['page']->subtitleUrl = 'nilai_siswa';
+        $this->page_data['page']->titleUrl = $is_nonaktif ? 'nilai_siswa/nonaktif' : 'nilai_siswa';
+        $this->page_data['page']->subtitle = $is_nonaktif ? 'Data Nilai Tidak Aktif' : 'Daftar Nilai';
+        $this->page_data['page']->subtitleUrl = $is_nonaktif ? 'nilai_siswa/nonaktif' : 'nilai_siswa';
         $this->page_data['page']->icon = 'solar:clipboard-list-linear';
 
         $this->page_data['default_setting'] = $this->getSetting(0);
-        $this->page_data['items'] = $this->getPembelajaranMapel();
+        $this->page_data['items'] = $this->getPembelajaranMapel($status_tahun);
+        $this->page_data['is_nonaktif'] = $is_nonaktif;
 
         $this->load->view('nilai_siswa/list', $this->page_data);
     }
@@ -168,7 +180,7 @@ class Nilai_siswa extends MY_Controller
         redirect($id_pembelajaran_mapel > 0 ? 'nilai_siswa/input/' . $id_pembelajaran_mapel : 'nilai_siswa');
     }
 
-    private function getPembelajaranMapel()
+    private function getPembelajaranMapel($status_tahun = 'Aktif')
     {
         $this->db->select('pm.id_pembelajaran_mapel, pm.id_pembelajaran, pm.id_mapel, pm.id_ptk, p.id_tahun_pelajaran, l.nama_lembaga, t.nama_tingkat, t.tingkat_angka, r.nama_rombel, tp.tahun_pelajaran, tp.semester, m.nama_mapel, m.mapel_singkat, ptk.nama_ptk, COUNT(DISTINCT ps.peserta_didik_id) AS jumlah_siswa, COUNT(DISTINCT ns.id_nilai_siswa) AS jumlah_dinilai, np.id_pengaturan_nilai');
         $this->db->from('pembelajaran_mapel pm');
@@ -182,8 +194,13 @@ class Nilai_siswa extends MY_Controller
         $this->db->join('pembelajaran_siswa ps', 'ps.id_pembelajaran = p.id_pembelajaran', 'left');
         $this->db->join('nilai_siswa ns', 'ns.id_pembelajaran_mapel = pm.id_pembelajaran_mapel', 'left');
         $this->db->join('nilai_siswa_pengaturan np', 'np.id_pembelajaran_mapel = pm.id_pembelajaran_mapel', 'left');
+        if ($status_tahun === 'Aktif') {
+            $this->db->where('tp.status', 'Aktif');
+        } else {
+            $this->db->where('tp.status !=', 'Aktif');
+        }
         $this->db->group_by('pm.id_pembelajaran_mapel');
-        $this->db->order_by('tp.status', 'ASC');
+        $this->db->order_by('tp.id_tahun_pelajaran', 'DESC');
         $this->db->order_by('l.nama_lembaga', 'ASC');
         $this->db->order_by('t.tingkat_angka', 'ASC');
         $this->db->order_by('r.nama_rombel', 'ASC');
