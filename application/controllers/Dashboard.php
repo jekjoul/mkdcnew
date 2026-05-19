@@ -17,6 +17,27 @@ class Dashboard extends MY_Controller
 		$this->page_data['page']->subtitleUrl = 'dashboard';
 		$this->page_data['page']->icon = 'solar:home-angle-2-linear';
 
+		// 1. Total Seluruh Siswa Aktif
+		$this->page_data['total_siswa'] = $this->db->where('status_keaktifan', 'Aktif')->count_all_results('siswa');
+
+		// 2. Total Pegawai (PTK Aktif)
+		$this->page_data['total_ptk'] = $this->db->where('status_keaktifan', 'Aktif')->count_all_results('ptk');
+
+		// 3. Total Alumni
+		$this->page_data['total_alumni'] = $this->db->table_exists('alumni') ? $this->db->count_all('alumni') : 0;
+
+		// Query dasar untuk menghitung siswa per lembaga pada tahun pelajaran aktif
+		$base_query = "SELECT COUNT(DISTINCT ps.peserta_didik_id) as total 
+					   FROM pembelajaran_siswa ps 
+					   JOIN pembelajaran p ON p.id_pembelajaran = ps.id_pembelajaran 
+					   JOIN lembaga l ON l.id_lembaga = p.id_lembaga 
+					   JOIN pembelajaran_tahun_pelajaran tp ON tp.id_tahun_pelajaran = p.id_tahun_pelajaran 
+					   WHERE tp.status = 'Aktif'";
+
+		$this->page_data['total_smp'] = $this->db->query("$base_query AND l.nama_lembaga LIKE '%SMP%'")->row()->total;
+		$this->page_data['total_sma'] = $this->db->query("$base_query AND l.nama_lembaga LIKE '%SMA%'")->row()->total;
+		$this->page_data['total_ponpes'] = $this->db->query("$base_query AND (l.nama_lembaga LIKE '%Ponpes%' OR l.nama_lembaga LIKE '%Pondok%')")->row()->total;
+
 		$this->load->view('dashboard', $this->page_data);
 	}
 }

@@ -20,15 +20,16 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                             <?php
                             $no = 1;
                             foreach ($lembaga as $row):
+                                $gradient_no = ($no % 5 == 0) ? 5 : ($no % 5); // Memastikan class CSS gradient 1-5 tetap valid
                             ?>
                                 <div class="col-xxl-4 col-lg-4 pb-3">
                                     <a href="<?php echo url('lembaga/detail/' . $row->id_lembaga) ?>" class="fullwidth card-hover">
-                                        <div class="card shadow-none border bg-gradient-start-<?= $no; ?>">
+                                        <div class="card shadow-none border bg-gradient-start-<?= $gradient_no; ?>">
                                             <div class="card-body p-20">
                                                 <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                                                     <div>
                                                         <p class="fw-medium text-primary-light mb-1"><?= $row->nama_lembaga ?></p>
-                                                        <h5 class="mb-0">368 Siswa [hc]</h5>
+                                                        <h5 class="mb-0"><?= number_format($row->total_siswa) ?> Siswa</h5>
                                                     </div>
                                                     <div
                                                         class="rounded-circle d-flex justify-content-center align-items-center">

@@ -17,7 +17,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                             <tr>
                                 <td>Kepala Sekolah </td>
                                 <td style="width: 20px; text-align: center;">:</td>
-                                <td class="fw-semibold">[hc]</td>
+                                <td class="fw-semibold"><?= $lembaga->nama_kepsek ?></td>
                             </tr>
                             <tr>
                                 <td>NPSN</td>
@@ -122,22 +122,22 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                                 <tr>
                                                     <td>Desa/Kel.</td>
                                                     <td>:</td>
-                                                    <td>Kertamandala[hc]</td>
+                                                    <td><?= $lembaga->kelurahan ?></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Kecamatan</td>
                                                     <td>:</td>
-                                                    <td>Panjalu[hc]</td>
+                                                    <td><?= $lembaga->kecamatan ?></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Kabupaten</td>
                                                     <td>:</td>
-                                                    <td>Ciamis[hc]</td>
+                                                    <td><?= $lembaga->kabupaten ?></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Provinsi</td>
                                                     <td>:</td>
-                                                    <td>Jawa Barat[hc]</td>
+                                                    <td><?= $lembaga->provinsi ?></td>
                                                 </tr>
                                             </table>
                                         </div>
