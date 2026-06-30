@@ -12,6 +12,7 @@ class Nilai_siswa extends MY_Controller
 
     public function index()
     {
+        ifPermissions('nilai_siswa_list');
         $this->loadNilaiList('Aktif');
     }
 

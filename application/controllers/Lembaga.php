@@ -11,6 +11,7 @@ class Lembaga extends MY_Controller
 
 	public function index()
 	{
+        ifPermissions('lembaga_list');
 		$this->page_data['page']->title = 'Lembaga';
 		$this->page_data['page']->titleUrl = 'lembaga';
 		$this->page_data['page']->subtitle = 'Daftar Lembaga';

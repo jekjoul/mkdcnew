@@ -13,13 +13,81 @@ class Ptk extends MY_Controller
 
 	public function ptk()
 	{
+		ifPermissions('ptk_list');
 		$this->page_data['page']->title = 'PTK';
 		$this->page_data['page']->titleUrl = 'ptk/ptk';
 		$this->page_data['page']->subtitle = 'Daftar PTK';
 		$this->page_data['page']->subtitleUrl = 'ptk/ptk';
 		$this->page_data['page']->icon = 'icon-park-outline:user-business';
-		$this->page_data['ptk'] = $this->db->get_where($this->table, ['status_keaktifan' => 'Aktif'])->result();
+		
+		$ptk_list = $this->db->get_where($this->table, ['status_keaktifan' => 'Aktif'])->result();
+		
+		$users = $this->db->select('id_ptk, username')->get_where('users', 'id_ptk IS NOT NULL')->result();
+		$user_map = [];
+		foreach ($users as $u) {
+			$user_map[$u->id_ptk] = $u->username;
+		}
+		
+		$this->page_data['ptk'] = $ptk_list;
+		$this->page_data['user_map'] = $user_map;
 		$this->load->view('ptk/v_ptk_list', $this->page_data);
+	}
+
+	public function buat_akun($id_ptk)
+	{
+		ifPermissions('ptk_buat_akun');
+		
+		$ptk = $this->db->get_where($this->table, ['id_ptk' => $id_ptk])->row();
+		if (!$ptk) {
+			show_404();
+		}
+		
+		$existing = $this->db->get_where('users', ['id_ptk' => $id_ptk])->row();
+		if ($existing) {
+			$this->session->set_flashdata('alert-type', 'warning');
+			$this->session->set_flashdata('alert', 'Akun MKDC untuk PTK ' . $ptk->nama_ptk . ' sudah pernah dibuat.');
+			redirect('ptk/ptk');
+		}
+		
+		$username = strtolower(str_replace(' ', '', preg_replace('/[^a-zA-Z0-9]/', '', $ptk->nama_ptk)));
+		$i = 1;
+		$orig_username = $username;
+		while ($this->db->get_where('users', ['username' => $username])->row()) {
+			$username = $orig_username . $i;
+			$i++;
+		}
+		
+		$email = !empty($ptk->email) ? $ptk->email : $username . '@mkdc.sch.id';
+		$i = 1;
+		$orig_email = $email;
+		while ($this->db->get_where('users', ['email' => $email])->row()) {
+			$email = 'ptk' . $i . '_' . $orig_email;
+			$i++;
+		}
+		
+		$default_password = !empty($ptk->nuptk) ? $ptk->nuptk : '123456';
+		$hashed_password = hash("sha256", $default_password);
+		
+		$user_data = [
+			'name' => $ptk->nama_ptk,
+			'username' => $username,
+			'email' => $email,
+			'password' => $hashed_password,
+			'role' => 4, // Role 4 is Guru
+			'id_ptk' => $ptk->id_ptk,
+			'status' => 1
+		];
+		
+		if ($this->db->insert('users', $user_data)) {
+			$this->activity_model->add(logged('name') . ' Membuat akun MKDC secara otomatis untuk PTK: ' . $ptk->nama_ptk, logged('id'));
+			$this->session->set_flashdata('alert-type', 'success');
+			$this->session->set_flashdata('alert', 'Akun berhasil dibuat. Username: ' . $username . ', Password: ' . $default_password);
+		} else {
+			$this->session->set_flashdata('alert-type', 'danger');
+			$this->session->set_flashdata('alert', 'Gagal membuat akun MKDC.');
+		}
+		
+		redirect('ptk/ptk');
 	}
 
 	public function ptkDetail($id)

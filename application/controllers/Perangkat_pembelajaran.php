@@ -12,6 +12,7 @@ class Perangkat_pembelajaran extends MY_Controller
 
     public function index()
     {
+        ifPermissions('perangkat_pembelajaran_list');
         $this->page_data['page']->title = 'Pembelajaran';
         $this->page_data['page']->titleUrl = 'perangkat_pembelajaran';
         $this->page_data['page']->subtitle = 'Perangkat Pembelajaran';

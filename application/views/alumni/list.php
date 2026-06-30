@@ -39,6 +39,15 @@
                                         <a href="<?php echo url('alumni/detail/' . $row->id_alumni); ?>" class="w-32-px h-32-px bg-info-focus text-info-main rounded-circle d-inline-flex align-items-center justify-content-center" data-bs-toggle="tooltip" title="Lihat Detail">
                                             <iconify-icon icon="lucide:eye"></iconify-icon>
                                         </a>
+                                        <?php if (empty($row->id_siswa_kembali)): ?>
+                                            <a href="<?php echo url('alumni/detail/' . $row->id_alumni); ?>" class="w-32-px h-32-px bg-success-100 text-success-600 rounded-circle d-inline-flex align-items-center justify-content-center" data-bs-toggle="tooltip" title="Kembalikan Jadi Siswa">
+                                                <iconify-icon icon="solar:user-check-linear"></iconify-icon>
+                                            </a>
+                                        <?php else: ?>
+                                            <a href="<?php echo url('siswa/detail/' . $row->id_siswa_kembali); ?>" class="w-32-px h-32-px bg-success-100 text-success-600 rounded-circle d-inline-flex align-items-center justify-content-center" data-bs-toggle="tooltip" title="Lihat Siswa Aktif">
+                                                <iconify-icon icon="solar:user-linear"></iconify-icon>
+                                            </a>
+                                        <?php endif; ?>
                                     </div>
                                 </td>
                             </tr>

@@ -11,6 +11,7 @@ class Tahun_pelajaran extends MY_Controller
 
     public function index()
     {
+        ifPermissions('tahun_pelajaran_list');
         $this->page_data['page']->title = 'Pembelajaran';
         $this->page_data['page']->titleUrl = 'tahun_pelajaran';
         $this->page_data['page']->subtitle = 'Tahun Pelajaran';
@@ -85,6 +86,7 @@ class Tahun_pelajaran extends MY_Controller
 
     public function add()
     {
+        ifPermissions('tahun_pelajaran_add');
         $this->page_data['page']->title = 'Pembelajaran';
         $this->page_data['page']->titleUrl = 'tahun_pelajaran';
         $this->page_data['page']->subtitle = 'Tambah Tahun Pelajaran';
@@ -96,6 +98,7 @@ class Tahun_pelajaran extends MY_Controller
 
     public function edit($id)
     {
+        ifPermissions('tahun_pelajaran_edit');
         $this->page_data['row'] = $this->tahun_pelajaran_model->getById($id);
         if (!$this->page_data['row']) show_404();
 
@@ -109,6 +112,7 @@ class Tahun_pelajaran extends MY_Controller
 
     public function save()
     {
+        ifPermissions('tahun_pelajaran_add');
         postAllowed();
         $tahun = post('tahun_pelajaran');
         $semester = post('semester');
@@ -140,6 +144,7 @@ class Tahun_pelajaran extends MY_Controller
 
     public function update($id)
     {
+        ifPermissions('tahun_pelajaran_edit');
         postAllowed();
         $tahun = post('tahun_pelajaran');
         $semester = post('semester');
@@ -172,6 +177,7 @@ class Tahun_pelajaran extends MY_Controller
 
     public function delete($id)
     {
+        ifPermissions('tahun_pelajaran_delete');
         $row = $this->tahun_pelajaran_model->getById($id);
         if ($row) {
             $this->tahun_pelajaran_model->ensureHariEfektifTable();

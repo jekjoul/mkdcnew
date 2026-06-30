@@ -11,6 +11,7 @@ class Surat extends MY_Controller
 
     public function index()
     {
+        ifPermissions('surat_list');
         redirect('surat/keluar');
     }
 

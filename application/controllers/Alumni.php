@@ -11,6 +11,7 @@ class Alumni extends MY_Controller
 
     public function index()
     {
+        ifPermissions('alumni_list');
         $this->page_data['page']->title = 'Alumni';
         $this->page_data['page']->titleUrl = 'alumni';
         $this->page_data['page']->subtitle = 'Data Alumni';
@@ -62,6 +63,43 @@ class Alumni extends MY_Controller
         $this->page_data['nilai'] = $this->db->get()->result();
 
         $this->load->view('alumni/detail', $this->page_data);
+    }
+
+    public function kembalikan($id_alumni)
+    {
+        postAllowed();
+        $alumni = $this->db->get_where('alumni', ['id_alumni' => (int) $id_alumni])->row_array();
+        if (!$alumni) {
+            show_404();
+        }
+
+        if (!empty($alumni['id_siswa_kembali'])) {
+            $this->session->set_flashdata('alert-type', 'warning');
+            $this->session->set_flashdata('alert', 'Alumni ini sudah pernah dikembalikan menjadi siswa.');
+            redirect('siswa/detail/' . $alumni['id_siswa_kembali']);
+            return;
+        }
+
+        $existing = $this->findExistingActiveSiswa($alumni);
+        if ($existing) {
+            $this->session->set_flashdata('alert-type', 'warning');
+            $this->session->set_flashdata('alert', 'Siswa aktif dengan NISN/NIK yang sama sudah ada: ' . $existing->nama_siswa);
+            redirect('siswa/detail/' . $existing->id_siswa);
+            return;
+        }
+
+        $id_siswa = $this->restoreAlumniToSiswa($alumni);
+        if ($id_siswa) {
+            $this->activity_model->add(logged('name') . ' Mengembalikan alumni menjadi siswa: ' . $alumni['nama_siswa'], logged('id'));
+            $this->session->set_flashdata('alert-type', 'success');
+            $this->session->set_flashdata('alert', 'Alumni berhasil dikembalikan menjadi siswa aktif.');
+            redirect('siswa/detail/' . $id_siswa);
+            return;
+        }
+
+        $this->session->set_flashdata('alert-type', 'danger');
+        $this->session->set_flashdata('alert', 'Gagal mengembalikan alumni menjadi siswa.');
+        redirect('alumni/detail/' . $id_alumni);
     }
 
     public function dokumenSimpan($id_alumni)
@@ -150,6 +188,18 @@ class Alumni extends MY_Controller
         }
         if (!$this->db->field_exists('rombel_terakhir', 'alumni')) {
             $this->dbforge->add_column('alumni', ['rombel_terakhir' => ['type' => 'VARCHAR', 'constraint' => 150, 'null' => true]]);
+        }
+        if (!$this->db->field_exists('id_siswa_kembali', 'alumni')) {
+            $this->dbforge->add_column('alumni', ['id_siswa_kembali' => ['type' => 'INT', 'constraint' => 11, 'null' => true]]);
+        }
+        if (!$this->db->field_exists('tanggal_kembali', 'alumni')) {
+            $this->dbforge->add_column('alumni', ['tanggal_kembali' => ['type' => 'DATE', 'null' => true]]);
+        }
+        if ($this->db->table_exists('siswa') && !$this->db->field_exists('id_alumni_asal', 'siswa')) {
+            $this->dbforge->add_column('siswa', ['id_alumni_asal' => ['type' => 'INT', 'constraint' => 11, 'null' => true]]);
+        }
+        if ($this->db->table_exists('siswa') && !$this->db->field_exists('tanggal_kembali', 'siswa')) {
+            $this->dbforge->add_column('siswa', ['tanggal_kembali' => ['type' => 'DATE', 'null' => true]]);
         }
 
         if (!$this->db->table_exists('alumni_foto')) {
@@ -240,5 +290,124 @@ class Alumni extends MY_Controller
         if (is_file($path)) {
             unlink($path);
         }
+    }
+
+    private function findExistingActiveSiswa($alumni)
+    {
+        if (empty($alumni['nisn']) && empty($alumni['nik'])) {
+            return null;
+        }
+
+        $this->db->group_start();
+        if (!empty($alumni['nisn'])) {
+            $this->db->or_where('nisn', $alumni['nisn']);
+        }
+        if (!empty($alumni['nik'])) {
+            $this->db->or_where('nik', $alumni['nik']);
+        }
+        $this->db->group_end();
+        $this->db->where('status_keaktifan', 'Aktif');
+        return $this->db->get('siswa')->row();
+    }
+
+    private function restoreAlumniToSiswa($alumni)
+    {
+        $siswa_fields = $this->db->list_fields('siswa');
+        $siswa_data = [];
+        $skip = [
+            'id_alumni',
+            'id_siswa_asal',
+            'status_alumni',
+            'tanggal_alumni',
+            'sekolah_terakhir',
+            'rombel_terakhir',
+            'created_from_siswa_at',
+            'id_siswa_kembali',
+            'tanggal_kembali',
+        ];
+
+        foreach ($alumni as $field => $value) {
+            if (!in_array($field, $skip, true) && in_array($field, $siswa_fields, true)) {
+                $siswa_data[$field] = $value;
+            }
+        }
+
+        $tanggal_kembali = post('tanggal_kembali') ?: date('Y-m-d');
+        $siswa_data['status_keaktifan'] = 'Aktif';
+        $siswa_data['status_pendaftaran'] = post('status_pendaftaran') ?: 'Kembali';
+        $siswa_data['tanggal_pendaftaran'] = $tanggal_kembali;
+        $siswa_data['rombel'] = post('rombel') ?: null;
+        $siswa_data['nipd'] = post('nipd') !== false ? post('nipd') : (isset($alumni['nipd']) ? $alumni['nipd'] : null);
+        if (in_array('id_alumni_asal', $siswa_fields, true)) {
+            $siswa_data['id_alumni_asal'] = (int) $alumni['id_alumni'];
+        }
+        if (in_array('tanggal_kembali', $siswa_fields, true)) {
+            $siswa_data['tanggal_kembali'] = $tanggal_kembali;
+        }
+
+        $this->db->trans_start();
+        $this->db->insert('siswa', $siswa_data);
+        $id_siswa = $this->db->insert_id();
+
+        foreach ($this->db->get_where('alumni_foto', ['id_alumni' => (int) $alumni['id_alumni']])->result_array() as $foto) {
+            $file = $this->copyAlumniFile('uploads/alumni_foto/' . $foto['foto'], 'uploads/siswa_foto', 'siswa-' . $id_siswa . '-kembali');
+            if ($file) {
+                $this->db->insert('siswa_foto', [
+                    'id_siswa' => $id_siswa,
+                    'foto' => $file,
+                    'label' => $foto['label'] ?: 'Foto Kembali',
+                    'created_at' => date('Y-m-d H:i:s'),
+                ]);
+            }
+        }
+
+        foreach ($this->db->get_where('alumni_dokumen', ['id_alumni' => (int) $alumni['id_alumni']])->result_array() as $dokumen) {
+            $file = !empty($dokumen['berkas']) ? $this->copyAlumniFile('uploads/alumni_dokumen/' . $dokumen['berkas'], 'uploads/siswa_dokumen', 'siswa-' . $id_siswa . '-kembali') : null;
+            if (!$file) {
+                continue;
+            }
+            $this->db->insert('siswa_dokumen', [
+                'id_siswa' => $id_siswa,
+                'id_jenis_dokumen' => (int) $dokumen['id_jenis_dokumen'],
+                'nomor_dokumen' => $dokumen['nomor_dokumen'],
+                'tanggal_dokumen' => $dokumen['tanggal_dokumen'],
+                'berkas' => $file,
+                'keterangan' => $dokumen['keterangan'],
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
+            ]);
+        }
+
+        $this->db->where('id_alumni', (int) $alumni['id_alumni']);
+        $this->db->update('alumni', [
+            'status_alumni' => 'Dikembalikan',
+            'status_keaktifan' => 'Dikembalikan',
+            'id_siswa_kembali' => $id_siswa,
+            'tanggal_kembali' => $tanggal_kembali,
+        ]);
+
+        $this->db->trans_complete();
+        return $this->db->trans_status() ? $id_siswa : null;
+    }
+
+    private function copyAlumniFile($relative_source, $target_dir, $prefix)
+    {
+        $source = FCPATH . $relative_source;
+        if (!is_file($source)) {
+            $fallback = str_replace(['uploads/alumni_foto/', 'uploads/alumni_dokumen/'], ['uploads/siswa_foto/', 'uploads/siswa_dokumen/'], $relative_source);
+            $source = FCPATH . $fallback;
+            if (!is_file($source)) {
+                return null;
+            }
+        }
+
+        $target_path = FCPATH . trim($target_dir, '/\\') . '/';
+        if (!is_dir($target_path)) {
+            mkdir($target_path, 0777, true);
+        }
+
+        $extension = pathinfo($source, PATHINFO_EXTENSION);
+        $file_name = $prefix . '-' . uniqid() . ($extension ? '.' . $extension : '');
+        return copy($source, $target_path . $file_name) ? $file_name : null;
     }
 }

@@ -29,6 +29,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                     <th scope="col">Nama PTK</th>
                                     <th scope="col">NUPTK</th>
                                     <th scope="col">NIY</th>
+                                    <th scope="col" class="text-center">Akun MKDC</th>
                                     <th scope="col" class="text-center">Aksi</th>
                                 </tr>
                             </thead>
@@ -42,6 +43,19 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                         <td><?php echo $row->nama_ptk; ?></td>
                                         <td><?php echo $row->nuptk; ?></td>
                                         <td><?php echo $row->niy; ?></td>
+                                        <td class="text-center">
+                                            <?php if (isset($user_map[$row->id_ptk])): ?>
+                                                <span class="badge bg-success-focus text-success-main px-16 py-6 radius-4">Akun sudah dibuat (<?php echo $user_map[$row->id_ptk]; ?>)</span>
+                                            <?php else: ?>
+                                                <?php if (hasPermissions('ptk_buat_akun')): ?>
+                                                    <a href="<?php echo url('ptk/buat_akun/' . $row->id_ptk) ?>" class="btn btn-sm btn-primary-600 radius-8 px-12 py-6 d-inline-flex align-items-center gap-1" onclick="return confirm('Buatkan akun login aplikasi untuk PTK ini? Password default adalah NUPTK (jika ada) atau 123456.')">
+                                                        <iconify-icon icon="lucide:user-plus"></iconify-icon> Buatkan Akun MKDC
+                                                    </a>
+                                                <?php else: ?>
+                                                    <span class="badge bg-danger-focus text-danger-main px-16 py-6 radius-4">Belum ada akun</span>
+                                                <?php endif; ?>
+                                            <?php endif; ?>
+                                        </td>
                                         <td>
                                             <div class="d-flex align-items-center gap-10 justify-content-center">
                                                 <a href="<?php echo url('ptk/ptkDetail/' . $row->id_ptk) ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Data PTK">

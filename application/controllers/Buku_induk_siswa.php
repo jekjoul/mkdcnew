@@ -11,6 +11,7 @@ class Buku_induk_siswa extends MY_Controller
 
     public function index()
     {
+        ifPermissions('buku_induk_siswa_list');
         $this->page_data['page']->title = 'Buku Induk Siswa';
         $this->page_data['page']->titleUrl = 'buku_induk_siswa';
         $this->page_data['page']->subtitle = 'Daftar Buku Induk';

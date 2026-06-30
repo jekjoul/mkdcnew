@@ -16,6 +16,7 @@ class Sync_dapodik_ptk extends MY_Controller
 
     public function index()
     {
+        ifPermissions('sync_dapodik_view');
         $this->page_data['page']->title = 'PTK';
         $this->page_data['page']->titleUrl = 'ptk/ptk';
         $this->page_data['page']->subtitle = 'Sinkronisasi Dapodik GTK';

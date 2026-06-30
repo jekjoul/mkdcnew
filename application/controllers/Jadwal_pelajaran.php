@@ -13,6 +13,7 @@ class Jadwal_pelajaran extends MY_Controller
 
     public function index()
     {
+        ifPermissions('jadwal_pelajaran_list');
         $this->loadJadwalIndex('Aktif');
     }
 

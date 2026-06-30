@@ -21,6 +21,7 @@ class Master extends MY_Controller
 
     public function tingkatSekolah()
     {
+        ifPermissions('master_list');
         $this->page_data['page']->title = 'Master Data';
         $this->page_data['page']->titleUrl = 'master/tingkatSekolah';
         $this->page_data['page']->subtitle = 'Tingkat Sekolah';
@@ -32,6 +33,7 @@ class Master extends MY_Controller
 
     public function tingkatSekolahTambah()
     {
+        ifPermissions('master_add');
         $this->page_data['page']->title = 'Master Data';
         $this->page_data['page']->titleUrl = 'master/tingkatSekolah';
         $this->page_data['page']->subtitle = 'Tambah Tingkat Sekolah';
@@ -43,6 +45,7 @@ class Master extends MY_Controller
 
     public function tingkatSekolahEdit($id)
     {
+        ifPermissions('master_edit');
         $this->page_data['row'] = $this->master_model->getDetailTingkatSekolah($id);
         if (!$this->page_data['row']) show_404();
 
@@ -56,6 +59,7 @@ class Master extends MY_Controller
 
     public function tingkatSekolahSimpan()
     {
+        ifPermissions('master_add');
         postAllowed();
         $id = post('id_tingkat_sekolah');
         $nama = post('nama_tingkat');
@@ -94,6 +98,7 @@ class Master extends MY_Controller
 
     public function tingkatSekolahDelete($id)
     {
+        ifPermissions('master_delete');
         $row = $this->master_model->getDetailTingkatSekolah($id);
         if ($row) {
             $this->db->delete($this->tingkat_sekolah, ['id_tingkat_sekolah' => $id]);
@@ -106,6 +111,7 @@ class Master extends MY_Controller
 
     public function lembaga()
     {
+        ifPermissions('master_list');
         $this->page_data['page']->title = 'Master Data';
         $this->page_data['page']->titleUrl = 'master/lembaga';
         $this->page_data['page']->subtitle = 'Master Lembaga';
@@ -117,6 +123,7 @@ class Master extends MY_Controller
 
     public function lembagaTambah()
     {
+        ifPermissions('master_add');
         $this->page_data['page']->title = 'Master Data';
         $this->page_data['page']->titleUrl = 'master/lembaga';
         $this->page_data['page']->subtitle = 'Tambah Lembaga';
@@ -129,6 +136,7 @@ class Master extends MY_Controller
 
     public function lembagaEdit($id)
     {
+        ifPermissions('master_edit');
         $this->page_data['page']->title = 'Master Data';
         $this->page_data['page']->titleUrl = 'master/lembaga';
         $this->page_data['page']->subtitle = 'Edit Lembaga';
@@ -143,6 +151,7 @@ class Master extends MY_Controller
 
     public function lembagaSimpan()
     {
+        ifPermissions('master_add');
         postAllowed();
         $data = $this->_lembagaData();
         if ($this->db->insert($this->lembaga, $data)) {
@@ -163,6 +172,7 @@ class Master extends MY_Controller
 
     public function lembagaUpdate($id)
     {
+        ifPermissions('master_edit');
         postAllowed();
         $data = $this->_lembagaData();
         $this->db->where('id_lembaga', $id);
@@ -183,6 +193,7 @@ class Master extends MY_Controller
 
     public function lembagaDelete($id)
     {
+        ifPermissions('master_delete');
         $row = $this->master_model->getDetailLembaga($id);
         if ($row) {
             $this->_hapusFileLembaga($row->berkas_akreditasi);
@@ -286,6 +297,7 @@ class Master extends MY_Controller
 
     public function jenisRuangan()
     {
+        ifPermissions('master_list');
         $this->page_data['page']->title = 'Sarpras';
         $this->page_data['page']->titleUrl = 'sarpras/tanah';
         $this->page_data['page']->subtitle = 'Tanah';
@@ -297,6 +309,7 @@ class Master extends MY_Controller
 
     public function jenisRuanganTambah()
     {
+        ifPermissions('master_add');
         $this->page_data['page']->title = 'Sarpras';
         $this->page_data['page']->titleUrl = 'sarpras/tanah';
         $this->page_data['page']->subtitle = 'Tanah';
@@ -309,6 +322,7 @@ class Master extends MY_Controller
 
     public function jenisRuanganSimpan()
     {
+        ifPermissions('master_add');
         $nama = $this->input->post('nama_jenis_ruangan');
 
         $caridata = $this->master_model->jenisRuanganNamaExist($nama);
@@ -343,6 +357,7 @@ class Master extends MY_Controller
 
     public function jenisRuanganEdit($id)
     {
+        ifPermissions('master_edit');
         $this->page_data['page']->title = 'Sarpras';
         $this->page_data['page']->titleUrl = 'sarpras/tanah';
         $this->page_data['page']->subtitle = 'Tanah';
@@ -354,6 +369,7 @@ class Master extends MY_Controller
 
     public function jenisRuanganUpdate($id)
     {
+        ifPermissions('master_edit');
         $nama = $this->input->post('nama_jenis_ruangan');
 
         $caridata = $this->master_model->jenisRuanganNamaExist($nama);
@@ -390,6 +406,7 @@ class Master extends MY_Controller
 
     public function jenisRuanganDelete($id)
     {
+        ifPermissions('master_delete');
 
         $caridata = $this->master_model->jenisRuanganExist($id);
 
@@ -420,6 +437,7 @@ class Master extends MY_Controller
 
     public function jenisSarana()
     {
+        ifPermissions('master_list');
         $this->page_data['page']->title = 'Sarpras';
         $this->page_data['page']->titleUrl = 'sarpras/tanah';
         $this->page_data['page']->subtitle = 'Tanah';
@@ -431,6 +449,7 @@ class Master extends MY_Controller
 
     public function jenisSaranaTambah()
     {
+        ifPermissions('master_add');
         $this->page_data['page']->title = 'Sarpras';
         $this->page_data['page']->titleUrl = 'sarpras/tanah';
         $this->page_data['page']->subtitle = 'Tanah';
@@ -443,6 +462,7 @@ class Master extends MY_Controller
 
     public function jenisSaranaSimpan()
     {
+        ifPermissions('master_add');
         $nama = $this->input->post('nama_jenis_sarana');
         $data = array(
             'nama_jenis_sarana' => $this->input->post('nama_jenis_sarana'),
@@ -468,6 +488,7 @@ class Master extends MY_Controller
 
     public function jenisSaranaEdit($id)
     {
+        ifPermissions('master_edit');
         $this->page_data['page']->title = 'Sarpras';
         $this->page_data['page']->titleUrl = 'sarpras/tanah';
         $this->page_data['page']->subtitle = 'Tanah';
@@ -479,6 +500,7 @@ class Master extends MY_Controller
 
     public function jenisSaranaUpdate($id)
     {
+        ifPermissions('master_edit');
         $nama = $this->input->post('nama_jenis_sarana');
 
         $caridata = $this->master_model->jenisSaranaNamaExist($nama);
@@ -515,6 +537,7 @@ class Master extends MY_Controller
 
     public function jenisSaranaDelete($id)
     {
+        ifPermissions('master_delete');
 
         $caridata = $this->master_model->jenisSaranaNamaExist($id);
 
@@ -545,11 +568,13 @@ class Master extends MY_Controller
 
     public function rombel()
     {
+        ifPermissions('master_list');
         $this->loadRombelList('Aktif');
     }
 
     public function rombelNonaktif()
     {
+        ifPermissions('master_list');
         $this->loadRombelList('Nonaktif');
     }
 
@@ -570,6 +595,7 @@ class Master extends MY_Controller
 
     public function rombelSimpan()
     {
+        ifPermissions('master_add');
         postAllowed();
         $nama = post('nama_rombel');
 
@@ -591,6 +617,7 @@ class Master extends MY_Controller
 
     public function rombelEdit($id)
     {
+        ifPermissions('master_edit');
         $this->page_data['page']->title = 'Master Data';
         $this->page_data['page']->titleUrl = 'master/rombel';
         $this->page_data['page']->subtitle = 'Edit Rombel';
@@ -607,6 +634,7 @@ class Master extends MY_Controller
 
     public function rombelUpdate($id)
     {
+        ifPermissions('master_edit');
         postAllowed();
         $nama = post('nama_rombel');
 
@@ -629,6 +657,7 @@ class Master extends MY_Controller
 
     public function rombelDelete($id)
     {
+        ifPermissions('master_delete');
         $row = $this->db->get_where($this->rombel, ['id_rombel' => $id])->row();
         if (!$row) {
             show_404();
@@ -658,6 +687,7 @@ class Master extends MY_Controller
 
     public function mapel()
     {
+        ifPermissions('master_list');
         $this->page_data['page']->title = 'Master Data';
         $this->page_data['page']->titleUrl = 'master/mapel';
         $this->page_data['page']->subtitle = 'Mata Pelajaran';
@@ -669,6 +699,7 @@ class Master extends MY_Controller
 
     public function tahunPelajaran()
     {
+        ifPermissions('master_list');
         $this->page_data['page']->title = 'Master Data';
         $this->page_data['page']->titleUrl = 'master/tahunPelajaran';
         $this->page_data['page']->subtitle = 'Tahun Pelajaran';
@@ -680,6 +711,7 @@ class Master extends MY_Controller
 
     public function tahunPelajaranTambah()
     {
+        ifPermissions('master_add');
         $this->page_data['page']->title = 'Master Data';
         $this->page_data['page']->titleUrl = 'master/tahunPelajaran';
         $this->page_data['page']->subtitle = 'Tambah Tahun Pelajaran';
@@ -691,6 +723,7 @@ class Master extends MY_Controller
 
     public function tahunPelajaranEdit($id)
     {
+        ifPermissions('master_edit');
         $this->page_data['row'] = $this->tahun_pelajaran_model->getById($id);
         if (!$this->page_data['row']) show_404();
 
@@ -704,6 +737,7 @@ class Master extends MY_Controller
 
     public function tahunPelajaranSimpan()
     {
+        ifPermissions('master_add');
         postAllowed();
         $tahun = post('tahun_pelajaran');
         $semester = post('semester');
@@ -733,6 +767,7 @@ class Master extends MY_Controller
 
     public function tahunPelajaranUpdate($id)
     {
+        ifPermissions('master_edit');
         postAllowed();
         $tahun = post('tahun_pelajaran');
         $semester = post('semester');
@@ -763,6 +798,7 @@ class Master extends MY_Controller
 
     public function tahunPelajaranDelete($id)
     {
+        ifPermissions('master_delete');
         $row = $this->tahun_pelajaran_model->getById($id);
         if ($row) {
             $this->tahun_pelajaran_model->ensureHariEfektifTable();
@@ -778,6 +814,7 @@ class Master extends MY_Controller
 
     public function mapelTambah()
     {
+        ifPermissions('master_add');
         $this->page_data['page']->title = 'Master Data';
         $this->page_data['page']->titleUrl = 'master/mapel';
         $this->page_data['page']->subtitle = 'Tambah Mapel';
@@ -789,6 +826,7 @@ class Master extends MY_Controller
 
     public function mapelEdit($id)
     {
+        ifPermissions('master_edit');
         $this->page_data['row'] = $this->master_model->getDetailMapel($id);
         if (!$this->page_data['row']) show_404();
 
@@ -802,6 +840,7 @@ class Master extends MY_Controller
 
     public function mapelSimpan()
     {
+        ifPermissions('master_add');
         postAllowed();
         $nama = post('nama_mapel');
         $id = post('id_mapel');
@@ -841,6 +880,7 @@ class Master extends MY_Controller
 
     public function mapelDelete($id)
     {
+        ifPermissions('master_delete');
         $row = $this->master_model->getDetailMapel($id);
         if ($row) {
             $this->db->delete($this->mapel, ['id_mapel' => $id]);

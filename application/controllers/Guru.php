@@ -16,6 +16,7 @@ class Guru extends MY_Controller
 
     public function index()
     {
+        ifPermissions('guru_list');
         $ptk = $this->currentPtk();
         if (!$ptk) {
             return $this->notLinked();

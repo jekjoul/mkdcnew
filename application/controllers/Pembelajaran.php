@@ -13,6 +13,7 @@ class Pembelajaran extends MY_Controller
 
     public function index()
     {
+        ifPermissions('pembelajaran_list');
         $this->loadPembelajaranList('Aktif');
     }
 
@@ -79,6 +80,7 @@ class Pembelajaran extends MY_Controller
 
     public function edit($id)
     {
+        ifPermissions('pembelajaran_edit');
         $pembelajaran = $this->getPembelajaranDetail($id);
         if (!$pembelajaran) {
             show_404();

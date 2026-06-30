@@ -52,7 +52,18 @@
                             <li class="nav-item"><button class="nav-link px-24" data-bs-toggle="pill" data-bs-target="#pills-arsip" type="button">Arsip</button></li>
                             <li class="nav-item"><button class="nav-link px-24" data-bs-toggle="pill" data-bs-target="#pills-nilai" type="button">Nilai</button></li>
                         </ul>
-                        <a href="<?php echo url('alumni') ?>" class="btn btn-sm btn-neutral-100 text-neutral-700"><i class="ri-arrow-left-line"></i> Kembali</a>
+                        <div class="d-flex flex-wrap gap-2">
+                            <?php if (empty($row->id_siswa_kembali)): ?>
+                                <button type="button" class="btn btn-sm btn-success-100 text-success-700" data-bs-toggle="modal" data-bs-target="#modalKembalikanAlumni">
+                                    <i class="ri-user-follow-line"></i> Kembalikan Jadi Siswa
+                                </button>
+                            <?php else: ?>
+                                <a href="<?php echo url('siswa/detail/' . $row->id_siswa_kembali) ?>" class="btn btn-sm btn-success-100 text-success-700">
+                                    <i class="ri-user-line"></i> Lihat Siswa Aktif
+                                </a>
+                            <?php endif; ?>
+                            <a href="<?php echo url('alumni') ?>" class="btn btn-sm btn-neutral-100 text-neutral-700"><i class="ri-arrow-left-line"></i> Kembali</a>
+                        </div>
                     </div>
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="pills-profile">
@@ -167,6 +178,52 @@
 </div>
 
 <?php include viewPath('alumni/partials/dokumen_modals'); ?>
+
+<?php if (empty($row->id_siswa_kembali)): ?>
+    <div class="modal fade" id="modalKembalikanAlumni" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content radius-16 bg-base">
+                <div class="modal-header py-16 px-24">
+                    <h1 class="modal-title fs-5">Kembalikan Alumni Menjadi Siswa</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form action="<?php echo url('alumni/kembalikan/' . $row->id_alumni) ?>" method="post">
+                    <div class="modal-body p-24">
+                        <div class="alert alert-warning bg-warning-100 text-warning-700 border-warning-100 radius-8">
+                            Data alumni tetap disimpan sebagai histori mutasi/lulus. Sistem akan membuat data siswa aktif baru dari profil alumni ini.
+                        </div>
+                        <div class="row gy-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Tanggal Masuk Kembali</label>
+                                <input type="date" class="form-control radius-8" name="tanggal_kembali" value="<?php echo date('Y-m-d') ?>" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Status Pendaftaran</label>
+                                <select class="form-control form-select radius-8" name="status_pendaftaran" required>
+                                    <option value="Kembali">Kembali</option>
+                                    <option value="Mutasi Masuk">Mutasi Masuk</option>
+                                    <option value="Siswa baru">Siswa baru</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">NIPD Baru</label>
+                                <input type="text" class="form-control radius-8" name="nipd" value="<?php echo html_escape($row->nipd) ?>" placeholder="Isi NIPD baru jika berubah">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Rombel Baru</label>
+                                <input type="text" class="form-control radius-8" name="rombel" placeholder="Contoh: X - Al Farabi / Pondok Pesantren">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer px-24 py-16">
+                        <button type="button" class="btn btn-secondary-light" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-success-600" onclick="return confirm('Kembalikan alumni ini menjadi siswa aktif?')">Kembalikan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+<?php endif; ?>
 
 <?php include viewPath('includes/footer'); ?>
 <script>

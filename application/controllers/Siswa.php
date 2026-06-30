@@ -14,11 +14,13 @@ class Siswa extends MY_Controller
 
     public function all()
     {
+        ifPermissions('siswa_list');
         $this->loadAllByPembelajaranStatus('Aktif');
     }
 
     public function nonaktif()
     {
+        ifPermissions('siswa_list');
         $this->loadAllByPembelajaranStatus('Nonaktif');
     }
 
@@ -83,6 +85,7 @@ class Siswa extends MY_Controller
 
     public function detail($id = null)
     {
+        ifPermissions('siswa_view');
         if (!$id) {
             redirect('siswa/all');
         }
@@ -113,6 +116,7 @@ class Siswa extends MY_Controller
 
     public function siswaAdd()
     {
+        ifPermissions('siswa_add');
         $this->page_data['page']->title = 'Siswa';
         $this->page_data['page']->titleUrl = 'siswa/all';
         $this->page_data['page']->subtitle = 'Tambah';
@@ -125,6 +129,7 @@ class Siswa extends MY_Controller
     public function simpan()
     {
         postAllowed();
+        ifPermissions('siswa_add');
         $data = $this->siswaData();
 
         if ($this->db->insert($this->table, $data)) {
@@ -149,6 +154,7 @@ class Siswa extends MY_Controller
     public function update($id)
     {
         postAllowed();
+        ifPermissions('siswa_edit');
         $siswa = $this->db->get_where($this->table, ['id_siswa' => $id])->row();
         if (!$siswa) {
             show_404();
@@ -176,6 +182,7 @@ class Siswa extends MY_Controller
     public function mutasi($id)
     {
         postAllowed();
+        ifPermissions('siswa_edit');
         $siswa = $this->db->get_where($this->table, ['id_siswa' => $id])->row();
         if (!$siswa) {
             show_404();
@@ -206,6 +213,7 @@ class Siswa extends MY_Controller
 
     public function hapus($id)
     {
+        ifPermissions('siswa_delete');
         $siswa = $this->db->get_where($this->table, ['id_siswa' => $id])->row();
         if (!$siswa) {
             show_404();
@@ -227,6 +235,7 @@ class Siswa extends MY_Controller
 
     public function fotoHapus($id_foto)
     {
+        ifPermissions('siswa_edit');
         $foto = $this->db->get_where('siswa_foto', ['id_foto' => $id_foto])->row();
         if (!$foto) {
             show_404();
@@ -239,6 +248,7 @@ class Siswa extends MY_Controller
     public function dokumenSimpan($id_siswa)
     {
         postAllowed();
+        ifPermissions('siswa_edit');
         $upload = $this->uploadDokumen($id_siswa);
         if (!$upload['status']) {
             $this->session->set_flashdata('alert-type', 'warning');
@@ -257,6 +267,7 @@ class Siswa extends MY_Controller
     public function dokumenUpdate($id_dokumen)
     {
         postAllowed();
+        ifPermissions('siswa_edit');
         $dokumen = $this->db->get_where('siswa_dokumen', ['id_dokumen' => $id_dokumen])->row();
         if (!$dokumen) {
             show_404();
@@ -284,6 +295,7 @@ class Siswa extends MY_Controller
 
     public function dokumenHapus($id_dokumen)
     {
+        ifPermissions('siswa_edit');
         $dokumen = $this->db->get_where('siswa_dokumen', ['id_dokumen' => $id_dokumen])->row();
         if (!$dokumen) {
             show_404();
@@ -296,6 +308,7 @@ class Siswa extends MY_Controller
     public function jenisDokumenSimpan()
     {
         postAllowed();
+        ifPermissions('siswa_edit');
         $nama = trim((string) post('nama_jenis_dokumen'));
         if ($nama === '') {
             $this->output->set_content_type('application/json')->set_output(json_encode(['status' => false, 'message' => 'Nama jenis dokumen wajib diisi']));
