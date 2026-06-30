@@ -377,20 +377,22 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                             </iconify-icon> My Profile
                                         </a>
                                     </li>
-                                    <li>
-                                        <a class="dropdown-item text-black px-0 py-8 hover-bg-transparent hover-text-primary d-flex align-items-center gap-3"
-                                            href="email.html">
-                                            <iconify-icon icon="tabler:message-check" class="icon text-xl">
-                                            </iconify-icon> Inbox
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item text-black px-0 py-8 hover-bg-transparent hover-text-primary d-flex align-items-center gap-3"
-                                            href="company.html">
-                                            <iconify-icon icon="icon-park-outline:setting-two" class="icon text-xl">
-                                            </iconify-icon> Setting
-                                        </a>
-                                    </li>
+                                    <?php if (logged('role') == 1): ?>
+                                     <li>
+                                         <a class="dropdown-item text-black px-0 py-8 hover-bg-transparent hover-text-primary d-flex align-items-center gap-3"
+                                             href="email.html">
+                                             <iconify-icon icon="tabler:message-check" class="icon text-xl">
+                                             </iconify-icon> Inbox
+                                         </a>
+                                     </li>
+                                     <li>
+                                         <a class="dropdown-item text-black px-0 py-8 hover-bg-transparent hover-text-primary d-flex align-items-center gap-3"
+                                             href="company.html">
+                                             <iconify-icon icon="icon-park-outline:setting-two" class="icon text-xl">
+                                             </iconify-icon> Setting
+                                         </a>
+                                     </li>
+                                     <?php endif; ?>
                                     <li>
                                         <a class="dropdown-item text-black px-0 py-8 hover-bg-transparent hover-text-danger d-flex align-items-center gap-3"
                                             href="<?php echo url('logout') ?>">
