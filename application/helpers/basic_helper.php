@@ -313,27 +313,18 @@ if (!function_exists('urlUpload')) {
 
 if (!function_exists('userProfile')) {
 
-
-
 	function userProfile($id)
-
 	{
-
 		$CI = &get_instance();
+		$img_type = $CI->users_model->getRowById($id, 'img_type');
+		$filename = 'users/' . $id . '.' . $img_type;
+		$filepath = FCPATH . 'uploads/' . $filename;
 
+		if ($id !== 'default' && !empty($img_type) && file_exists($filepath)) {
+			return urlUpload($filename . '?' . time());
+		}
 
-
-		$url = urlUpload('users/' . $id . '.png?' . time());
-
-
-
-		if ($id != 'default')
-
-			$url = urlUpload('users/' . $id . '.' . $CI->users_model->getRowById($id, 'img_type') . '?' . time());
-
-
-
-		return $url;
+		return url('assets/images/user.png');
 	}
 }
 
