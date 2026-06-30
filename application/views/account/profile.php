@@ -3,312 +3,240 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 
 <?php include viewPath('includes/header'); ?>
 
-<!-- Content Header (Page header) -->
-<section class="content-header">
-  <div class="container-fluid">
-    <div class="row mb-2">
-      <div class="col-sm-6">
-        <h1><?php echo lang('my_account') ?></h1>
-      </div>
-      <div class="col-sm-6">
-        <ol class="breadcrumb float-sm-right">
-          <li class="breadcrumb-item"><a href="<?php echo url('/') ?>"><?php echo lang('home') ?></a></li>
-          <li class="breadcrumb-item active"><?php echo lang('roles') ?></li>
-        </ol>
-      </div>
-    </div>
-  </div><!-- /.container-fluid -->
-</section>
+<div class="dashboard-main-body">
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+    <h6 class="fw-semibold mb-0"><?php echo lang('my_account') ?></h6>
+    <ul class="d-flex align-items-center gap-2">
+      <li class="fw-medium">
+        <a href="<?php echo url('/') ?>" class="d-flex align-items-center gap-1 hover-text-primary">
+          <iconify-icon icon="solar:home-angle-2-linear" class="icon text-lg"></iconify-icon>
+          Home
+        </a>
+      </li>
+      <li class="text-secondary-light">/</li>
+      <li class="text-secondary-light">Profil Saya</li>
+    </ul>
+  </div>
 
-<!-- Main content -->
-<section class="content">
-
-
-  <div class="row">
-    <div class="col-md-3">
-
-      <!-- Profile Image -->
-      <div class="card card-primary">
-        <div class="card-body card-profile">
-          <div class="text-center">
-            <img class="profile-user-img img-responsive img-circle" src="<?php echo userProfile($user->id) ?>" alt="<?php echo lang('user_profile_image') ?>" />
+  <div class="row gy-4">
+    <!-- Left Column: User Profile Card -->
+    <div class="col-lg-4">
+      <div class="card border-0 radius-12 shadow-sm h-100">
+        <div class="card-body p-24 text-center">
+          <div class="mb-20 d-inline-block position-relative">
+            <img class="w-120-px h-120-px rounded-circle object-fit-cover border border-3 border-primary-light" src="<?php echo userProfile($user->id) ?>" alt="Avatar" />
           </div>
 
-          <h3 class="profile-username text-center"><?php echo $user->name ?></h3>
+          <h5 class="fw-semibold text-primary-light mb-8"><?php echo htmlspecialchars($user->name, ENT_QUOTES, 'UTF-8'); ?></h5>
+          <span class="badge bg-success-focus text-success-main px-16 py-6 radius-4 mb-24"><?php echo $user->role->title ?></span>
 
-          <p class="text-muted text-center"><?php echo $user->role->title ?></p>
+          <div class="border-top pt-20 text-start">
+            <div class="mb-16">
+              <span class="text-secondary-light text-xs d-block mb-4">Username</span>
+              <span class="fw-semibold text-primary-light"><?php echo htmlspecialchars($user->username, ENT_QUOTES, 'UTF-8'); ?></span>
+            </div>
+            <div class="mb-16">
+              <span class="text-secondary-light text-xs d-block mb-4">Login Terakhir</span>
+              <span class="fw-semibold text-primary-light"><?php echo $user->last_login != '0000-00-00 00:00:00' ? date('d M Y H:i', strtotime($user->last_login)) : '-' ?></span>
+            </div>
+            <div class="mb-0">
+              <span class="text-secondary-light text-xs d-block mb-4">Bergabung Sejak</span>
+              <span class="fw-semibold text-primary-light"><?php echo date('d M Y', strtotime($user->created_at)) ?></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-          <ul class="list-group list-group-unbordered">
-            <li class="list-group-item">
-              <b><?php echo lang('user_username') ?></b> <a class="pull-right"><?php echo $user->username ?></a>
+    <!-- Right Column: Tabs and Forms -->
+    <div class="col-lg-8">
+      <div class="card border-0 radius-12 shadow-sm h-100">
+        <div class="card-header border-bottom bg-transparent p-24 pb-0">
+          <ul class="nav nav-tabs border-bottom-0 gap-2 mb-20" id="profileTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active btn btn-outline-primary radius-8 px-16 py-8" id="view-tab" data-bs-toggle="tab" data-bs-target="#viewProfile" type="button" role="tab">
+                <iconify-icon icon="lucide:user" class="me-1"></iconify-icon> <?php echo lang('profile') ?>
+              </button>
             </li>
-            <li class="list-group-item">
-              <b><?php echo lang('user_last_login') ?></b> <a class="pull-right"><?php echo date( setting('date_format'), strtotime($user->last_login)) ?></a>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link btn btn-outline-primary radius-8 px-16 py-8" id="edit-tab" data-bs-toggle="tab" data-bs-target="#editProfile" type="button" role="tab">
+                <iconify-icon icon="lucide:edit" class="me-1"></iconify-icon> <?php echo lang('edit') ?>
+              </button>
             </li>
-            <li class="list-group-item">
-              <b><?php echo lang('member_since') ?> </b> <a class="pull-right"><?php echo date( setting('date_format'), strtotime($user->created_at)) ?></a>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link btn btn-outline-primary radius-8 px-16 py-8" id="pic-tab" data-bs-toggle="tab" data-bs-target="#editProfilePic" type="button" role="tab">
+                <iconify-icon icon="lucide:image" class="me-1"></iconify-icon> Foto Profil
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link btn btn-outline-primary radius-8 px-16 py-8" id="password-tab" data-bs-toggle="tab" data-bs-target="#changePassword" type="button" role="tab">
+                <iconify-icon icon="lucide:lock" class="me-1"></iconify-icon> Password
+              </button>
             </li>
           </ul>
-
-          <a href="<?php echo url('profile/index/edit') ?>" class="btn btn-primary btn-block"><b> <i class="fa fa-pencil"></i> <?php echo lang('edit') ?></b></a>
         </div>
-        <!-- /.card-body -->
-      </div>
-      <!-- /.card -->
 
-    </div>
-    <!-- /.col -->
-    <div class="col-md-9">
-    <div class="card">
-      <div class="card-header p-2">
-        <ul class="nav nav-pills">
-          <li class="nav-item"><a href="#viewProfile" class="nav-link <?php echo $activeTab=='profile'?'active':'' ?>" data-toggle="tab"><?php echo lang('profile') ?></a></li>
-          <li class="nav-item"><a href="#editProfile" class="nav-link <?php echo $activeTab=='edit'?'active':'' ?>" data-toggle="tab"><?php echo lang('edit') ?></a></li>
-          <li class="nav-item"><a href="#editProfilePic" class="nav-link <?php echo $activeTab=='change_pic'?'active':'' ?>" data-toggle="tab"><?php echo lang('change_profile_image') ?></a></li>
-          <li class="nav-item"><a href="#changePassword" class="nav-link <?php echo $activeTab=='change_password'?'active':'' ?>" data-toggle="tab"><?php echo lang('change_password') ?></a></li>
-
-          
-        </ul>
-      </div>
-
-        <div class="card-body">
-        <div class="tab-content">
-          <div class="<?php echo $activeTab=='profile'?'active':'' ?> tab-pane" id="viewProfile">
-            <table class="table table-bordered table-striped">
-              <tbody>
-                <tr>
-                  <td width="160"><strong><?php echo lang('user_name') ?></strong>:</td>
-                  <td><?php echo $user->name ?></td>
-                </tr>
-                <tr>
-                  <td><strong><?php echo lang('user_username') ?></strong>:</td>
-                  <td><?php echo $user->username ?></td>
-                </tr>
-                <tr>
-                  <td><strong><?php echo lang('user_email') ?></strong>:</td>
-                  <td><?php echo $user->email ?></td>
-                </tr>
-                <tr>
-                  <td><strong><?php echo lang('user_role') ?></strong>:</td>
-                  <td><?php echo $user->role->title ?></td>
-                </tr>
-                <tr>
-                  <td><strong><?php echo lang('user_contact') ?></strong>:</td>
-                  <td><?php echo $user->phone ?></td>
-                </tr>
-                <tr>
-                  <td><strong><?php echo lang('user_address') ?></strong>:</td>
-                  <td><?php echo nl2br($user->address) ?></td>
-                </tr>
-                <tr>
-                  <td><strong><?php echo lang('user_last_login') ?></strong>:</td>
-                  <td><?php echo ($user->last_login!='0000-00-00 00:00:00')?date( setting('datetime_format'), strtotime($user->last_login)):'No Record' ?></td>
-                </tr>
-                <tr>
-                  <td><strong><?php echo lang('member_since') ?></strong>:</td>
-                  <td><?php echo ($user->created_at!='0000-00-00 00:00:00')?date( setting('datetime_format'), strtotime($user->created_at)):'No Record' ?></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="<?php echo $activeTab=='edit'?'active':'' ?> tab-pane" id="editProfile">
-            <?php echo form_open('/profile/updateProfile', ['method' => 'POST', 'autocomplete' => 'off', 'class' => 'form-horizontal form-validate']); ?> 
-
-
-              <div class="form-group">
-                <label for="inputName" class="col-sm-2 control-label"><?php echo lang('user_name') ?></label>
-
-                <div class="col-sm-10">
-                  <input type="name" name="name" required class="form-control" id="inputName" value="<?php echo $user->name ?>" autofocus placeholder="<?php echo lang('user_name') ?>">
+        <div class="card-body p-24">
+          <div class="tab-content" id="profileTabsContent">
+            
+            <!-- Tab 1: View Profile -->
+            <div class="tab-pane fade show active" id="viewProfile" role="tabpanel">
+              <div class="row gy-3">
+                <div class="col-md-6">
+                  <div class="bg-light p-12 radius-8">
+                    <span class="text-secondary-light text-xs d-block mb-4">Nama Lengkap</span>
+                    <span class="fw-semibold text-primary-light"><?php echo htmlspecialchars($user->name, ENT_QUOTES, 'UTF-8'); ?></span>
+                  </div>
                 </div>
-              </div>
-
-              <div class="form-group">
-                <label for="inputUserName" class="col-sm-2 control-label"><?php echo lang('user_username') ?></label>
-
-                <div class="col-sm-10">
-                  <input type="text" class="form-control"  minlength="5" data-rule-remote="<?php echo url('users/check?notId='.$user->id) ?>" data-msg-remote="<?php echo lang('user_username_taken') ?>" name="username" id="inputUsername" required placeholder="<?php echo lang('user_username') ?>"  value="<?php echo $user->username ?>"/>
+                <div class="col-md-6">
+                  <div class="bg-light p-12 radius-8">
+                    <span class="text-secondary-light text-xs d-block mb-4">Username</span>
+                    <span class="fw-semibold text-primary-light"><?php echo htmlspecialchars($user->username, ENT_QUOTES, 'UTF-8'); ?></span>
+                  </div>
                 </div>
-              </div>
-
-              <div class="form-group">
-                <label for="inputEmail" class="col-sm-2 control-label"><?php echo lang('user_email') ?></label>
-
-                <div class="col-sm-10">
-                  <input type="email" name="email" required 
-                   data-rule-remote="<?php echo url('users/check?notId='.$user->id) ?>" data-msg-remote="<?php echo lang('user_email_exists') ?>"
-                   class="form-control" id="inputEmail" placeholder="<?php echo lang('user_email') ?>" value="<?php echo $user->email ?>">
+                <div class="col-md-6">
+                  <div class="bg-light p-12 radius-8">
+                    <span class="text-secondary-light text-xs d-block mb-4">Email</span>
+                    <span class="fw-semibold text-primary-light"><?php echo htmlspecialchars($user->email, ENT_QUOTES, 'UTF-8'); ?></span>
+                  </div>
                 </div>
-              </div>
-
-              <div class="form-group">
-                <label for="inputContact" class="col-sm-2 control-label"><?php echo lang('user_contact') ?></label>
-
-                <div class="col-sm-10">
-                  <input type="name" name="contact" class="form-control" id="inputContact" value="<?php echo $user->phone ?>" placeholder="<?php echo lang('user_contact') ?>">
+                <div class="col-md-6">
+                  <div class="bg-light p-12 radius-8">
+                    <span class="text-secondary-light text-xs d-block mb-4">Hak Akses / Role</span>
+                    <span class="fw-semibold text-primary-light"><?php echo $user->role->title ?></span>
+                  </div>
                 </div>
-              </div>
-
-              <div class="form-group">
-                <label for="inputContact" class="col-sm-2 control-label"><?php echo lang('user_address') ?></label>
-
-                <div class="col-sm-10">
-                  <textarea type="text" class="form-control" name="address" id="inputAddress" placeholder="<?php echo lang('user_address') ?>" rows="3"><?php echo $user->address ?></textarea>
+                <div class="col-md-6">
+                  <div class="bg-light p-12 radius-8">
+                    <span class="text-secondary-light text-xs d-block mb-4">Kontak / Telepon</span>
+                    <span class="fw-semibold text-primary-light"><?php echo htmlspecialchars($user->phone ?: '-', ENT_QUOTES, 'UTF-8'); ?></span>
+                  </div>
                 </div>
-              </div>
-
-              <div class="form-group hidden">
-                <label for="inputContact" class="col-sm-2 control-label"><?php echo lang('user_role') ?></label>
-
-                <div class="col-sm-10">
-                  <select name="role" id="inputRole" class="form-control select2" style="width:100%;">
-                    <option value=""><?php echo lang('user_select_role') ?></option>
-                    <?php foreach ($this->roles_model->get() as $row): ?>
-                      <?php $sel = !empty($user->role) && $user->role->id==$row->id ? 'selected' : '' ?>
-                      <option value="<?php echo $row->id ?>" <?php echo $sel ?>><?php echo $row->title ?></option>
-                    <?php endforeach ?>
-                  </select>
-                </div>
-              </div>
-
-              <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-10">
-                  <button type="submit" class="btn btn-primary btn-flat"><?php echo lang('submit') ?></button>
-                </div>
-              </div>
-            <?php echo form_close(); ?>
-          </div>
-          <!-- /.tab-pane -->
-          <div class="<?php echo $activeTab=='change_password'?'active':'' ?> tab-pane" id="changePassword">
-            <?php echo form_open('/profile/updatePassword', ['method' => 'POST', 'autocomplete' => 'off', 'class' => 'form-horizontal form-validate']); ?> 
-
-              <div class="alert alert-warning">
-                <?php echo lang('message_login_again_after_password') ?>
-              </div>
-
-              <div class="alert alert-info">
-                <?php echo lang('message_password_atleast_long') ?>
-              </div>
-
-              <div class="form-group">
-                <label for="inputContact" class="col-sm-2 control-label"><?php echo lang('old_password') ?></label>
-
-                <div class="col-sm-10">
-                  <div class="input-group">
-                    <div class="input-group-append"><span class="input-group-text"><i class="fa fa-lock"></i></span></div>
-                    <input type="password" class="form-control" placeholder="<?php echo lang('old_password') ?>" minlength="6" name="old_password" required autofocus id="old_password" />
-                    <!-- <span class="fa fa-lock form-control-feedback"></span> -->
+                <div class="col-md-6">
+                  <div class="bg-light p-12 radius-8">
+                    <span class="text-secondary-light text-xs d-block mb-4">Alamat</span>
+                    <span class="fw-semibold text-primary-light"><?php echo !empty($user->address) ? nl2br(htmlspecialchars($user->address, ENT_QUOTES, 'UTF-8')) : '-' ?></span>
                   </div>
                 </div>
               </div>
+            </div>
 
-              <div class="form-group">
-                <label for="inputContact" class="col-sm-2 control-label"><?php echo lang('new_password') ?></label>
-
-                <div class="col-sm-10">
-                  <div class="input-group">
-                    <div class="input-group-append"><span class="input-group-text"><i class="fa fa-lock"></i></span></div>
-                    <input type="password" class="form-control" placeholder="<?php echo lang('new_password') ?>" minlength="6" name="password" required autofocus id="password" />
+            <!-- Tab 2: Edit Profile -->
+            <div class="tab-pane fade" id="editProfile" role="tabpanel">
+              <?php echo form_open('/profile/updateProfile', ['method' => 'POST', 'autocomplete' => 'off', 'class' => 'form-validate']); ?>
+                <div class="row gy-3">
+                  <div class="col-12">
+                    <label class="form-label fw-semibold text-primary-light text-sm mb-8">Nama Lengkap</label>
+                    <input type="text" name="name" required class="form-control radius-8" value="<?php echo htmlspecialchars($user->name, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Nama Lengkap">
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label fw-semibold text-primary-light text-sm mb-8">Username</label>
+                    <input type="text" class="form-control radius-8" minlength="5" data-rule-remote="<?php echo url('users/check?notId='.$user->id) ?>" data-msg-remote="<?php echo lang('user_username_taken') ?>" name="username" required placeholder="Username" value="<?php echo htmlspecialchars($user->username, ENT_QUOTES, 'UTF-8'); ?>"/>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label fw-semibold text-primary-light text-sm mb-8">Email</label>
+                    <input type="email" name="email" required data-rule-remote="<?php echo url('users/check?notId='.$user->id) ?>" data-msg-remote="<?php echo lang('user_email_exists') ?>" class="form-control radius-8" placeholder="Alamat Email" value="<?php echo htmlspecialchars($user->email, ENT_QUOTES, 'UTF-8'); ?>">
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label fw-semibold text-primary-light text-sm mb-8">Kontak / No. Telp</label>
+                    <input type="text" name="contact" class="form-control radius-8" value="<?php echo htmlspecialchars($user->phone ?: '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="Nomor Telepon">
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label fw-semibold text-primary-light text-sm mb-8">Alamat</label>
+                    <textarea class="form-control radius-8" name="address" placeholder="Alamat Tinggal" rows="3"><?php echo htmlspecialchars($user->address ?: '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                  </div>
+                  <div class="col-12 hidden">
+                    <input type="hidden" name="role" value="<?php echo $user->role->id ?>">
+                  </div>
+                  <div class="col-12 mt-24">
+                    <button type="submit" class="btn btn-primary-600 radius-8 px-20 py-11">Simpan Perubahan</button>
                   </div>
                 </div>
-              </div>
+              <?php echo form_close(); ?>
+            </div>
 
-              <div class="form-group">
-               
-                <label for="inputContact" class="col-sm-2 control-label"><?php echo lang('confirm_new_password') ?></label>
+            <!-- Tab 3: Change Profile Pic -->
+            <div class="tab-pane fade" id="editProfilePic" role="tabpanel">
+              <?php echo form_open('/profile/updateProfilePic', ['method' => 'POST', 'autocomplete' => 'off', 'class' => 'form-validate', 'enctype' => 'multipart/form-data']); ?>
+                <div class="row gy-3">
+                  <div class="col-12">
+                    <label class="form-label fw-semibold text-primary-light text-sm mb-8">Pilih Foto Baru</label>
+                    <input type="file" class="form-control radius-8" name="image" required accept="image/*" onchange="previewImage(this, '#imagePreview img')">
+                    <div class="form-text text-secondary-light mt-8">Hanya file gambar (JPG, PNG) dengan ukuran maksimal 2MB.</div>
+                  </div>
+                  <div class="col-12 my-24" id="imagePreview">
+                    <img src="<?php echo userProfile($user->id) ?>" class="rounded-circle object-fit-cover border" width="150" height="150" alt="Preview">
+                  </div>
+                  <div class="col-12">
+                    <button type="submit" class="btn btn-primary-600 radius-8 px-20 py-11">Unggah Foto</button>
+                  </div>
+                </div>
+              <?php echo form_close(); ?>
+            </div>
 
-                <div class="col-sm-10">
-                  <div class="input-group">
-                    <div class="input-group-append"><span class="input-group-text"><i class="fa fa-lock"></i></span></div>
-                    <input type="password" class="form-control" equalTo="#password" placeholder="<?php echo lang('confirm)new_password') ?>" required name="password_confirm" />
+            <!-- Tab 4: Change Password -->
+            <div class="tab-pane fade" id="changePassword" role="tabpanel">
+              <?php echo form_open('/profile/updatePassword', ['method' => 'POST', 'autocomplete' => 'off', 'class' => 'form-validate']); ?>
+                
+                <div class="alert bg-warning-focus text-warning-main border border-warning-200 px-16 py-12 radius-8 mb-16 d-flex align-items-start gap-2">
+                  <iconify-icon icon="lucide:alert-triangle" class="icon text-xl flex-shrink-0 mt-1"></iconify-icon>
+                  <div>
+                    <div class="fw-semibold">Perhatian!</div>
+                    <div class="text-sm"><?php echo lang('message_login_again_after_password') ?></div>
                   </div>
                 </div>
 
-              </div>
-
-              
-
-              
-
-              <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-10">
-                  <button type="submit" class="btn btn-primary btn-flat"><?php echo lang('submit') ?></button>
+                <div class="alert bg-info-focus text-info-main border border-info-200 px-16 py-12 radius-8 mb-24 d-flex align-items-start gap-2">
+                  <iconify-icon icon="lucide:info" class="icon text-xl flex-shrink-0 mt-1"></iconify-icon>
+                  <div>
+                    <div class="fw-semibold">Aturan Password</div>
+                    <div class="text-sm"><?php echo lang('message_password_atleast_long') ?></div>
+                  </div>
                 </div>
-              </div>
-            <?php echo form_close(); ?>
-          </div>
-          <!-- /.tab-pane -->
-          <div class="<?php echo $activeTab=='change_pic'?'active':'' ?> tab-pane" id="editProfilePic">
-            <?php echo form_open('/profile/updateProfilePic', ['method' => 'POST', 'autocomplete' => 'off', 'class' => 'form-horizontal form-validate', 'enctype' => 'multipart/form-data']); ?> 
 
-              <div class="form-group">
-                <label for="formAdmin-Image" class="col-sm-2 control-label"><?php echo lang('user_profile_image') ?></label>
-
-                <div class="col-sm-10">
-                  <input type="file" class="form-control" name="image" id="formAdmin-Image" placeholder="Upload Image" required accept="image/*" onchange="previewImage(this, '#imagePreview')">
+                <div class="row gy-3">
+                  <div class="col-12">
+                    <label class="form-label fw-semibold text-primary-light text-sm mb-8">Password Lama</label>
+                    <input type="password" class="form-control radius-8" placeholder="Password Lama" minlength="6" name="old_password" required id="old_password" />
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label fw-semibold text-primary-light text-sm mb-8">Password Baru</label>
+                    <input type="password" class="form-control radius-8" placeholder="Password Baru" minlength="6" name="password" required id="password" />
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label fw-semibold text-primary-light text-sm mb-8">Ulangi Password Baru</label>
+                    <input type="password" class="form-control radius-8" equalTo="#password" placeholder="Konfirmasi Password Baru" required name="password_confirm" />
+                  </div>
+                  <div class="col-12 mt-24">
+                    <button type="submit" class="btn btn-primary-600 radius-8 px-20 py-11">Ganti Password</button>
+                  </div>
                 </div>
-              </div>       
-              <div class="form-group" id="imagePreview">
-                <div class="col-sm-10">
-                  <img src="<?php echo userProfile($user->id) ?>" class="img-circle" width="150" alt="<?php echo lang('user_profile_image') ?>">
-                </div>
-              </div>
-
-              <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-10">
-                  <button type="submit" class="btn btn-primary btn-flat"><?php echo lang('submit') ?></button>
-                </div>
-              </div>
-            <?php echo form_close(); ?>
-          </div>
-          <!-- /.tab-pane -->
-          
+              <?php echo form_close(); ?>
+            </div>
 
           </div>
-          <!-- /.tab-content -->
         </div>
-        <!-- /.card-body -->
       </div>
-      <!-- /.card -->
     </div>
-    <!-- /.col -->
   </div>
-  <!-- /.row -->
-
-</section>
-<!-- /.content -->
+</div>
 
 <script>
   $(document).ready(function() {
     $('.form-validate').each(function() {
       $(this).validate();
     });
-  })
+  });
 
-  function previewImage(input, previewDom) {
-
+  function previewImage(input, previewImgSelector) {
     if (input.files && input.files[0]) {
-
-      $(previewDom).show();
-
       var reader = new FileReader();
-
       reader.onload = function(e) {
-        $(previewDom).find('img').attr('src', e.target.result);
+        $(previewImgSelector).attr('src', e.target.result);
       }
-
       reader.readAsDataURL(input.files[0]);
-    }else{
-      $(previewDom).hide();
     }
-
   }
 </script>
 
 <?php include viewPath('includes/footer'); ?>
-
-<script>
-      //Initialize Select2 Elements
-    $('.select2').select2()
-</script>
