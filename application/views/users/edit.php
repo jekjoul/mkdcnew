@@ -107,6 +107,18 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                       </select>
                     </div>
 
+                    <div class="form-group">
+                      <label for="formClient-Ptk">Hubungkan ke PTK/Guru</label>
+                      <select name="id_ptk" id="formClient-Ptk" class="form-control select2">
+                        <option value="">Tidak terhubung</option>
+                        <?php $this->db->order_by('nama_ptk', 'ASC'); foreach ($this->db->get_where('ptk', ['status_keaktifan' => 'Aktif'])->result() as $ptk): ?>
+                          <option value="<?php echo $ptk->id_ptk ?>" <?php echo !empty($User->id_ptk) && (int) $User->id_ptk === (int) $ptk->id_ptk ? 'selected' : '' ?>>
+                            <?php echo $ptk->nama_ptk ?><?php echo $ptk->email ? ' - ' . $ptk->email : '' ?>
+                          </option>
+                        <?php endforeach ?>
+                      </select>
+                    </div>
+
                     <?php if (logged('id') != $User->id): ?>
 
                     <?php endif ?>

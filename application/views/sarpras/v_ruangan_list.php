@@ -48,12 +48,9 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
                                         <td>
                                             <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#TanahDetail<?= $no ?>">
-                                                    <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                </button>
 
-                                                <a href="<?php echo url('sarpras/ruanganDetail/' . $row->id_ruangan) ?>" class="bg-neutral-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle">
-                                                    <iconify-icon icon="material-symbols:list-alt-outline-sharp" class="menu-icon"></iconify-icon>
+                                                <a href="<?php echo url('sarpras/ruanganDetail/' . $row->id_ruangan) ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle">
+                                                    <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
                                                 </a>
 
                                                 <button type="button" class="bg-success-100 text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#TanahEdit<?= $no ?>">
@@ -79,75 +76,6 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
 $no = 1;
 foreach ($ruangan as $row):
 ?>
-    <!--Modal Detail Ruangan -->
-    <div class="modal fade" id="TanahDetail<?= $no ?>" tabindex="-1" aria-labelledby="exampleModalEditLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog modal-dialog-centered">
-            <div class="modal-content radius-16 bg-base">
-                <div class="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0">
-                    <h1 class="modal-title fs-5" id="exampleModalEditLabel">Detail Ruangan</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-24">
-                    <form action="#">
-                        <div class="row">
-                            <div class="col-md-6 mb-20 was-validated">
-                                <label for="editname"
-                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Nama Ruangan</label>
-                                <p><?= $row->nama_ruangan ?></p>
-                            </div>
-
-                            <div class="col-md-6 mb-20 was-validated">
-                                <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Jenis Ruangan</label>
-                                <p><?= $row->nama_jenis_ruangan ?></p>
-
-                            </div>
-
-                            <div class="col-md-6 mb-20 was-validated">
-                                <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Bangunan</label>
-                                <p><?= $row->nama_bangunan ?></p>
-
-                            </div>
-
-                            <div class="col-md-6 mb-20">
-                                <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Luas Ruangan (m<sup>2</sup>)</label>
-                                <p><?= $row->luas_tapak_ruangan ?></p>
-                            </div>
-
-                            <div class="col-md-6 mb-20 was-validated">
-                                <label for="editname"
-                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Panjang (m)</label>
-                                <p><?= $row->panjang_ruangan ?></p>
-                            </div>
-
-                            <div class="col-md-6 mb-20 was-validated">
-                                <label for="editname"
-                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Lebar (m)</label>
-                                <p><?= $row->lebar_ruangan ?></p>
-                            </div>
-
-                            <div class="col-md-6 mb-20">
-                                <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Kapasitas </label>
-                                <p><?= $row->kapasitas ?></p>
-                            </div>
-
-                            <div class="col-md-6 mb-20">
-                                <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Kondisi </label>
-                                <p><?= $row->kondisi ?></p>
-                            </div>
-
-                            <div class="col-md-6 mb-20">
-                                <label for="editname" class="form-label fw-semibold text-primary-light text-sm mb-8">Status </label>
-                                <p><?= $row->status ?></p>
-                            </div>
-
-
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- End of Modal Detail Ruangan -->
 
     <!-- Modal Sunting Ruangan -->
     <div class="modal fade" id="TanahEdit<?= $no ?>" tabindex="-1" aria-labelledby="exampleModalEditLabel" aria-hidden="true">

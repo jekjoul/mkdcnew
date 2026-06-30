@@ -25,24 +25,27 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
             <div class="form-group">
               <label for="formClient-Table"><?php echo lang('permissions') ?></label>
               <div class="row">
-                <div class="col-sm-6">
-                  <table class="table table-bordered table-striped">
+                <div class="col-sm-12">
+                  <table class="table table-bordered table-striped" id="tablePermissions">
                     <thead>
                       <tr>
-                        <th><?php echo lang('role_name') ?></th>
-                        <th width="50" class="text-center"><input type="checkbox" class="check-select-all-p"></th>
+                        <th><?php echo lang('permissions') ?></th>
+                        <th width="150" class="text-center">Pilih Semua <input type="checkbox" class="form-check-input check-select-all-p ms-2"></th>
                       </tr>
                     </thead>
                     <tbody>
                       <?php if (!empty($permissions = $this->permissions_model->get())): ?>
                         <?php foreach ($permissions as $row): ?>
                           <tr>
-                            <td><?php echo ucfirst($row->title) ?></td>
-                            <td width="50" class="text-center"><input type="checkbox" class="check-select-p" name="permission[]" value="<?php echo $row->code ?>"></td>
+                            <td><?php echo ucfirst(str_replace('_', ' ', $row->title)) ?></td>
+                            <td class="text-center">
+                              <input type="checkbox" class="form-check-input check-select-p" name="permission[]" value="<?php echo $row->code ?>">
+                            </td>
                           </tr>
                         <?php endforeach ?>
                       <?php else: ?>
-                        <td colspan="2" class="text-center">No Permissions Found</td>
+                        <tr>
+                          <td colspan="2" class="text-center">No Permissions Found</td>
                         </tr>
                       <?php endif ?>
                     </tbody>
@@ -94,7 +97,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
     $('.check-select-all-p').on('change', function() {
 
-      $('.check-select-p').attr('checked', $(this).is(':checked'));
+      $('.check-select-p').prop('checked', $(this).is(':checked'));
 
     })
 

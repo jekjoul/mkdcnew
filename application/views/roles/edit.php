@@ -28,30 +28,32 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
             <div class="form-group">
               <label for="formClient-Table"><?php echo lang('permissions') ?></label>
               <div class="row">
-                <div class="col-sm-6">
-                  <table class="table table-bordered table-striped">
+                <div class="col-sm-12">
+                  <table class="table table-bordered table-striped" id="tablePermissions">
                     <thead>
                       <tr>
-                        <th><?php echo lang('role_name') ?></th>
-                        <th width="50" class="text-center"><input type="checkbox" class="check-select-all-p"></th>
+                        <th><?php echo lang('permissions') ?></th>
+                        <th width="150" class="text-center">Pilih Semua <input type="checkbox" class="form-check-input check-select-all-p ms-2"></th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <?php if (!empty($permissions = $this->permissions_model->get())): ?>
-                          <?php foreach ($permissions as $row): ?>
-                            <td><?php echo ucfirst($row->title) ?></td>
+                      <?php if (!empty($permissions = $this->permissions_model->get())): ?>
+                        <?php foreach ($permissions as $row): ?>
+                          <tr>
+                            <td><?php echo ucfirst(str_replace('_', ' ', $row->title)) ?></td>
                             <?php
                             $isChecked = in_array($row->code, $role_permissions) ? 'checked' : '';
                             ?>
-                            <td width="50" class="text-center"><input type="checkbox" class="form-check-input" name="permission[]" value="<?php echo $row->code ?>" <?php echo $isChecked ?>></td>
-                      </tr>
-                    <?php endforeach ?>
-                  <?php else: ?>
-                    <tr>
-                      <td colspan="2" class="text-center">No Permissions Found</td>
-                    </tr>
-                  <?php endif ?>
+                            <td class="text-center">
+                              <input type="checkbox" class="form-check-input check-select-p" name="permission[]" value="<?php echo $row->code ?>" <?php echo $isChecked ?>>
+                            </td>
+                          </tr>
+                        <?php endforeach ?>
+                      <?php else: ?>
+                        <tr>
+                          <td colspan="2" class="text-center">No Permissions Found</td>
+                        </tr>
+                      <?php endif ?>
                     </tbody>
                   </table>
                 </div>
@@ -101,7 +103,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
     $('.check-select-all-p').on('change', function() {
 
-      $('.check-select-p').attr('checked', $(this).is(':checked'));
+      $('.check-select-p').prop('checked', $(this).is(':checked'));
 
     })
 
@@ -117,12 +119,10 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
       if (!$(this).is(':checked'))
         checked = false;
 
-      return checked;
-
     });
 
     if (checked) {
-      $('.check-select-all-p').attr('checked', true);
+      $('.check-select-all-p').prop('checked', true);
     }
 
 

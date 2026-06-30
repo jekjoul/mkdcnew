@@ -61,6 +61,20 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
     // Toggle fade in/out
     $('#myAlert').fadeToggle(8000); // 500 milliseconds duration
+
+    // Auto scroll ke menu sidebar yang aktif
+    $(document).ready(function() {
+        setTimeout(function() {
+            // Mencari elemen menu yang memiliki class 'active' atau 'show' (umum digunakan di template ini)
+            var activeMenu = $('.sidebar-menu .active, .sidebar-menu .show, .sidebar-menu .sidebar-menu-item.active').last();
+            if (activeMenu.length) {
+                activeMenu[0].scrollIntoView({
+                    behavior: 'auto',
+                    block: 'center'
+                });
+            }
+        }, 300); // Menggunakan sedikit timeout agar script inisialisasi sidebar di app.js selesai berjalan lebih dulu
+    });
 </script>
 </body>
 

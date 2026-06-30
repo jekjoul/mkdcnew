@@ -1,6 +1,6 @@
 <?php
 
-defined('BASEPATH') OR exit('No direct script access allowed'); ?>
+defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
 <?php include viewPath('includes/header'); ?>
 
@@ -11,9 +11,9 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
     <div class="row gy-4 mb-24">
         <div class="col-lg-12">
             <div class="card basic-data-table">
-                <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-3 bg-success" >
+                <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-3 bg-success">
                     <div class="d-flex flex-wrap align-items-center gap-3">
-                      <h6 class="text-light">Data PTK</h6>
+                        <h6 class="text-light">Data PTK</h6>
                     </div>
                     <div class="d-flex flex-wrap align-items-center gap-3">
                         <a href="<?php echo url('ptk/ptkTambah') ?>" class="btn btn-sm btn-success-100 text-success"><i class="ri-add-line"></i> Tambah PTK</a>
@@ -27,47 +27,46 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                     <th scope="col">No</th>
                                     <th scope="col">Jenis PTK</th>
                                     <th scope="col">Nama PTK</th>
-                                    <th scope="col">NIK</th>
+                                    <th scope="col">NUPTK</th>
                                     <th scope="col">NIY</th>
+                                    <th scope="col" class="text-center">Akun MKDC</th>
                                     <th scope="col" class="text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>PTY</td>
-                                    <td>Zakaria Zulkarnain</td>
-                                    <td>3207080307930003</td>
-                                    <td>20190718001014</td>
-                                    <td>
-                                        <div class="d-flex align-items-center gap-10 justify-content-center">
-                                            <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Data PTK">
-                                                <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                            </a>
-                                            <a href="<?php echo url('ptk/ptkUpdate') ?>" class="bg-success-100 text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sunting Data PTK">
-                                                <iconify-icon icon="lucide:edit" class="menu-icon"></iconify-icon></a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>PTY</td>
-                                    <td>Yulianni</td>
-                                    <td>3207080307930003</td>
-                                    <td>20190718001014</td>
-                                    <td>
-                                        <div class="d-flex align-items-center gap-10 justify-content-center">
-                                            <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#TanahDetail">
-                                                <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                            </button>
-                                            <button type="button" class="bg-success-100 text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#TanahEdit">
-                                                <iconify-icon icon="lucide:edit" class="menu-icon"></iconify-icon>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
 
-
+                                <?php $no = 1;
+                                foreach ($ptk as $row): ?>
+                                    <tr>
+                                        <td><?php echo $no++; ?></td>
+                                        <td><?php echo $row->status_pegawai; ?></td>
+                                        <td><?php echo $row->nama_ptk; ?></td>
+                                        <td><?php echo $row->nuptk; ?></td>
+                                        <td><?php echo $row->niy; ?></td>
+                                        <td class="text-center">
+                                            <?php if (isset($user_map[$row->id_ptk])): ?>
+                                                <span class="badge bg-success-focus text-success-main px-16 py-6 radius-4">Akun sudah dibuat (<?php echo $user_map[$row->id_ptk]; ?>)</span>
+                                            <?php else: ?>
+                                                <?php if (hasPermissions('ptk_buat_akun')): ?>
+                                                    <a href="<?php echo url('ptk/buat_akun/' . $row->id_ptk) ?>" class="btn btn-sm btn-primary-600 radius-8 px-12 py-6 d-inline-flex align-items-center gap-1" onclick="return confirm('Buatkan akun login aplikasi untuk PTK ini? Password default adalah NUPTK (jika ada) atau 123456.')">
+                                                        <iconify-icon icon="lucide:user-plus"></iconify-icon> Buatkan Akun MKDC
+                                                    </a>
+                                                <?php else: ?>
+                                                    <span class="badge bg-danger-focus text-danger-main px-16 py-6 radius-4">Belum ada akun</span>
+                                                <?php endif; ?>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                <a href="<?php echo url('ptk/ptkDetail/' . $row->id_ptk) ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Data PTK">
+                                                    <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
+                                                </a>
+                                                <a href="<?php echo url('ptk/ptkEdit/' . $row->id_ptk) ?>" class="bg-success-100 text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sunting Data PTK">
+                                                    <iconify-icon icon="lucide:edit" class="menu-icon"></iconify-icon></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
                             </tbody>
                         </table>
                     </div>
@@ -80,26 +79,26 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 
 <?php include viewPath('includes/footer'); ?>
 <script>
-  let table = new DataTable('#dataTable');
+    let table = new DataTable('#dataTable');
 </script>
 
 <script>
-    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]'); 
-    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl)); 
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 
     // Boxed Tooltip
     $(document).ready(function() {
-        $('.tooltip-button').each(function () {
+        $('.tooltip-button').each(function() {
             var tooltipButton = $(this);
-            var tooltipContent = $(this).siblings('.my-tooltip').html(); 
-    
+            var tooltipContent = $(this).siblings('.my-tooltip').html();
+
             // Initialize the tooltip
             tooltipButton.tooltip({
                 title: tooltipContent,
                 trigger: 'hover',
                 html: true
             });
-    
+
             // Optionally, reinitialize the tooltip if the content might change dynamically
             tooltipButton.on('mouseenter', function() {
                 tooltipButton.tooltip('dispose').tooltip({

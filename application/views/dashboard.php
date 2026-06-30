@@ -1,6 +1,6 @@
 <?php
 
-defined('BASEPATH') OR exit('No direct script access allowed'); ?>
+defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
 <?php include viewPath('includes/header'); ?>
 
@@ -8,7 +8,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 
 
 <div class="dashboard-main-body">
-    
+
     <div class="row gy-4 mb-24">
         <!-- ======================= First Row Cards Start =================== -->
         <div class="col-xxl-12 col-lg-12">
@@ -22,7 +22,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                                             <div>
                                                 <p class="fw-medium text-primary-light mb-1">Seluruh Siswa</p>
-                                                <h5 class="mb-0">368</h5>
+                                                <h5 class="mb-0"><?php echo number_format($total_siswa) ?></h5>
                                             </div>
                                             <div
                                                 class="w-50-px h-50-px bg-cyan rounded-circle d-flex justify-content-center align-items-center">
@@ -30,7 +30,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                     class="text-base text-2xl mb-0"></iconify-icon>
                                             </div>
                                         </div>
-                                        
+
                                     </div>
                                 </div><!-- card end -->
                             </div>
@@ -39,8 +39,8 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                     <div class="card-body p-20">
                                         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                                             <div>
-                                                <p class="fw-medium text-primary-light mb-1">Guru</p>
-                                                <h5 class="mb-0">21</h5>
+                                                <p class="fw-medium text-primary-light mb-1">Pegawai</p>
+                                                <h5 class="mb-0"><?php echo number_format($total_ptk) ?></h5>
                                             </div>
                                             <div
                                                 class="w-50-px h-50-px bg-cyan rounded-circle d-flex justify-content-center align-items-center">
@@ -48,7 +48,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                     class="text-base text-2xl mb-0"></iconify-icon>
                                             </div>
                                         </div>
-                                        
+
                                     </div>
                                 </div><!-- card end -->
                             </div>
@@ -57,8 +57,8 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                     <div class="card-body p-20">
                                         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                                             <div>
-                                                <p class="fw-medium text-primary-light mb-1">Tenaga Administrasi</p>
-                                                <h5 class="mb-0">18</h5>
+                                                <p class="fw-medium text-primary-light mb-1">Alumni</p>
+                                                <h5 class="mb-0"><?php echo number_format($total_alumni) ?></h5>
                                             </div>
                                             <div
                                                 class="w-50-px h-50-px bg-cyan rounded-circle d-flex justify-content-center align-items-center">
@@ -66,11 +66,11 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                     class="text-base text-2xl mb-0"></iconify-icon>
                                             </div>
                                         </div>
-                                       
+
                                     </div>
                                 </div><!-- card end -->
                             </div>
-                            
+
                         </div>
 
                         <div class="row">
@@ -80,7 +80,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                                             <div>
                                                 <p class="fw-medium text-primary-light mb-1">Siswa SMP</p>
-                                                <h5 class="mb-0">289</h5>
+                                                <h5 class="mb-0"><?php echo number_format($total_smp) ?></h5>
                                             </div>
                                             <div
                                                 class="w-50-px h-50-px bg-cyan rounded-circle d-flex justify-content-center align-items-center">
@@ -88,7 +88,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                     class="text-base text-2xl mb-0"></iconify-icon>
                                             </div>
                                         </div>
-                                        
+
                                     </div>
                                 </div><!-- card end -->
                             </div>
@@ -98,7 +98,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                                             <div>
                                                 <p class="fw-medium text-primary-light mb-1">Siswa SMA</p>
-                                                <h5 class="mb-0">156</h5>
+                                                <h5 class="mb-0"><?php echo number_format($total_sma) ?></h5>
                                             </div>
                                             <div
                                                 class="w-50-px h-50-px bg-cyan rounded-circle d-flex justify-content-center align-items-center">
@@ -106,7 +106,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                     class="text-base text-2xl mb-0"></iconify-icon>
                                             </div>
                                         </div>
-                                        
+
                                     </div>
                                 </div><!-- card end -->
                             </div>
@@ -116,7 +116,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                                             <div>
                                                 <p class="fw-medium text-primary-light mb-1">Santri Ponpes</p>
-                                                <h5 class="mb-0">165</h5>
+                                                <h5 class="mb-0"><?php echo number_format($total_ponpes) ?></h5>
                                             </div>
                                             <div
                                                 class="w-50-px h-50-px bg-cyan rounded-circle d-flex justify-content-center align-items-center">
@@ -124,14 +124,14 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                                                     class="text-base text-2xl mb-0"></iconify-icon>
                                             </div>
                                         </div>
-                                       
+
                                     </div>
                                 </div><!-- card end -->
                             </div>
-                            
+
                         </div>
 
-                      
+
                     </div>
 
 
@@ -181,7 +181,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
             </div>
         </div>
 
-         <div class="col-xxl-6 col-md-6">
+        <div class="col-xxl-6 col-md-6">
             <div class="card h-100">
                 <div class="card-header">
                     <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between">
@@ -348,12 +348,12 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
             </div>
         </div>
 
-        
+
         <!-- ======================= First Row Cards End =================== -->
 
         <!-- ================== Second Row Cards Start ======================= -->
         <!-- Top Categories Card Start -->
-       
+
         <div class="col-xxl-4 col-md-6">
             <div class="card">
                 <div class="card-header">
@@ -624,8 +624,8 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 
 
         <!-- ================== Third Row Cards Start ======================= -->
-       
-       
+
+
         <!-- ================== Third Row Cards End ======================= -->
 
     </div>
@@ -743,7 +743,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                     enabled: false
                 },
                 labels: {
-                    formatter: function (value) {
+                    formatter: function(value) {
                         return value;
                     },
                     style: {
@@ -753,7 +753,7 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
             },
             yaxis: {
                 labels: {
-                    formatter: function (value) {
+                    formatter: function(value) {
                         return "$" + value + "k";
                     },
                     style: {
@@ -889,13 +889,13 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
     // ================================ Client Payment Status chart End ================================ 
 
     // ================================ Aminated Radial Progress Bar Start ================================ 
-    $('svg.radial-progress').each(function (index, value) {
+    $('svg.radial-progress').each(function(index, value) {
         $(this).find($('circle.complete')).removeAttr('style');
     });
 
     // Activate progress animation on scroll
-    $(window).scroll(function () {
-        $('svg.radial-progress').each(function (index, value) {
+    $(window).scroll(function() {
+        $('svg.radial-progress').each(function(index, value) {
             // If svg.radial-progress is approximately 25% vertically into the window when scrolling from the top or the bottom
             if (
                 $(window).scrollTop() > $(this).offset().top - ($(window).height() * 0.75) &&
