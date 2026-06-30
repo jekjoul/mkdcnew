@@ -25,6 +25,135 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `siswa`
+--
+
+CREATE TABLE `siswa` (
+  `id_siswa` int(11) NOT NULL AUTO_INCREMENT,
+  `nama_siswa` varchar(150) NOT NULL,
+  `nisn` varchar(30) DEFAULT NULL,
+  `nipd` varchar(30) DEFAULT NULL,
+  `nik` varchar(30) DEFAULT NULL,
+  `no_kk` varchar(30) DEFAULT NULL,
+  `jenis_kelamin` varchar(20) DEFAULT NULL,
+  `tempat_lahir` varchar(100) DEFAULT NULL,
+  `tanggal_lahir` date DEFAULT NULL,
+  `agama` varchar(30) DEFAULT NULL,
+  `telepon` varchar(30) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `rombel` varchar(100) DEFAULT NULL,
+  `tanggal_pendaftaran` date DEFAULT NULL,
+  `status_pendaftaran` varchar(100) DEFAULT NULL,
+  `status_keaktifan` varchar(30) DEFAULT 'Aktif',
+  `no_ijazah` varchar(100) DEFAULT NULL,
+  `kewarganegaraan` varchar(50) DEFAULT 'Indonesia',
+  `anak_ke` int(3) DEFAULT NULL,
+  `alamat` text,
+  `rt` varchar(5) DEFAULT NULL,
+  `rw` varchar(5) DEFAULT NULL,
+  `jenis_tempat_tinggal` varchar(100) DEFAULT NULL,
+  `alat_transportasi` varchar(100) DEFAULT NULL,
+  `jarak_ke_sekolah` varchar(100) DEFAULT NULL,
+  `koordinat` varchar(100) DEFAULT NULL,
+  `sekolah_asal` varchar(150) DEFAULT NULL,
+  `riwayat_penyakit` text,
+  `prestasi_siswa` text,
+  `id_provinsi` varchar(20) DEFAULT NULL,
+  `id_kabupaten` varchar(20) DEFAULT NULL,
+  `id_kecamatan` varchar(20) DEFAULT NULL,
+  `id_kelurahan` varchar(20) DEFAULT NULL,
+  `nama_ayah` varchar(150) DEFAULT NULL,
+  `nik_ayah` varchar(30) DEFAULT NULL,
+  `pekerjaan_ayah` varchar(100) DEFAULT NULL,
+  `penghasilan_ayah` varchar(100) DEFAULT NULL,
+  `tahun_lahir_ayah` year(4) DEFAULT NULL,
+  `pendidikan_ayah` varchar(100) DEFAULT NULL,
+  `alamat_ayah_sama_siswa` tinyint(1) NOT NULL DEFAULT 0,
+  `alamat_ayah` text,
+  `id_provinsi_ayah` varchar(20) DEFAULT NULL,
+  `id_kabupaten_ayah` varchar(20) DEFAULT NULL,
+  `id_kecamatan_ayah` varchar(20) DEFAULT NULL,
+  `id_kelurahan_ayah` varchar(20) DEFAULT NULL,
+  `nama_ibu` varchar(150) DEFAULT NULL,
+  `nik_ibu` varchar(30) DEFAULT NULL,
+  `pekerjaan_ibu` varchar(100) DEFAULT NULL,
+  `penghasilan_ibu` varchar(100) DEFAULT NULL,
+  `tahun_lahir_ibu` year(4) DEFAULT NULL,
+  `pendidikan_ibu` varchar(100) DEFAULT NULL,
+  `alamat_ibu_sama_siswa` tinyint(1) NOT NULL DEFAULT 0,
+  `alamat_ibu` text,
+  `id_provinsi_ibu` varchar(20) DEFAULT NULL,
+  `id_kabupaten_ibu` varchar(20) DEFAULT NULL,
+  `id_kecamatan_ibu` varchar(20) DEFAULT NULL,
+  `id_kelurahan_ibu` varchar(20) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_siswa`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `siswa_foto`
+--
+
+CREATE TABLE `siswa_foto` (
+  `id_foto` int(11) NOT NULL AUTO_INCREMENT,
+  `id_siswa` int(11) NOT NULL,
+  `foto` varchar(255) NOT NULL,
+  `label` varchar(100) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_foto`),
+  KEY `idx_siswa_foto_id_siswa` (`id_siswa`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `master_jenis_dokumen_siswa`
+--
+
+CREATE TABLE `master_jenis_dokumen_siswa` (
+  `id_jenis_dokumen` int(11) NOT NULL AUTO_INCREMENT,
+  `nama_jenis_dokumen` varchar(150) NOT NULL,
+  `status` varchar(20) NOT NULL DEFAULT 'Aktif',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_jenis_dokumen`),
+  UNIQUE KEY `nama_jenis_dokumen` (`nama_jenis_dokumen`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `master_jenis_dokumen_siswa` (`id_jenis_dokumen`, `nama_jenis_dokumen`, `status`) VALUES
+(1, 'KTP Orang Tua', 'Aktif'),
+(2, 'Kartu Keluarga', 'Aktif'),
+(3, 'Akta Kelahiran', 'Aktif'),
+(4, 'KIP', 'Aktif'),
+(5, 'Ijazah Terakhir', 'Aktif');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `siswa_dokumen`
+--
+
+CREATE TABLE `siswa_dokumen` (
+  `id_dokumen` int(11) NOT NULL AUTO_INCREMENT,
+  `id_siswa` int(11) NOT NULL,
+  `id_jenis_dokumen` int(11) NOT NULL,
+  `nomor_dokumen` varchar(100) DEFAULT NULL,
+  `tanggal_dokumen` date DEFAULT NULL,
+  `berkas` varchar(255) NOT NULL,
+  `keterangan` text,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_dokumen`),
+  KEY `idx_siswa_dokumen_id_siswa` (`id_siswa`),
+  KEY `idx_siswa_dokumen_id_jenis` (`id_jenis_dokumen`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `activity_logs`
 --
 
@@ -53,6 +182,76 @@ INSERT INTO `activity_logs` (`id`, `title`, `user`, `siswa`, `ip_address`, `crea
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `ptk_riwayat_pendidikan`
+--
+
+CREATE TABLE `ptk_riwayat_pendidikan` (
+  `id_pendidikan` int(11) NOT NULL AUTO_INCREMENT,
+  `id_ptk` int(11) NOT NULL,
+  `jenjang` varchar(50) NOT NULL,
+  `satuan_pendidikan` varchar(200) NOT NULL,
+  `jurusan` varchar(150) DEFAULT NULL,
+  `tahun_masuk` year(4) DEFAULT NULL,
+  `tahun_lulus` year(4) DEFAULT NULL,
+  `tanggal_lulus` date DEFAULT NULL,
+  `no_ijazah` varchar(100) DEFAULT NULL,
+  `keterangan` text,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_pendidikan`),
+  KEY `idx_ptk_riwayat_pendidikan_id_ptk` (`id_ptk`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `master_jenis_dokumen_ptk`
+--
+
+CREATE TABLE `master_jenis_dokumen_ptk` (
+  `id_jenis_dokumen` int(11) NOT NULL AUTO_INCREMENT,
+  `nama_jenis_dokumen` varchar(150) NOT NULL,
+  `status` varchar(20) NOT NULL DEFAULT 'Aktif',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_jenis_dokumen`),
+  UNIQUE KEY `nama_jenis_dokumen` (`nama_jenis_dokumen`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `master_jenis_dokumen_ptk`
+--
+
+INSERT INTO `master_jenis_dokumen_ptk` (`id_jenis_dokumen`, `nama_jenis_dokumen`, `status`) VALUES
+(1, 'KTP', 'Aktif'),
+(2, 'Kartu Keluarga', 'Aktif'),
+(3, 'Akta Kelahiran', 'Aktif'),
+(4, 'NPWP', 'Aktif');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ptk_dokumen_pribadi`
+--
+
+CREATE TABLE `ptk_dokumen_pribadi` (
+  `id_dokumen` int(11) NOT NULL AUTO_INCREMENT,
+  `id_ptk` int(11) NOT NULL,
+  `id_jenis_dokumen` int(11) NOT NULL,
+  `nomor_dokumen` varchar(100) DEFAULT NULL,
+  `tanggal_dokumen` date DEFAULT NULL,
+  `berkas` varchar(255) NOT NULL,
+  `keterangan` text,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_dokumen`),
+  KEY `idx_ptk_dokumen_pribadi_id_ptk` (`id_ptk`),
+  KEY `idx_ptk_dokumen_pribadi_id_jenis` (`id_jenis_dokumen`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `lembaga`
 --
 
@@ -64,6 +263,7 @@ CREATE TABLE `lembaga` (
   `bentuk_pendidikan` varchar(10) NOT NULL,
   `status` varchar(50) NOT NULL,
   `akreditasi` varchar(100) NOT NULL,
+  `berkas_akreditasi` varchar(255) NOT NULL,
   `no_sk_akreditasi` varchar(100) NOT NULL,
   `alamat` text NOT NULL,
   `rt` varchar(5) NOT NULL,
@@ -86,10 +286,10 @@ CREATE TABLE `lembaga` (
 -- Dumping data for table `lembaga`
 --
 
-INSERT INTO `lembaga` (`id_lembaga`, `nama_lembaga`, `id_ptk_kepsek`, `npsn`, `bentuk_pendidikan`, `status`, `akreditasi`, `no_sk_akreditasi`, `alamat`, `rt`, `rw`, `id_kelurahan`, `id_kecamatan`, `id_kabupaten`, `id_provinsi`, `telepon`, `email`, `website`, `instagram`, `tiktok`, `youtube`, `logo`, `foto_kepsek`) VALUES
-(1, 'SMP Miftahul Khoer Boarding School', '', '123456789', 'SMA', 'Swasta', 'Terakreditasi B (Baik)', '555/BAN-SM/SK/2023', 'Dusun Mandala', '018', '006', '', '', '', '', '082240213444', 'smp@miftahulkhoer.org', 'http://sma.miftahulkhoer.org', '@miftahulkhoermedia', 'miftahulkhoermedia', 'Miftahul Khoer Media Official', 'logo_smp.png', ''),
-(2, 'SMA Miftahul Khoer Boarding School', '', '123456789', 'SMP', 'Swasta', 'Belum Akreditasi', '-', 'Dusun Mandala', '018', '006', '', '', '', '', '+6282240213444', 'sma@miftahulkhoer.org', 'http://sma.miftahulkhoer.org', '@miftahulkhoermedia', 'miftahulkhoermedia', 'Miftahul Khoer Media Official', 'logo_sma.png', ''),
-(3, 'Pondok Pesantren Miftahul Khoer', '', '123456789', 'SMP', 'Swasta', 'Belum Akreditasi', '-', 'Dusun Mandala', '018', '006', '', '', '', '', '+6282240213444', 'sma@miftahulkhoer.org', 'http://sma.miftahulkhoer.org', '@miftahulkhoermedia', 'miftahulkhoermedia', 'Miftahul Khoer Media Official', 'logo_ponpes.png', '');
+INSERT INTO `lembaga` (`id_lembaga`, `nama_lembaga`, `id_ptk_kepsek`, `npsn`, `bentuk_pendidikan`, `status`, `akreditasi`, `berkas_akreditasi`, `no_sk_akreditasi`, `alamat`, `rt`, `rw`, `id_kelurahan`, `id_kecamatan`, `id_kabupaten`, `id_provinsi`, `telepon`, `email`, `website`, `instagram`, `tiktok`, `youtube`, `logo`, `foto_kepsek`) VALUES
+(1, 'SMP Miftahul Khoer Boarding School', '', '123456789', 'SMA', 'Swasta', 'Terakreditasi B (Baik)', '', '555/BAN-SM/SK/2023', 'Dusun Mandala', '018', '006', '', '', '', '', '082240213444', 'smp@miftahulkhoer.org', 'http://sma.miftahulkhoer.org', '@miftahulkhoermedia', 'miftahulkhoermedia', 'Miftahul Khoer Media Official', 'logo_smp.png', ''),
+(2, 'SMA Miftahul Khoer Boarding School', '', '123456789', 'SMP', 'Swasta', 'Belum Akreditasi', '', '-', 'Dusun Mandala', '018', '006', '', '', '', '', '+6282240213444', 'sma@miftahulkhoer.org', 'http://sma.miftahulkhoer.org', '@miftahulkhoermedia', 'miftahulkhoermedia', 'Miftahul Khoer Media Official', 'logo_sma.png', ''),
+(3, 'Pondok Pesantren Miftahul Khoer', '', '123456789', 'SMP', 'Swasta', 'Belum Akreditasi', '', '-', 'Dusun Mandala', '018', '006', '', '', '', '', '+6282240213444', 'sma@miftahulkhoer.org', 'http://sma.miftahulkhoer.org', '@miftahulkhoermedia', 'miftahulkhoermedia', 'Miftahul Khoer Media Official', 'logo_ponpes.png', '');
 
 -- --------------------------------------------------------
 

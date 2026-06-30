@@ -5,6 +5,45 @@ class Master_model extends MY_Model
 {
     public $jenis_ruangan = 'master_jenis_ruangan';
     public $jenis_sarana = 'master_jenis_sarana';
+    public $lembaga = 'lembaga';
+    public $mapel = 'mapel';
+    public $tingkat_sekolah = 'master_tingkat_sekolah';
+
+    public function getAllLembaga()
+    {
+        $query = $this->db->get($this->lembaga);
+        return $query ? $query->result() : [];
+    }
+
+    public function getDetailLembaga($id)
+    {
+        $query = $this->db->get_where($this->lembaga, ['id_lembaga' => $id]);
+        return $query ? $query->row() : null;
+    }
+
+    public function getMapel()
+    {
+        $query = $this->db->get($this->mapel);
+        return $query ? $query->result() : [];
+    }
+
+    public function getDetailMapel($id)
+    {
+        $query = $this->db->get_where($this->mapel, ['id_mapel' => $id]);
+        return $query ? $query->row() : null;
+    }
+
+    public function getTingkatSekolah()
+    {
+        $query = $this->db->get($this->tingkat_sekolah);
+        return $query ? $query->result() : [];
+    }
+
+    public function getDetailTingkatSekolah($id)
+    {
+        $query = $this->db->get_where($this->tingkat_sekolah, ['id_tingkat_sekolah' => $id]);
+        return $query ? $query->row() : null;
+    }
 
     public function getJenisRuangan()
     {
@@ -20,7 +59,7 @@ class Master_model extends MY_Model
         $this->db->from($this->jenis_ruangan);
         $this->db->where('id_jenis_ruangan', $id);
         $query = $this->db->get();
-        return $query->row();
+        return $query ? $query->row() : null;
     }
 
     public function getJenisRuanganAktif()
@@ -29,7 +68,7 @@ class Master_model extends MY_Model
         $this->db->from($this->jenis_ruangan);
         $this->db->where('status', 'Aktif');
         $query = $this->db->get();
-        return $query->result();
+        return $query ? $query->result() : [];
     }
 
     public function jenisRuanganExist($id)
@@ -60,7 +99,7 @@ class Master_model extends MY_Model
         $this->db->from($this->jenis_sarana);
         $this->db->where('id_jenis_sarana', $id);
         $query = $this->db->get();
-        return $query->row();
+        return $query ? $query->row() : null;
     }
 
     public function getJenisSaranaAktif()
@@ -69,7 +108,7 @@ class Master_model extends MY_Model
         $this->db->from($this->jenis_sarana);
         $this->db->where('status', 'Aktif');
         $query = $this->db->get();
-        return $query->result();
+        return $query ? $query->result() : [];
     }
 
     public function jenisSaranaExist($id)

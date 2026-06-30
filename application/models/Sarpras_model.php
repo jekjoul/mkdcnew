@@ -80,4 +80,24 @@ class Sarpras_model extends MY_Model
         $query = $this->db->get();
         return $query->row();
     }
+
+    public function getSomeSarana($id)
+    {
+        $this->db->select('*');
+        $this->db->from($this->alat);
+        $this->db->where('sarpras_sarana.id_jenis_sarana', $id);
+        $query = $this->db->get();
+        return $query->result();
+    }
+
+    public function getRuanganSarana($id)
+    {
+        $this->db->select('*');
+        $this->db->from('sarpras_ruangan_sarana');
+        $this->db->join($this->jenis_sarana, 'sarpras_ruangan_sarana.id_jenis_sarana= master_jenis_sarana.id_jenis_sarana', 'left');
+        $this->db->join($this->alat, 'sarpras_ruangan_sarana.id_sarana= sarpras_sarana.id_sarana', 'left');
+        $this->db->where('id_ruangan', $id);
+        $query = $this->db->get();
+        return $query->result();
+    }
 }

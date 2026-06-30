@@ -13,11 +13,11 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
             <div class="card basic-data-table">
                 <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-3 bg-neutral-300">
                     <div class="d-flex flex-wrap align-items-center gap-3">
-                        <h6>Master Jenis Ruangan</h6>
+                        <h6>Master Jenis Sarana</h6>
                     </div>
                     <div class="d-flex flex-wrap align-items-center gap-3">
-                        <button type="button" class="btn btn-sm btn-primary-600" data-bs-toggle="modal" data-bs-target="#addJenisRuangan">
-                            <i class="ri-add-line"></i>Tambah Jenis Ruangan
+                        <button type="button" class="btn btn-sm btn-primary-600" data-bs-toggle="modal" data-bs-target="#add">
+                            <i class="ri-add-line"></i>Tambah Jenis Sarana
                         </button>
                     </div>
                 </div>
@@ -40,14 +40,14 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                 ?>
                                     <tr>
                                         <td class="text-center"><?= $no ?></td>
-                                        <td><?= $row->nama_jenis_ruangan ?></td>
+                                        <td><?= $row->nama_jenis_sarana ?></td>
                                         <td><?= $row->status ?></td>
                                         <td>
                                             <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                <button type="button" class="bg-success-100 text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" onclick="tampilkanModal(<?= $row->id_jenis_ruangan ?>)">
+                                                <button type="button" class="bg-success-100 text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" onclick="tampilkanModal(<?= $row->id_jenis_sarana ?>)">
                                                     <iconify-icon icon="lucide:edit" class="menu-icon"></iconify-icon>
                                                 </button>
-                                                <button type="button" class="bg-danger-100 text-danger-600 bg-hover-danger-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#hapus<?= $no ?>">
+                                                <button type="button" class="bg-danger-100 text-danger-600 bg-hover-danger-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#hapus<?= $row->id_jenis_sarana ?>">
                                                     <iconify-icon icon="material-symbols:delete" class="menu-icon"></iconify-icon>
                                                 </button>
                                             </div>
@@ -66,22 +66,22 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
 </div>
 
 <!--Modal Detail Ruangan -->
-<div class="modal fade" id="addJenisRuangan" tabindex="-1" aria-labelledby="exampleModalEditLabel" aria-hidden="true">
+<div class="modal fade" id="add" tabindex="-1" aria-labelledby="exampleModalEditLabel" aria-hidden="true">
     <div class="modal-dialog modal-md modal-dialog modal-dialog-centered">
         <div class="modal-content radius-16 bg-base">
             <div class="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0">
-                <h1 class="modal-title fs-5" id="exampleModalEditLabel">Detail Ruangan</h1>
+                <h1 class="modal-title fs-5" id="exampleModalEditLabel">Tambah Sarana</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-24">
-                <form action="<?php echo url('master/jenisRuanganSimpan/') ?>" method="post">
+                <form action="<?php echo url('master/jenisSaranaSimpan/') ?>" method="post">
                     <div class="row">
                         <div class="col-md-12 mb-20 was-validated">
                             <label for="editname"
-                                class="form-label fw-semibold text-primary-light text-sm mb-8">Nama Jenis Ruangan</label>
-                            <input type="text" class="form-control radius-8" id="editname" name="nama_jenis_ruangan" required>
+                                class="form-label fw-semibold text-primary-light text-sm mb-8">Nama Jenis Sarana</label>
+                            <input type="text" class="form-control radius-8" id="editname" name="nama_jenis_sarana" required>
                             <div class="invalid-feedback">
-                                Silahkan masukan Nama Jenis Ruangan.
+                                Silahkan masukan Nama Jenis Sarana.
                             </div>
                         </div>
 
@@ -113,7 +113,7 @@ foreach ($jenis_sarana as $row):
 ?>
 
     <!--Modal Hapus -->
-    <div class="modal fade" id="hapus<?= $no ?>" tabindex="-1" aria-labelledby="exampleModalEditLabel" aria-hidden="true">
+    <div class="modal fade" id="hapus<?= $row->id_jenis_sarana ?>" tabindex="-1" aria-labelledby="exampleModalEditLabel" aria-hidden="true">
         <div class="modal-dialog modal-md modal-dialog modal-dialog-centered">
             <div class="modal-content radius-16 bg-base">
 
@@ -125,7 +125,7 @@ foreach ($jenis_sarana as $row):
                         <h7 class="text-center mt-3 mb-2">Apakah anda yakin akan menghapus data ini?</h7>
                         <div class="w-50-px h-50-px mx-auto my-4 d-flex justify-content-center align-items-center gap-3">
                             <button data-bs-dismiss="modal" aria-label="Close" class="btn btn-sm btn-neutral-500 px-20 py-11"> Batal</button>
-                            <a href="<?php echo url('master/jenisRuanganDelete/' . $row->id_jenis_ruangan)  ?>" class="btn btn-sm btn-danger-600 px-20 py-11"> Hapus</a>
+                            <a href="<?php echo url('master/jenisSaranaDelete/' . $row->id_jenis_sarana)  ?>" class="btn btn-sm btn-danger-600 px-20 py-11"> Hapus</a>
                         </div>
 
                     </div>
@@ -136,14 +136,14 @@ foreach ($jenis_sarana as $row):
     <!-- End of Modal Hapus -->
 
     <!-- Modal Sunting Ajax-->
-    <div class="modal fade" id="ModalEdit<?= $row->id_jenis_ruangan ?>" tabindex="-1" aria-labelledby="exampleModalEditLabel" aria-hidden="true">
+    <div class="modal fade" id="ModalEdit<?= $row->id_jenis_sarana ?>" tabindex="-1" aria-labelledby="exampleModalEditLabel" aria-hidden="true">
         <div class="modal-dialog modal-md modal-dialog modal-dialog-centered">
             <div class="modal-content radius-16 bg-base">
                 <div class="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0">
-                    <h1 class="modal-title fs-5" id="exampleModalEditLabel">Sunting Jenis Ruangan</h1>
+                    <h1 class="modal-title fs-5" id="exampleModalEditLabel">Sunting Jenis Sarana</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body p-24" id="modal-body<?= $row->id_jenis_ruangan ?>">
+                <div class="modal-body p-24" id="modal-body<?= $row->id_jenis_sarana ?>">
 
                 </div>
             </div>
@@ -157,13 +157,13 @@ foreach ($jenis_sarana as $row):
         function tampilkanModal(id) {
             // Permintaan Ajax
             $.ajax({
-                url: '<?php echo base_url("master/jenisRuanganEdit/"); ?>' + id, // Sesuaikan URL controller Anda
+                url: '<?php echo base_url("master/jenisSaranaEdit/"); ?>' + id, // Sesuaikan URL controller Anda
                 type: 'GET',
                 success: function(response) {
                     // Masukkan konten HTML yang dikembalikan ke dalam body modal
-                    $('#modal-body<?= $row->id_jenis_ruangan ?>').html(response);
+                    $('#modal-body<?= $row->id_jenis_sarana ?>').html(response);
                     // Tampilkan modal
-                    $('#ModalEdit<?= $row->id_jenis_ruangan ?>').modal('show');
+                    $('#ModalEdit<?= $row->id_jenis_sarana ?>').modal('show');
                 },
                 error: function(xhr, status, error) {
                     // Tangani error jika terjadi
