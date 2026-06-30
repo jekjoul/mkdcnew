@@ -43,6 +43,9 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
 <script src=" https://cdn.jsdelivr.net/npm/sweetalert2@11.26.2/dist/sweetalert2.all.min.js "></script>
 
+<!-- scanner plugin -->
+<script src="<?php echo $url->assets ?>js/scanner-plugin.js"></script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const myAlert = document.getElementById('myAlert');
