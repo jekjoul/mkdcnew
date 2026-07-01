@@ -56,7 +56,12 @@ $(document).ready(function() {
                 // Bridge is running! Fetch scanner devices
                 try {
                     const devicesRes = await fetch(`${SCANNER_API_URL}/devices`);
-                    const devices = await devicesRes.json();
+                    let devices = await devicesRes.json();
+
+                    // PowerShell ConvertTo-Json quirk: single object returned instead of array if there is only 1 device
+                    if (devices && !Array.isArray(devices)) {
+                        devices = [devices];
+                    }
 
                     if (!devices || devices.length === 0 || (devices.length === 1 && !devices[0])) {
                         Swal.fire({
