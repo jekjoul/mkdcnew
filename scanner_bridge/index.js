@@ -126,6 +126,21 @@ const server = http.createServer(async (req, res) => {
                 $device = $scannerInfo.Connect()
                 $item = $device.Items.Item(1)
                 
+                # Configure A4 size at 150 DPI
+                $dpi = 150
+                try {
+                    # 6147/6148 = DPI, 6151/6152 = Extent (width/height in pixels)
+                    # A4 is 8.27 in x 11.69 in
+                    $item.Properties.Item("6147").Value = $dpi
+                    $item.Properties.Item("6148").Value = $dpi
+                    $item.Properties.Item("6149").Value = 0
+                    $item.Properties.Item("6150").Value = 0
+                    $item.Properties.Item("6151").Value = [int](8.27 * $dpi)
+                    $item.Properties.Item("6152").Value = [int](11.69 * $dpi)
+                } catch {
+                    # Ignore if read-only or driver doesn't support setting size
+                }
+                
                 # Setup format
                 $formatGuid = "${formatGuid}"
                 
