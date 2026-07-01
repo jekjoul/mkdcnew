@@ -56,9 +56,14 @@ $(document).ready(function() {
                 // Bridge is running! Fetch scanner devices
                 try {
                     const devicesRes = await fetch(`${SCANNER_API_URL}/devices`);
-                    const devices = await devicesRes.json();
+                    let devices = await devicesRes.json();
 
-                    if (!devices || devices.length === 0) {
+                    // PowerShell ConvertTo-Json quirk: single object returned instead of array if there is only 1 device
+                    if (devices && !Array.isArray(devices)) {
+                        devices = [devices];
+                    }
+
+                    if (!devices || devices.length === 0 || (devices.length === 1 && !devices[0])) {
                         Swal.fire({
                             icon: 'warning',
                             title: 'Alat Scanner Tidak Ditemukan',
@@ -85,6 +90,7 @@ $(document).ready(function() {
                                 <select id="swal-scanner-format" class="form-select">
                                     <option value="jpg" selected>JPEG (Rekomendasi - Lebih Ringan)</option>
                                     <option value="png">PNG (Transparansi & Kualitas Tinggi)</option>
+                                    <option value="pdf">PDF (Dokumen Portable Document Format)</option>
                                 </select>
                             </div>
                         `,
@@ -92,9 +98,11 @@ $(document).ready(function() {
                         confirmButtonText: 'Mulai Scan',
                         cancelButtonText: 'Batal',
                         preConfirm: () => {
+                            const formatVal = document.getElementById('swal-scanner-format').value;
                             return {
                                 deviceId: document.getElementById('swal-scanner-device').value,
-                                format: document.getElementById('swal-scanner-format').value
+                                format: formatVal === 'pdf' ? 'png' : formatVal,
+                                convertToPdf: formatVal === 'pdf'
                             }
                         }
                     }).then(async (result) => {
@@ -111,15 +119,30 @@ $(document).ready(function() {
                             const scanRes = await fetch(`${SCANNER_API_URL}/scan`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify(result.value)
+                                body: JSON.stringify({
+                                    deviceId: result.value.deviceId,
+                                    format: result.value.format
+                                })
                             });
 
                             const scanData = await scanRes.json();
                             if (scanData.success && scanData.base64) {
-                                // Convert base64 to File object
-                                const mime = scanData.mime;
-                                const filename = `scanned_document_${Date.now()}.${scanData.format}`;
-                                const file = dataURLtoFile(`data:${mime};base64,${scanData.base64}`, filename);
+                                let file;
+                                
+                                if (result.value.convertToPdf) {
+                                    // Load jsPDF dynamically from CDN
+                                    await loadJsPDF();
+                                    
+                                    // Convert scanned image to PDF Blob
+                                    const pdfBlob = await imageToPdfBlob(`data:${scanData.mime};base64,${scanData.base64}`, scanData.format);
+                                    const filename = `scanned_document_${Date.now()}.pdf`;
+                                    file = new File([pdfBlob], filename, { type: 'application/pdf' });
+                                } else {
+                                    // Convert base64 to image File object
+                                    const mime = scanData.mime;
+                                    const filename = `scanned_document_${Date.now()}.${scanData.format}`;
+                                    file = dataURLtoFile(`data:${mime};base64,${scanData.base64}`, filename);
+                                }
 
                                 // Put the file into the file input
                                 const dataTransfer = new DataTransfer();
@@ -150,6 +173,40 @@ $(document).ready(function() {
                     });
                 }
             });
+        });
+    }
+
+    // Dynamic jsPDF Loader
+    function loadJsPDF() {
+        return new Promise((resolve, reject) => {
+            if (window.jspdf) {
+                resolve();
+                return;
+            }
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+            script.onload = () => resolve();
+            script.onerror = () => reject(new Error('Gagal memuat pustaka jsPDF'));
+            document.head.appendChild(script);
+        });
+    }
+
+    // Convert Image Data URL to PDF Blob
+    function imageToPdfBlob(dataUrl, imgFormat) {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.src = dataUrl;
+            img.onload = function() {
+                const { jsPDF } = window.jspdf;
+                // Create PDF matches image orientation & dimension
+                const pdf = new jsPDF({
+                    orientation: img.width > img.height ? 'landscape' : 'portrait',
+                    unit: 'px',
+                    format: [img.width, img.height]
+                });
+                pdf.addImage(dataUrl, imgFormat.toUpperCase(), 0, 0, img.width, img.height);
+                resolve(pdf.output('blob'));
+            };
         });
     }
 

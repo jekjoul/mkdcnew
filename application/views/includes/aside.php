@@ -15,7 +15,7 @@
             $CI = &get_instance();
             $role_title_row = $CI->db->get_where('roles', ['id' => logged('role')])->row();
             $role_title = $role_title_row ? strtolower((string) $role_title_row->title) : '';
-            $is_guru_portal = strpos($role_title, 'guru') !== false;
+            $is_guru_portal = ($role_title === 'guru' || logged('role') == 4);
             ?>
             <?php if ($is_guru_portal): ?>
                 <?php if (hasPermissions('menu_dashboard_guru')): ?>
