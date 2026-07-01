@@ -191,7 +191,7 @@ class Calon_siswa extends MY_Controller
 
         $this->session->set_flashdata('alert-type', 'success');
         $this->session->set_flashdata('alert', 'Berkas berhasil diupload');
-        redirect('calon_siswa');
+        redirect('calon_siswa/upload/' . $row->id_calon_siswa);
     }
 
     public function berkasHapus($id_berkas = null)
