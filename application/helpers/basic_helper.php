@@ -422,7 +422,7 @@ if (!function_exists('postAllowed')) {
 
 		$CI = &get_instance();
 
-		if (count($CI->input->post()) <= 0)
+		if ($CI->input->server('REQUEST_METHOD') !== 'POST')
 
 			die('Invalid Request');
 
@@ -2646,7 +2646,28 @@ function supported_languages()
 }
 
 
+if (!function_exists('is_daftar_ulang_aktif')) {
+	function is_daftar_ulang_aktif()
+	{
+		$status = setting('daftar_ulang_status');
+		if ($status !== 'Aktif') {
+			return false;
+		}
 
+		$start_date = setting('daftar_ulang_start_date');
+		$end_date = setting('daftar_ulang_end_date');
+		$now = date('Y-m-d H:i:s');
 
+		if (!empty($start_date) && $now < $start_date) {
+			return false;
+		}
+
+		if (!empty($end_date) && $now > $end_date) {
+			return false;
+		}
+
+		return true;
+	}
+}
 
 // lang_codes();

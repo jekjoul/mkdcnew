@@ -320,20 +320,22 @@ class Login extends CI_Controller {
 	private function googleClient()
 	{
 		$config = [
-			'client_id' => $this->config->item('google_oauth_client_id'),
-			'client_secret' => '',
+			'client_id' => setting('google_client_id') ? setting('google_client_id') : $this->config->item('google_oauth_client_id'),
+			'client_secret' => setting('google_client_secret') ? setting('google_client_secret') : '',
 			'auth_uri' => 'https://accounts.google.com/o/oauth2/v2/auth',
 			'token_uri' => 'https://oauth2.googleapis.com/token',
 		];
 
-		$file = $this->config->item('google_oauth_client_secret_file');
-		if ($file && is_file($file)) {
-			$json = json_decode(file_get_contents($file), true);
-			$item = isset($json['web']) ? $json['web'] : (isset($json['installed']) ? $json['installed'] : []);
-			$config['client_id'] = !empty($item['client_id']) ? $item['client_id'] : $config['client_id'];
-			$config['client_secret'] = !empty($item['client_secret']) ? $item['client_secret'] : '';
-			$config['auth_uri'] = !empty($item['auth_uri']) ? $item['auth_uri'] : $config['auth_uri'];
-			$config['token_uri'] = !empty($item['token_uri']) ? $item['token_uri'] : $config['token_uri'];
+		if (empty($config['client_secret'])) {
+			$file = $this->config->item('google_oauth_client_secret_file');
+			if ($file && is_file($file)) {
+				$json = json_decode(file_get_contents($file), true);
+				$item = isset($json['web']) ? $json['web'] : (isset($json['installed']) ? $json['installed'] : []);
+				$config['client_id'] = !empty($item['client_id']) ? $item['client_id'] : $config['client_id'];
+				$config['client_secret'] = !empty($item['client_secret']) ? $item['client_secret'] : '';
+				$config['auth_uri'] = !empty($item['auth_uri']) ? $item['auth_uri'] : $config['auth_uri'];
+				$config['token_uri'] = !empty($item['token_uri']) ? $item['token_uri'] : $config['token_uri'];
+			}
 		}
 
 		return $config;

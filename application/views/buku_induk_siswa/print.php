@@ -57,7 +57,7 @@
 <body>
     <div class="print-toolbar">
         <button type="button" class="primary" onclick="window.print()">Print / Save PDF</button>
-        <a href="<?php echo url('buku_induk_siswa/view/' . $siswa->id_siswa); ?>">Kembali ke View</a>
+        <a href="<?php echo url('buku_induk_siswa/view/' . $siswa->id_alumni); ?>">Kembali ke View</a>
     </div>
 
     <?php include viewPath('buku_induk_siswa/partials/template'); ?>

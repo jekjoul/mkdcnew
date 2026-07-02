@@ -209,10 +209,6 @@
                                 <label class="form-label">NIPD Baru</label>
                                 <input type="text" class="form-control radius-8" name="nipd" value="<?php echo html_escape($row->nipd) ?>" placeholder="Isi NIPD baru jika berubah">
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Rombel Baru</label>
-                                <input type="text" class="form-control radius-8" name="rombel" placeholder="Contoh: X - Al Farabi / Pondok Pesantren">
-                            </div>
                         </div>
                     </div>
                     <div class="modal-footer px-24 py-16">

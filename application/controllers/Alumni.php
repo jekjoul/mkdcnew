@@ -62,6 +62,7 @@ class Alumni extends MY_Controller
         $this->db->order_by('m.nama_mapel', 'ASC');
         $this->page_data['nilai'] = $this->db->get()->result();
 
+
         $this->load->view('alumni/detail', $this->page_data);
     }
 
@@ -336,7 +337,7 @@ class Alumni extends MY_Controller
         $siswa_data['status_keaktifan'] = 'Aktif';
         $siswa_data['status_pendaftaran'] = post('status_pendaftaran') ?: 'Kembali';
         $siswa_data['tanggal_pendaftaran'] = $tanggal_kembali;
-        $siswa_data['rombel'] = post('rombel') ?: null;
+        $siswa_data['rombel'] = null;
         $siswa_data['nipd'] = post('nipd') !== false ? post('nipd') : (isset($alumni['nipd']) ? $alumni['nipd'] : null);
         if (in_array('id_alumni_asal', $siswa_fields, true)) {
             $siswa_data['id_alumni_asal'] = (int) $alumni['id_alumni'];
@@ -378,13 +379,27 @@ class Alumni extends MY_Controller
             ]);
         }
 
-        $this->db->where('id_alumni', (int) $alumni['id_alumni']);
-        $this->db->update('alumni', [
-            'status_alumni' => 'Dikembalikan',
-            'status_keaktifan' => 'Dikembalikan',
-            'id_siswa_kembali' => $id_siswa,
-            'tanggal_kembali' => $tanggal_kembali,
-        ]);
+        foreach ($this->db->get_where('alumni_pembelajaran_siswa', ['id_alumni' => (string) $alumni['id_alumni']])->result_array() as $pembelajaran) {
+            unset($pembelajaran['id_alumni_pembelajaran_siswa']);
+            $pembelajaran['peserta_didik_id'] = (string) $id_siswa;
+            unset($pembelajaran['id_alumni']);
+            unset($pembelajaran['id_siswa_asal']);
+            $this->db->insert('pembelajaran_siswa', $pembelajaran);
+        }
+
+        foreach ($this->db->get_where('alumni_nilai_siswa', ['id_alumni' => (int) $alumni['id_alumni']])->result_array() as $nilai) {
+            unset($nilai['id_alumni_nilai_siswa']);
+            $nilai['id_siswa'] = (int) $id_siswa;
+            unset($nilai['id_alumni']);
+            unset($nilai['id_siswa_asal']);
+            $this->db->insert('nilai_siswa', $nilai);
+        }
+
+        $this->db->delete('alumni_foto', ['id_alumni' => (int) $alumni['id_alumni']]);
+        $this->db->delete('alumni_dokumen', ['id_alumni' => (int) $alumni['id_alumni']]);
+        $this->db->delete('alumni_pembelajaran_siswa', ['id_alumni' => (string) $alumni['id_alumni']]);
+        $this->db->delete('alumni_nilai_siswa', ['id_alumni' => (int) $alumni['id_alumni']]);
+        $this->db->delete('alumni', ['id_alumni' => (int) $alumni['id_alumni']]);
 
         $this->db->trans_complete();
         return $this->db->trans_status() ? $id_siswa : null;

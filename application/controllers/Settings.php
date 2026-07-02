@@ -8,6 +8,10 @@ class Settings extends MY_Controller {
 		parent::__construct();
 		$this->page_data['page']->title = 'Settings';
 		$this->page_data['page']->menu = 'settings';
+		$this->page_data['page']->titleUrl = 'settings/general';
+		$this->page_data['page']->subtitle = 'System Settings';
+		$this->page_data['page']->subtitleUrl = 'settings/general';
+		$this->page_data['page']->icon = 'solar:settings-linear';
 	}
 
 	public function index()
@@ -156,6 +160,66 @@ class Settings extends MY_Controller {
 		$this->activity_model->add("Email Template Updated by User: #".logged('id'));
 		
 		redirect('settings/email_templates');
+	}
+
+	public function api_settings()
+	{
+		ifPermissions('general_settings');
+		$this->page_data['page']->subtitle = 'Integrasi API';
+		$this->page_data['page']->subtitleUrl = 'settings/api_settings';
+		$this->page_data['page']->submenu = 'api_settings';
+		$this->load->view('settings/api_settings', $this->page_data);
+	}
+
+	public function apiSettingsUpdate()
+	{
+		ifPermissions('general_settings');
+		postAllowed();
+
+		$this->settings_model->updateByKey('company_name', post('company_name'));
+		$this->settings_model->updateByKey('google_client_id', post('google_client_id'));
+		$this->settings_model->updateByKey('google_client_secret', post('google_client_secret'));
+
+		$this->session->set_flashdata('alert-type', 'success');
+		$this->session->set_flashdata('alert', 'Pengaturan API berhasil diperbarui.');
+
+		$this->activity_model->add("API Settings Updated by User: #".logged('id'));
+
+		redirect('settings/api_settings');
+	}
+
+	public function feature_settings()
+	{
+		ifPermissions('general_settings');
+		$this->page_data['page']->subtitle = 'Pengaturan Fitur';
+		$this->page_data['page']->subtitleUrl = 'settings/feature_settings';
+		$this->page_data['page']->submenu = 'feature_settings';
+		$this->load->view('settings/feature_settings', $this->page_data);
+	}
+
+	public function featureSettingsUpdate()
+	{
+		ifPermissions('general_settings');
+		postAllowed();
+
+		$this->settings_model->updateByKey('daftar_ulang_status', post('daftar_ulang_status'));
+
+		$start_date = post('daftar_ulang_start_date');
+		$end_date = post('daftar_ulang_end_date');
+		
+		// Convert empty or invalid date inputs to null/empty string
+		$start_date = !empty($start_date) ? date('Y-m-d H:i:s', strtotime($start_date)) : '';
+		$end_date = !empty($end_date) ? date('Y-m-d H:i:s', strtotime($end_date)) : '';
+
+		$this->settings_model->updateByKey('daftar_ulang_start_date', $start_date);
+		$this->settings_model->updateByKey('daftar_ulang_end_date', $end_date);
+
+		$this->session->set_flashdata('alert-type', 'success');
+		$this->session->set_flashdata('alert', 'Pengaturan Fitur berhasil diperbarui.');
+
+		$this->activity_model->add("Feature Settings Updated by User: #".logged('id'));
+
+		redirect('settings/feature_settings');
 	}
 
 }

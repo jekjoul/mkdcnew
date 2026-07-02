@@ -9,7 +9,7 @@
                 <a href="<?php echo url('buku_induk_siswa'); ?>" class="btn btn-sm btn-neutral-100 text-neutral-700">
                     <i class="ri-arrow-left-line"></i> Kembali
                 </a>
-                <a href="<?php echo url('buku_induk_siswa/export_pdf/' . $siswa->id_siswa); ?>" target="_blank" class="btn btn-sm btn-warning-600 text-light">
+                <a href="<?php echo url('buku_induk_siswa/export_pdf/' . $siswa->id_alumni); ?>" target="_blank" class="btn btn-sm btn-warning-600 text-light">
                     <i class="ri-printer-line"></i> Print / Export PDF
                 </a>
             </div>
