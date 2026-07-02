@@ -4,12 +4,26 @@ defined('BASEPATH') or exit('No direct script access allowed');
 class Siswa extends MY_Controller
 {
     public $table = 'siswa';
+    
+    private $pekerjaan_options = [
+        'Wiraswasta',
+        'Karyawan Swasta',
+        'Buruh Harian Lepas',
+        'ASN/PPPK',
+        'TNI',
+        'Polri',
+        'Ustadz/Mubaligh',
+        'Petani/Peternak',
+        'Ibu Rumah Tangga',
+        'Sudah Meninggal',
+    ];
 
     public function __construct()
     {
         parent::__construct();
         $this->ensureSiswaBukuIndukColumns();
-        $this->ensureAlumniTables();
+        $this->load->model('Alumni_model');
+        $this->Alumni_model->ensureAlumniTables();
     }
 
     public function all()
@@ -24,28 +38,98 @@ class Siswa extends MY_Controller
         $this->loadAllByPembelajaranStatus('Nonaktif');
     }
 
+    public function kelulusan()
+    {
+        ifPermissions('siswa_list'); // Assuming they need view student permissions, or maybe a new permission
+
+        $this->page_data['page']->title = 'Kelulusan Siswa';
+        $this->page_data['page']->titleUrl = 'siswa/kelulusan';
+        $this->page_data['page']->subtitle = 'Daftar Calon Lulusan (Kelas 9 & 12)';
+        $this->page_data['page']->subtitleUrl = 'siswa/kelulusan';
+        $this->page_data['page']->icon = 'lucide:graduation-cap';
+
+        // Ambil siswa kelas 9 dan 12 yang masih aktif
+        $this->db->select('s.*, r.nama_rombel, t.nama_tingkat, l.nama_lembaga');
+        $this->db->from('pembelajaran_siswa ps');
+        $this->db->join('siswa s', 's.id_siswa = ps.peserta_didik_id');
+        $this->db->join('pembelajaran p', 'p.id_pembelajaran = ps.id_pembelajaran');
+        $this->db->join('rombel r', 'r.id_rombel = p.id_rombel');
+        $this->db->join('master_tingkat_sekolah t', 't.id_tingkat_sekolah = p.id_tingkat_sekolah');
+        $this->db->join('lembaga l', 'l.id_lembaga = p.id_lembaga');
+        $this->db->join('pembelajaran_tahun_pelajaran tp', 'tp.id_tahun_pelajaran = p.id_tahun_pelajaran');
+        
+        $this->db->where('tp.status', 'Aktif');
+        $this->db->where('s.status_keaktifan', 'Aktif');
+        $this->db->where_in('t.tingkat_angka', [9, 12]);
+        $this->db->order_by('l.nama_lembaga', 'ASC');
+        $this->db->order_by('t.tingkat_angka', 'ASC');
+        $this->db->order_by('s.nama_siswa', 'ASC');
+        
+        $this->page_data['siswa'] = $this->db->get()->result();
+
+        $this->load->view('siswa/v_siswa_kelulusan', $this->page_data);
+    }
+
+    public function proses_kelulusan()
+    {
+        ifPermissions('siswa_edit'); 
+        
+        $siswa_ids = $this->input->post('siswa_ids');
+        $tanggal_alumni = $this->input->post('tanggal_alumni') ?: date('Y-m-d');
+        $status_alumni = 'Lulus';
+
+        if (!empty($siswa_ids) && is_array($siswa_ids)) {
+            $count = 0;
+            foreach ($siswa_ids as $id_siswa) {
+                // moveSiswaToAlumni returns null if failed or already moved
+                $id_alumni = $this->Alumni_model->moveSiswaToAlumni($id_siswa, $status_alumni, $tanggal_alumni);
+                $count++;
+            }
+            $this->session->set_flashdata('message', "$count siswa berhasil diluluskan dan dipindah ke data Alumni.");
+            $this->session->set_flashdata('message_type', 'success');
+        } else {
+            $this->session->set_flashdata('message', 'Tidak ada siswa yang dipilih.');
+            $this->session->set_flashdata('message_type', 'danger');
+        }
+
+        redirect('siswa/kelulusan', 'refresh');
+    }
+
     private function loadAllByPembelajaranStatus($status_tahun)
     {
         $is_nonaktif = $status_tahun !== 'Aktif';
         $this->page_data['page']->title = 'Siswa';
         $this->page_data['page']->titleUrl = $is_nonaktif ? 'siswa/nonaktif' : 'siswa/all';
-        $this->page_data['page']->subtitle = $is_nonaktif ? 'Data Siswa Tahun Tidak Aktif' : 'Daftar Siswa';
+        $this->page_data['page']->subtitle = $is_nonaktif ? 'Data Siswa Tidak Aktif' : 'Daftar Siswa';
         $this->page_data['page']->subtitleUrl = $is_nonaktif ? 'siswa/nonaktif' : 'siswa/all';
         $this->page_data['page']->icon = 'icon-park-outline:user-business';
 
-        $this->db->select('DISTINCT s.*', false);
-        $this->db->from('pembelajaran_siswa ps');
-        $this->db->join('siswa s', 's.id_siswa = ps.peserta_didik_id');
-        $this->db->join('pembelajaran p', 'p.id_pembelajaran = ps.id_pembelajaran');
-        $this->db->join('pembelajaran_tahun_pelajaran tp', 'tp.id_tahun_pelajaran = p.id_tahun_pelajaran');
-        if ($status_tahun === 'Aktif') {
-            $this->db->where('tp.status', 'Aktif');
+        if ($is_nonaktif) {
+            $this->db->select('s.*');
+            $this->db->from('siswa s');
+            $this->db->where("s.id_siswa NOT IN (
+                SELECT ps.peserta_didik_id 
+                FROM pembelajaran_siswa ps 
+                JOIN pembelajaran p ON p.id_pembelajaran = ps.id_pembelajaran
+                JOIN pembelajaran_tahun_pelajaran tp ON tp.id_tahun_pelajaran = p.id_tahun_pelajaran
+                WHERE tp.status = 'Aktif' AND p.status = 'Aktif' AND ps.peserta_didik_id IS NOT NULL
+            )", NULL, FALSE);
+            $this->db->order_by('s.nama_siswa', 'ASC');
+            $this->page_data['siswa'] = $this->db->get()->result();
         } else {
-            $this->db->where('tp.status !=', 'Aktif');
+            $this->db->select('s.*, t.nama_tingkat');
+            $this->db->from('pembelajaran_siswa ps');
+            $this->db->join('siswa s', 's.id_siswa = ps.peserta_didik_id');
+            $this->db->join('pembelajaran p', 'p.id_pembelajaran = ps.id_pembelajaran');
+            $this->db->join('master_tingkat_sekolah t', 't.id_tingkat_sekolah = p.id_tingkat_sekolah', 'left');
+            $this->db->join('pembelajaran_tahun_pelajaran tp', 'tp.id_tahun_pelajaran = p.id_tahun_pelajaran');
+            $this->db->where('tp.status', 'Aktif');
+            $this->db->group_by('s.id_siswa, t.nama_tingkat');
+            $this->db->order_by('s.nama_siswa', 'ASC');
+            $this->page_data['siswa'] = $this->db->get()->result();
         }
-        $this->db->order_by('s.nama_siswa', 'ASC');
-        $this->page_data['siswa'] = $this->db->get()->result();
-        $this->page_data['judul_tabel'] = $is_nonaktif ? 'Data Siswa Tahun Tidak Aktif' : 'Data Siswa Tahun Aktif';
+
+        $this->page_data['judul_tabel'] = $is_nonaktif ? 'Data Siswa Tidak Aktif' : 'Data Siswa Tahun Aktif';
         $this->page_data['is_nonaktif'] = $is_nonaktif;
 
         $this->load->view('siswa/v_siswa_list', $this->page_data);
@@ -111,6 +195,19 @@ class Siswa extends MY_Controller
         $this->db->where('siswa_dokumen.id_siswa', $id);
         $this->db->order_by('master_jenis_dokumen_siswa.nama_jenis_dokumen', 'ASC');
         $this->page_data['dokumen'] = $this->db->get()->result();
+        
+        $this->db->select('r.nama_rombel, t.nama_tingkat');
+        $this->db->from('pembelajaran p');
+        $this->db->join('rombel r', 'p.id_rombel = r.id_rombel');
+        $this->db->join('master_tingkat_sekolah t', 'p.id_tingkat_sekolah = t.id_tingkat_sekolah');
+        $this->db->join('pembelajaran_tahun_pelajaran tp', 'p.id_tahun_pelajaran = tp.id_tahun_pelajaran');
+        $this->db->where('tp.status', 'Aktif');
+        $this->db->group_by('r.nama_rombel, t.nama_tingkat');
+        $this->db->order_by('t.tingkat_angka', 'ASC');
+        $this->db->order_by('r.nama_rombel', 'ASC');
+        $this->page_data['rombel_aktif'] = $this->db->get()->result();
+        
+        $this->page_data['pekerjaan_options'] = $this->pekerjaan_options;
         $this->load->view('siswa/v_siswa_detail', $this->page_data);
     }
 
@@ -123,6 +220,19 @@ class Siswa extends MY_Controller
         $this->page_data['page']->subtitleUrl = 'siswa/siswaAdd';
         $this->page_data['page']->icon = 'icon-park-outline:user-business';
         $this->page_data['provinsi'] = $this->db->get('reg_provinsi')->result();
+        
+        $this->db->select('r.nama_rombel, t.nama_tingkat');
+        $this->db->from('pembelajaran p');
+        $this->db->join('rombel r', 'p.id_rombel = r.id_rombel');
+        $this->db->join('master_tingkat_sekolah t', 'p.id_tingkat_sekolah = t.id_tingkat_sekolah');
+        $this->db->join('pembelajaran_tahun_pelajaran tp', 'p.id_tahun_pelajaran = tp.id_tahun_pelajaran');
+        $this->db->where('tp.status', 'Aktif');
+        $this->db->group_by('r.nama_rombel, t.nama_tingkat');
+        $this->db->order_by('t.tingkat_angka', 'ASC');
+        $this->db->order_by('r.nama_rombel', 'ASC');
+        $this->page_data['rombel_aktif'] = $this->db->get()->result();
+        
+        $this->page_data['pekerjaan_options'] = $this->pekerjaan_options;
         $this->load->view('siswa/v_siswa_form', $this->page_data);
     }
 
@@ -456,199 +566,6 @@ class Siswa extends MY_Controller
     private function isAlumniStatus($status)
     {
         return in_array(strtolower(trim((string) $status)), ['lulus', 'pindah', 'keluar'], true);
-    }
-
-    private function ensureAlumniTables()
-    {
-        $this->load->dbforge();
-        if (!$this->db->table_exists('alumni')) {
-            $this->db->query('CREATE TABLE alumni LIKE siswa');
-            $this->db->query('ALTER TABLE alumni CHANGE id_siswa id_alumni INT(11) NOT NULL AUTO_INCREMENT');
-            $this->db->query('ALTER TABLE alumni ADD COLUMN id_siswa_asal INT(11) NULL AFTER id_alumni');
-            $this->db->query("ALTER TABLE alumni ADD COLUMN status_alumni VARCHAR(30) NULL AFTER status_keaktifan");
-            $this->db->query('ALTER TABLE alumni ADD COLUMN tanggal_alumni DATE NULL AFTER status_alumni');
-            $this->db->query('ALTER TABLE alumni ADD COLUMN sekolah_terakhir VARCHAR(150) NULL AFTER tanggal_alumni');
-            $this->db->query('ALTER TABLE alumni ADD COLUMN rombel_terakhir VARCHAR(150) NULL AFTER sekolah_terakhir');
-            $this->db->query('ALTER TABLE alumni ADD COLUMN created_from_siswa_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER tanggal_alumni');
-        }
-        if (!$this->db->field_exists('sekolah_terakhir', 'alumni')) {
-            $this->dbforge->add_column('alumni', ['sekolah_terakhir' => ['type' => 'VARCHAR', 'constraint' => 150, 'null' => true]]);
-        }
-        if (!$this->db->field_exists('rombel_terakhir', 'alumni')) {
-            $this->dbforge->add_column('alumni', ['rombel_terakhir' => ['type' => 'VARCHAR', 'constraint' => 150, 'null' => true]]);
-        }
-
-        if (!$this->db->table_exists('alumni_foto')) {
-            $this->dbforge->add_field([
-                'id_foto_alumni' => ['type' => 'INT', 'constraint' => 11, 'auto_increment' => true],
-                'id_alumni' => ['type' => 'INT', 'constraint' => 11],
-                'id_foto_asal' => ['type' => 'INT', 'constraint' => 11, 'null' => true],
-                'foto' => ['type' => 'VARCHAR', 'constraint' => 255],
-                'label' => ['type' => 'VARCHAR', 'constraint' => 100, 'null' => true],
-                'created_at' => ['type' => 'TIMESTAMP', 'null' => true],
-            ]);
-            $this->dbforge->add_key('id_foto_alumni', true);
-            $this->dbforge->add_key('id_alumni');
-            $this->dbforge->create_table('alumni_foto', true);
-        }
-
-        if (!$this->db->table_exists('alumni_dokumen')) {
-            $this->dbforge->add_field([
-                'id_dokumen_alumni' => ['type' => 'INT', 'constraint' => 11, 'auto_increment' => true],
-                'id_alumni' => ['type' => 'INT', 'constraint' => 11],
-                'id_dokumen_asal' => ['type' => 'INT', 'constraint' => 11, 'null' => true],
-                'id_jenis_dokumen' => ['type' => 'INT', 'constraint' => 11, 'null' => true],
-                'nomor_dokumen' => ['type' => 'VARCHAR', 'constraint' => 100, 'null' => true],
-                'tanggal_dokumen' => ['type' => 'DATE', 'null' => true],
-                'berkas' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
-                'keterangan' => ['type' => 'TEXT', 'null' => true],
-                'created_at' => ['type' => 'TIMESTAMP', 'null' => true],
-                'updated_at' => ['type' => 'TIMESTAMP', 'null' => true],
-            ]);
-            $this->dbforge->add_key('id_dokumen_alumni', true);
-            $this->dbforge->add_key('id_alumni');
-            $this->dbforge->create_table('alumni_dokumen', true);
-        }
-
-        if (!$this->db->table_exists('alumni_pembelajaran_siswa') && $this->db->table_exists('pembelajaran_siswa')) {
-            $this->db->query('CREATE TABLE alumni_pembelajaran_siswa LIKE pembelajaran_siswa');
-            $this->db->query('ALTER TABLE alumni_pembelajaran_siswa CHANGE id_pembelajaran_siswa id_alumni_pembelajaran_siswa INT(11) NOT NULL AUTO_INCREMENT');
-            $this->db->query('ALTER TABLE alumni_pembelajaran_siswa CHANGE peserta_didik_id id_alumni VARCHAR(100) NOT NULL');
-            $this->db->query('ALTER TABLE alumni_pembelajaran_siswa ADD COLUMN id_siswa_asal INT(11) NULL AFTER id_alumni');
-        }
-
-        if (!$this->db->table_exists('alumni_nilai_siswa') && $this->db->table_exists('nilai_siswa')) {
-            $this->db->query('CREATE TABLE alumni_nilai_siswa LIKE nilai_siswa');
-            $this->db->query('ALTER TABLE alumni_nilai_siswa CHANGE id_nilai_siswa id_alumni_nilai_siswa INT(11) NOT NULL AUTO_INCREMENT');
-            $this->db->query('ALTER TABLE alumni_nilai_siswa CHANGE id_siswa id_alumni INT(11) NOT NULL');
-            $this->db->query('ALTER TABLE alumni_nilai_siswa ADD COLUMN id_siswa_asal INT(11) NULL AFTER id_alumni');
-        }
-    }
-
-    private function moveSiswaToAlumni($id_siswa, $status_alumni)
-    {
-        $siswa = $this->db->get_where($this->table, ['id_siswa' => $id_siswa])->row_array();
-        if (!$siswa) {
-            return null;
-        }
-
-        $this->ensureAlumniTables();
-        $terakhir = $this->getPembelajaranTerakhirUntukAlumni($id_siswa);
-        $this->db->trans_start();
-
-        $alumni_data = [];
-        $alumni_fields = $this->db->list_fields('alumni');
-        foreach ($siswa as $field => $value) {
-            if ($field !== 'id_siswa' && in_array($field, $alumni_fields, true)) {
-                $alumni_data[$field] = $value;
-            }
-        }
-        $alumni_data['id_siswa_asal'] = $id_siswa;
-        $alumni_data['status_alumni'] = $status_alumni;
-        $alumni_data['status_keaktifan'] = $status_alumni;
-        $alumni_data['tanggal_alumni'] = date('Y-m-d');
-        $alumni_data['sekolah_terakhir'] = $terakhir['sekolah'] ?: null;
-        $alumni_data['rombel_terakhir'] = $terakhir['rombel'] ?: ($siswa['rombel'] ?: null);
-        $this->db->insert('alumni', $alumni_data);
-        $id_alumni = $this->db->insert_id();
-
-        foreach ($this->db->get_where('siswa_foto', ['id_siswa' => $id_siswa])->result_array() as $foto) {
-            $foto_file = $this->moveUploadedFile('uploads/siswa_foto/' . $foto['foto'], 'uploads/alumni_foto', $id_alumni);
-            $this->db->insert('alumni_foto', [
-                'id_alumni' => $id_alumni,
-                'id_foto_asal' => $foto['id_foto'],
-                'foto' => $foto_file,
-                'label' => $foto['label'],
-                'created_at' => $foto['created_at'],
-            ]);
-        }
-
-        foreach ($this->db->get_where('siswa_dokumen', ['id_siswa' => $id_siswa])->result_array() as $dokumen) {
-            $berkas = $this->moveUploadedFile('uploads/siswa_dokumen/' . $dokumen['berkas'], 'uploads/alumni_dokumen', $id_alumni);
-            $this->db->insert('alumni_dokumen', [
-                'id_alumni' => $id_alumni,
-                'id_dokumen_asal' => $dokumen['id_dokumen'],
-                'id_jenis_dokumen' => $dokumen['id_jenis_dokumen'],
-                'nomor_dokumen' => $dokumen['nomor_dokumen'],
-                'tanggal_dokumen' => $dokumen['tanggal_dokumen'],
-                'berkas' => $berkas,
-                'keterangan' => $dokumen['keterangan'],
-                'created_at' => $dokumen['created_at'],
-                'updated_at' => $dokumen['updated_at'],
-            ]);
-        }
-
-        foreach ($this->db->get_where('pembelajaran_siswa', ['peserta_didik_id' => (string) $id_siswa])->result_array() as $pembelajaran) {
-            unset($pembelajaran['id_pembelajaran_siswa']);
-            $pembelajaran['id_alumni'] = (string) $id_alumni;
-            $pembelajaran['id_siswa_asal'] = $id_siswa;
-            unset($pembelajaran['peserta_didik_id']);
-            $this->db->insert('alumni_pembelajaran_siswa', $pembelajaran);
-        }
-
-        foreach ($this->db->get_where('nilai_siswa', ['id_siswa' => (int) $id_siswa])->result_array() as $nilai) {
-            unset($nilai['id_nilai_siswa']);
-            $nilai['id_alumni'] = $id_alumni;
-            $nilai['id_siswa_asal'] = $id_siswa;
-            unset($nilai['id_siswa']);
-            $this->db->insert('alumni_nilai_siswa', $nilai);
-        }
-
-        $this->db->delete('siswa_foto', ['id_siswa' => $id_siswa]);
-        $this->db->delete('siswa_dokumen', ['id_siswa' => $id_siswa]);
-        $this->db->delete('pembelajaran_siswa', ['peserta_didik_id' => (string) $id_siswa]);
-        $this->db->delete('nilai_siswa', ['id_siswa' => (int) $id_siswa]);
-        $this->db->delete($this->table, ['id_siswa' => $id_siswa]);
-
-        $this->db->trans_complete();
-        return $this->db->trans_status() ? $id_alumni : null;
-    }
-
-    private function getPembelajaranTerakhirUntukAlumni($id_siswa)
-    {
-        $this->db->select('l.nama_lembaga, t.nama_tingkat, r.nama_rombel');
-        $this->db->from('pembelajaran_siswa ps');
-        $this->db->join('pembelajaran p', 'p.id_pembelajaran = ps.id_pembelajaran');
-        $this->db->join('lembaga l', 'l.id_lembaga = p.id_lembaga', 'left');
-        $this->db->join('master_tingkat_sekolah t', 't.id_tingkat_sekolah = p.id_tingkat_sekolah', 'left');
-        $this->db->join('rombel r', 'r.id_rombel = p.id_rombel', 'left');
-        $this->db->join('pembelajaran_tahun_pelajaran tp', 'tp.id_tahun_pelajaran = p.id_tahun_pelajaran', 'left');
-        $this->db->where('ps.peserta_didik_id', (string) $id_siswa);
-        $this->db->order_by('tp.id_tahun_pelajaran', 'DESC');
-        $row = $this->db->get()->row();
-
-        if (!$row) {
-            return ['sekolah' => '', 'rombel' => ''];
-        }
-
-        $rombel = trim((string) $row->nama_tingkat);
-        $rombel = $rombel !== '' ? $rombel . ' - ' . $row->nama_rombel : $row->nama_rombel;
-        return [
-            'sekolah' => $row->nama_lembaga,
-            'rombel' => $rombel,
-        ];
-    }
-
-    private function moveUploadedFile($source_relative_path, $target_relative_dir, $id_alumni)
-    {
-        $source = FCPATH . $source_relative_path;
-        $original = basename($source_relative_path);
-        if ($original === '' || !is_file($source)) {
-            return $original;
-        }
-
-        $target_dir = FCPATH . trim($target_relative_dir, '/\\') . DIRECTORY_SEPARATOR;
-        if (!is_dir($target_dir)) {
-            mkdir($target_dir, 0777, true);
-        }
-
-        $target_name = 'alumni-' . $id_alumni . '-' . uniqid('', true) . '-' . $original;
-        $target = $target_dir . $target_name;
-        if (rename($source, $target)) {
-            return $target_name;
-        }
-
-        return $original;
     }
 
     private function uploadFotoSiswa($id_siswa)

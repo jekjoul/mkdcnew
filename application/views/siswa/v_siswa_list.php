@@ -22,9 +22,9 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                         </a>
                         <?php if (empty($is_nonaktif)): ?>
                             <?php if (hasPermissions('siswa_add')): ?>
-                            <a href="<?php echo url(isset($tambah_url) ? $tambah_url : 'siswa/siswaAdd'); ?>" class="btn btn-primary-600 radius-8 px-20 py-11 d-flex align-items-center gap-2">
-                                <iconify-icon icon="lucide:plus" class="text-xl"></iconify-icon> <?php echo isset($tambah_label) ? $tambah_label : 'Tambah Siswa'; ?>
-                            </a>
+                                <a href="<?php echo url(isset($tambah_url) ? $tambah_url : 'siswa/siswaAdd'); ?>" class="btn btn-primary-600 radius-8 px-20 py-11 d-flex align-items-center gap-2">
+                                    <iconify-icon icon="lucide:plus" class="text-xl"></iconify-icon> <?php echo isset($tambah_label) ? $tambah_label : 'Tambah Siswa'; ?>
+                                </a>
                             <?php endif; ?>
                         <?php endif; ?>
                     </div>
@@ -45,27 +45,27 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                 <?php $no = 1; ?>
                                 <?php if (!empty($siswa)): ?>
                                     <?php foreach ($siswa as $s): ?>
-                                        <tr>
+                                        <tr class="<?php echo ($s->pekerjaan_ayah === 'Sudah Meninggal' || $s->pekerjaan_ibu === 'Sudah Meninggal') ? 'bg-warning-50' : ''; ?>">
                                             <td class="text-center"><?php echo $no++; ?></td>
                                             <td><?php echo $s->nama_siswa; ?></td>
                                             <td class="text-center"><?php echo ($s->nisn ?: '-') . ' / ' . ($s->nipd ?: '-'); ?></td>
-                                            <td><?php echo $s->rombel ?: '-'; ?></td>
+                                            <td><?php echo $s->rombel; ?></td>
                                             <td>
                                                 <div class="d-flex align-items-center gap-10 justify-content-center">
                                                     <?php if (hasPermissions('siswa_view')): ?>
-                                                    <a href="<?php echo url('siswa/detail/' . $s->id_siswa); ?>" class="w-32-px h-32-px bg-info-focus text-info-main rounded-circle d-inline-flex align-items-center justify-content-center" data-bs-toggle="tooltip" title="Lihat Detail">
-                                                        <iconify-icon icon="lucide:eye"></iconify-icon>
-                                                    </a>
+                                                        <a href="<?php echo url('siswa/detail/' . $s->id_siswa); ?>" class="w-32-px h-32-px bg-info-focus text-info-main rounded-circle d-inline-flex align-items-center justify-content-center" data-bs-toggle="tooltip" title="Lihat Detail">
+                                                            <iconify-icon icon="lucide:eye"></iconify-icon>
+                                                        </a>
                                                     <?php endif; ?>
                                                     <?php if (hasPermissions('siswa_edit')): ?>
-                                                    <a href="<?php echo url('siswa/edit/' . $s->id_siswa); ?>" class="w-32-px h-32-px bg-success-focus text-success-main rounded-circle d-inline-flex align-items-center justify-content-center" data-bs-toggle="tooltip" title="Sunting">
-                                                        <iconify-icon icon="lucide:edit"></iconify-icon>
-                                                    </a>
+                                                        <a href="<?php echo url('siswa/edit/' . $s->id_siswa); ?>" class="w-32-px h-32-px bg-success-focus text-success-main rounded-circle d-inline-flex align-items-center justify-content-center" data-bs-toggle="tooltip" title="Sunting">
+                                                            <iconify-icon icon="lucide:edit"></iconify-icon>
+                                                        </a>
                                                     <?php endif; ?>
                                                     <?php if (hasPermissions('siswa_delete')): ?>
-                                                    <a href="<?php echo url('siswa/hapus/' . $s->id_siswa); ?>" class="w-32-px h-32-px bg-danger-focus text-danger-main rounded-circle d-inline-flex align-items-center justify-content-center" data-bs-toggle="tooltip" title="Hapus" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
-                                                        <iconify-icon icon="lucide:trash-2"></iconify-icon>
-                                                    </a>
+                                                        <a href="<?php echo url('siswa/hapus/' . $s->id_siswa); ?>" class="w-32-px h-32-px bg-danger-focus text-danger-main rounded-circle d-inline-flex align-items-center justify-content-center" data-bs-toggle="tooltip" title="Hapus" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                                            <iconify-icon icon="lucide:trash-2"></iconify-icon>
+                                                        </a>
                                                     <?php endif; ?>
                                                 </div>
                                             </td>

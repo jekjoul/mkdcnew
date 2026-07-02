@@ -34,10 +34,10 @@
                                 </td>
                                 <td>
                                     <div class="d-flex align-items-center gap-10 justify-content-center">
-                                        <a href="<?php echo url('buku_induk_siswa/view/' . $row->id_siswa); ?>" class="w-32-px h-32-px bg-info-focus text-info-main rounded-circle d-inline-flex align-items-center justify-content-center" data-bs-toggle="tooltip" title="View">
+                                        <a href="<?php echo url('buku_induk_siswa/view/' . $row->id_alumni); ?>" class="w-32-px h-32-px bg-info-focus text-info-main rounded-circle d-inline-flex align-items-center justify-content-center" data-bs-toggle="tooltip" title="View">
                                             <iconify-icon icon="lucide:eye"></iconify-icon>
                                         </a>
-                                        <a href="<?php echo url('buku_induk_siswa/export_pdf/' . $row->id_siswa); ?>" target="_blank" class="w-32-px h-32-px bg-warning-focus text-warning-main rounded-circle d-inline-flex align-items-center justify-content-center" data-bs-toggle="tooltip" title="Print / Export PDF">
+                                        <a href="<?php echo url('buku_induk_siswa/export_pdf/' . $row->id_alumni); ?>" target="_blank" class="w-32-px h-32-px bg-warning-focus text-warning-main rounded-circle d-inline-flex align-items-center justify-content-center" data-bs-toggle="tooltip" title="Print / Export PDF">
                                             <iconify-icon icon="lucide:printer"></iconify-icon>
                                         </a>
                                     </div>
