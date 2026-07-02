@@ -15306,10 +15306,16 @@ td.fc-header-center {
   font-weight: 600;
   margin-block: 0.5rem;
   font-size: 0.875rem;
+  background: #d4d4d4;
+  background: linear-gradient(90deg, rgba(212, 212, 212, 1) 0%, rgba(255, 255, 255, 0) 100%);
+  padding: 5px 10px;
 }
 
 @media (min-width: 1650px) {
   .sidebar-menu .sidebar-menu-group-title {
+    background: #d4d4d4;
+    background: linear-gradient(90deg, rgba(212, 212, 212, 1) 0%, rgba(255, 255, 255, 0) 100%);
+    padding: 5px 10px;
     font-size: 1rem;
   }
 }

@@ -8,7 +8,9 @@ foreach ($siswa as $s) {
     if (in_array($s->id_siswa, $siswa_terpilih)) {
         $siswa_pembelajaran[] = $s;
     } else {
-        $siswa_belum_masuk[] = $s;
+        if (!in_array($s->id_siswa, $enrolled_siswa_ids)) {
+            $siswa_belum_masuk[] = $s;
+        }
     }
 }
 
@@ -139,7 +141,7 @@ function pembelajaran_siswa_item($s, $show_detail = false)
                     </div>
                     <div class="col-md-3">
                         <span class="text-secondary-light d-block">Rombel</span>
-                        <strong><?php echo $pembelajaran->nama_rombel ?></strong>
+                        <strong><?php echo $pembelajaran->nama_tingkat . ' - ' . $pembelajaran->nama_rombel ?></strong>
                     </div>
                 </div>
             </div>

@@ -31,7 +31,7 @@ class Pembelajaran extends MY_Controller
         $this->page_data['page']->subtitleUrl = $is_nonaktif ? 'pembelajaran/nonaktif' : 'pembelajaran';
         $this->page_data['page']->icon = 'solar:notebook-bookmark-linear';
 
-        $this->db->select('p.*, l.nama_lembaga, t.nama_tingkat, r.nama_rombel, tp.tahun_pelajaran, tp.semester, wali.nama_ptk AS nama_wali_kelas');
+        $this->db->select('p.*, l.nama_lembaga, l.nama_lembaga_singkat, t.nama_tingkat, r.nama_rombel, tp.tahun_pelajaran, tp.semester, wali.nama_ptk AS nama_wali_kelas, (SELECT COUNT(*) FROM pembelajaran_siswa ps JOIN siswa s ON s.id_siswa = ps.peserta_didik_id WHERE ps.id_pembelajaran = p.id_pembelajaran) AS jumlah_siswa');
         $this->db->from('pembelajaran p');
         $this->db->join('lembaga l', 'p.id_lembaga = l.id_lembaga');
         $this->db->join('master_tingkat_sekolah t', 'p.id_tingkat_sekolah = t.id_tingkat_sekolah');
@@ -40,8 +40,12 @@ class Pembelajaran extends MY_Controller
         $this->db->join('ptk wali', 'wali.id_ptk = p.id_ptk_wali', 'left');
         if ($status_tahun === 'Aktif') {
             $this->db->where('tp.status', 'Aktif');
+            $this->db->where('p.status', 'Aktif');
         } else {
+            $this->db->group_start();
             $this->db->where('tp.status !=', 'Aktif');
+            $this->db->or_where('p.status !=', 'Aktif');
+            $this->db->group_end();
         }
         $this->db->order_by('tp.id_tahun_pelajaran', 'DESC');
         $this->db->order_by('l.nama_lembaga', 'ASC');
@@ -81,6 +85,7 @@ class Pembelajaran extends MY_Controller
     public function edit($id)
     {
         ifPermissions('pembelajaran_edit');
+        if (!$this->checkPembelajaranAktif($id)) return;
         $pembelajaran = $this->getPembelajaranDetail($id);
         if (!$pembelajaran) {
             show_404();
@@ -118,6 +123,9 @@ class Pembelajaran extends MY_Controller
         ];
 
         $id_pembelajaran = (int) post('id_pembelajaran');
+        if ($id_pembelajaran > 0) {
+            if (!$this->checkPembelajaranAktif($id_pembelajaran)) return;
+        }
         $this->db->where('id_tahun_pelajaran', $pembelajaran_data['id_tahun_pelajaran']);
         $this->db->where('id_lembaga', $pembelajaran_data['id_lembaga']);
         $this->db->where('id_tingkat_sekolah', $pembelajaran_data['id_tingkat_sekolah']);
@@ -150,6 +158,7 @@ class Pembelajaran extends MY_Controller
 
     public function tambah_mapel($id)
     {
+        if (!$this->checkPembelajaranAktif($id)) return;
         $pembelajaran = $this->getPembelajaranDetail($id);
         if (!$pembelajaran) {
             show_404();
@@ -175,6 +184,7 @@ class Pembelajaran extends MY_Controller
     {
         postAllowed();
 
+        if (!$this->checkPembelajaranAktif($id)) return;
         if (!$this->db->get_where('pembelajaran', ['id_pembelajaran' => $id])->row()) {
             show_404();
         }
@@ -203,6 +213,7 @@ class Pembelajaran extends MY_Controller
 
     public function daftar_siswa($id)
     {
+        if (!$this->checkPembelajaranAktif($id)) return;
         $pembelajaran = $this->getPembelajaranDetail($id);
         if (!$pembelajaran) {
             show_404();
@@ -221,6 +232,18 @@ class Pembelajaran extends MY_Controller
         $this->page_data['siswa'] = $siswa;
         $this->page_data['siswa_terpilih'] = $this->getSelectedValues('pembelajaran_siswa', 'peserta_didik_id', $id);
 
+        $id_tahun_pelajaran = (int) $pembelajaran->id_tahun_pelajaran;
+        $this->db->select('ps.peserta_didik_id');
+        $this->db->from('pembelajaran_siswa ps');
+        $this->db->join('pembelajaran p', 'p.id_pembelajaran = ps.id_pembelajaran');
+        $this->db->where('p.id_tahun_pelajaran', $id_tahun_pelajaran);
+        $this->db->where('p.status', 'Aktif');
+        $this->db->where('p.id_pembelajaran !=', $id);
+        $query = $this->db->get();
+        $this->page_data['enrolled_siswa_ids'] = array_map(function($row) {
+            return $row->peserta_didik_id;
+        }, $query->result());
+
         $this->load->view('pembelajaran/siswa', $this->page_data);
     }
 
@@ -228,6 +251,7 @@ class Pembelajaran extends MY_Controller
     {
         postAllowed();
 
+        if (!$this->checkPembelajaranAktif($id)) return;
         $pembelajaran = $this->getPembelajaranDetail($id);
         if (!$pembelajaran) {
             show_404();
@@ -357,5 +381,51 @@ class Pembelajaran extends MY_Controller
                 'id_ptk_wali' => ['type' => 'INT', 'constraint' => 11, 'null' => true, 'after' => 'id_rombel'],
             ]);
         }
+    }
+
+    public function luluskan($id_pembelajaran)
+    {
+        if (!hasPermissions('menu_pembelajaran')) {
+            show_404();
+        }
+
+        $pembelajaran = $this->db->get_where('pembelajaran', ['id_pembelajaran' => $id_pembelajaran])->row();
+        if (!$pembelajaran) {
+            $this->session->set_flashdata('error', 'Data pembelajaran tidak ditemukan.');
+            redirect('pembelajaran');
+        }
+
+        $this->load->model('Alumni_model');
+        $siswa_list = $this->db->get_where('pembelajaran_siswa', ['id_pembelajaran' => $id_pembelajaran])->result();
+        
+        $count = 0;
+        $tanggal_alumni = date('Y-m-d');
+        foreach ($siswa_list as $s) {
+            $id_siswa = (int) $s->peserta_didik_id;
+            if ($this->Alumni_model->moveSiswaToAlumni($id_siswa, 'Lulus', $tanggal_alumni)) {
+                $count++;
+            }
+        }
+
+        // Deactivate Rombel
+        $this->db->update('rombel', ['status' => 'Tidak Aktif'], ['id_rombel' => $pembelajaran->id_rombel]);
+        
+        // Deactivate Pembelajaran
+        $this->db->update('pembelajaran', ['status' => 'Tidak Aktif'], ['id_pembelajaran' => $id_pembelajaran]);
+
+        $this->session->set_flashdata('message', "$count siswa berhasil diluluskan ke Data Alumni. Rombel dan Pembelajaran telah dinonaktifkan.");
+        redirect('pembelajaran');
+    }
+
+    private function checkPembelajaranAktif($id)
+    {
+        $p = $this->db->get_where('pembelajaran', ['id_pembelajaran' => $id])->row();
+        if ($p && $p->status !== 'Aktif') {
+            $this->session->set_flashdata('alert-type', 'danger');
+            $this->session->set_flashdata('alert', 'Aksi dibatalkan. Pembelajaran ini sudah lulus/tidak aktif.');
+            redirect('pembelajaran');
+            return false;
+        }
+        return true;
     }
 }

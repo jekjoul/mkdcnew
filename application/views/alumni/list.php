@@ -14,7 +14,6 @@
                             <th class="text-center">No</th>
                             <th>Nama Alumni</th>
                             <th class="text-center">NISN/NIPD</th>
-                            <th>Sekolah Terakhir</th>
                             <th>Rombel Terakhir</th>
                             <th class="text-center">Status</th>
                             <th class="text-center">Tanggal</th>
@@ -28,7 +27,6 @@
                                 <td class="text-center"><?php echo $no++; ?></td>
                                 <td><?php echo html_escape($row->nama_siswa); ?></td>
                                 <td class="text-center"><?php echo html_escape(($row->nisn ?: '-') . ' / ' . ($row->nipd ?: '-')); ?></td>
-                                <td><?php echo html_escape((isset($row->sekolah_terakhir) && $row->sekolah_terakhir) ? $row->sekolah_terakhir : '-'); ?></td>
                                 <td><?php echo html_escape((isset($row->rombel_terakhir) && $row->rombel_terakhir) ? $row->rombel_terakhir : ($row->rombel ?: '-')); ?></td>
                                 <td class="text-center">
                                     <span class="badge bg-warning-100 text-warning-700"><?php echo html_escape($row->status_alumni ?: $row->status_keaktifan ?: '-'); ?></span>

@@ -21,6 +21,7 @@ class Calon_siswa extends MY_Controller
         'Ustadz/Mubaligh',
         'Petani/Peternak',
         'Ibu Rumah Tangga',
+        'Sudah Meninggal',
     ];
     private $required_berkas = [
         'Kartu Keluarga',
@@ -34,6 +35,9 @@ class Calon_siswa extends MY_Controller
     {
         parent::__construct();
         $this->ensureTables();
+        if (!is_daftar_ulang_aktif()) {
+            show_404();
+        }
     }
 
     public function index()

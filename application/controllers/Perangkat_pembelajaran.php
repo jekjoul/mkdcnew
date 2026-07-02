@@ -30,49 +30,190 @@ class Perangkat_pembelajaran extends MY_Controller
         }
 
         $perangkat = $this->perangkat_model->getPerangkatByMapel($id_pembelajaran_mapel);
+        $agenda = $this->perangkat_model->getAgendaByMapel($id_pembelajaran_mapel);
+        $has_schedule_and_days = $this->perangkat_model->hasScheduleAndEffectiveDays($id_pembelajaran_mapel);
+
         $this->page_data['page']->title = 'Pembelajaran';
         $this->page_data['page']->titleUrl = 'perangkat_pembelajaran';
-        $this->page_data['page']->subtitle = 'Detail Perangkat';
+        $this->page_data['page']->subtitle = 'Detail Perangkat & Agenda';
         $this->page_data['page']->subtitleUrl = 'perangkat_pembelajaran/detail/' . $id_pembelajaran_mapel;
         $this->page_data['page']->icon = 'solar:document-add-linear';
+        
         $this->page_data['item'] = $item;
         $this->page_data['perangkat'] = $perangkat;
-        $this->page_data['materi'] = $perangkat ? $this->perangkat_model->getMateri($perangkat->id_perangkat) : [];
+        $this->page_data['agenda'] = $agenda;
+        $this->page_data['has_schedule_and_days'] = $has_schedule_and_days;
+
+        // Copy features data & rombel switcher
+        $this->page_data['source_last_year_id'] = $this->perangkat_model->getSourceLastYearAgenda($id_pembelajaran_mapel);
+        $this->page_data['other_active_rombel_agendas'] = $this->perangkat_model->getOtherActiveRombelAgendas($id_pembelajaran_mapel);
+        $this->page_data['all_rombel'] = $this->perangkat_model->getAllRombelSameMapelTingkat($id_pembelajaran_mapel);
+        $this->page_data['detail_base_url'] = url('perangkat_pembelajaran/detail');
+        
         $this->page_data['back_url'] = url('perangkat_pembelajaran');
-        $this->page_data['generate_url'] = url('perangkat_pembelajaran/generate/' . $id_pembelajaran_mapel);
-        $this->page_data['save_url'] = $perangkat ? url('perangkat_pembelajaran/simpan/' . $perangkat->id_perangkat) : '#';
+        $this->page_data['save_berkas_url'] = url('perangkat_pembelajaran/simpan_berkas/' . $id_pembelajaran_mapel);
+        $this->page_data['hapus_berkas_url'] = url('perangkat_pembelajaran/hapus_berkas/' . $id_pembelajaran_mapel);
+        $this->page_data['generate_agenda_url'] = url('perangkat_pembelajaran/generate_agenda/' . $id_pembelajaran_mapel);
+        $this->page_data['save_agenda_url'] = url('perangkat_pembelajaran/simpan_agenda/' . $id_pembelajaran_mapel);
+        $this->page_data['salin_perangkat_url'] = url('perangkat_pembelajaran/salin_perangkat/' . $id_pembelajaran_mapel);
+        $this->page_data['salin_agenda_url'] = url('perangkat_pembelajaran/salin_agenda/' . $id_pembelajaran_mapel);
+        
         $this->load->view('perangkat_pembelajaran/detail', $this->page_data);
     }
 
-    public function generate($id_pembelajaran_mapel)
+    public function simpan_berkas($id_pembelajaran_mapel)
     {
         postAllowed();
-        $cadangan_hari = post('cadangan_hari') !== false ? (int) post('cadangan_hari') : 28;
-        $perangkat = $this->perangkat_model->generate($id_pembelajaran_mapel, $cadangan_hari);
-        if (!$perangkat) {
+        ifPermissions('perangkat_pembelajaran_edit');
+
+        $item = $this->perangkat_model->getPembelajaranMapel($id_pembelajaran_mapel);
+        if (!$item) {
             show_404();
         }
 
-        $this->activity_model->add(logged('name') . ' Generate Perangkat Pembelajaran #' . $id_pembelajaran_mapel);
+        $fields = [
+            'file_cp', 'file_tp', 'file_atp', 'file_modul_ajar',
+            'file_kisi_sts', 'file_soal_sts', 'file_kisi_sas', 'file_soal_sas'
+        ];
+
+        $uploaded = [];
+        foreach ($fields as $field) {
+            $file_name = $this->uploadFile($field, $id_pembelajaran_mapel);
+            $uploaded[$field] = $file_name;
+        }
+
+        $this->perangkat_model->saveBerkas($id_pembelajaran_mapel, $uploaded);
+
+        $this->activity_model->add(logged('name') . ' Menyimpan Berkas Perangkat Pembelajaran untuk #' . $id_pembelajaran_mapel);
         $this->session->set_flashdata('alert-type', 'success');
-        $this->session->set_flashdata('alert', 'Perangkat pembelajaran berhasil digenerate.');
+        $this->session->set_flashdata('alert', 'Berkas perangkat pembelajaran berhasil disimpan.');
         redirect('perangkat_pembelajaran/detail/' . $id_pembelajaran_mapel);
     }
 
-    public function simpan($id_perangkat)
+    public function hapus_berkas($id_pembelajaran_mapel, $jenis)
+    {
+        ifPermissions('perangkat_pembelajaran_edit');
+        
+        $fields = [
+            'cp' => 'file_cp', 'tp' => 'file_tp', 'atp' => 'file_atp', 'modul_ajar' => 'file_modul_ajar',
+            'kisi_sts' => 'file_kisi_sts', 'soal_sts' => 'file_soal_sts', 'kisi_sas' => 'file_kisi_sas', 'soal_sas' => 'file_soal_sas'
+        ];
+
+        if (!isset($fields[$jenis])) {
+            show_404();
+        }
+
+        $this->perangkat_model->deleteBerkasFile($id_pembelajaran_mapel, $fields[$jenis]);
+
+        $this->activity_model->add(logged('name') . ' Menghapus Berkas ' . $jenis . ' untuk #' . $id_pembelajaran_mapel);
+        $this->session->set_flashdata('alert-type', 'success');
+        $this->session->set_flashdata('alert', 'Berkas berhasil dihapus.');
+        redirect('perangkat_pembelajaran/detail/' . $id_pembelajaran_mapel);
+    }
+
+    public function generate_agenda($id_pembelajaran_mapel)
     {
         postAllowed();
-        $this->perangkat_model->savePerangkat($id_perangkat, [
-            'cp' => post('cp'),
-            'atp' => post('atp'),
-            'modul_ajar' => post('modul_ajar'),
-        ]);
-        $this->perangkat_model->saveMateri($this->input->post('materi', true));
+        ifPermissions('perangkat_pembelajaran_edit');
 
-        $row = $this->db->get_where('perangkat_pembelajaran', ['id_perangkat' => (int) $id_perangkat])->row();
-        $this->activity_model->add(logged('name') . ' Menyimpan Perangkat Pembelajaran #' . $id_perangkat);
+        $success = $this->perangkat_model->generateAgenda($id_pembelajaran_mapel);
+        if ($success) {
+            $this->activity_model->add(logged('name') . ' Generate Agenda Harian untuk #' . $id_pembelajaran_mapel);
+            $this->session->set_flashdata('alert-type', 'success');
+            $this->session->set_flashdata('alert', 'Agenda harian berhasil digenerate berdasarkan jadwal dan hari aktif.');
+        } else {
+            $this->session->set_flashdata('alert-type', 'danger');
+            $this->session->set_flashdata('alert', 'Gagal generate agenda harian. Pastikan jadwal pelajaran dan hari aktif telah digenerate.');
+        }
+        redirect('perangkat_pembelajaran/detail/' . $id_pembelajaran_mapel);
+    }
+
+    public function simpan_agenda($id_pembelajaran_mapel)
+    {
+        postAllowed();
+        ifPermissions('perangkat_pembelajaran_edit');
+
+        $id_agenda = (int) post('id_agenda');
+        if ($id_agenda) {
+            $this->db->where('id_agenda', $id_agenda);
+            $this->db->where('id_pembelajaran_mapel', $id_pembelajaran_mapel);
+            $this->db->update('agenda_pembelajaran', [
+                'materi' => $this->input->post('materi'),
+                'kegiatan' => $this->input->post('kegiatan'),
+                'status' => post('status'),
+                'catatan' => post('catatan'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
+        }
+
+        $this->activity_model->add(logged('name') . ' Menyimpan Agenda Harian untuk #' . $id_pembelajaran_mapel);
         $this->session->set_flashdata('alert-type', 'success');
-        $this->session->set_flashdata('alert', 'Perangkat pembelajaran berhasil disimpan.');
-        redirect('perangkat_pembelajaran/detail/' . $row->id_pembelajaran_mapel);
+        $this->session->set_flashdata('alert', 'Agenda harian berhasil disimpan.');
+        redirect('perangkat_pembelajaran/detail/' . $id_pembelajaran_mapel);
+    }
+
+    public function salin_perangkat($id_pembelajaran_mapel)
+    {
+        postAllowed();
+        ifPermissions('perangkat_pembelajaran_edit');
+
+        $item = $this->perangkat_model->getPembelajaranMapel($id_pembelajaran_mapel);
+        if (!$item) show_404();
+
+        $success = $this->perangkat_model->copyPerangkatFromLastYear($item->id_tahun_pelajaran, $item->id_tingkat_sekolah, $item->id_mapel);
+        if ($success) {
+            $this->session->set_flashdata('alert-type', 'success');
+            $this->session->set_flashdata('alert', 'Berkas perangkat pembelajaran berhasil disalin dari tahun lalu.');
+        } else {
+            $this->session->set_flashdata('alert-type', 'danger');
+            $this->session->set_flashdata('alert', 'Gagal menyalin. Tidak ditemukan berkas perangkat dari tahun lalu.');
+        }
+        redirect('perangkat_pembelajaran/detail/' . $id_pembelajaran_mapel);
+    }
+
+    public function salin_agenda($id_pembelajaran_mapel)
+    {
+        postAllowed();
+        ifPermissions('perangkat_pembelajaran_edit');
+
+        $source_id = (int) post('source_id');
+        if (!$source_id) {
+            $this->session->set_flashdata('alert-type', 'danger');
+            $this->session->set_flashdata('alert', 'Sumber agenda tidak valid.');
+            redirect('perangkat_pembelajaran/detail/' . $id_pembelajaran_mapel);
+        }
+
+        $success = $this->perangkat_model->copyAgendaFromSource($id_pembelajaran_mapel, $source_id);
+        if ($success) {
+            $this->session->set_flashdata('alert-type', 'success');
+            $this->session->set_flashdata('alert', 'Isi agenda harian berhasil disalin dari sumber terpilih.');
+        } else {
+            $this->session->set_flashdata('alert-type', 'danger');
+            $this->session->set_flashdata('alert', 'Gagal menyalin agenda. Pastikan sumber agenda terisi.');
+        }
+        redirect('perangkat_pembelajaran/detail/' . $id_pembelajaran_mapel);
+    }
+
+    private function uploadFile($fieldName, $id_pembelajaran_mapel)
+    {
+        if (empty($_FILES[$fieldName]['name'])) return null;
+
+        $config['upload_path'] = './uploads/perangkat_pembelajaran/';
+        $config['allowed_types'] = ($fieldName === 'file_cp') ? 'pdf' : 'pdf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|jpg|jpeg|png';
+        $config['max_size'] = 10240; // 10MB
+        $config['file_name'] = $fieldName . '_' . $id_pembelajaran_mapel . '_' . time();
+
+        if (!is_dir($config['upload_path'])) {
+            mkdir($config['upload_path'], 0777, true);
+        }
+
+        $this->load->library('upload', $config);
+        $this->upload->initialize($config);
+
+        if ($this->upload->do_upload($fieldName)) {
+            $data = $this->upload->data();
+            return $data['file_name'];
+        }
+        return null;
     }
 }

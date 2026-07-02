@@ -19,7 +19,7 @@ class Buku_induk_siswa extends MY_Controller
         $this->page_data['page']->icon = 'solar:book-bookmark-linear';
 
         $this->db->order_by('nama_siswa', 'ASC');
-        $this->page_data['siswa'] = $this->db->get('siswa')->result();
+        $this->page_data['siswa'] = $this->db->get('alumni')->result();
 
         $this->load->view('buku_induk_siswa/list', $this->page_data);
     }
@@ -56,7 +56,7 @@ class Buku_induk_siswa extends MY_Controller
             redirect('buku_induk_siswa');
         }
 
-        $siswa = $this->db->get_where('siswa', ['id_siswa' => $id_siswa])->row();
+        $siswa = $this->db->get_where('alumni', ['id_alumni' => $id_siswa])->row();
         if (!$siswa) {
             show_404();
         }
@@ -72,20 +72,20 @@ class Buku_induk_siswa extends MY_Controller
 
     private function getFotoSiswa($id_siswa)
     {
-        $this->db->order_by('id_foto', 'DESC');
-        return $this->db->get_where('siswa_foto', ['id_siswa' => $id_siswa])->row();
+        $this->db->order_by('id_foto_alumni', 'DESC');
+        return $this->db->get_where('alumni_foto', ['id_alumni' => $id_siswa])->row();
     }
 
     private function getPembelajaranTerakhir($id_siswa)
     {
         $this->db->select('p.*, l.nama_lembaga, t.nama_tingkat, r.nama_rombel, tp.tahun_pelajaran, tp.semester');
-        $this->db->from('pembelajaran_siswa ps');
+        $this->db->from('alumni_pembelajaran_siswa ps');
         $this->db->join('pembelajaran p', 'p.id_pembelajaran = ps.id_pembelajaran');
         $this->db->join('lembaga l', 'l.id_lembaga = p.id_lembaga', 'left');
         $this->db->join('master_tingkat_sekolah t', 't.id_tingkat_sekolah = p.id_tingkat_sekolah', 'left');
         $this->db->join('rombel r', 'r.id_rombel = p.id_rombel', 'left');
         $this->db->join('pembelajaran_tahun_pelajaran tp', 'tp.id_tahun_pelajaran = p.id_tahun_pelajaran', 'left');
-        $this->db->where('ps.peserta_didik_id', (string) $id_siswa);
+        $this->db->where('ps.id_alumni', (string) $id_siswa);
         $this->db->order_by('tp.id_tahun_pelajaran', 'DESC');
         return $this->db->get()->row();
     }
@@ -93,10 +93,10 @@ class Buku_induk_siswa extends MY_Controller
     private function getSemesterColumns($id_siswa)
     {
         $this->db->select('DISTINCT tp.id_tahun_pelajaran, tp.tahun_pelajaran, tp.semester', false);
-        $this->db->from('pembelajaran_siswa ps');
+        $this->db->from('alumni_pembelajaran_siswa ps');
         $this->db->join('pembelajaran p', 'p.id_pembelajaran = ps.id_pembelajaran');
         $this->db->join('pembelajaran_tahun_pelajaran tp', 'tp.id_tahun_pelajaran = p.id_tahun_pelajaran');
-        $this->db->where('ps.peserta_didik_id', (string) $id_siswa);
+        $this->db->where('ps.id_alumni', (string) $id_siswa);
         $this->db->order_by('tp.id_tahun_pelajaran', 'ASC');
         $rows = $this->db->get()->result();
 
@@ -123,12 +123,12 @@ class Buku_induk_siswa extends MY_Controller
     private function getNilaiRows($id_siswa)
     {
         $this->db->select('m.id_mapel, m.nama_mapel, tp.id_tahun_pelajaran, ns.nilai_rapor');
-        $this->db->from('nilai_siswa ns');
+        $this->db->from('alumni_nilai_siswa ns');
         $this->db->join('pembelajaran_mapel pm', 'pm.id_pembelajaran_mapel = ns.id_pembelajaran_mapel');
         $this->db->join('mapel m', 'm.id_mapel = pm.id_mapel');
         $this->db->join('pembelajaran p', 'p.id_pembelajaran = pm.id_pembelajaran');
         $this->db->join('pembelajaran_tahun_pelajaran tp', 'tp.id_tahun_pelajaran = p.id_tahun_pelajaran');
-        $this->db->where('ns.id_siswa', (int) $id_siswa);
+        $this->db->where('ns.id_alumni', (int) $id_siswa);
         $this->db->order_by('m.nama_mapel', 'ASC');
         $this->db->order_by('tp.id_tahun_pelajaran', 'ASC');
         $rows = $this->db->get()->result();

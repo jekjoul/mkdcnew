@@ -21,7 +21,7 @@
                     </div>
                     <div class="col-md-3">
                         <span class="text-secondary-light d-block">Rombel</span>
-                        <strong><?php echo $pembelajaran->nama_rombel ?></strong>
+                        <strong><?php echo $pembelajaran->nama_tingkat . ' - ' . $pembelajaran->nama_rombel ?></strong>
                     </div>
                 </div>
             </div>

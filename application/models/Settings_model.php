@@ -24,10 +24,18 @@ class Settings_model extends MY_Model {
 
 	public function updateByKey($key, $value)
 	{
-		$this->db->where('key', $key);
-		return $this->db->update($this->table, [
-			'value' => $value
-		]);
+		$exists = $this->db->get_where($this->table, ['key' => $key])->num_rows() > 0;
+		if ($exists) {
+			$this->db->where('key', $key);
+			return $this->db->update($this->table, [
+				'value' => $value
+			]);
+		} else {
+			return $this->db->insert($this->table, [
+				'key' => $key,
+				'value' => $value
+			]);
+		}
 	}
 
 
