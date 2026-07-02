@@ -63,10 +63,12 @@
         const start = selected || school;
         const map = L.map(mapEl).setView(start, selected ? 16 : 15);
         let studentMarker = null;
+        let routePolyline = null;
 
-        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            maxZoom: 19,
-            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+        // Use Google Hybrid Map (Satellite + Roads/Labels overlay)
+        L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+            maxZoom: 20,
+            attribution: 'Map data &copy; Google'
         }).addTo(map);
 
         L.marker(school).addTo(map).bindPopup('Lokasi Sekolah');
@@ -75,12 +77,49 @@
             const coordinate = [latlng.lat, latlng.lng];
             const value = latlng.lat.toFixed(7) + ',' + latlng.lng.toFixed(7);
             koordinatInput.value = value;
-            jarakInput.value = distanceKm(school, coordinate).toFixed(2) + ' km';
 
             if (studentMarker) {
                 studentMarker.setLatLng(latlng);
             } else {
                 studentMarker = L.marker(latlng).addTo(map);
+            }
+
+            // Fetch actual road routing distance using OSRM
+            const url = `https://router.project-osrm.org/route/v1/driving/${school[1]},${school[0]};${latlng.lng},${latlng.lat}?overview=full&geometries=geojson`;
+            
+            fetch(url)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.routes && data.routes[0]) {
+                        const route = data.routes[0];
+                        const distanceInKm = (route.distance / 1000).toFixed(2);
+                        jarakInput.value = distanceInKm + ' km';
+
+                        // Draw driving path on map
+                        if (routePolyline) {
+                            map.removeLayer(routePolyline);
+                        }
+                        routePolyline = L.geoJSON(route.geometry, {
+                            style: {
+                                color: '#e11d48',
+                                weight: 5,
+                                opacity: 0.85
+                            }
+                        }).addTo(map);
+                    } else {
+                        fallbackStraight();
+                    }
+                })
+                .catch(err => {
+                    fallbackStraight();
+                });
+
+            function fallbackStraight() {
+                const dist = distanceKm(school, coordinate).toFixed(2);
+                jarakInput.value = dist + ' km (Garis Lurus)';
+                if (routePolyline) {
+                    map.removeLayer(routePolyline);
+                }
             }
         }
 

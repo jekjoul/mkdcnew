@@ -1,5 +1,6 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
 <?php include viewPath('includes/header'); ?>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
 <div class="dashboard-main-body">
     <div class="row gy-4">
@@ -234,6 +235,7 @@
 <?php include viewPath('siswa/partials/v_siswa_dokumen_modals'); ?>
 
 <?php include viewPath('includes/footer'); ?>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <?php include viewPath('siswa/partials/v_siswa_form_script'); ?>
 <script>
     let table = new DataTable('#dataPribadi');
