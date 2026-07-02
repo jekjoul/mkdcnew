@@ -54,15 +54,6 @@ function siswa_value($row, $field, $default = '')
         </div>
         <div class="col-sm-4 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Telepon</label><input type="text" class="form-control radius-8" name="telepon" value="<?php echo siswa_value($row, 'telepon') ?>"></div>
         <div class="col-sm-4 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Email</label><input type="email" class="form-control radius-8" name="email" value="<?php echo siswa_value($row, 'email') ?>"></div>
-        <div class="col-sm-4 mb-20">
-            <label class="form-label fw-semibold text-primary-light text-sm mb-8">Rombel</label>
-            <select class="form-control radius-8 form-select" name="rombel">
-                <option value="">Pilih Rombel</option>
-                <?php if (isset($rombel_aktif)): foreach ($rombel_aktif as $r): ?>
-                    <option value="<?php echo html_escape($r->nama_rombel) ?>" <?php echo siswa_value($row, 'rombel') === $r->nama_rombel ? 'selected' : '' ?>><?php echo html_escape($r->nama_tingkat . ' - ' . $r->nama_rombel) ?></option>
-                <?php endforeach; endif; ?>
-            </select>
-        </div>
         <div class="col-sm-4 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Tanggal Pendaftaran</label><input type="date" class="form-control radius-8" name="tanggal_pendaftaran" value="<?php echo siswa_value($row, 'tanggal_pendaftaran') ?>"></div>
         <div class="col-sm-4 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Status Pendaftaran</label><input type="text" class="form-control radius-8" name="status_pendaftaran" value="<?php echo siswa_value($row, 'status_pendaftaran') ?>"></div>
         <div class="col-sm-4 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">No Ijazah</label><input type="text" class="form-control radius-8" name="no_ijazah" value="<?php echo siswa_value($row, 'no_ijazah') ?>"></div>
@@ -81,10 +72,29 @@ function siswa_value($row, $field, $default = '')
         <div class="col-sm-12 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Alamat Siswa</label><input type="text" class="form-control radius-8" name="alamat" value="<?php echo siswa_value($row, 'alamat') ?>"></div>
         <div class="col-sm-3 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">RT</label><input type="text" class="form-control radius-8" name="rt" value="<?php echo siswa_value($row, 'rt') ?>"></div>
         <div class="col-sm-3 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">RW</label><input type="text" class="form-control radius-8" name="rw" value="<?php echo siswa_value($row, 'rw') ?>"></div>
-        <div class="col-sm-3 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Jenis Tempat Tinggal</label><input type="text" class="form-control radius-8" name="jenis_tempat_tinggal" value="<?php echo siswa_value($row, 'jenis_tempat_tinggal') ?>"></div>
-        <div class="col-sm-3 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Alat Transportasi</label><input type="text" class="form-control radius-8" name="alat_transportasi" value="<?php echo siswa_value($row, 'alat_transportasi') ?>"></div>
-        <div class="col-sm-6 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Jarak ke Sekolah</label><input type="text" class="form-control radius-8" name="jarak_ke_sekolah" value="<?php echo siswa_value($row, 'jarak_ke_sekolah') ?>"></div>
-        <div class="col-sm-6 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Koordinat</label><input type="text" class="form-control radius-8" name="koordinat" value="<?php echo siswa_value($row, 'koordinat') ?>"></div>
+        <div class="col-sm-3 mb-20">
+            <label class="form-label fw-semibold text-primary-light text-sm mb-8">Jenis Tempat Tinggal</label>
+            <select class="form-control radius-8 form-select" name="jenis_tempat_tinggal">
+                <option value="">Pilih Tempat Tinggal</option>
+                <?php if (isset($jenis_tempat_tinggal_options)): foreach ($jenis_tempat_tinggal_options as $option): ?>
+                    <option value="<?php echo $option ?>" <?php echo siswa_value($row, 'jenis_tempat_tinggal') === $option ? 'selected' : '' ?>><?php echo $option ?></option>
+                <?php endforeach; endif; ?>
+            </select>
+        </div>
+        <div class="col-sm-3 mb-20">
+            <label class="form-label fw-semibold text-primary-light text-sm mb-8">Alat Transportasi</label>
+            <select class="form-control radius-8 form-select" name="alat_transportasi">
+                <option value="">Pilih Transportasi</option>
+                <?php if (isset($alat_transportasi_options)): foreach ($alat_transportasi_options as $option): ?>
+                    <option value="<?php echo $option ?>" <?php echo siswa_value($row, 'alat_transportasi') === $option ? 'selected' : '' ?>><?php echo $option ?></option>
+                <?php endforeach; endif; ?>
+            </select>
+        </div>
+        <div class="col-sm-6 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Jarak ke Sekolah</label><input type="text" class="form-control radius-8" name="jarak_ke_sekolah" id="jarak_ke_sekolah" value="<?php echo siswa_value($row, 'jarak_ke_sekolah') ?>" readonly></div>
+        <div class="col-sm-6 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Koordinat</label><input type="text" class="form-control radius-8" name="koordinat" id="koordinat" value="<?php echo siswa_value($row, 'koordinat') ?>" readonly></div>
+        <div class="col-sm-12 mb-20">
+            <div id="map-koordinat" class="radius-8 border" style="height: 360px; overflow: hidden;"></div>
+        </div>
         <?php foreach (['' => 'Siswa', '_ayah' => 'Ayah', '_ibu' => 'Ibu'] as $suffix => $label): ?>
             <?php if ($suffix): ?>
                 <div class="col-sm-12"><hr><h6>Data <?php echo $label ?></h6></div>

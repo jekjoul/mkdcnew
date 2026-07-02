@@ -5,6 +5,8 @@ class Siswa extends MY_Controller
 {
     public $table = 'siswa';
     
+    private $school_coordinate = '-7.1454257,108.2664001';
+    
     private $pekerjaan_options = [
         'Wiraswasta',
         'Karyawan Swasta',
@@ -17,6 +19,9 @@ class Siswa extends MY_Controller
         'Ibu Rumah Tangga',
         'Sudah Meninggal',
     ];
+
+    private $jenis_tempat_tinggal_options = ['Bersama Orang Tua', 'Bersama Saudara', 'Pondok Pesantren', 'Panti Asuhan'];
+    private $alat_transportasi_options = ['Jalan Kaki', 'Transportasi Umum', 'Kendaraan Roda Dua', 'Kendaraan Roda Empat'];
 
     public function __construct()
     {
@@ -185,6 +190,7 @@ class Siswa extends MY_Controller
         $this->page_data['page']->subtitleUrl = 'siswa/detail/' . $id;
         $this->page_data['page']->icon = 'icon-park-outline:user-business';
         $this->page_data['row'] = $row;
+        $this->page_data['school_coordinate'] = $this->school_coordinate;
         $this->page_data['provinsi'] = $this->db->get('reg_provinsi')->result();
         $this->page_data['foto'] = $this->db->get_where('siswa_foto', ['id_siswa' => $id])->result();
         $this->db->order_by('nama_jenis_dokumen', 'ASC');
@@ -208,6 +214,8 @@ class Siswa extends MY_Controller
         $this->page_data['rombel_aktif'] = $this->db->get()->result();
         
         $this->page_data['pekerjaan_options'] = $this->pekerjaan_options;
+        $this->page_data['jenis_tempat_tinggal_options'] = $this->jenis_tempat_tinggal_options;
+        $this->page_data['alat_transportasi_options'] = $this->alat_transportasi_options;
         $this->load->view('siswa/v_siswa_detail', $this->page_data);
     }
 
@@ -220,6 +228,7 @@ class Siswa extends MY_Controller
         $this->page_data['page']->subtitleUrl = 'siswa/siswaAdd';
         $this->page_data['page']->icon = 'icon-park-outline:user-business';
         $this->page_data['provinsi'] = $this->db->get('reg_provinsi')->result();
+        $this->page_data['school_coordinate'] = $this->school_coordinate;
         
         $this->db->select('r.nama_rombel, t.nama_tingkat');
         $this->db->from('pembelajaran p');
@@ -233,6 +242,8 @@ class Siswa extends MY_Controller
         $this->page_data['rombel_aktif'] = $this->db->get()->result();
         
         $this->page_data['pekerjaan_options'] = $this->pekerjaan_options;
+        $this->page_data['jenis_tempat_tinggal_options'] = $this->jenis_tempat_tinggal_options;
+        $this->page_data['alat_transportasi_options'] = $this->alat_transportasi_options;
         $this->load->view('siswa/v_siswa_form', $this->page_data);
     }
 
