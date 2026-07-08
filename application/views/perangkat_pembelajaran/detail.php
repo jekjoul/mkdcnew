@@ -127,14 +127,14 @@
                                 <tbody>
                                     <?php
                                     $files_config = [
-                                        'file_cp'        => ['label' => '1. Capaian Pembelajaran (CP)',              'key' => 'cp',        'accept' => '.pdf',                                                                 'hint' => 'PDF saja'],
-                                        'file_tp'        => ['label' => '2. Tujuan Pembelajaran (TP)',               'key' => 'tp',        'accept' => '.pdf,.doc,.docx',                                                      'hint' => 'PDF / Word'],
-                                        'file_atp'       => ['label' => '3. Alur Tujuan Pembelajaran (ATP)',         'key' => 'atp',       'accept' => '.pdf,.doc,.docx',                                                      'hint' => 'PDF / Word'],
-                                        'file_modul_ajar'=> ['label' => '4. Modul Ajar / RPP',                      'key' => 'modul_ajar','accept' => '.pdf,.doc,.docx,.zip,.rar',                                            'hint' => 'PDF / Word / ZIP'],
-                                        'file_kisi_sts'  => ['label' => '5. Kisi-kisi Sumatif Tengah Semester (STS)','key' => 'kisi_sts', 'accept' => '.pdf,.doc,.docx,.xls,.xlsx',                                           'hint' => 'PDF / Word / Excel'],
-                                        'file_soal_sts'  => ['label' => '6. Soal Sumatif Tengah Semester (STS)',    'key' => 'soal_sts',  'accept' => '.pdf,.doc,.docx,.xls,.xlsx',                                           'hint' => 'PDF / Word / Excel'],
-                                        'file_kisi_sas'  => ['label' => '7. Kisi-kisi Sumatif Akhir Semester (SAS)','key' => 'kisi_sas',  'accept' => '.pdf,.doc,.docx,.xls,.xlsx',                                           'hint' => 'PDF / Word / Excel'],
-                                        'file_soal_sas'  => ['label' => '8. Soal Sumatif Akhir Semester (SAS)',     'key' => 'soal_sas',  'accept' => '.pdf,.doc,.docx,.xls,.xlsx',                                           'hint' => 'PDF / Word / Excel'],
+                                        'file_cp'        => ['label' => '1. Capaian Pembelajaran (CP)',              'key' => 'cp',        'accept' => '.docx,.xlsx',                                                          'hint' => 'DOCX / XLSX saja'],
+                                        'file_tp'        => ['label' => '2. Tujuan Pembelajaran (TP)',               'key' => 'tp',        'accept' => '.docx,.xlsx',                                                          'hint' => 'DOCX / XLSX saja'],
+                                        'file_atp'       => ['label' => '3. Alur Tujuan Pembelajaran (ATP)',         'key' => 'atp',       'accept' => '.docx,.xlsx',                                                          'hint' => 'DOCX / XLSX saja'],
+                                        'file_modul_ajar'=> ['label' => '4. Modul Ajar / RPP',                      'key' => 'modul_ajar','accept' => '.docx,.xlsx',                                                          'hint' => 'DOCX / XLSX saja'],
+                                        'file_kisi_sts'  => ['label' => '5. Kisi-kisi Sumatif Tengah Semester (STS)','key' => 'kisi_sts', 'accept' => '.docx,.xlsx',                                                          'hint' => 'DOCX / XLSX saja'],
+                                        'file_soal_sts'  => ['label' => '6. Soal Sumatif Tengah Semester (STS)',    'key' => 'soal_sts',  'accept' => '.docx,.xlsx',                                                          'hint' => 'DOCX / XLSX saja'],
+                                        'file_kisi_sas'  => ['label' => '7. Kisi-kisi Sumatif Akhir Semester (SAS)','key' => 'kisi_sas',  'accept' => '.docx,.xlsx',                                                          'hint' => 'DOCX / XLSX saja'],
+                                        'file_soal_sas'  => ['label' => '8. Soal Sumatif Akhir Semester (SAS)',     'key' => 'soal_sas',  'accept' => '.docx,.xlsx',                                                          'hint' => 'DOCX / XLSX saja'],
                                     ];
                                     $no = 1;
                                     foreach ($files_config as $field => $cfg):

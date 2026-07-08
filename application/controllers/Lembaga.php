@@ -54,11 +54,70 @@ class Lembaga extends MY_Controller
 			$lembaga->nama_kepsek = $kepsek ? $kepsek->nama_ptk : '-';
 		}
 
+		$this->page_data['ptk'] = $this->db->order_by('nama_ptk', 'ASC')->get('ptk')->result();
 		$this->page_data['lembaga'] = $lembaga;
 		$this->load->view('lembaga/v_lembaga_detail', $this->page_data);
 	}
-}
-	
 
-/* End of file Dashboard.php */
-/* Location: ./application/controllers/Dashboard.php */
+	public function update($id)
+	{
+		postAllowed();
+		ifPermissions('lembaga_edit');
+
+		$data = [
+			'nama_lembaga' => $this->input->post('nama_lembaga'),
+			'nama_lembaga_singkat' => $this->input->post('nama_lembaga_singkat'),
+			'npsn' => $this->input->post('npsn'),
+			'bentuk_pendidikan' => $this->input->post('bentuk_pendidikan'),
+			'status' => $this->input->post('status'),
+			'akreditasi' => $this->input->post('akreditasi'),
+			'no_sk_akreditasi' => $this->input->post('no_sk_akreditasi'),
+			'alamat' => $this->input->post('alamat'),
+			'rt' => $this->input->post('rt'),
+			'rw' => $this->input->post('rw'),
+			'kelurahan' => $this->input->post('kelurahan'),
+			'kecamatan' => $this->input->post('kecamatan'),
+			'kabupaten' => $this->input->post('kabupaten'),
+			'provinsi' => $this->input->post('provinsi'),
+			'koordinat' => $this->input->post('koordinat'),
+			'telepon' => $this->input->post('telepon'),
+			'email' => $this->input->post('email'),
+			'website' => $this->input->post('website'),
+			'instagram' => $this->input->post('instagram'),
+			'tiktok' => $this->input->post('tiktok'),
+			'youtube' => $this->input->post('youtube'),
+			'id_ptk_kepsek' => $this->input->post('id_ptk_kepsek') ?: null
+		];
+
+		// Handle logo upload
+		if (!empty($_FILES['logo']['name'])) {
+			$config['upload_path'] = './uploads/logo_lembaga/';
+			$config['allowed_types'] = 'gif|jpg|png|jpeg';
+			$config['file_name'] = 'logo_' . $id . '_' . time();
+			
+			// Create directory if not exists
+			if (!is_dir($config['upload_path'])) {
+				mkdir($config['upload_path'], 0777, true);
+			}
+
+			$this->load->library('upload');
+			$this->upload->initialize($config);
+			if ($this->upload->do_upload('logo')) {
+				$upload_data = $this->upload->data();
+				$data['logo'] = $upload_data['file_name'];
+			}
+		}
+
+		$this->db->where('id_lembaga', $id);
+		if ($this->db->update('lembaga', $data)) {
+			$this->activity_model->add(logged('name') . ' mengubah data lembaga: ' . $data['nama_lembaga'], logged('id'));
+			$this->session->set_flashdata('alert-type', 'success');
+			$this->session->set_flashdata('alert', 'Data Lembaga berhasil diperbarui');
+		} else {
+			$this->session->set_flashdata('alert-type', 'danger');
+			$this->session->set_flashdata('alert', 'Gagal memperbarui data Lembaga');
+		}
+
+		redirect('lembaga/detail/' . $id);
+	}
+}

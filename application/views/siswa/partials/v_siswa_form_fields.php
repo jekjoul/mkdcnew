@@ -54,6 +54,15 @@ function siswa_value($row, $field, $default = '')
         </div>
         <div class="col-sm-4 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Telepon</label><input type="text" class="form-control radius-8" name="telepon" value="<?php echo siswa_value($row, 'telepon') ?>"></div>
         <div class="col-sm-4 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Email</label><input type="email" class="form-control radius-8" name="email" value="<?php echo siswa_value($row, 'email') ?>"></div>
+        <div class="col-sm-4 mb-20">
+            <label class="form-label fw-semibold text-primary-light text-sm mb-8">Lembaga</label>
+            <select class="form-control radius-8 form-select" id="id_lembaga_tujuan">
+                <option value="">Pilih Lembaga</option>
+                <?php if (isset($lembaga)): foreach ($lembaga as $l): ?>
+                    <option value="<?php echo $l->id_lembaga ?>" data-coordinate="<?php echo htmlspecialchars($l->koordinat, ENT_QUOTES, 'UTF-8') ?>"><?php echo htmlspecialchars($l->nama_lembaga) ?></option>
+                <?php endforeach; endif; ?>
+            </select>
+        </div>
         <div class="col-sm-4 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Tanggal Pendaftaran</label><input type="date" class="form-control radius-8" name="tanggal_pendaftaran" value="<?php echo siswa_value($row, 'tanggal_pendaftaran') ?>"></div>
         <div class="col-sm-4 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Status Pendaftaran</label><input type="text" class="form-control radius-8" name="status_pendaftaran" value="<?php echo siswa_value($row, 'status_pendaftaran') ?>"></div>
         <div class="col-sm-4 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">No Ijazah</label><input type="text" class="form-control radius-8" name="no_ijazah" value="<?php echo siswa_value($row, 'no_ijazah') ?>"></div>

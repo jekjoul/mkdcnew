@@ -93,7 +93,35 @@
             attribution: 'Map data &copy; Google'
         }).addTo(map);
 
-        L.marker(school).addTo(map).bindPopup('Lokasi Sekolah');
+        let schoolMarker = L.marker(school).addTo(map).bindPopup('Lokasi Sekolah');
+
+        // Handle school coordinate change based on chosen Lembaga
+        const lembagaSelect = document.getElementById('id_lembaga_tujuan');
+        if (lembagaSelect) {
+            lembagaSelect.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                const coordinateStr = selectedOption ? selectedOption.getAttribute('data-coordinate') : null;
+                const newSchoolCoord = parseCoordinate(coordinateStr);
+                if (newSchoolCoord) {
+                    school[0] = newSchoolCoord[0];
+                    school[1] = newSchoolCoord[1];
+                    schoolMarker.setLatLng(school);
+                    
+                    // Recalculate route if student marker already exists
+                    if (studentMarker) {
+                        setStudentLocation(studentMarker.getLatLng());
+                    }
+                }
+            });
+            // Trigger initial coordination alignment if pre-selected
+            const initialCoord = lembagaSelect.options[lembagaSelect.selectedIndex]?.getAttribute('data-coordinate');
+            const parsedInitial = parseCoordinate(initialCoord);
+            if (parsedInitial) {
+                school[0] = parsedInitial[0];
+                school[1] = parsedInitial[1];
+                schoolMarker.setLatLng(school);
+            }
+        }
 
         function setStudentLocation(latlng) {
             const coordinate = [latlng.lat, latlng.lng];
