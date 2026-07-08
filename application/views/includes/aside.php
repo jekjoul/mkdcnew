@@ -400,7 +400,7 @@ foreach ($menu_pembelajaran_siswa as $menu_row) {
 <?php if (hasPermissions('menu_surat_menyurat')): ?>
     <li class="sidebar-menu-group-title"
         style="background: #bdd3b1;
-        background: linear-gradient(90deg, rgb(232, 191, 255) 0%, rgba(255, 255, 255, 0) 100%);">Persuratan
+        background: linear-gradient(90deg, rgb(232, 191, 255) 0%, rgba(255, 255, 255, 0) 100%);">Pencetakan & Surat
     </li>
 
     <li class="dropdown">
@@ -431,6 +431,21 @@ foreach ($menu_pembelajaran_siswa as $menu_row) {
                 <a href="<?php echo url('surat/template') ?>">
                     <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
                     Template Surat
+                </a>
+            </li>
+        </ul>
+    </li>
+
+    <li class="dropdown">
+        <a href="javascript:void(0)">
+            <iconify-icon icon="solar:printer-linear" class="menu-icon"></iconify-icon>
+            <span>Pencetakan</span>
+        </a>
+        <ul class="sidebar-submenu">
+            <li>
+                <a href="<?php echo url('pencetakan/absensi') ?>">
+                    <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
+                    Cetak Absensi
                 </a>
             </li>
         </ul>
@@ -597,6 +612,12 @@ foreach ($menu_pembelajaran_siswa as $menu_row) {
     <a href="<?php echo $url->assets ?>downloads/mkdc_scanner_bridge.zip" download class="d-flex align-items-center gap-2">
         <iconify-icon icon="lucide:download" class="menu-icon text-primary"></iconify-icon>
         <span>Download Scanner Bridge</span>
+    </a>
+</li>
+<li>
+    <a href="<?php echo url('update_log') ?>">
+        <iconify-icon icon="solar:history-linear" class="menu-icon text-primary"></iconify-icon>
+        <span>Update Log</span>
     </a>
 </li>
 </ul>

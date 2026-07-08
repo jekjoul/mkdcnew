@@ -2,7 +2,9 @@
 <script>
     $('.wilayah-provinsi').on('change', function() {
         const value = $(this).val();
-        $.post('<?php echo url('calon_siswa/getKabupaten') ?>', { id: value }, function(data) {
+        $.post('<?php echo url('calon_siswa/getKabupaten') ?>', {
+            id: value
+        }, function(data) {
             $('#id_kabupaten').html('<option value="">Pilih Kabupaten</option>');
             $('#id_kecamatan').html('<option value="">Pilih Kecamatan</option>');
             $('#id_kelurahan').html('<option value="">Pilih Kelurahan</option>');
@@ -12,7 +14,9 @@
         });
     });
     $('.wilayah-kabupaten').on('change', function() {
-        $.post('<?php echo url('calon_siswa/getKecamatan') ?>', { id: $(this).val() }, function(data) {
+        $.post('<?php echo url('calon_siswa/getKecamatan') ?>', {
+            id: $(this).val()
+        }, function(data) {
             $('#id_kecamatan').html('<option value="">Pilih Kecamatan</option>');
             $('#id_kelurahan').html('<option value="">Pilih Kelurahan</option>');
             $.each(JSON.parse(data), function(_, item) {
@@ -21,7 +25,9 @@
         });
     });
     $('.wilayah-kecamatan').on('change', function() {
-        $.post('<?php echo url('calon_siswa/getKelurahan') ?>', { id: $(this).val() }, function(data) {
+        $.post('<?php echo url('calon_siswa/getKelurahan') ?>', {
+            id: $(this).val()
+        }, function(data) {
             $('#id_kelurahan').html('<option value="">Pilih Kelurahan</option>');
             $.each(JSON.parse(data), function(_, item) {
                 $('#id_kelurahan').append('<option value="' + item.id_kel + '">' + item.nama + '</option>');
@@ -58,7 +64,7 @@
             return radius * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
         }
 
-        const school = parseCoordinate(schoolCoordinate) || [-7.1454257, 108.2664001];
+        const school = parseCoordinate(schoolCoordinate) || [-7.1460997, 108.2668510];
         const selected = parseCoordinate(koordinatInput.value);
         const start = selected || school;
         const map = L.map(mapEl).setView(start, selected ? 16 : 15);
@@ -71,7 +77,35 @@
             attribution: 'Map data &copy; Google'
         }).addTo(map);
 
-        L.marker(school).addTo(map).bindPopup('Lokasi Sekolah');
+        let schoolMarker = L.marker(school).addTo(map).bindPopup('Lokasi Sekolah');
+
+        // Handle school coordinate change based on chosen Lembaga
+        const lembagaSelect = document.getElementById('id_lembaga_tujuan');
+        if (lembagaSelect) {
+            lembagaSelect.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                const coordinateStr = selectedOption ? selectedOption.getAttribute('data-coordinate') : null;
+                const newSchoolCoord = parseCoordinate(coordinateStr);
+                if (newSchoolCoord) {
+                    school[0] = newSchoolCoord[0];
+                    school[1] = newSchoolCoord[1];
+                    schoolMarker.setLatLng(school);
+                    
+                    // Recalculate route if student marker already exists
+                    if (studentMarker) {
+                        setStudentLocation(studentMarker.getLatLng());
+                    }
+                }
+            });
+            // Trigger initial coordination alignment if pre-selected
+            const initialCoord = lembagaSelect.options[lembagaSelect.selectedIndex]?.getAttribute('data-coordinate');
+            const parsedInitial = parseCoordinate(initialCoord);
+            if (parsedInitial) {
+                school[0] = parsedInitial[0];
+                school[1] = parsedInitial[1];
+                schoolMarker.setLatLng(school);
+            }
+        }
 
         function setStudentLocation(latlng) {
             const coordinate = [latlng.lat, latlng.lng];
@@ -86,7 +120,7 @@
 
             // Fetch actual road routing distance using OSRM
             const url = `https://router.project-osrm.org/route/v1/driving/${school[1]},${school[0]};${latlng.lng},${latlng.lat}?overview=full&geometries=geojson`;
-            
+
             fetch(url)
                 .then(res => res.json())
                 .then(data => {
@@ -124,7 +158,10 @@
         }
 
         if (selected) {
-            setStudentLocation({ lat: selected[0], lng: selected[1] });
+            setStudentLocation({
+                lat: selected[0],
+                lng: selected[1]
+            });
         }
 
         map.on('click', function(event) {

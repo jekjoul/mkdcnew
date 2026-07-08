@@ -169,9 +169,20 @@ class Perangkat_pembelajaran_model extends MY_Model
         if (empty($schedules)) return false;
 
         // Get pengaturan jadwal for calculating exact time
-        $pengaturan = $this->db->get_where('jadwal_pelajaran_pengaturan', [
+        $pengaturan_rows = $this->db->get_where('jadwal_pelajaran_pengaturan', [
             'id_pembelajaran' => $item->id_pembelajaran
-        ])->row();
+        ])->result();
+        
+        if (empty($pengaturan_rows)) {
+            $pengaturan_rows = $this->db->get_where('jadwal_pelajaran_pengaturan', [
+                'id_pembelajaran' => 0
+            ])->result();
+        }
+
+        $pengaturan_by_day = [];
+        foreach ($pengaturan_rows as $p_row) {
+            $pengaturan_by_day[strtolower($p_row->hari)] = $p_row;
+        }
 
         // Group slots by day
         $slots_by_day = [];
@@ -190,23 +201,25 @@ class Perangkat_pembelajaran_model extends MY_Model
             $jam_mulai = '';
             $jam_selesai = '';
 
-            if ($pengaturan && !empty($pengaturan->jam_mulai)) {
-                $istirahat = json_decode($pengaturan->istirahat_json) ?: [];
+            $p_day = isset($pengaturan_by_day[$day_key]) ? $pengaturan_by_day[$day_key] : null;
+
+            if ($p_day && !empty($p_day->jam_mulai)) {
+                $istirahat = json_decode($p_day->istirahat_json) ?: [];
                 $istirahat_map = [];
                 foreach ($istirahat as $ist) {
                     $istirahat_map[$ist->setelah_jp_ke] = $ist->durasi_menit;
                 }
 
                 // Helper to find slot times
-                $getSlotTime = function($target_slot) use ($pengaturan, $istirahat_map) {
-                    $time_sec = strtotime($pengaturan->jam_mulai);
+                $getSlotTime = function($target_slot) use ($p_day, $istirahat_map) {
+                    $time_sec = strtotime($p_day->jam_mulai);
                     for ($i = 1; $i < $target_slot; $i++) {
-                        $time_sec += ($pengaturan->menit_jp * 60);
+                        $time_sec += ($p_day->menit_jp * 60);
                         if (isset($istirahat_map[$i])) {
                             $time_sec += ($istirahat_map[$i] * 60);
                         }
                     }
-                    $end_sec = $time_sec + ($pengaturan->menit_jp * 60);
+                    $end_sec = $time_sec + ($p_day->menit_jp * 60);
                     return [date('H:i', $time_sec), date('H:i', $end_sec)];
                 };
 
