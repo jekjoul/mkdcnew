@@ -199,7 +199,7 @@ class Perangkat_pembelajaran extends MY_Controller
         if (empty($_FILES[$fieldName]['name'])) return null;
 
         $config['upload_path'] = './uploads/perangkat_pembelajaran/';
-        $config['allowed_types'] = ($fieldName === 'file_cp') ? 'pdf' : 'pdf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|jpg|jpeg|png';
+        $config['allowed_types'] = 'docx|xlsx';
         $config['max_size'] = 10240; // 10MB
         $config['file_name'] = $fieldName . '_' . $id_pembelajaran_mapel . '_' . time();
 

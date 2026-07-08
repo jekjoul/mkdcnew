@@ -3,6 +3,7 @@
 defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
 <?php include viewPath('includes/header'); ?>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
 <!-- meta tags and other links -->
 
@@ -26,8 +27,14 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                             </tr>
                         </table>
                     </div>
-                    <div class="col-xl-5 d-xl-block d-none">
-                        <img src="<?= urlUpload('logo_lembaga/'); ?><?= $lembaga->logo ?>" alt="">
+                    <div class="col-xl-5 d-xl-block d-none text-end">
+                        <?php if (!empty($lembaga->logo)): ?>
+                            <img src="<?= urlUpload('logo_lembaga/' . $lembaga->logo) ?>" alt="Logo Lembaga" style="max-height: 120px;" class="radius-8">
+                        <?php else: ?>
+                            <div class="d-inline-flex align-items-center justify-content-center bg-success-100 text-success-600 rounded-circle" style="width: 100px; height: 100px;">
+                                <iconify-icon icon="solar:home-linear" style="font-size: 50px;"></iconify-icon>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -54,6 +61,11 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                         <button class="nav-link text-secondary-light fw-semibold text-xl px-0 py-16"
                             id="v-pills-use-agency-tab" data-bs-toggle="pill" data-bs-target="#v-pills-use-agency"
                             type="button" role="tab" aria-controls="v-pills-use-agency" aria-selected="false">Alumni</button>
+                        <?php if (hasPermissions('lembaga_edit')): ?>
+                        <button class="nav-link text-secondary-light fw-semibold text-xl px-0 py-16 border-top"
+                            id="v-pills-edit-tab" data-bs-toggle="pill" data-bs-target="#v-pills-edit"
+                            type="button" role="tab" aria-controls="v-pills-edit" aria-selected="false">Edit Lembaga</button>
+                        <?php endif; ?>
                     </div>
                 </div>
                 <div class="col-lg-8">
@@ -670,6 +682,109 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                 </div>
                             </div>
                         </div>
+                        <?php if (hasPermissions('lembaga_edit')): ?>
+                        <div class="tab-pane fade" id="v-pills-edit" role="tabpanel" aria-labelledby="v-pills-edit-tab" tabindex="0">
+                            <div class="card shadow">
+                                <div class="card-header py-16 px-24 bg-base border-bottom">
+                                    <h6 class="text-lg mb-0 text-primary">Edit Data Lembaga</h6>
+                                </div>
+                                <div class="card-body">
+                                    <form action="<?= url('lembaga/update/' . $lembaga->id_lembaga) ?>" method="post" enctype="multipart/form-data">
+                                        <div class="row">
+                                            <div class="col-sm-6 mb-20">
+                                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">Nama Lembaga <span class="text-danger-600">*</span></label>
+                                                <input type="text" class="form-control radius-8" name="nama_lembaga" required value="<?= htmlspecialchars($lembaga->nama_lembaga) ?>">
+                                            </div>
+                                            <div class="col-sm-6 mb-20">
+                                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">Nama Singkat Lembaga</label>
+                                                <input type="text" class="form-control radius-8" name="nama_lembaga_singkat" value="<?= htmlspecialchars($lembaga->nama_lembaga_singkat) ?>">
+                                            </div>
+                                            <div class="col-sm-4 mb-20">
+                                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">NPSN</label>
+                                                <input type="text" class="form-control radius-8" name="npsn" value="<?= htmlspecialchars($lembaga->npsn) ?>">
+                                            </div>
+                                            <div class="col-sm-4 mb-20">
+                                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">Bentuk Pendidikan</label>
+                                                <input type="text" class="form-control radius-8" name="bentuk_pendidikan" value="<?= htmlspecialchars($lembaga->bentuk_pendidikan) ?>">
+                                            </div>
+                                            <div class="col-sm-4 mb-20">
+                                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">Status</label>
+                                                <input type="text" class="form-control radius-8" name="status" value="<?= htmlspecialchars($lembaga->status) ?>">
+                                            </div>
+                                            <div class="col-sm-6 mb-20">
+                                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">Akreditasi</label>
+                                                <input type="text" class="form-control radius-8" name="akreditasi" value="<?= htmlspecialchars($lembaga->akreditasi) ?>">
+                                            </div>
+                                            <div class="col-sm-6 mb-20">
+                                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">No SK Akreditasi</label>
+                                                <input type="text" class="form-control radius-8" name="no_sk_akreditasi" value="<?= htmlspecialchars($lembaga->no_sk_akreditasi) ?>">
+                                            </div>
+                                            <div class="col-sm-6 mb-20">
+                                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">Kepala Sekolah</label>
+                                                <select class="form-control radius-8 form-select" name="id_ptk_kepsek">
+                                                    <option value="">Pilih Kepala Sekolah</option>
+                                                    <?php foreach ($ptk as $p): ?>
+                                                        <option value="<?= $p->id_ptk ?>" <?= $lembaga->id_ptk_kepsek == $p->id_ptk ? 'selected' : '' ?>><?= htmlspecialchars($p->nama_ptk) ?></option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-6 mb-20">
+                                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">Telepon</label>
+                                                <input type="text" class="form-control radius-8" name="telepon" value="<?= htmlspecialchars($lembaga->telepon) ?>">
+                                            </div>
+                                            <div class="col-sm-6 mb-20">
+                                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">Email</label>
+                                                <input type="email" class="form-control radius-8" name="email" value="<?= htmlspecialchars($lembaga->email) ?>">
+                                            </div>
+                                            <div class="col-sm-6 mb-20">
+                                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">Website</label>
+                                                <input type="text" class="form-control radius-8" name="website" value="<?= htmlspecialchars($lembaga->website) ?>">
+                                            </div>
+                                            <div class="col-sm-4 mb-20">
+                                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">Instagram</label>
+                                                <input type="text" class="form-control radius-8" name="instagram" value="<?= htmlspecialchars($lembaga->instagram) ?>">
+                                            </div>
+                                            <div class="col-sm-4 mb-20">
+                                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">Tiktok</label>
+                                                <input type="text" class="form-control radius-8" name="tiktok" value="<?= htmlspecialchars($lembaga->tiktok) ?>">
+                                            </div>
+                                            <div class="col-sm-4 mb-20">
+                                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">Youtube</label>
+                                                <input type="text" class="form-control radius-8" name="youtube" value="<?= htmlspecialchars($lembaga->youtube) ?>">
+                                            </div>
+                                            <div class="col-sm-12 mb-20">
+                                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">Alamat</label>
+                                                <textarea class="form-control radius-8" name="alamat" rows="2"><?= htmlspecialchars($lembaga->alamat) ?></textarea>
+                                            </div>
+                                            <div class="col-sm-3 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">RT</label><input type="text" class="form-control radius-8" name="rt" value="<?= htmlspecialchars($lembaga->rt) ?>"></div>
+                                            <div class="col-sm-3 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">RW</label><input type="text" class="form-control radius-8" name="rw" value="<?= htmlspecialchars($lembaga->rw) ?>"></div>
+                                            <div class="col-sm-3 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Kelurahan</label><input type="text" class="form-control radius-8" name="kelurahan" value="<?= htmlspecialchars($lembaga->kelurahan) ?>"></div>
+                                            <div class="col-sm-3 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Kecamatan</label><input type="text" class="form-control radius-8" name="kecamatan" value="<?= htmlspecialchars($lembaga->kecamatan) ?>"></div>
+                                            <div class="col-sm-6 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Kabupaten</label><input type="text" class="form-control radius-8" name="kabupaten" value="<?= htmlspecialchars($lembaga->kabupaten) ?>"></div>
+                                            <div class="col-sm-6 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Provinsi</label><input type="text" class="form-control radius-8" name="provinsi" value="<?= htmlspecialchars($lembaga->provinsi) ?>"></div>
+                                            <div class="col-sm-12 mb-20">
+                                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">Koordinat Lembaga</label>
+                                                <input type="text" class="form-control radius-8 mb-8" name="koordinat" id="lembaga_koordinat" value="<?= htmlspecialchars($lembaga->koordinat) ?>" readonly>
+                                                <div id="lembaga-map" class="radius-8 border" style="height: 320px; overflow: hidden;"></div>
+                                            </div>
+                                            <div class="col-sm-12 mb-20">
+                                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">Logo Lembaga</label>
+                                                <?php if (!empty($lembaga->logo)): ?>
+                                                    <div class="mb-12">
+                                                        <img src="<?= urlUpload('logo_lembaga/' . $lembaga->logo) ?>" alt="Logo Lembaga" class="radius-8 border p-4" style="max-height: 120px;">
+                                                    </div>
+                                                <?php endif; ?>
+                                                <input type="file" class="form-control radius-8" name="logo" accept=".jpg,.jpeg,.png,.gif">
+                                            </div>
+                                        </div>
+                                        <div class="d-flex align-items-center justify-content-center mt-20">
+                                            <button type="submit" class="btn btn-success text-md px-56 py-12 radius-8">Simpan Perubahan</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -678,3 +793,43 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
 </div>
 
 <?php include viewPath('includes/footer'); ?>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    // Institution Coordinate Map
+    (function() {
+        const mapEl = document.getElementById('lembaga-map');
+        const koordinatInput = document.getElementById('lembaga_koordinat');
+        if (!mapEl || !koordinatInput || typeof L === 'undefined') return;
+
+        function parseCoordinate(value) {
+            const parts = (value || '').split(',').map(function(item) {
+                return parseFloat(item.trim());
+            });
+            return parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1]) ? parts : null;
+        }
+
+        const initialCoord = parseCoordinate(koordinatInput.value) || [-7.1454257, 108.2664001];
+        const map = L.map(mapEl).setView(initialCoord, 16);
+        let marker = L.marker(initialCoord).addTo(map);
+
+        L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+            maxZoom: 20,
+            attribution: 'Map data &copy; Google'
+        }).addTo(map);
+
+        map.on('click', function(e) {
+            const latlng = e.latlng;
+            koordinatInput.value = latlng.lat.toFixed(7) + ',' + latlng.lng.toFixed(7);
+            marker.setLatLng(latlng);
+        });
+
+        // Invalidate size when the tab is shown to fix rendering glitches
+        const editTabButton = document.getElementById('v-pills-edit-tab');
+        if (editTabButton) {
+            editTabButton.addEventListener('shown.bs.tab', function() {
+                map.invalidateSize();
+                map.setView(marker.getLatLng(), 16);
+            });
+        }
+    })();
+</script>

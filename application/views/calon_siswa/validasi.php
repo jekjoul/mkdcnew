@@ -276,7 +276,7 @@
         new bootstrap.Tooltip(el);
     });
 
-    $('.btn-validasi-calon').on('click', function(e) {
+    $(document).on('click', '.btn-validasi-calon', function(e) {
         e.preventDefault();
         let id = $(this).data('id');
         let detailUrl = '<?php echo url("calon_siswa/get_detail_ajax/"); ?>' + id;

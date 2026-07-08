@@ -63,10 +63,10 @@ $lembaga = isset($lembaga) ? $lembaga : [];
         <div class="col-sm-4 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Email</label><input type="email" class="form-control radius-8" name="email" value="<?php echo calon_siswa_value($row, 'email') ?>"></div>
         <div class="col-sm-4 mb-20">
             <label class="form-label fw-semibold text-primary-light text-sm mb-8">Lembaga Tujuan</label>
-            <select class="form-control radius-8 form-select" name="id_lembaga_tujuan">
+            <select class="form-control radius-8 form-select" name="id_lembaga_tujuan" id="id_lembaga_tujuan">
                 <option value="">Pilih Lembaga</option>
                 <?php foreach ($lembaga as $l): ?>
-                    <option value="<?php echo $l->id_lembaga ?>" <?php echo calon_siswa_value($row, 'id_lembaga_tujuan') == $l->id_lembaga ? 'selected' : '' ?>><?php echo htmlspecialchars($l->nama_lembaga, ENT_QUOTES, 'UTF-8') ?></option>
+                    <option value="<?php echo $l->id_lembaga ?>" data-coordinate="<?php echo htmlspecialchars($l->koordinat, ENT_QUOTES, 'UTF-8') ?>" <?php echo calon_siswa_value($row, 'id_lembaga_tujuan') == $l->id_lembaga ? 'selected' : '' ?>><?php echo htmlspecialchars($l->nama_lembaga, ENT_QUOTES, 'UTF-8') ?></option>
                 <?php endforeach; ?>
             </select>
         </div>

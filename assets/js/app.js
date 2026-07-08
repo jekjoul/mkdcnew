@@ -37,7 +37,13 @@
       var nk = window.location,
         o = $("ul#sidebar-menu a")
           .filter(function () {
-            return this.href == nk;
+            if (this.href == nk) return true;
+            let hrefPath = this.pathname.replace(/\/$/, "");
+            let nkPath = nk.pathname.replace(/\/$/, "");
+            if (hrefPath && nkPath && nkPath.indexOf(hrefPath + '/') === 0) {
+                return true;
+            }
+            return false;
           })
           .addClass("active-page") // anchor
           .parent()
