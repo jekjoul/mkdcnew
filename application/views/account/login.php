@@ -98,6 +98,13 @@
                 
                 
             </form>
+            <div class="mt-40 text-center">
+                <p class="text-secondary-light text-sm mb-0">
+                    <a href="<?php echo url('policies/privacy_policy') ?>" class="text-primary-600 fw-semibold">Kebijakan Privasi</a>
+                    <span class="mx-8 text-neutral-300">|</span>
+                    <a href="<?php echo url('policies/terms_of_service') ?>" class="text-primary-600 fw-semibold">Syarat Layanan</a>
+                </p>
+            </div>
         </div>
     </div>
 </section>
