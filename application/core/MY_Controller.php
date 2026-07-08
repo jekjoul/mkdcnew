@@ -66,7 +66,7 @@ class MY_Controller extends CI_Controller {
 
 		$role = $this->db->get_where('roles', ['id' => logged('role')])->row();
 		$role_title = $role ? strtolower((string) $role->title) : '';
-		if (strpos($role_title, 'guru') !== false && $this->uri->segment(1) !== 'guru') {
+		if (strpos($role_title, 'guru') !== false && !in_array($this->uri->segment(1), ['guru', 'profile'], true)) {
 			redirect('guru', 'refresh');
 		}
 
