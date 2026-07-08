@@ -7,7 +7,13 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
             <p class="mb-0">© 2025 Miftahul Khoer Boarding School. All Rights Reserved.</p>
         </div>
         <div class="col-auto">
-            <p class="mb-0">Made by <span class="text-primary-600">Zakaria Zulkarnain</span></p>
+            <p class="mb-0 d-flex gap-3 align-items-center">
+                <a href="<?php echo url('policies/privacy_policy') ?>" class="text-secondary-light text-xs hover-text-primary">Kebijakan Privasi</a>
+                <span class="text-neutral-300">|</span>
+                <a href="<?php echo url('policies/terms_of_service') ?>" class="text-secondary-light text-xs hover-text-primary">Syarat Layanan</a>
+                <span class="text-neutral-300">|</span>
+                <span>Made by <span class="text-primary-600">Zakaria Zulkarnain</span></span>
+            </p>
         </div>
     </div>
 </footer>

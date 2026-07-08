@@ -118,7 +118,11 @@ class Update_log extends MY_Controller
             "Add Google Drive open/edit button in pembelajaran detail view when drive_file_id is present" => "Menambahkan tombol edit Google Docs langsung pada tabel berkas perangkat pembelajaran.",
             "Add Google Hub tab button to navigation list in profile.php view" => "Menambahkan tab Google Integrasi pada halaman profil.",
             "Insert googleIntegration tab pane in profile.php view" => "Membuat panel integrasi Google Account pada halaman profil.",
-            "Add connectGoogle, disconnectGoogle, and oauth callback actions to Profile controller" => "Menambahkan endpoint otorisasi OAuth Google dan pendaftaran Audience Google Console di menu profil."
+            "Add connectGoogle, disconnectGoogle, and oauth callback actions to Profile controller" => "Menambahkan endpoint otorisasi OAuth Google dan pendaftaran Audience Google Console di menu profil.",
+            "Create Policies controller to render privacy policy and terms of service pages without strict login requirement" => "Membuat controller Policies untuk melayani akses halaman kebijakan dan ketentuan layanan secara publik.",
+            "Create privacy policy view file linking features with MKDC application context" => "Membuat tampilan dokumen Kebijakan Privasi (Privacy Policy) yang selaras dengan fitur sekolah.",
+            "Create terms of service view file linking features with MKDC application context" => "Membuat tampilan dokumen Syarat & Ketentuan Layanan (Terms of Service) yang selaras dengan fitur sekolah.",
+            "Add Policy and Terms links in footer.php" => "Menyisipkan tautan Kebijakan Privasi & Syarat Layanan di bagian footer bawah aplikasi."
         ];
 
         if (isset($mappings[$desc])) {
