@@ -122,7 +122,8 @@ class Update_log extends MY_Controller
             "Create Policies controller to render privacy policy and terms of service pages without strict login requirement" => "Membuat controller Policies untuk melayani akses halaman kebijakan dan ketentuan layanan secara publik.",
             "Create privacy policy view file linking features with MKDC application context" => "Membuat tampilan dokumen Kebijakan Privasi (Privacy Policy) yang selaras dengan fitur sekolah.",
             "Create terms of service view file linking features with MKDC application context" => "Membuat tampilan dokumen Syarat & Ketentuan Layanan (Terms of Service) yang selaras dengan fitur sekolah.",
-            "Add Policy and Terms links in footer.php" => "Menyisipkan tautan Kebijakan Privasi & Syarat Layanan di bagian footer bawah aplikasi."
+            "Add Policy and Terms links in footer.php" => "Menyisipkan tautan Kebijakan Privasi & Syarat Layanan di bagian footer bawah aplikasi.",
+            "Add Google connection status indicator beside user profile dropdown in header.php navbar" => "Menampilkan indikator status koneksi Google (Ikon & Teks Terhubung/Hubungkan ke Google) di bilah navigasi (navbar) atas."
         ];
 
         if (isset($mappings[$desc])) {
