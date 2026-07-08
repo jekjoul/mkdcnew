@@ -113,8 +113,7 @@
                     <?php echo form_close(); ?>
                 </div>
                 <div class="card-body p-24">
-                    <?php echo form_open_multipart($save_berkas_url, ['class' => 'form-validate']); ?>
-                        <div class="table-responsive">
+                    <div class="table-responsive">
                             <table class="table bordered-table align-middle">
                                 <thead>
                                     <tr>
@@ -179,7 +178,13 @@
                                                         </a>
                                                     </div>
                                                 <?php else: ?>
-                                                    <input type="file" name="<?php echo $field ?>" class="form-control radius-8 form-control-sm" accept="<?php echo $cfg['accept'] ?>">
+                                                    <?php echo form_open_multipart($save_berkas_url, ['class' => 'd-flex align-items-center gap-8']); ?>
+                                                        <input type="hidden" name="single_field" value="<?php echo $field ?>">
+                                                        <input type="file" name="<?php echo $field ?>" required class="form-control radius-8 form-control-sm w-auto" accept="<?php echo $cfg['accept'] ?>">
+                                                        <button type="submit" class="btn btn-sm btn-primary-600 radius-8 px-16 py-8 d-inline-flex align-items-center gap-1">
+                                                            <iconify-icon icon="lucide:upload-cloud"></iconify-icon> Upload
+                                                        </button>
+                                                    <?php echo form_close(); ?>
                                                 <?php endif; ?>
                                             </td>
                                         </tr>
@@ -187,12 +192,7 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="text-end mt-24">
-                            <button type="submit" class="btn btn-primary-600 radius-8 px-24 py-12">
-                                <iconify-icon icon="lucide:save" class="me-1"></iconify-icon> Simpan & Upload Berkas
-                            </button>
-                        </div>
-                    <?php echo form_close(); ?>
+                    </div>
                 </div>
             </div>
         </div><!-- /tab-berkas -->
