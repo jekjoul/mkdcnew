@@ -77,16 +77,36 @@ class Perangkat_pembelajaran extends MY_Controller
         ];
 
         $uploaded = [];
+        $drive_ids = [];
+        $this->load->library('GoogleDrive_Helper');
+
         foreach ($fields as $field) {
             $file_name = $this->uploadFile($field, $id_pembelajaran_mapel);
-            $uploaded[$field] = $file_name;
+            if ($file_name) {
+                $uploaded[$field] = $file_name;
+                
+                // Try uploading to Google Drive
+                $filepath = './uploads/perangkat_pembelajaran/' . $file_name;
+                $mime = mime_content_type($filepath);
+                
+                $drive_res = $this->googledrive_helper->uploadFile($filepath, $file_name, $mime, true);
+                if (isset($drive_res['id'])) {
+                    $key_drive = str_replace('file_', '', $field) . '_drive_file_id';
+                    $drive_ids[$key_drive] = $drive_res['id'];
+                }
+            }
         }
 
-        $this->perangkat_model->saveBerkas($id_pembelajaran_mapel, $uploaded);
+        if (!empty($uploaded)) {
+            $this->perangkat_model->saveBerkas($id_pembelajaran_mapel, $uploaded);
+        }
+        if (!empty($drive_ids)) {
+            $this->perangkat_model->saveDriveIds($id_pembelajaran_mapel, $drive_ids);
+        }
 
         $this->activity_model->add(logged('name') . ' Menyimpan Berkas Perangkat Pembelajaran untuk #' . $id_pembelajaran_mapel);
         $this->session->set_flashdata('alert-type', 'success');
-        $this->session->set_flashdata('alert', 'Berkas perangkat pembelajaran berhasil disimpan.');
+        $this->session->set_flashdata('alert', 'Berkas perangkat pembelajaran berhasil disimpan dan disinkronkan ke Google Drive.');
         redirect('perangkat_pembelajaran/detail/' . $id_pembelajaran_mapel);
     }
 
@@ -103,11 +123,21 @@ class Perangkat_pembelajaran extends MY_Controller
             show_404();
         }
 
+        // Get Google Drive File ID and delete it
+        $perangkat = $this->perangkat_model->getPerangkatByMapel($id_pembelajaran_mapel);
+        if ($perangkat) {
+            $key_drive = $jenis . '_drive_file_id';
+            if (!empty($perangkat->$key_drive)) {
+                $this->load->library('GoogleDrive_Helper');
+                $this->googledrive_helper->deleteFile($perangkat->$key_drive);
+            }
+        }
+
         $this->perangkat_model->deleteBerkasFile($id_pembelajaran_mapel, $fields[$jenis]);
 
         $this->activity_model->add(logged('name') . ' Menghapus Berkas ' . $jenis . ' untuk #' . $id_pembelajaran_mapel);
         $this->session->set_flashdata('alert-type', 'success');
-        $this->session->set_flashdata('alert', 'Berkas berhasil dihapus.');
+        $this->session->set_flashdata('alert', 'Berkas lokal dan di Google Drive berhasil dihapus.');
         redirect('perangkat_pembelajaran/detail/' . $id_pembelajaran_mapel);
     }
 

@@ -109,7 +109,13 @@ class Update_log extends MY_Controller
             "Implement fallback to default settings and map settings per day in generateAgenda" => "Memperbaiki kalkulasi otomatis jam mulai dan jam selesai pada agenda harian berdasarkan pengaturan jadwal.",
             "Implement smart path active menu highlighting in sidebar app.js" => "Memperbaiki highlight menu aktif di sidebar saat mengakses halaman detail perangkat pembelajaran.",
             "Enforce allowed upload types to docx and xlsx only" => "Membatasi unggahan dokumen pembelajaran hanya untuk berkas .docx dan .xlsx agar dapat terintegrasi dengan Google Docs/Sheets.",
-            "Limit upload extensions to docx and xlsx in detail view config" => "Mengubah filter ekstensi dokumen di antarmuka unggah berkas agar membatasi hanya .docx dan .xlsx."
+            "Limit upload extensions to docx and xlsx in detail view config" => "Mengubah filter ekstensi dokumen di antarmuka unggah berkas agar membatasi hanya .docx dan .xlsx.",
+            "Create GoogleDrive_Helper library to handle Google Drive API file upload, conversion, permissions, and deletion" => "Membuat modul library GoogleDrive_Helper untuk menangani interaksi berkas dengan Google Drive API.",
+            "Store google_access_token in session upon successful Google login callback" => "Menyimpan Google Access Token ke session setelah login untuk autorisasi Google Drive.",
+            "Modify Perangkat_pembelajaran controller to upload files to Google Drive when available" => "Menghubungkan unggahan dokumen perangkat pembelajaran dengan unggahan otomatis ke Google Drive.",
+            "Delete Google Drive file when deleting local file in hapus_berkas" => "Menambahkan fitur penghapusan file di Google Drive secara otomatis saat berkas lokal dihapus.",
+            "Add saveDriveIds and adjust deleteBerkasFile to clear drive_file_id in Perangkat_pembelajaran_model" => "Memperbarui database model untuk mencatat dan mengosongkan ID file Google Drive.",
+            "Add Google Drive open/edit button in pembelajaran detail view when drive_file_id is present" => "Menambahkan tombol edit Google Docs langsung pada tabel berkas perangkat pembelajaran."
         ];
 
         if (isset($mappings[$desc])) {

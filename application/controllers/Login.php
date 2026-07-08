@@ -129,6 +129,7 @@ class Login extends CI_Controller {
 			return;
 		}
 
+		$this->session->set_userdata('google_access_token', $token['access_token']);
 		$this->users_model->login($user, false);
 		redirect('/', 'refresh');
 	}
