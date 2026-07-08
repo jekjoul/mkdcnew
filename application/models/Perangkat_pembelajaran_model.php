@@ -324,6 +324,23 @@ class Perangkat_pembelajaran_model extends MY_Model
         }
     }
 
+    public function saveDriveIds($id_pembelajaran_mapel, $drive_ids)
+    {
+        $item = $this->getPembelajaranMapel($id_pembelajaran_mapel);
+        if (!$item) return;
+
+        $existing = $this->db->get_where($this->perangkat_table, [
+            'id_tahun_pelajaran' => $item->id_tahun_pelajaran,
+            'id_tingkat_sekolah' => $item->id_tingkat_sekolah,
+            'id_mapel' => $item->id_mapel
+        ])->row();
+
+        if ($existing) {
+            $this->db->where('id_perangkat', $existing->id_perangkat);
+            $this->db->update($this->perangkat_table, $drive_ids);
+        }
+    }
+
     public function deleteBerkasFile($id_pembelajaran_mapel, $field)
     {
         $existing = $this->getPerangkatByMapel($id_pembelajaran_mapel);
@@ -332,8 +349,13 @@ class Perangkat_pembelajaran_model extends MY_Model
             if (is_file($filepath)) {
                 unlink($filepath);
             }
+            $key_drive = str_replace('file_', '', $field) . '_drive_file_id';
             $this->db->where('id_perangkat', $existing->id_perangkat);
-            $this->db->update($this->perangkat_table, [$field => null, 'updated_at' => date('Y-m-d H:i:s')]);
+            $this->db->update($this->perangkat_table, [
+                $field => null,
+                $key_drive => null,
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
         }
     }
 

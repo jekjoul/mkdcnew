@@ -161,6 +161,17 @@
                                                            class="btn btn-sm btn-info-100 text-info-600 radius-8 px-12 py-8 d-inline-flex align-items-center gap-1">
                                                             <iconify-icon icon="lucide:download"></iconify-icon> Lihat/Unduh
                                                         </a>
+                                                        <?php 
+                                                        $key_drive = $cfg['key'] . '_drive_file_id';
+                                                        $drive_file_id = $perangkat ? $perangkat->$key_drive : null;
+                                                        if ($drive_file_id):
+                                                        ?>
+                                                            <a href="https://docs.google.com/document/d/<?php echo html_escape($drive_file_id) ?>/edit"
+                                                               target="_blank"
+                                                               class="btn btn-sm btn-success-100 text-success-600 radius-8 px-12 py-8 d-inline-flex align-items-center gap-1">
+                                                                <iconify-icon icon="logos:google-drive" class="align-middle"></iconify-icon> Edit Google Docs
+                                                            </a>
+                                                        <?php endif; ?>
                                                         <a href="<?php echo $hapus_berkas_url . '/' . $cfg['key'] ?>"
                                                            onclick="return confirm('Hapus berkas ini? Rombel lain yang sama tingkat & mapelnya juga tidak bisa mengaksesnya.')"
                                                            class="btn btn-sm btn-danger-100 text-danger-600 radius-8 px-12 py-8 d-inline-flex align-items-center gap-1">
