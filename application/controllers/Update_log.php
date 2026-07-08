@@ -115,7 +115,10 @@ class Update_log extends MY_Controller
             "Modify Perangkat_pembelajaran controller to upload files to Google Drive when available" => "Menghubungkan unggahan dokumen perangkat pembelajaran dengan unggahan otomatis ke Google Drive.",
             "Delete Google Drive file when deleting local file in hapus_berkas" => "Menambahkan fitur penghapusan file di Google Drive secara otomatis saat berkas lokal dihapus.",
             "Add saveDriveIds and adjust deleteBerkasFile to clear drive_file_id in Perangkat_pembelajaran_model" => "Memperbarui database model untuk mencatat dan mengosongkan ID file Google Drive.",
-            "Add Google Drive open/edit button in pembelajaran detail view when drive_file_id is present" => "Menambahkan tombol edit Google Docs langsung pada tabel berkas perangkat pembelajaran."
+            "Add Google Drive open/edit button in pembelajaran detail view when drive_file_id is present" => "Menambahkan tombol edit Google Docs langsung pada tabel berkas perangkat pembelajaran.",
+            "Add Google Hub tab button to navigation list in profile.php view" => "Menambahkan tab Google Integrasi pada halaman profil.",
+            "Insert googleIntegration tab pane in profile.php view" => "Membuat panel integrasi Google Account pada halaman profil.",
+            "Add connectGoogle, disconnectGoogle, and oauth callback actions to Profile controller" => "Menambahkan endpoint otorisasi OAuth Google dan pendaftaran Audience Google Console di menu profil."
         ];
 
         if (isset($mappings[$desc])) {
