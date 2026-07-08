@@ -73,6 +73,11 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                 <iconify-icon icon="lucide:lock" class="me-1"></iconify-icon> Password
               </button>
             </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link btn btn-outline-primary radius-8 px-16 py-8 <?php echo $activeTab === 'google' ? 'active' : '' ?>" id="google-tab" data-bs-toggle="tab" data-bs-target="#googleIntegration" type="button" role="tab">
+                <iconify-icon icon="logos:google-icon" class="me-1"></iconify-icon> Google Integrasi
+              </button>
+            </li>
           </ul>
         </div>
 
@@ -212,6 +217,52 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                   </div>
                 </div>
               <?php echo form_close(); ?>
+            </div>
+
+            <!-- Tab 5: Google Integration -->
+            <div class="tab-pane fade <?php echo $activeTab === 'google' ? 'show active' : '' ?>" id="googleIntegration" role="tabpanel">
+              <div class="p-24 border radius-12 bg-light-50">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-16">
+                  <div>
+                    <h6 class="text-primary-light mb-4">Hubungkan Akun Google</h6>
+                    <p class="text-secondary-light text-xs mb-0">Menghubungkan akun Google memungkinkan Anda masuk dengan sekali klik dan sinkronisasi file pembelajaran langsung ke Google Drive.</p>
+                  </div>
+                  <?php if (!empty($user->google_id)): ?>
+                    <span class="badge bg-success-focus text-success-main px-12 py-6 radius-4">Terhubung</span>
+                  <?php else: ?>
+                    <span class="badge bg-neutral-200 text-neutral-600 px-12 py-6 radius-4">Belum Terhubung</span>
+                  <?php endif; ?>
+                </div>
+
+                <?php if (!empty($user->google_id)): ?>
+                  <div class="bg-success-50 border border-success-100 p-16 radius-8 mb-24 d-flex align-items-center gap-12">
+                    <iconify-icon icon="logos:google-icon" style="font-size: 24px;"></iconify-icon>
+                    <div>
+                      <span class="d-block text-success-800 fw-semibold text-sm">Akun Google Anda Berhasil Terintegrasi</span>
+                      <span class="text-secondary-light text-xs">Anda saat ini terdaftar sebagai Audience di Google Console. Login cepat dan sinkronisasi Google Docs/Sheets siap digunakan.</span>
+                    </div>
+                  </div>
+
+                  <a href="<?php echo url('profile/disconnectGoogle') ?>" 
+                     onclick="return confirm('Apakah Anda yakin ingin mematikan sinkronisasi & memutuskan integrasi Google?')" 
+                     class="btn btn-outline-danger radius-8 px-20 py-10 d-inline-flex align-items-center gap-2">
+                     <iconify-icon icon="lucide:link-2-off"></iconify-icon> Putuskan Akun Google
+                  </a>
+                <?php else: ?>
+                  <div class="bg-warning-50 border border-warning-100 p-16 radius-8 mb-24 d-flex align-items-start gap-12">
+                    <iconify-icon icon="lucide:info" class="text-warning-main mt-1" style="font-size: 20px;"></iconify-icon>
+                    <div class="text-sm">
+                      <strong class="text-warning-800">Menghubungkan Profil Anda:</strong>
+                      <span class="d-block text-secondary-light text-xs mt-4">Proses ini akan mendaftarkan data profil Anda sebagai Audience di Google Console untuk otorisasi API internal.</span>
+                    </div>
+                  </div>
+
+                  <a href="<?php echo url('profile/connectGoogle') ?>" 
+                     class="btn btn-primary-600 radius-8 px-20 py-10 d-inline-flex align-items-center gap-2">
+                     <iconify-icon icon="logos:google-icon" class="bg-white p-2 rounded"></iconify-icon> Hubungkan Profil ke Google
+                  </a>
+                <?php endif; ?>
+              </div>
             </div>
 
           </div>
