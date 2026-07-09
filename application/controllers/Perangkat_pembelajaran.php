@@ -706,7 +706,11 @@ class Perangkat_pembelajaran extends MY_Controller
             redirect('perangkat_pembelajaran/detail/' . $id_pembelajaran_mapel);
         }
 
-        $modul_ajar_list = $this->db->get_where('perangkat_modul_ajar', ['id_pembelajaran_mapel' => $id_pembelajaran_mapel])->result();
+        $modul_ajar_list = $this->db->get_where('perangkat_pembelajaran_modul_ajar', [
+            'id_tahun_pelajaran' => $item->id_tahun_pelajaran,
+            'id_tingkat_sekolah' => $item->id_tingkat_sekolah,
+            'id_mapel' => $item->id_mapel
+        ])->result();
         $modul_list_str = "";
         if (!empty($modul_ajar_list)) {
             $labels = [];
