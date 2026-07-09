@@ -328,14 +328,44 @@ class Perangkat_pembelajaran extends MY_Controller
                     . "5. PENTING: Di dalam seluruh isi dokumen, hindari penggunaan istilah/kata 'peserta didik', ganti/gunakan kata 'murid' sebagai gantinya.\n"
                     . "6. Kirimkan langsung berupa tag HTML mentah saja (tanpa pembungkus markdown ```html).";
         } else {
-            $prompt = "Anda adalah pakar kurikulum dan pendidik di Indonesia. "
-                    . "Buatlah draft dokumen resmi '{$field_info['name']}' yang mendalam dan komprehensif untuk mata pelajaran '{$subject}', "
-                    . "tingkat kelas '{$class_level}', semester '{$semester}', dengan acuan '{$kurikulum}'."
-                    . $prev_file_context
-                    . "\nDesainlah isian dokumen tersebut dengan format HTML terstruktur rapi menggunakan heading (h1, h2, h3), list (ul, ol), dan tabel yang menarik untuk dibaca. "
-                    . "Pastikan isinya sangat relevan dengan kurikulum dan kebutuhan sekolah formal di Indonesia saat ini. "
-                    . "PENTING: Di dalam seluruh isi dokumen, hindari penggunaan istilah/kata 'peserta didik', ganti/gunakan kata 'murid' sebagai gantinya. "
-                    . "Jangan gunakan pembungkus markdown code block (```html), kirimkan teks HTML mentah saja.";
+            $is_soal = ($field === 'file_soal_sts' || $field === 'file_soal_sas');
+            if ($is_soal) {
+                // Find Kisi-kisi file content to read exact number of questions
+                $kisi_field = (strpos($field, 'sts') !== false) ? 'file_kisi_sts' : 'file_kisi_sas';
+                $kisi_file_name = $perangkat ? $perangkat->$kisi_field : null;
+                $kisi_context = "";
+                
+                if ($kisi_file_name) {
+                    $kisi_path = './uploads/perangkat_pembelajaran/' . $kisi_file_name;
+                    if (is_file($kisi_path)) {
+                        $raw_kisi = file_get_contents($kisi_path);
+                        $clean_kisi = strip_tags($raw_kisi);
+                        $clean_kisi = preg_replace('/\s+/', ' ', $clean_kisi);
+                        $clean_kisi = substr($clean_kisi, 0, 3000);
+                        $kisi_context = "\nBerikut adalah data 'KISI-KISI SOAL' yang telah dibuat sebelumnya. Silakan baca tabel kisi-kisi ini untuk menentukan materi, indikator, bentuk, dan nomor soal:\n--- BACAAN KISI-KISI ---\n{$clean_kisi}\n--- AKHIR BACAAN KISI-KISI ---\n";
+                    }
+                }
+
+                $prompt = "Anda adalah pakar pembuat evaluasi pendidikan (soal ujian) di Indonesia. "
+                        . "Buatlah lembar naskah SOAL UJIAN lengkap untuk mata pelajaran '{$subject}', tingkat kelas '{$class_level}', semester '{$semester}', kurikulum '{$kurikulum}'."
+                        . $kisi_context
+                        . "\nATURAN PENULISAN SOAL:\n"
+                        . "1. Buatlah seluruh butir soal SECARA LENGKAP SATU PER SATU. Jangan pernah melompati nomor soal, mempersingkat tulisan, atau menggunakan singkatan seperti '(dst./dan seterusnya)'. Jika di kisi-kisi terdapat 20 soal, Anda WAJIB memaparkan 20 soal tersebut secara penuh dari nomor 1 sampai 20.\n"
+                        . "2. Jika tipe soal berupa Pilihan Ganda (PG), wajib menyertakan opsi pilihan jawaban lengkap (A, B, C, D, dan E untuk tingkat SMA/SMK, atau A, B, C, D untuk tingkat SMP/SD).\n"
+                        . "3. Tuliskan KUNCI JAWABAN lengkap di bagian paling akhir dokumen naskah soal.\n"
+                        . "4. Gunakan format HTML yang rapi dengan list tertata (ol, ul) dan spasi paragraf yang bersih untuk dibaca murid.\n"
+                        . "5. PENTING: Di dalam seluruh isi dokumen, hindari penggunaan istilah/kata 'peserta didik', ganti/gunakan kata 'murid' sebagai gantinya.\n"
+                        . "6. Kirimkan langsung berupa tag HTML mentah saja (tanpa pembungkus markdown ```html).";
+            } else {
+                $prompt = "Anda adalah pakar kurikulum dan pendidik di Indonesia. "
+                        . "Buatlah draft dokumen resmi '{$field_info['name']}' yang mendalam dan komprehensif untuk mata pelajaran '{$subject}', "
+                        . "tingkat kelas '{$class_level}', semester '{$semester}', dengan acuan '{$kurikulum}'."
+                        . $prev_file_context
+                        . "\nDesainlah isian dokumen tersebut dengan format HTML terstruktur rapi menggunakan heading (h1, h2, h3), list (ul, ol), dan tabel yang menarik untuk dibaca. "
+                        . "Pastikan isinya sangat relevan dengan kurikulum dan kebutuhan sekolah formal di Indonesia saat ini. "
+                        . "PENTING: Di dalam seluruh isi dokumen, hindari penggunaan istilah/kata 'peserta didik', ganti/gunakan kata 'murid' sebagai gantinya. "
+                        . "Jangan gunakan pembungkus markdown code block (```html), kirimkan teks HTML mentah saja.";
+            }
         }
 
         $api_key = setting('google_ai_api_key');
