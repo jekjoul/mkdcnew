@@ -136,10 +136,16 @@ class Profile extends MY_Controller
 		$state = bin2hex(random_bytes(16));
 		$this->session->set_userdata('google_profile_state', $state);
 
+		// Force production HTTPS domain for redirect URI to match Google Console setting
+		$redirect_uri = 'https://datacenter.miftahulkhoer.org/index.php/profile/google_callback_profile';
+		if (strpos(site_url(), 'localhost') !== false) {
+			$redirect_uri = site_url('profile/google_callback_profile');
+		}
+
 		$auth_uri = 'https://accounts.google.com/o/oauth2/v2/auth';
 		$params = [
 			'client_id' => $client_id,
-			'redirect_uri' => site_url('profile/google_callback_profile'),
+			'redirect_uri' => $redirect_uri,
 			'response_type' => 'code',
 			'scope' => 'openid email profile https://www.googleapis.com/auth/drive.file',
 			'state' => $state,
@@ -168,6 +174,12 @@ class Profile extends MY_Controller
 		$client_id = setting('google_client_id') ? setting('google_client_id') : $this->config->item('google_oauth_client_id');
 		$client_secret = setting('google_client_secret') ? setting('google_client_secret') : '';
 		
+		// Use same redirect URI as connectGoogle
+		$redirect_uri = 'https://datacenter.miftahulkhoer.org/index.php/profile/google_callback_profile';
+		if (strpos(site_url(), 'localhost') !== false) {
+			$redirect_uri = site_url('profile/google_callback_profile');
+		}
+
 		// Exchange code
 		$ch = curl_init('https://oauth2.googleapis.com/token');
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -176,7 +188,7 @@ class Profile extends MY_Controller
 			'code' => $code,
 			'client_id' => $client_id,
 			'client_secret' => $client_secret,
-			'redirect_uri' => site_url('profile/google_callback_profile'),
+			'redirect_uri' => $redirect_uri,
 			'grant_type' => 'authorization_code'
 		]));
 		curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
