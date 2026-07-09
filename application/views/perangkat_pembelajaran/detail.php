@@ -155,9 +155,8 @@
                                             <td>
                                                 <?php if ($uploaded_file): ?>
                                                     <div class="d-flex align-items-center gap-8">
-                                                        <a href="<?php echo url('uploads/perangkat_pembelajaran/' . $uploaded_file) ?>"
-                                                           target="_blank"
-                                                           class="btn btn-sm btn-info-100 text-info-600 radius-8 px-12 py-8 d-inline-flex align-items-center gap-1">
+                                                        <a href="<?php echo $unduh_berkas_url . '/' . $cfg['key'] ?>"
+                                                            class="btn btn-sm btn-info-100 text-info-600 radius-8 px-12 py-8 d-inline-flex align-items-center gap-1">
                                                             <iconify-icon icon="lucide:download"></iconify-icon> Lihat/Unduh
                                                         </a>
                                                         <?php 

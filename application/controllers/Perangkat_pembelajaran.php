@@ -53,6 +53,7 @@ class Perangkat_pembelajaran extends MY_Controller
         $this->page_data['back_url'] = url('perangkat_pembelajaran');
         $this->page_data['save_berkas_url'] = url('perangkat_pembelajaran/simpan_berkas/' . $id_pembelajaran_mapel);
         $this->page_data['hapus_berkas_url'] = url('perangkat_pembelajaran/hapus_berkas/' . $id_pembelajaran_mapel);
+        $this->page_data['unduh_berkas_url'] = url('perangkat_pembelajaran/unduh_berkas/' . $id_pembelajaran_mapel);
         $this->page_data['generate_agenda_url'] = url('perangkat_pembelajaran/generate_agenda/' . $id_pembelajaran_mapel);
         $this->page_data['save_agenda_url'] = url('perangkat_pembelajaran/simpan_agenda/' . $id_pembelajaran_mapel);
         $this->page_data['salin_perangkat_url'] = url('perangkat_pembelajaran/salin_perangkat/' . $id_pembelajaran_mapel);
@@ -155,6 +156,45 @@ class Perangkat_pembelajaran extends MY_Controller
         $this->session->set_flashdata('alert-type', 'success');
         $this->session->set_flashdata('alert', 'Berkas lokal dan di Google Drive berhasil dihapus.');
         redirect('perangkat_pembelajaran/detail/' . $id_pembelajaran_mapel);
+    }
+
+    public function unduh_berkas($id_pembelajaran_mapel, $jenis)
+    {
+        ifPermissions('perangkat_pembelajaran_list');
+
+        $fields = [
+            'cp' => 'file_cp', 'tp' => 'file_tp', 'atp' => 'file_atp', 'modul_ajar' => 'file_modul_ajar',
+            'kisi_sts' => 'file_kisi_sts', 'soal_sts' => 'file_soal_sts', 'kisi_sas' => 'file_kisi_sas', 'soal_sas' => 'file_soal_sas'
+        ];
+
+        if (!isset($fields[$jenis])) {
+            show_404();
+        }
+
+        $field_name = $fields[$jenis];
+        $perangkat = $this->perangkat_model->getPerangkatByMapel($id_pembelajaran_mapel);
+        if (!$perangkat || empty($perangkat->$field_name)) {
+            show_404();
+        }
+
+        $filename = $perangkat->$field_name;
+        $local_path = './uploads/perangkat_pembelajaran/' . $filename;
+
+        // Try downloading/exporting from Google Drive first to get latest online changes
+        $key_drive = $jenis . '_drive_file_id';
+        if (!empty($perangkat->$key_drive)) {
+            $this->load->library('GoogleDrive_Helper');
+            $is_xlsx = (strpos($filename, '.xlsx') !== false);
+            $this->googledrive_helper->downloadGoogleFile($perangkat->$key_drive, $local_path, $is_xlsx);
+        }
+
+        // Force download to browser
+        $this->load->helper('download');
+        if (is_file($local_path)) {
+            force_download($local_path, NULL);
+        } else {
+            show_404();
+        }
     }
 
     public function generate_agenda($id_pembelajaran_mapel)
