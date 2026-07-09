@@ -129,7 +129,8 @@ class Update_log extends MY_Controller
             "Remove global form open tag in detail.php" => "Menghapus tag HTML form pembuka global di dalam detail perangkat pembelajaran.",
             "Modify simpan_berkas in Perangkat_pembelajaran controller to support single item field uploads and handle errors" => "Menyesuaikan backend controller agar mendukung unggah berkas per-item serta menangani feedback/alert error Google Drive API secara informatif.",
             "Enforce secure HTTPS redirect URI using production domain in Profile controller google oauth flow" => "Mengatur paksa URI pengalihan Google OAuth profil agar menggunakan protokol aman HTTPS dengan domain resmi sekolah.",
-            "Use same secure production domain redirect URI for code exchange in Profile controller callback" => "Menyelaraskan URI pengalihan callback untuk proses pertukaran token akses Google OAuth profil."
+            "Use same secure production domain redirect URI for code exchange in Profile controller callback" => "Menyelaraskan URI pengalihan callback untuk proses pertukaran token akses Google OAuth profil.",
+            "Add Google Drive files scope to Login controller oauth flow" => "Menambahkan scope izin akses file Google Drive (drive.file) pada sistem login utama Google."
         ];
 
         if (isset($mappings[$desc])) {
