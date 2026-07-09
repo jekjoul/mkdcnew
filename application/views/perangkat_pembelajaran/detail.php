@@ -909,6 +909,7 @@
 
         // Handle Trigger AI Loading Spinner
         $(document).on('click', '.trigger-ai', function(e) {
+            e.preventDefault();
             var btn = $(this);
             var form = btn.closest('form');
             var docLabel = btn.data('label') || 'Dokumen';
@@ -919,7 +920,6 @@
                 confirmMsg = "Apakah Anda yakin ingin men-generate agenda secara otomatis menggunakan Google AI? Proses ini akan menyusun silabus baru.";
             }
             if (!confirm(confirmMsg)) {
-                e.preventDefault();
                 return false;
             }
 
@@ -932,6 +932,11 @@
                 keyboard: false
             });
             spinnerModal.show();
+
+            // Submit the form after a tiny delay so the modal rendering is fully initialized
+            setTimeout(function() {
+                form.submit();
+            }, 300);
         });
 
     });
