@@ -30,8 +30,8 @@ class GoogleAI_Helper
                 . "Keluaran HARUS berupa JSON array of objects yang valid tanpa markdown code block formatting (hanya raw JSON string). "
                 . "Setiap object harus memiliki atribut: "
                 . "1. 'pertemuan' (integer, urutan pertemuan dari 1 sampai {$meetingsCount}) "
-                . "2. 'materi' (string, ringkasan materi pelajaran yang diajarkan, maksimal 100 karakter) "
-                . "3. 'kegiatan' (string, ringkasan kegiatan belajar mengajar atau metode ajar, maksimal 200 karakter). "
+                . "2. 'materi' (string, ringkasan materi pelajaran yang diajarkan. Rumuskan materi secara interaktif, kreatif, sebutkan aplikasi penerapannya di dunia nyata, serta wajib sertakan 1 contoh judul/topik video pembelajaran YouTube yang relevan untuk ditonton, maksimal 250 karakter) "
+                . "3. 'kegiatan' (string, ringkasan metode/kegiatan belajar mengajar aktif dan interaktif, praktikum, diskusi kelompok, atau simulasi nyata yang dipraktikkan murid di kelas, maksimal 400 karakter). "
                 . "PENTING: Di dalam seluruh isi data materi dan kegiatan, hindari penggunaan istilah/kata 'peserta didik', ganti/gunakan kata 'murid' sebagai gantinya. "
                 . "Pastikan urutan materi logis dan bermakna.";
 
