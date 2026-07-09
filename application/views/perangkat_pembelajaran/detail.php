@@ -164,11 +164,15 @@
                                                         $key_drive = $cfg['key'] . '_drive_file_id';
                                                         $drive_file_id = $perangkat ? $perangkat->$key_drive : null;
                                                         if ($drive_file_id):
+                                                            // Build dynamic edit link: docs.google.com/document/d/ (Word) or docs.google.com/spreadsheets/d/ (Excel)
+                                                            $is_xlsx = (strpos($uploaded_file, '.xlsx') !== false);
+                                                            $editor_base = $is_xlsx ? 'https://docs.google.com/spreadsheets/d/' : 'https://docs.google.com/document/d/';
+                                                            $drive_url = $editor_base . html_escape($drive_file_id) . '/edit';
                                                         ?>
-                                                            <a href="https://docs.google.com/document/d/<?php echo html_escape($drive_file_id) ?>/edit"
+                                                            <a href="<?php echo $drive_url ?>"
                                                                target="_blank"
                                                                class="btn btn-sm btn-success-100 text-success-600 radius-8 px-12 py-8 d-inline-flex align-items-center gap-1">
-                                                                <iconify-icon icon="logos:google-drive" class="align-middle"></iconify-icon> Edit Google Docs
+                                                                <iconify-icon icon="logos:google-drive" class="align-middle"></iconify-icon> Edit Online
                                                             </a>
                                                         <?php endif; ?>
                                                         <a href="<?php echo $hapus_berkas_url . '/' . $cfg['key'] ?>"
