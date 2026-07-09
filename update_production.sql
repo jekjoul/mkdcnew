@@ -79,3 +79,24 @@ WHERE NOT EXISTS (SELECT 1 FROM `settings` WHERE `key` = 'daftar_ulang_start_dat
 INSERT INTO `settings` (`key`, `value`) 
 SELECT 'daftar_ulang_end_date', '' FROM DUAL 
 WHERE NOT EXISTS (SELECT 1 FROM `settings` WHERE `key` = 'daftar_ulang_end_date');
+
+-- ==========================================
+-- 5. NEW GOOGLE DRIVE & GOOGLE AI SYSTEM UPDATE
+-- ==========================================
+
+-- Tambahkan kolom Google Drive File ID jika belum ada di tabel perangkat_pembelajaran
+ALTER TABLE `perangkat_pembelajaran`
+  ADD COLUMN `cp_drive_file_id` varchar(255) NULL DEFAULT NULL AFTER `file_soal_sas`,
+  ADD COLUMN `tp_drive_file_id` varchar(255) NULL DEFAULT NULL AFTER `cp_drive_file_id`,
+  ADD COLUMN `atp_drive_file_id` varchar(255) NULL DEFAULT NULL AFTER `tp_drive_file_id`,
+  ADD COLUMN `modul_ajar_drive_file_id` varchar(255) NULL DEFAULT NULL AFTER `atp_drive_file_id`,
+  ADD COLUMN `kisi_sts_drive_file_id` varchar(255) NULL DEFAULT NULL AFTER `modul_ajar_drive_file_id`,
+  ADD COLUMN `soal_sts_drive_file_id` varchar(255) NULL DEFAULT NULL AFTER `kisi_sts_drive_file_id`,
+  ADD COLUMN `kisi_sas_drive_file_id` varchar(255) NULL DEFAULT NULL AFTER `soal_sts_drive_file_id`,
+  ADD COLUMN `soal_sas_drive_file_id` varchar(255) NULL DEFAULT NULL AFTER `kisi_sas_drive_file_id`;
+
+-- Tambahkan konfigurasi Google AI API Key jika belum ada di tabel settings
+INSERT INTO `settings` (`key`, `value`) 
+SELECT 'google_ai_api_key', '0' FROM DUAL 
+WHERE NOT EXISTS (SELECT 1 FROM `settings` WHERE `key` = 'google_ai_api_key');
+
