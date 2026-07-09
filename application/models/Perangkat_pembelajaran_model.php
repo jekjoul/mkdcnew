@@ -289,6 +289,128 @@ class Perangkat_pembelajaran_model extends MY_Model
         return $pageNum > 1;
     }
 
+    public function generateAgendaAI($id_pembelajaran_mapel, $ai_data)
+    {
+        $item = $this->getPembelajaranMapel($id_pembelajaran_mapel);
+        if (!$item) return false;
+
+        // Clear existing agenda first
+        $this->db->delete($this->agenda_table, ['id_pembelajaran_mapel' => $id_pembelajaran_mapel]);
+
+        // Map AI list to scheduled days
+        $slots_by_day = [];
+        $schedules = $this->db->get_where('jadwal_pelajaran_item', ['id_pembelajaran' => $item->id_pembelajaran])->result();
+        $pengaturan = $this->db->get_where('jadwal_pelajaran_pengaturan', ['id_pembelajaran' => $item->id_pembelajaran])->result();
+        
+        $pengaturan_by_day = [];
+        foreach ($pengaturan as $p) {
+            $pengaturan_by_day[strtolower($p->hari)] = $p;
+        }
+
+        foreach ($schedules as $sched) {
+            $day_key = strtolower($sched->hari);
+            if (!isset($slots_by_day[$day_key])) {
+                $slots_by_day[$day_key] = [];
+            }
+            $slots_by_day[$day_key][] = $sched->slot_ke;
+        }
+
+        $scheduled_days = [];
+        foreach ($slots_by_day as $day_key => $slots) {
+            sort($slots);
+            $jumlah_jam = count($slots);
+            $jam_mulai = '';
+            $jam_selesai = '';
+
+            $p_day = isset($pengaturan_by_day[$day_key]) ? $pengaturan_by_day[$day_key] : null;
+
+            if ($p_day && !empty($p_day->jam_mulai)) {
+                $istirahat = json_decode($p_day->istirahat_json) ?: [];
+                $istirahat_map = [];
+                foreach ($istirahat as $ist) {
+                    $istirahat_map[$ist->setelah_jp_ke] = $ist->durasi_menit;
+                }
+
+                $getSlotTime = function($target_slot) use ($p_day, $istirahat_map) {
+                    $time_sec = strtotime($p_day->jam_mulai);
+                    for ($i = 1; $i < $target_slot; $i++) {
+                        $time_sec += ($p_day->menit_jp * 60);
+                        if (isset($istirahat_map[$i])) {
+                            $time_sec += ($istirahat_map[$i] * 60);
+                        }
+                    }
+                    $end_sec = $time_sec + ($p_day->menit_jp * 60);
+                    return [date('H:i', $time_sec), date('H:i', $end_sec)];
+                };
+
+                $first_slot = $slots[0];
+                $last_slot = $slots[count($slots) - 1];
+
+                $start_info = $getSlotTime($first_slot);
+                $end_info = $getSlotTime($last_slot);
+
+                $jam_mulai = $start_info[0];
+                $jam_selesai = $end_info[1];
+            }
+
+            $scheduled_days[$day_key] = [
+                'jumlah_jam' => $jumlah_jam,
+                'jam_mulai' => $jam_mulai,
+                'jam_selesai' => $jam_selesai
+            ];
+        }
+
+        $active_days = $this->db->where('id_tahun_pelajaran', $item->id_tahun_pelajaran)
+            ->where_in('status', ['Efektif', 'Daring', 'Luar Kelas'])
+            ->order_by('tanggal', 'ASC')
+            ->get('pembelajaran_hari_efektif')->result();
+
+        if (empty($active_days)) return false;
+
+        $pageNum = 1;
+        $now = date('Y-m-d H:i:s');
+        $day_names = [
+            0 => 'minggu', 1 => 'senin', 2 => 'selasa', 3 => 'rabu', 4 => 'kamis', 5 => 'jumat', 6 => 'sabtu'
+        ];
+
+        $ai_by_pertemuan = [];
+        foreach ($ai_data as $ai_row) {
+            if (isset($ai_row['pertemuan'])) {
+                $ai_by_pertemuan[(int)$ai_row['pertemuan']] = $ai_row;
+            }
+        }
+
+        foreach ($active_days as $ad) {
+            $w = (int) date('w', strtotime($ad->tanggal));
+            $day_ind = $day_names[$w];
+            
+            if (isset($scheduled_days[$day_ind])) {
+                $sched_info = $scheduled_days[$day_ind];
+
+                $materi_ai = isset($ai_by_pertemuan[$pageNum]['materi']) ? $ai_by_pertemuan[$pageNum]['materi'] : '';
+                $kegiatan_ai = isset($ai_by_pertemuan[$pageNum]['kegiatan']) ? $ai_by_pertemuan[$pageNum]['kegiatan'] : '';
+
+                $this->db->insert($this->agenda_table, [
+                    'id_pembelajaran_mapel' => $id_pembelajaran_mapel,
+                    'tanggal' => $ad->tanggal,
+                    'hari' => ucfirst($day_ind),
+                    'pertemuan_ke' => $pageNum++,
+                    'materi' => $materi_ai,
+                    'kegiatan' => $kegiatan_ai,
+                    'status' => 'Belum',
+                    'catatan' => '',
+                    'jumlah_jam' => $sched_info['jumlah_jam'],
+                    'jam_mulai' => $sched_info['jam_mulai'],
+                    'jam_selesai' => $sched_info['jam_selesai'],
+                    'created_at' => $now,
+                    'updated_at' => $now
+                ]);
+            }
+        }
+
+        return $pageNum > 1;
+    }
+
     public function saveBerkas($id_pembelajaran_mapel, $files)
     {
         $item = $this->getPembelajaranMapel($id_pembelajaran_mapel);
