@@ -21,6 +21,7 @@
                                     <th class="text-center">No</th>
                                     <th>Tahun Pelajaran</th>
                                     <th>Semester</th>
+                                    <th>Kurikulum</th>
                                     <th>Hari Efektif</th>
                                     <th class="text-center">Status</th>
                                     <th class="text-center">Aksi</th>
@@ -33,6 +34,7 @@
                                         <td class="text-center"><?php echo $no++ ?></td>
                                         <td><?php echo html_escape($row->tahun_pelajaran) ?></td>
                                         <td><?php echo html_escape($row->semester) ?></td>
+                                        <td><span class="badge bg-neutral-100 text-neutral-800"><?php echo html_escape($row->kurikulum) ?></span></td>
                                         <td>
                                             <?php if ($row->hari_efektif->total > 0): ?>
                                                 <div class="d-flex flex-wrap align-items-center gap-2">

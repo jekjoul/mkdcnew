@@ -159,7 +159,25 @@ class Update_log extends MY_Controller
             "Sync istirahat_json property decoding key in generateAgendaAI to match setlah_jp_ke key name" => "Menyelaraskan kunci pembacaan data JSON istirahat pada penentuan jadwal agar tidak macet.",
             "Sync istirahat_json key check in main generateAgenda model" => "Menyelaraskan kunci pembacaan data JSON istirahat di fungsi utama jadwal pelajaran.",
             "Escape HTML content for materi and kegiatan display to prevent code execution XSS" => "Melakukan proteksi (escape HTML) materi agenda harian agar coding tidak dieksekusi oleh web browser.",
-            "Load text helper in Perangkat_pembelajaran constructor to fix undefined character_limiter" => "Memuat helper teks bawaan CodeIgniter untuk mendukung pembatasan panjang kalimat materi agenda harian."
+            "Load text helper in Perangkat_pembelajaran constructor to fix undefined character_limiter" => "Memuat helper teks bawaan CodeIgniter untuk mendukung pembatasan panjang kalimat materi agenda harian.",
+            "Add Modul Ajar navigation tab to tab headers in detail.php view" => "Menambahkan Tab Modul Ajar / RPP terpisah di halaman detail perangkat pembelajaran.",
+            "Remove single file modul_ajar from files_config array in detail.php view" => "Memindahkan file modul ajar dari berkas perangkat tunggal ke sistem multi-file.",
+            "Add TAB 2: Modul Ajar / RPP View and Forms to detail.php view" => "Menyediakan antarmuka pengelolaan multifile Modul Ajar & formulir generator AI.",
+            "Add Modul Ajar RPP CRUD methods to Perangkat_pembelajaran_model" => "Menambahkan model penanganan data CRUD modul ajar / RPP multifile.",
+            "Pass modul_ajar list and CRUD URLs to detail view in Perangkat_pembelajaran controller" => "Mengirimkan data modul ajar dan rute aksi detail ke antarmuka guru.",
+            "Implement Modul Ajar upload, delete, download, and AI generation endpoints in Perangkat_pembelajaran controller" => "Mengimplementasikan fitur unggah, hapus, unduh, serta pembuatan RPP otomatis berbasis AI (Gemini) yang langsung dikonversi menjadi berkas DOCX di Google Drive.",
+            "Handle activeTab = 'modul' parameter in URL parameters Javascript" => "Menambahkan navigasi JavaScript untuk menjaga fokus pada tab Modul Ajar pasca aksi.",
+            "Add table creation script for perangkat_pembelajaran_modul_ajar to update_production.sql" => "Menambahkan skrip migrasi database tabel modul ajar multifile untuk server produksi.",
+            "Add kurikulum select dropdown to v_tahun_pelajaran_form.php" => "Menambahkan pilihan input kurikulum di formulir tahun pelajaran.",
+            "Add Kurikulum column to v_tahun_pelajaran_list.php table view" => "Menambahkan kolom kurikulum di tabel daftar master tahun pelajaran.",
+            "Capture and save 'kurikulum' column input in Master controller tahunPelajaran actions" => "Menyimpan pilihan kurikulum (K-13 atau Kurikulum Merdeka) di database tahun pelajaran.",
+            "Add alter table kurikulum column migration query to update_production.sql" => "Menambahkan query migrasi kolom kurikulum ke database produksi.",
+            "Add Kurikulum column to master tahun_pelajaran/list.php view" => "Menampilkan data kurikulum di menu navigasi utama Tahun Pelajaran.",
+            "Capture and save 'kurikulum' column input in Tahun_pelajaran controller actions" => "Menyimpan konfigurasi kurikulum pada controller utama Tahun Pelajaran.",
+            "Add kurikulum select dropdown input to tahun_pelajaran/form.php view" => "Menambahkan dropdown pemilihan kurikulum di form input utama Tahun Pelajaran.",
+            "Add tp.kurikulum to db select in getPembelajaranMapel model query" => "Menyertakan kurikulum aktif tahun pelajaran ke dalam model data perangkat pembelajaran.",
+            "Implement generate_berkas_ai endpoint in Perangkat_pembelajaran controller for sequential docx/xlsx file generation" => "Menyediakan endpoint untuk membuat berkas perangkat pembelajaran secara otomatis via Google AI.",
+            "Implement sequential AI generation buttons with lock/unlock state based on previous file upload in detail.php view" => "Mengunci/membuka akses tombol 'Generate via AI' secara berurutan berdasarkan kelengkapan berkas sebelumnya (CP -> TP -> ATP -> Kisi/Soal STS/SAS)."
         ];
 
         if (isset($mappings[$desc])) {

@@ -116,6 +116,7 @@ class Tahun_pelajaran extends MY_Controller
         postAllowed();
         $tahun = post('tahun_pelajaran');
         $semester = post('semester');
+        $kurikulum = post('kurikulum') ?: 'Kurikulum Merdeka';
         $status = post('status');
 
         // Validasi Duplikat: Mencegah kombinasi tahun pelajaran dan semester yang sama
@@ -132,7 +133,12 @@ class Tahun_pelajaran extends MY_Controller
             $this->db->update('pembelajaran_tahun_pelajaran', ['status' => 'Nonaktif']);
         }
 
-        $data = ['tahun_pelajaran' => $tahun, 'semester' => $semester, 'status' => $status];
+        $data = [
+            'tahun_pelajaran' => $tahun, 
+            'semester' => $semester, 
+            'kurikulum' => $kurikulum,
+            'status' => $status
+        ];
 
         if ($this->db->insert('pembelajaran_tahun_pelajaran', $data)) {
             $this->activity_model->add(logged('name') . ' Menambah Tahun Pelajaran: ' . $data['tahun_pelajaran']);
@@ -148,6 +154,7 @@ class Tahun_pelajaran extends MY_Controller
         postAllowed();
         $tahun = post('tahun_pelajaran');
         $semester = post('semester');
+        $kurikulum = post('kurikulum') ?: 'Kurikulum Merdeka';
         $status = post('status');
 
         // Validasi Duplikat selain data yang sedang diedit
@@ -164,7 +171,12 @@ class Tahun_pelajaran extends MY_Controller
             $this->db->update('pembelajaran_tahun_pelajaran', ['status' => 'Nonaktif']);
         }
 
-        $data = ['tahun_pelajaran' => $tahun, 'semester' => $semester, 'status' => $status];
+        $data = [
+            'tahun_pelajaran' => $tahun, 
+            'semester' => $semester, 
+            'kurikulum' => $kurikulum,
+            'status' => $status
+        ];
 
         $this->db->where('id_tahun_pelajaran', $id);
         if ($this->db->update('pembelajaran_tahun_pelajaran', $data)) {
