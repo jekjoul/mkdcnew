@@ -155,15 +155,26 @@
                                             <td>
                                                 <?php if ($uploaded_file): ?>
                                                     <div class="d-flex align-items-center gap-8">
-                                                        <a href="<?php echo $unduh_berkas_url . '/' . $cfg['key'] ?>"
-                                                            class="btn btn-sm btn-info-100 text-info-600 radius-8 px-12 py-8 d-inline-flex align-items-center gap-1">
-                                                            <iconify-icon icon="lucide:download"></iconify-icon> Lihat/Unduh
-                                                        </a>
                                                         <?php 
                                                         $key_drive = $cfg['key'] . '_drive_file_id';
                                                         $drive_file_id = $perangkat ? $perangkat->$key_drive : null;
                                                         if ($drive_file_id):
-                                                            // Build dynamic edit link: docs.google.com/document/d/ (Word) or docs.google.com/spreadsheets/d/ (Excel)
+                                                        ?>
+                                                            <button type="button" 
+                                                                    class="btn btn-sm btn-info-100 text-info-600 radius-8 px-12 py-8 d-inline-flex align-items-center gap-1 btn-preview-doc"
+                                                                    data-drive-id="<?php echo html_escape($drive_file_id) ?>"
+                                                                    data-title="<?php echo html_escape($cfg['label']) ?>">
+                                                                <iconify-icon icon="lucide:eye"></iconify-icon> Lihat (Preview)
+                                                            </button>
+                                                        <?php endif; ?>
+                                                        
+                                                        <a href="<?php echo $unduh_berkas_url . '/' . $cfg['key'] ?>"
+                                                           class="btn btn-sm btn-secondary-100 text-secondary-600 radius-8 px-12 py-8 d-inline-flex align-items-center gap-1">
+                                                            <iconify-icon icon="lucide:download"></iconify-icon> Unduh
+                                                        </a>
+                                                        
+                                                        <?php if ($drive_file_id):
+                                                            // Build dynamic edit link
                                                             $is_xlsx = (strpos($uploaded_file, '.xlsx') !== false);
                                                             $editor_base = $is_xlsx ? 'https://docs.google.com/spreadsheets/d/' : 'https://docs.google.com/document/d/';
                                                             $drive_url = $editor_base . html_escape($drive_file_id) . '/edit';
@@ -619,5 +630,46 @@ $(document).ready(function () {
         $(this).closest('.salin-option').removeClass('border-secondary').addClass('border-primary');
     });
 
+    // Preview Google Drive Document Ajax Modal Trigger
+    $(document).on('click', '.btn-preview-doc', function () {
+        var driveId = $(this).data('drive-id');
+        var title = $(this).data('title');
+        
+        $('#previewDocTitle').text(title);
+        
+        // Show loading spinner
+        $('#preview-doc-body').html('<div class="text-center py-40"><iconify-icon icon="line-md:loading-twotone-loop" class="text-primary-600" style="font-size: 48px;"></iconify-icon><p class="text-secondary-light text-sm mt-8">Memuat pratinjau dokumen dari Google Drive...</p></div>');
+        
+        var bsModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('modalPreviewDoc'));
+        bsModal.show();
+        
+        // Build preview URL: Google Drive Preview URL
+        var previewUrl = 'https://docs.google.com/file/d/' + driveId + '/preview';
+        
+        setTimeout(function() {
+            var iframeHtml = '<iframe src="' + previewUrl + '" width="100%" height="600" style="border: none; border-radius: 8px;"></iframe>';
+            $('#preview-doc-body').html(iframeHtml);
+        }, 300);
+    });
+
 });
 </script>
+
+<!-- Modal Preview Document Google Drive -->
+<div class="modal fade" id="modalPreviewDoc" tabindex="-1" aria-labelledby="previewDocTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content radius-16 border-0 shadow-lg">
+            <div class="modal-header border-bottom bg-light px-24 py-16">
+                <h6 class="modal-title fw-semibold text-primary-light" id="previewDocTitle">Pratinjau Dokumen</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-24" id="preview-doc-body">
+                <!-- Ajax content loads here -->
+            </div>
+            <div class="modal-footer border-top bg-light px-24 py-16">
+                <button type="button" class="btn btn-secondary radius-8 px-20 py-10" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
