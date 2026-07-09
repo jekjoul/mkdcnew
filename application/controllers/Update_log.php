@@ -139,7 +139,9 @@ class Update_log extends MY_Controller
             "Restore deleteFile method to GoogleDrive_Helper.php library" => "Memulihkan fungsi hapus file Google Drive di helper.",
             "Define unduh_berkas_url parameter in Perangkat_pembelajaran controller detail page" => "Menyisipkan variabel URL unduh berkas dinamis pada halaman detail perangkat pembelajaran.",
             "Create unduh_berkas action in Perangkat_pembelajaran controller" => "Membuat rute unduh berkas dinamis untuk mendownload versi dokumen terbaru dari Google Drive sebelum diteruskan ke browser pengguna.",
-            "Route download button in detail.php to the new unduh_berkas action" => "Mengarahkan tombol download berkas di antarmuka agar memicu penarikan berkas terbaru dari Google Drive."
+            "Route download button in detail.php to the new unduh_berkas action" => "Mengarahkan tombol download berkas di antarmuka agar memicu penarikan berkas terbaru dari Google Drive.",
+            "Separate Download and View buttons and implement Ajax Document Preview modal in detail.php" => "Memecah tombol unduh dan lihat dokumen, serta mengimplementasikan Ajax dokumen preview.",
+            "Add Document Preview Modal HTML and Ajax handler in detail.php" => "Menambahkan elemen modal pratinjau (preview iframe) dokumen Google Drive terintegrasi di halaman detail perangkat pembelajaran."
         ];
 
         if (isset($mappings[$desc])) {
