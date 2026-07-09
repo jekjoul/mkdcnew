@@ -360,14 +360,21 @@ class Perangkat_pembelajaran extends MY_Controller
             $drive_error = isset($drive_res['error']) ? $drive_res['error'] : 'Gagal terhubung ke Google Drive API.';
         }
 
-        $this->perangkat_model->saveBerkas($id_pembelajaran_mapel, $uploaded);
+        $db_saved = $this->perangkat_model->saveBerkas($id_pembelajaran_mapel, $uploaded);
 
-        if ($drive_error) {
-            $this->session->set_flashdata('alert-type', 'warning');
-            $this->session->set_flashdata('alert', $field_info['name'] . ' berhasil digenerate secara lokal, tetapi gagal disinkronkan ke Google Drive untuk Edit Online. Masalah: ' . $drive_error);
+        if (!$db_saved) {
+            $db_error = $this->db->error();
+            $db_err_msg = isset($db_error['message']) ? $db_error['message'] : 'Query SQL gagal dieksekusi.';
+            $this->session->set_flashdata('alert-type', 'danger');
+            $this->session->set_flashdata('alert', 'Gagal menyimpan data ke database SQL! Silakan periksa tabel database Anda. Masalah: ' . $db_err_msg);
         } else {
-            $this->session->set_flashdata('alert-type', 'success');
-            $this->session->set_flashdata('alert', $field_info['name'] . ' baru berhasil digenerate oleh AI, disimpan ke Drive, dan siap diedit online.');
+            if ($drive_error) {
+                $this->session->set_flashdata('alert-type', 'warning');
+                $this->session->set_flashdata('alert', $field_info['name'] . ' berhasil digenerate secara lokal, tetapi gagal disinkronkan ke Google Drive untuk Edit Online. Masalah: ' . $drive_error);
+            } else {
+                $this->session->set_flashdata('alert-type', 'success');
+                $this->session->set_flashdata('alert', $field_info['name'] . ' baru berhasil digenerate oleh AI, disimpan ke Drive, dan siap diedit online.');
+            }
         }
         redirect('perangkat_pembelajaran/detail/' . $id_pembelajaran_mapel);
     }

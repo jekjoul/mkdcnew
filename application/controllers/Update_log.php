@@ -185,7 +185,9 @@ class Update_log extends MY_Controller
             "Add loading spinner modal markup and handle form submit trigger-ai in detail.php" => "Menambahkan modal loading spinner global dan penanganan aksi pemicu progres AI di JavaScript.",
             "Add trigger-ai class and data-label attribute to AI generation buttons in detail.php view" => "Menambahkan selektor pemicu progress loader pada tombol pemicu berkas AI.",
             "Add trigger-ai class to Modul Ajar AI generator button in detail.php" => "Menambahkan selektor pemicu progress loader pada tombol modul ajar AI.",
-            "Add trigger-ai class to Agenda AI generator buttons in detail.php" => "Menambahkan selektor pemicu progress loader pada tombol agenda AI."
+            "Add trigger-ai class to Agenda AI generator buttons in detail.php" => "Menambahkan selektor pemicu progress loader pada tombol agenda AI.",
+            "Update saveBerkas model function to return boolean status indicating DB insert/update success" => "Mengembalikan status boolean pada method penyimpanan berkas model perangkat.",
+            "Add database insert/update confirmation logic and notification alert in generate_berkas_ai" => "Menambahkan penangkapan status kueri SQL dan pelaporan alert error jika database menolak input data."
         ];
 
         if (isset($mappings[$desc])) {
