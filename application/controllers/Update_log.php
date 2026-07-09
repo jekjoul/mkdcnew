@@ -195,7 +195,9 @@ class Update_log extends MY_Controller
             "Add modal dialog and Javascript click triggers for Kisi-kisi AI parameter configuration in detail.php" => "Menambahkan dialog konfigurasi input jumlah soal, bentuk, alokasi waktu, serta dynamic field toggle di detail.php.",
             "Differentiate Soal AI prompt to force full questions matching previous Kisi-kisi reference content in generate_berkas_ai" => "Membuat prompt naskah soal AI terstruktur lengkap tanpa lompatan nomor berdasarkan berkas kisi-kisi sebelumnya.",
             "Make AI agenda generation prompt more creative, interactive and include YouTube examples and application context" => "Mengonfigurasi prompt agenda AI agar menyajikan rencana pertemuan yang lebih kreatif, interaktif, aplikatif, serta menyertakan referensi video YouTube.",
-            "Fix Preview document modal click trigger in list modul ajar and fix layout of modul ajar table to avoid overflow-x" => "Memperbaiki pemicu tombol preview berkas modul ajar dan merapikan layout lebar kolom tabel agar tidak meluap."
+            "Fix Preview document modal click trigger in list modul ajar and fix layout of modul ajar table to avoid overflow-x" => "Memperbaiki pemicu tombol preview berkas modul ajar dan merapikan layout lebar kolom tabel agar tidak meluap.",
+            "Convert Modul Ajar RPP list table into a DataTable to allow clean sorting, pagination, and prevent overflow-x layout break" => "Mengubah tabel modul ajar manual & AI menjadi DataTable agar memiliki fitur sorting, pencarian, paginasi, dan lebar kolom yang proporsional.",
+            "Initialize DataTable for modulAjarTable in JavaScript on detail.php document.ready" => "Menginisialisasi JQuery DataTable untuk tabel modul ajar pada javascript dokumen."
         ];
 
         if (isset($mappings[$desc])) {
