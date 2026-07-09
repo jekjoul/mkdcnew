@@ -924,7 +924,6 @@
             }
 
             // Inline Loading Spinner
-            btn.prop('disabled', true);
             btn.addClass('btn-warning-100 text-warning-600').removeClass('btn-success-100 btn-success text-success-600');
             btn.html('<iconify-icon icon="line-md:loading-twotone-loop" class="align-middle me-1"></iconify-icon> Menyusun ' + docLabel + ' via AI...');
 
