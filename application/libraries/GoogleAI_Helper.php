@@ -32,6 +32,7 @@ class GoogleAI_Helper
                 . "1. 'pertemuan' (integer, urutan pertemuan dari 1 sampai {$meetingsCount}) "
                 . "2. 'materi' (string, ringkasan materi pelajaran yang diajarkan, maksimal 100 karakter) "
                 . "3. 'kegiatan' (string, ringkasan kegiatan belajar mengajar atau metode ajar, maksimal 200 karakter). "
+                . "PENTING: Di dalam seluruh isi data materi dan kegiatan, hindari penggunaan istilah/kata 'peserta didik', ganti/gunakan kata 'murid' sebagai gantinya. "
                 . "Pastikan urutan materi logis dan bermakna.";
 
         $url = "https://generativelanguage.googleapis.com/v1beta/models/{$this->model}:generateContent?key=" . $this->api_key;
