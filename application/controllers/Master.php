@@ -741,6 +741,7 @@ class Master extends MY_Controller
         postAllowed();
         $tahun = post('tahun_pelajaran');
         $semester = post('semester');
+        $kurikulum = post('kurikulum') ?: 'Kurikulum Merdeka';
         $status = post('status');
 
         $exists = $this->db->get_where('pembelajaran_tahun_pelajaran', ['tahun_pelajaran' => $tahun, 'semester' => $semester])->num_rows();
@@ -755,7 +756,12 @@ class Master extends MY_Controller
             $this->db->update('pembelajaran_tahun_pelajaran', ['status' => 'Nonaktif']);
         }
 
-        $data = ['tahun_pelajaran' => $tahun, 'semester' => $semester, 'status' => $status];
+        $data = [
+            'tahun_pelajaran' => $tahun, 
+            'semester' => $semester, 
+            'kurikulum' => $kurikulum,
+            'status' => $status
+        ];
         if ($this->db->insert('pembelajaran_tahun_pelajaran', $data)) {
             $this->activity_model->add(logged('name') . ' Menambah Tahun Pelajaran: ' . $data['tahun_pelajaran']);
             $this->session->set_flashdata('alert-type', 'success');
@@ -771,6 +777,7 @@ class Master extends MY_Controller
         postAllowed();
         $tahun = post('tahun_pelajaran');
         $semester = post('semester');
+        $kurikulum = post('kurikulum') ?: 'Kurikulum Merdeka';
         $status = post('status');
 
         $exists = $this->db->get_where('pembelajaran_tahun_pelajaran', ['tahun_pelajaran' => $tahun, 'semester' => $semester, 'id_tahun_pelajaran !=' => $id])->num_rows();
@@ -785,7 +792,12 @@ class Master extends MY_Controller
             $this->db->update('pembelajaran_tahun_pelajaran', ['status' => 'Nonaktif']);
         }
 
-        $data = ['tahun_pelajaran' => $tahun, 'semester' => $semester, 'status' => $status];
+        $data = [
+            'tahun_pelajaran' => $tahun, 
+            'semester' => $semester, 
+            'kurikulum' => $kurikulum,
+            'status' => $status
+        ];
         $this->db->where('id_tahun_pelajaran', $id);
         if ($this->db->update('pembelajaran_tahun_pelajaran', $data)) {
             $this->activity_model->add(logged('name') . ' Mengubah Tahun Pelajaran: ' . $data['tahun_pelajaran']);

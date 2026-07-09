@@ -125,5 +125,10 @@ CREATE TABLE IF NOT EXISTS `perangkat_pembelajaran_modul_ajar` (
   KEY `id_mapel` (`id_mapel`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- Tambahkan kolom kurikulum ke tabel pembelajaran_tahun_pelajaran jika belum ada
+ALTER TABLE `pembelajaran_tahun_pelajaran` 
+  ADD COLUMN `kurikulum` ENUM('Kurikulum 2013', 'Kurikulum Merdeka') NOT NULL DEFAULT 'Kurikulum Merdeka' AFTER `semester`;
+
+
 
 

@@ -167,7 +167,11 @@ class Update_log extends MY_Controller
             "Pass modul_ajar list and CRUD URLs to detail view in Perangkat_pembelajaran controller" => "Mengirimkan data modul ajar dan rute aksi detail ke antarmuka guru.",
             "Implement Modul Ajar upload, delete, download, and AI generation endpoints in Perangkat_pembelajaran controller" => "Mengimplementasikan fitur unggah, hapus, unduh, serta pembuatan RPP otomatis berbasis AI (Gemini) yang langsung dikonversi menjadi berkas DOCX di Google Drive.",
             "Handle activeTab = 'modul' parameter in URL parameters Javascript" => "Menambahkan navigasi JavaScript untuk menjaga fokus pada tab Modul Ajar pasca aksi.",
-            "Add table creation script for perangkat_pembelajaran_modul_ajar to update_production.sql" => "Menambahkan skrip migrasi database tabel modul ajar multifile untuk server produksi."
+            "Add table creation script for perangkat_pembelajaran_modul_ajar to update_production.sql" => "Menambahkan skrip migrasi database tabel modul ajar multifile untuk server produksi.",
+            "Add kurikulum select dropdown to v_tahun_pelajaran_form.php" => "Menambahkan pilihan input kurikulum di formulir tahun pelajaran.",
+            "Add Kurikulum column to v_tahun_pelajaran_list.php table view" => "Menambahkan kolom kurikulum di tabel daftar master tahun pelajaran.",
+            "Capture and save 'kurikulum' column input in Master controller tahunPelajaran actions" => "Menyimpan pilihan kurikulum (K-13 atau Kurikulum Merdeka) di database tahun pelajaran.",
+            "Add alter table kurikulum column migration query to update_production.sql" => "Menambahkan query migrasi kolom kurikulum ke database produksi."
         ];
 
         if (isset($mappings[$desc])) {
