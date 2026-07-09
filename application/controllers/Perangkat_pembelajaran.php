@@ -706,8 +706,18 @@ class Perangkat_pembelajaran extends MY_Controller
             redirect('perangkat_pembelajaran/detail/' . $id_pembelajaran_mapel);
         }
 
+        $modul_ajar_list = $this->db->get_where('perangkat_modul_ajar', ['id_pembelajaran_mapel' => $id_pembelajaran_mapel])->result();
+        $modul_list_str = "";
+        if (!empty($modul_ajar_list)) {
+            $labels = [];
+            foreach ($modul_ajar_list as $m) {
+                $labels[] = "- " . $m->label;
+            }
+            $modul_list_str = implode("\n", $labels);
+        }
+
         $this->load->library('GoogleAI_Helper');
-        $ai_res = $this->googleai_helper->generateAgenda($item->nama_mapel, $item->nama_tingkat, $meetings_count);
+        $ai_res = $this->googleai_helper->generateAgenda($item->nama_mapel, $item->nama_tingkat, $meetings_count, $modul_list_str);
 
         if (isset($ai_res['error'])) {
             $this->session->set_flashdata('alert-type', 'danger');

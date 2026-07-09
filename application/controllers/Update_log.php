@@ -197,7 +197,9 @@ class Update_log extends MY_Controller
             "Make AI agenda generation prompt more creative, interactive and include YouTube examples and application context" => "Mengonfigurasi prompt agenda AI agar menyajikan rencana pertemuan yang lebih kreatif, interaktif, aplikatif, serta menyertakan referensi video YouTube.",
             "Fix Preview document modal click trigger in list modul ajar and fix layout of modul ajar table to avoid overflow-x" => "Memperbaiki pemicu tombol preview berkas modul ajar dan merapikan layout lebar kolom tabel agar tidak meluap.",
             "Convert Modul Ajar RPP list table into a DataTable to allow clean sorting, pagination, and prevent overflow-x layout break" => "Mengubah tabel modul ajar manual & AI menjadi DataTable agar memiliki fitur sorting, pencarian, paginasi, dan lebar kolom yang proporsional.",
-            "Initialize DataTable for modulAjarTable in JavaScript on detail.php document.ready" => "Menginisialisasi JQuery DataTable untuk tabel modul ajar pada javascript dokumen."
+            "Initialize DataTable for modulAjarTable in JavaScript on detail.php document.ready" => "Menginisialisasi JQuery DataTable untuk tabel modul ajar pada javascript dokumen.",
+            "Update generate_agenda_ai controller logic to extract and inject Modul Ajar (RPP) labels as reference context to AI prompt" => "Mengambil daftar topik modul ajar (RPP) yang telah dibuat untuk dijadikan referensi wajib dalam menyelaraskan rencana pertemuan harian.",
+            "Update GoogleAI_Helper.php generateAgenda signature and insert Modul Ajar context into agenda generation prompt" => "Menambahkan parameter opsional modulListStr pada method generateAgenda serta menyuntikkan instruksi sinkronisasi silabus dengan topik RPP."
         ];
 
         if (isset($mappings[$desc])) {

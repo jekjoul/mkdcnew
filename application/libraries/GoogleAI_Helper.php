@@ -17,17 +17,23 @@ class GoogleAI_Helper
     /**
      * Generate structured learning agenda based on class, subject and Indonesian curriculum
      */
-    public function generateAgenda($subjectName, $classLevel, $meetingsCount)
+    public function generateAgenda($subjectName, $classLevel, $meetingsCount, $modulListStr = "")
     {
         if (empty($this->api_key) || $this->api_key === '0') {
             return ['error' => 'API Key Google AI belum dikonfigurasikan di halaman Pengaturan API.'];
+        }
+
+        $rpp_context = "";
+        if (!empty($modulListStr)) {
+            $rpp_context = "\nSebagai acuan wajib, Anda HARUS menyelaraskan topik materi pertemuan harian dengan daftar Rencana Pelaksanaan Pembelajaran (RPP) / Modul Ajar berikut yang sudah disusun sebelumnya:\n--- DAFTAR MODUL AJAR (RPP) ---\n{$modulListStr}\n--- AKHIR DAFTAR ---\nPastikan agenda pertemuan harian memetakan pembahasan di atas secara sinkron.\n";
         }
 
         $prompt = "Anda adalah pakar kurikulum nasional Indonesia (Kurikulum Merdeka). "
                 . "Buatlah silabus rencana pertemuan pembelajaran yang teratur dan berurutan untuk mata pelajaran '{$subjectName}' "
                 . "pada tingkat kelas '{$classLevel}' (sesuaikan dengan Fase kurikulum merdeka saat ini di Indonesia). "
                 . "Sediakan tepat sebanyak {$meetingsCount} pertemuan pembelajaran. "
-                . "Keluaran HARUS berupa JSON array of objects yang valid tanpa markdown code block formatting (hanya raw JSON string). "
+                . $rpp_context
+                . "\nKeluaran HARUS berupa JSON array of objects yang valid tanpa markdown code block formatting (hanya raw JSON string). "
                 . "Setiap object harus memiliki atribut: "
                 . "1. 'pertemuan' (integer, urutan pertemuan dari 1 sampai {$meetingsCount}) "
                 . "2. 'materi' (string, ringkasan materi pelajaran yang diajarkan. Rumuskan materi secara interaktif, kreatif, sebutkan aplikasi penerapannya di dunia nyata, serta wajib sertakan 1 contoh judul/topik video pembelajaran YouTube yang relevan untuk ditonton, maksimal 250 karakter) "
