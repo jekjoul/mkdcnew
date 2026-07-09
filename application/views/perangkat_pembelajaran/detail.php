@@ -69,6 +69,11 @@
             </button>
         </li>
         <li class="nav-item" role="presentation">
+            <button class="nav-link btn btn-outline-primary radius-8 px-20 py-10" id="modul-tab" data-bs-toggle="tab" data-bs-target="#tab-modul" type="button" role="tab">
+                <iconify-icon icon="solar:document-text-linear" class="me-1"></iconify-icon> Modul Ajar / RPP
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
             <button class="nav-link btn btn-outline-primary radius-8 px-20 py-10" id="agenda-tab" data-bs-toggle="tab" data-bs-target="#tab-agenda" type="button" role="tab">
                 <iconify-icon icon="solar:calendar-date-linear" class="me-1"></iconify-icon> Agenda Harian
             </button>
@@ -129,11 +134,10 @@
                                     'file_cp'        => ['label' => '1. Capaian Pembelajaran (CP)',              'key' => 'cp',        'accept' => '.docx,.xlsx',                                                          'hint' => 'DOCX / XLSX saja'],
                                     'file_tp'        => ['label' => '2. Tujuan Pembelajaran (TP)',               'key' => 'tp',        'accept' => '.docx,.xlsx',                                                          'hint' => 'DOCX / XLSX saja'],
                                     'file_atp'       => ['label' => '3. Alur Tujuan Pembelajaran (ATP)',         'key' => 'atp',       'accept' => '.docx,.xlsx',                                                          'hint' => 'DOCX / XLSX saja'],
-                                    'file_modul_ajar' => ['label' => '4. Modul Ajar / RPP',                      'key' => 'modul_ajar', 'accept' => '.docx,.xlsx',                                                          'hint' => 'DOCX / XLSX saja'],
-                                    'file_kisi_sts'  => ['label' => '5. Kisi-kisi Sumatif Tengah Semester (STS)', 'key' => 'kisi_sts', 'accept' => '.docx,.xlsx',                                                          'hint' => 'DOCX / XLSX saja'],
-                                    'file_soal_sts'  => ['label' => '6. Soal Sumatif Tengah Semester (STS)',    'key' => 'soal_sts',  'accept' => '.docx,.xlsx',                                                          'hint' => 'DOCX / XLSX saja'],
-                                    'file_kisi_sas'  => ['label' => '7. Kisi-kisi Sumatif Akhir Semester (SAS)', 'key' => 'kisi_sas',  'accept' => '.docx,.xlsx',                                                          'hint' => 'DOCX / XLSX saja'],
-                                    'file_soal_sas'  => ['label' => '8. Soal Sumatif Akhir Semester (SAS)',     'key' => 'soal_sas',  'accept' => '.docx,.xlsx',                                                          'hint' => 'DOCX / XLSX saja'],
+                                    'file_kisi_sts'  => ['label' => '4. Kisi-kisi Sumatif Tengah Semester (STS)', 'key' => 'kisi_sts', 'accept' => '.docx,.xlsx',                                                          'hint' => 'DOCX / XLSX saja'],
+                                    'file_soal_sts'  => ['label' => '5. Soal Sumatif Tengah Semester (STS)',    'key' => 'soal_sts',  'accept' => '.docx,.xlsx',                                                          'hint' => 'DOCX / XLSX saja'],
+                                    'file_kisi_sas'  => ['label' => '6. Kisi-kisi Sumatif Akhir Semester (SAS)', 'key' => 'kisi_sas',  'accept' => '.docx,.xlsx',                                                          'hint' => 'DOCX / XLSX saja'],
+                                    'file_soal_sas'  => ['label' => '7. Soal Sumatif Akhir Semester (SAS)',     'key' => 'soal_sas',  'accept' => '.docx,.xlsx',                                                          'hint' => 'DOCX / XLSX saja'],
                                 ];
                                 $no = 1;
                                 foreach ($files_config as $field => $cfg):
@@ -208,12 +212,180 @@
                     </div>
                 </div>
             </div>
-        </div>
     </div><!-- /tab-berkas -->
 
 
     <!-- ============================================================ -->
-    <!-- TAB 2: Agenda Pembelajaran Harian                            -->
+    <!-- TAB 2: Modul Ajar / RPP (Multifile & AI Generator)           -->
+    <!-- ============================================================ -->
+    <div class="tab-pane fade" id="tab-modul" role="tabpanel">
+        
+        <!-- Info bersama -->
+        <div class="alert bg-info-focus text-info-main border border-info-200 radius-12 p-16 d-flex align-items-start gap-12 mb-24">
+            <iconify-icon icon="lucide:info" class="icon text-xl flex-shrink-0 mt-1"></iconify-icon>
+            <div class="text-sm">
+                <strong>Informasi:</strong> Dokumen Modul Ajar / RPP mendukung penyimpanan lebih dari 1 file. 
+                Anda dapat mengunggah berkas secara manual atau merumuskannya langsung via **Google AI** berdasarkan berkas ATP yang telah diunggah sebelumnya. 
+                Modul Ajar yang digenerate AI akan disimpan langsung ke Google Drive sebagai dokumen DOCX yang dapat Anda **Edit Online**.
+            </div>
+        </div>
+
+        <div class="row gy-4">
+            <!-- Kolom Kiri: Daftar File Modul Ajar -->
+            <div class="col-lg-7">
+                <div class="card border-0 shadow-sm radius-12 h-100">
+                    <div class="card-header bg-transparent border-bottom p-24">
+                        <h6 class="mb-0 text-primary-light">Daftar Modul Ajar / RPP Aktif</h6>
+                    </div>
+                    <div class="card-body p-24">
+                        <div class="table-responsive">
+                            <table class="table bordered-table align-middle">
+                                <thead>
+                                    <tr>
+                                        <th width="40" class="text-center">No</th>
+                                        <th>Nama Modul / Rencana Kegiatan</th>
+                                        <th width="120" class="text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php 
+                                    $no_modul = 1;
+                                    foreach ($modul_ajar_list as $modul): 
+                                    ?>
+                                        <tr>
+                                            <td class="text-center fw-semibold"><?php echo $no_modul++ ?></td>
+                                            <td>
+                                                <span class="fw-semibold text-primary-light d-block"><?php echo html_escape($modul->label) ?></span>
+                                                <span class="text-muted text-xs d-block mt-4">
+                                                    <iconify-icon icon="lucide:file-text" class="align-middle"></iconify-icon> 
+                                                    <?php echo html_escape($modul->nama_file) ?>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center gap-8 justify-content-center">
+                                                    <?php if ($modul->drive_file_id): ?>
+                                                        <button type="button"
+                                                            class="btn btn-xs btn-info-100 text-info-600 radius-8 p-8 d-inline-flex align-items-center"
+                                                            title="Lihat (Preview)"
+                                                            data-drive-id="<?php echo html_escape($modul->drive_file_id) ?>"
+                                                            data-title="<?php echo html_escape($modul->label) ?>">
+                                                            <iconify-icon icon="lucide:eye"></iconify-icon>
+                                                        </button>
+
+                                                        <?php 
+                                                        $drive_url = 'https://docs.google.com/document/d/' . html_escape($modul->drive_file_id) . '/edit';
+                                                        ?>
+                                                        <a href="<?php echo $drive_url ?>"
+                                                            target="_blank"
+                                                            title="Edit Online"
+                                                            class="btn btn-xs btn-success-100 text-success-600 radius-8 p-8 d-inline-flex align-items-center">
+                                                            <iconify-icon icon="logos:google-drive"></iconify-icon>
+                                                        </a>
+                                                    <?php endif; ?>
+
+                                                    <a href="<?php echo $unduh_modul_url . '/' . $modul->id_modul ?>"
+                                                        title="Unduh (.docx)"
+                                                        class="btn btn-xs btn-secondary-100 text-secondary-600 radius-8 p-8 d-inline-flex align-items-center">
+                                                        <iconify-icon icon="lucide:download"></iconify-icon>
+                                                    </a>
+
+                                                    <a href="<?php echo $delete_modul_url . '/' . $modul->id_modul ?>"
+                                                        title="Hapus"
+                                                        onclick="return confirm('Apakah Anda yakin ingin menghapus berkas modul ajar ini? Berkas lokal dan Google Drive akan dihapus secara permanen.')"
+                                                        class="btn btn-xs btn-danger-100 text-danger-600 radius-8 p-8 d-inline-flex align-items-center">
+                                                        <iconify-icon icon="lucide:trash-2"></iconify-icon>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+
+                                    <?php if (empty($modul_ajar_list)): ?>
+                                        <tr>
+                                            <td colspan="3" class="text-center py-24 text-secondary-light text-sm">
+                                                Belum ada file Modul Ajar / RPP yang diunggah atau digenerate.
+                                            </td>
+                                        </tr>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kolom Kanan: Upload Manual & AI Generator -->
+            <div class="col-lg-5">
+                <div class="d-flex flex-column gap-4">
+                    
+                    <!-- Box 1: Upload Manual -->
+                    <div class="card border-0 shadow-sm radius-12">
+                        <div class="card-header bg-transparent border-bottom p-24">
+                            <h6 class="mb-0 text-primary-light">Upload Modul Ajar Manual</h6>
+                        </div>
+                        <div class="card-body p-24">
+                            <?php echo form_open_multipart($upload_modul_url); ?>
+                            <div class="mb-16">
+                                <label class="form-label text-sm fw-semibold text-secondary-light">Nama / Label Modul</label>
+                                <input type="text" name="label" required placeholder="Contoh: Modul Ajar Pertemuan 1 - Algoritma" class="form-control radius-8">
+                            </div>
+                            <div class="mb-20">
+                                <label class="form-label text-sm fw-semibold text-secondary-light">Pilih File (.docx saja)</label>
+                                <input type="file" name="file_modul_rpp" required class="form-control radius-8" accept=".docx">
+                            </div>
+                            <button type="submit" class="btn btn-primary-600 w-100 radius-8 py-10 d-inline-flex align-items-center justify-content-center gap-1">
+                                <iconify-icon icon="lucide:upload-cloud"></iconify-icon> Unggah Berkas
+                            </button>
+                            <?php echo form_close(); ?>
+                        </div>
+                    </div>
+
+                    <!-- Box 2: AI Generator -->
+                    <div class="card border-0 shadow-sm radius-12 border border-success-200">
+                        <div class="card-header bg-success-50 border-bottom border-success-100 p-24">
+                            <h6 class="mb-0 text-success-800 d-inline-flex align-items-center gap-1">
+                                <iconify-icon icon="logos:google-gemini" class="align-middle"></iconify-icon>
+                                Google AI Modul Ajar Generator
+                            </h6>
+                        </div>
+                        <div class="card-body p-24">
+                            <?php 
+                            $has_atp = $perangkat && !empty($perangkat->file_atp); 
+                            if (!$has_atp):
+                            ?>
+                                <div class="text-center py-16">
+                                    <iconify-icon icon="lucide:alert-circle" class="text-warning-600 text-3xl mb-8"></iconify-icon>
+                                    <p class="text-xs text-secondary-light mb-0">
+                                        Untuk menggunakan generator AI, silakan upload file **Alur Tujuan Pembelajaran (ATP)** terlebih dahulu di tab **Berkas Perangkat**.
+                                    </p>
+                                </div>
+                            <?php else: ?>
+                                <?php echo form_open($generate_modul_ai_url); ?>
+                                <div class="mb-20">
+                                    <label class="form-label text-sm fw-semibold text-secondary-light">Topik / Bahasan Pembelajaran</label>
+                                    <textarea name="topic" required rows="3" placeholder="Contoh: Pengenalan struktur percabangan If-Else pada bahasa Python dengan studi kasus lampu lalu lintas..." class="form-control radius-8"></textarea>
+                                    <div class="text-xs text-secondary-light mt-4">Tulis topik secara mendalam agar AI dapat menyusun RPP / Modul Ajar yang lengkap dan detail.</div>
+                                </div>
+                                <button type="submit" 
+                                    onclick="return confirm('AI akan menyusun modul ajar interaktif lengkap dan menyimpannya langsung ke Google Drive sebagai berkas DOCX. Lanjutkan?')"
+                                    class="btn btn-success-600 w-100 radius-8 py-10 d-inline-flex align-items-center justify-content-center gap-1">
+                                    <iconify-icon icon="logos:google-gemini" class="align-middle"></iconify-icon>
+                                    Generate via Google AI
+                                </button>
+                                <?php echo form_close(); ?>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /tab-modul -->
+
+
+    <!-- ============================================================ -->
+    <!-- TAB 3: Agenda Pembelajaran Harian                            -->
     <!-- ============================================================ -->
     <div class="tab-pane fade" id="tab-agenda" role="tabpanel">
 
@@ -588,6 +760,9 @@
         if (activeTab === 'agenda') {
             const agendaTabBtn = new bootstrap.Tab(document.querySelector('#agenda-tab'));
             agendaTabBtn.show();
+        } else if (activeTab === 'modul') {
+            const modulTabBtn = new bootstrap.Tab(document.querySelector('#modul-tab'));
+            modulTabBtn.show();
         }
 
         // Initialize DataTable for agenda

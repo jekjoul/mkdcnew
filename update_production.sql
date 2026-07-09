@@ -105,4 +105,25 @@ INSERT INTO `settings` (`key`, `value`)
 SELECT 'google_ai_model', 'gemini-3.1-flash-lite' FROM DUAL 
 WHERE NOT EXISTS (SELECT 1 FROM `settings` WHERE `key` = 'google_ai_model');
 
+-- ==========================================
+-- 6. MULTI FILE MODUL AJAR / RPP TABLE
+-- ==========================================
+
+CREATE TABLE IF NOT EXISTS `perangkat_pembelajaran_modul_ajar` (
+  `id_modul` int(11) NOT NULL AUTO_INCREMENT,
+  `id_tahun_pelajaran` int(11) NOT NULL,
+  `id_tingkat_sekolah` int(11) NOT NULL,
+  `id_mapel` int(11) NOT NULL,
+  `nama_file` varchar(255) NOT NULL,
+  `drive_file_id` varchar(255) DEFAULT NULL,
+  `label` varchar(255) NOT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id_modul`),
+  KEY `id_tahun_pelajaran` (`id_tahun_pelajaran`),
+  KEY `id_tingkat_sekolah` (`id_tingkat_sekolah`),
+  KEY `id_mapel` (`id_mapel`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 

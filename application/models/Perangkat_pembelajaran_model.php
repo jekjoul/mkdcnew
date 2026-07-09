@@ -683,4 +683,48 @@ class Perangkat_pembelajaran_model extends MY_Model
 
         return $this->db->get()->result();
     }
+
+    public function getModulAjarByMapel($id_pembelajaran_mapel)
+    {
+        $item = $this->getPembelajaranMapel($id_pembelajaran_mapel);
+        if (!$item) return [];
+
+        return $this->db->get_where('perangkat_pembelajaran_modul_ajar', [
+            'id_tahun_pelajaran' => $item->id_tahun_pelajaran,
+            'id_tingkat_sekolah' => $item->id_tingkat_sekolah,
+            'id_mapel' => $item->id_mapel
+        ])->result();
+    }
+
+    public function saveModulAjar($id_pembelajaran_mapel, $nama_file, $drive_file_id, $label)
+    {
+        $item = $this->getPembelajaranMapel($id_pembelajaran_mapel);
+        if (!$item) return false;
+
+        $now = date('Y-m-d H:i:s');
+        return $this->db->insert('perangkat_pembelajaran_modul_ajar', [
+            'id_tahun_pelajaran' => $item->id_tahun_pelajaran,
+            'id_tingkat_sekolah' => $item->id_tingkat_sekolah,
+            'id_mapel' => $item->id_mapel,
+            'nama_file' => $nama_file,
+            'drive_file_id' => $drive_file_id,
+            'label' => $label,
+            'created_at' => $now,
+            'updated_at' => $now
+        ]);
+    }
+
+    public function deleteModulAjar($id_modul)
+    {
+        $row = $this->db->get_where('perangkat_pembelajaran_modul_ajar', ['id_modul' => (int)$id_modul])->row();
+        if ($row) {
+            $filepath = './uploads/perangkat_pembelajaran/' . $row->nama_file;
+            if (is_file($filepath)) {
+                unlink($filepath);
+            }
+            $this->db->delete('perangkat_pembelajaran_modul_ajar', ['id_modul' => (int)$id_modul]);
+            return $row;
+        }
+        return false;
+    }
 }
