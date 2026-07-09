@@ -96,6 +96,25 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                 </div>
                 <div class="col-auto">
                     <div class="d-flex flex-wrap align-items-center gap-3">
+                        <?php
+                        $user_id = logged('id');
+                        $CI = &get_instance();
+                        $current_user = $CI->db->get_where('users', ['id' => $user_id])->row();
+                        $is_google_connected = ($current_user && !empty($current_user->google_id));
+                        ?>
+                        <div class="d-flex align-items-center gap-2 me-12">
+                            <?php if ($is_google_connected): ?>
+                                <span class="badge bg-success-focus text-success-main radius-8 px-12 py-8 d-inline-flex align-items-center gap-1">
+                                    <iconify-icon icon="logos:google-icon" class="align-middle"></iconify-icon>
+                                    <span class="text-xs fw-semibold">Terhubung ke Google</span>
+                                </span>
+                            <?php else: ?>
+                                <a href="<?php echo url('profile/index/google') ?>" class="badge bg-neutral-200 text-neutral-600 radius-8 px-12 py-8 d-inline-flex align-items-center gap-1 hover-bg-neutral-300">
+                                    <iconify-icon icon="lucide:link" class="align-middle text-xs"></iconify-icon>
+                                    <span class="text-xs fw-semibold">Hubungkan ke Google</span>
+                                </a>
+                            <?php endif; ?>
+                        </div>
                         <button type="button" data-theme-toggle
                             class="w-40-px h-40-px bg-neutral-200 rounded-circle d-flex justify-content-center align-items-center"></button>
 
@@ -352,25 +371,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                             </div>
                         </div><!-- Notification dropdown end -->
 
-                        <?php
-                        $user_id = logged('id');
-                        $CI =& get_instance();
-                        $current_user = $CI->db->get_where('users', ['id' => $user_id])->row();
-                        $is_google_connected = ($current_user && !empty($current_user->google_id));
-                        ?>
-                        <div class="d-flex align-items-center gap-2 me-12">
-                            <?php if ($is_google_connected): ?>
-                                <span class="badge bg-success-focus text-success-main radius-8 px-12 py-8 d-inline-flex align-items-center gap-1">
-                                    <iconify-icon icon="logos:google-icon" class="align-middle"></iconify-icon>
-                                    <span class="text-xs fw-semibold">Terhubung ke Google</span>
-                                </span>
-                            <?php else: ?>
-                                <a href="<?php echo url('profile/index/google') ?>" class="badge bg-neutral-200 text-neutral-600 radius-8 px-12 py-8 d-inline-flex align-items-center gap-1 hover-bg-neutral-300">
-                                    <iconify-icon icon="lucide:link" class="align-middle text-xs"></iconify-icon>
-                                    <span class="text-xs fw-semibold">Hubungkan ke Google</span>
-                                </a>
-                            <?php endif; ?>
-                        </div>
+
 
                         <div class="dropdown">
                             <button class="d-flex justify-content-center align-items-center rounded-circle"
@@ -398,21 +399,21 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                         </a>
                                     </li>
                                     <?php if (logged('role') == 1): ?>
-                                     <li>
-                                         <a class="dropdown-item text-black px-0 py-8 hover-bg-transparent hover-text-primary d-flex align-items-center gap-3"
-                                             href="email.html">
-                                             <iconify-icon icon="tabler:message-check" class="icon text-xl">
-                                             </iconify-icon> Inbox
-                                         </a>
-                                     </li>
-                                     <li>
-                                         <a class="dropdown-item text-black px-0 py-8 hover-bg-transparent hover-text-primary d-flex align-items-center gap-3"
-                                             href="company.html">
-                                             <iconify-icon icon="icon-park-outline:setting-two" class="icon text-xl">
-                                             </iconify-icon> Setting
-                                         </a>
-                                     </li>
-                                     <?php endif; ?>
+                                        <li>
+                                            <a class="dropdown-item text-black px-0 py-8 hover-bg-transparent hover-text-primary d-flex align-items-center gap-3"
+                                                href="email.html">
+                                                <iconify-icon icon="tabler:message-check" class="icon text-xl">
+                                                </iconify-icon> Inbox
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item text-black px-0 py-8 hover-bg-transparent hover-text-primary d-flex align-items-center gap-3"
+                                                href="company.html">
+                                                <iconify-icon icon="icon-park-outline:setting-two" class="icon text-xl">
+                                                </iconify-icon> Setting
+                                            </a>
+                                        </li>
+                                    <?php endif; ?>
                                     <li>
                                         <a class="dropdown-item text-black px-0 py-8 hover-bg-transparent hover-text-danger d-flex align-items-center gap-3"
                                             href="<?php echo url('logout') ?>">

@@ -240,6 +240,7 @@ class Jadwal_pelajaran extends MY_Controller
             $this->db->where('tp.status !=', 'Aktif');
         }
         $this->db->group_by('p.id_pembelajaran');
+        $this->db->having('jumlah_mapel >', 0); // Only active pembelajaran with mapped subjects
         $this->db->order_by('t.tingkat_angka', 'ASC');
         $this->db->order_by('r.nama_rombel', 'ASC');
         $this->db->order_by('l.nama_lembaga', 'ASC');
