@@ -923,22 +923,15 @@
                 return false;
             }
 
-            // Show Loading Spinner Modal
-            $('#ai-progress-text').html('Sedang memproses dan menyusun <strong>' + docLabel + '</strong> via Google AI (Gemini)...');
-            $('#ai-detail-progress-text').text('Menghubungi Google AI dan mensinkronisasikan berkas ke Google Drive. Mohon tunggu, proses ini memakan waktu beberapa detik.');
-            
-            var spinnerModal = new bootstrap.Modal(document.getElementById('modalAiSpinner'), {
-                backdrop: 'static',
-                keyboard: false
-            });
-            spinnerModal.show();
+            // Inline Loading Spinner
+            btn.prop('disabled', true);
+            btn.addClass('btn-warning-100 text-warning-600').removeClass('btn-success-100 btn-success text-success-600');
+            btn.html('<iconify-icon icon="line-md:loading-twotone-loop" class="align-middle me-1"></iconify-icon> Menyusun ' + docLabel + ' via AI...');
 
-            // Submit the form after a tiny delay so the modal rendering is fully initialized
-            setTimeout(function() {
-                if (form.length > 0) {
-                    form[0].submit();
-                }
-            }, 300);
+            // Submit form native
+            if (form.length > 0) {
+                form[0].submit();
+            }
         });
 
     });
@@ -961,18 +954,4 @@
         </div>
     </div>
 </div>
-
-<!-- Modal Loading Spinner Global Google AI -->
-<div class="modal fade" id="modalAiSpinner" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content radius-16 border-0 shadow-lg">
-            <div class="modal-body p-40 text-center">
-                <div class="mb-24">
-                    <iconify-icon icon="line-md:loading-twotone-loop" class="text-success-600" style="font-size: 80px;"></iconify-icon>
-                </div>
-                <h6 class="fw-semibold text-primary-light mb-12" id="ai-progress-text">Sedang Memproses...</h6>
-                <p class="text-secondary-light text-sm mb-0" id="ai-detail-progress-text">Menghubungi Google AI dan mensinkronisasikan berkas ke Google Drive. Mohon tunggu, proses ini memakan waktu beberapa detik.</p>
-            </div>
-        </div>
-    </div>
 </div>
