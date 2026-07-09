@@ -32,6 +32,7 @@ class Perangkat_pembelajaran extends MY_Controller
 
         $perangkat = $this->perangkat_model->getPerangkatByMapel($id_pembelajaran_mapel);
         $agenda = $this->perangkat_model->getAgendaByMapel($id_pembelajaran_mapel);
+        $modul_ajar_list = $this->perangkat_model->getModulAjarByMapel($id_pembelajaran_mapel);
         $has_schedule_and_days = $this->perangkat_model->hasScheduleAndEffectiveDays($id_pembelajaran_mapel);
 
         $this->page_data['page']->title = 'Pembelajaran';
@@ -43,6 +44,7 @@ class Perangkat_pembelajaran extends MY_Controller
         $this->page_data['item'] = $item;
         $this->page_data['perangkat'] = $perangkat;
         $this->page_data['agenda'] = $agenda;
+        $this->page_data['modul_ajar_list'] = $modul_ajar_list;
         $this->page_data['has_schedule_and_days'] = $has_schedule_and_days;
 
         // Copy features data & rombel switcher
@@ -61,6 +63,12 @@ class Perangkat_pembelajaran extends MY_Controller
         $this->page_data['salin_agenda_url'] = url('perangkat_pembelajaran/salin_agenda/' . $id_pembelajaran_mapel);
         $this->page_data['generate_agenda_ai_url'] = url('perangkat_pembelajaran/generate_agenda_ai/' . $id_pembelajaran_mapel);
         
+        // Modul ajar URLs
+        $this->page_data['upload_modul_url'] = url('perangkat_pembelajaran/upload_modul_ajar/' . $id_pembelajaran_mapel);
+        $this->page_data['delete_modul_url'] = url('perangkat_pembelajaran/delete_modul_ajar/' . $id_pembelajaran_mapel);
+        $this->page_data['generate_modul_ai_url'] = url('perangkat_pembelajaran/generate_modul_ai/' . $id_pembelajaran_mapel);
+        $this->page_data['unduh_modul_url'] = url('perangkat_pembelajaran/unduh_modul_ajar/' . $id_pembelajaran_mapel);
+
         $this->load->view('perangkat_pembelajaran/detail', $this->page_data);
     }
 
@@ -197,6 +205,319 @@ class Perangkat_pembelajaran extends MY_Controller
         } else {
             show_404();
         }
+    }
+
+    public function generate_berkas_ai($id_pembelajaran_mapel)
+    {
+        postAllowed();
+        ifPermissions('perangkat_pembelajaran_edit');
+
+        $item = $this->perangkat_model->getPembelajaranMapel($id_pembelajaran_mapel);
+        if (!$item) {
+            show_404();
+        }
+
+        $field = post('field');
+        $valid_fields = [
+            'file_cp' => ['name' => 'Capaian Pembelajaran (CP)', 'ext' => 'docx', 'type' => 'word'],
+            'file_tp' => ['name' => 'Tujuan Pembelajaran (TP)', 'ext' => 'docx', 'type' => 'word'],
+            'file_atp' => ['name' => 'Alur Tujuan Pembelajaran (ATP)', 'ext' => 'docx', 'type' => 'word'],
+            'file_kisi_sts' => ['name' => 'Kisi-kisi STS', 'ext' => 'docx', 'type' => 'word'],
+            'file_soal_sts' => ['name' => 'Soal STS', 'ext' => 'docx', 'type' => 'word'],
+            'file_kisi_sas' => ['name' => 'Kisi-kisi SAS', 'ext' => 'docx', 'type' => 'word'],
+            'file_soal_sas' => ['name' => 'Soal SAS', 'ext' => 'docx', 'type' => 'word']
+        ];
+
+        if (!isset($valid_fields[$field])) {
+            show_404();
+        }
+
+        // Sequential validation check
+        $seq_order = ['file_cp', 'file_tp', 'file_atp', 'file_kisi_sts', 'file_soal_sts', 'file_kisi_sas', 'file_soal_sas'];
+        $current_idx = array_search($field, $seq_order);
+        $perangkat = $this->perangkat_model->getPerangkatByMapel($id_pembelajaran_mapel);
+
+        if ($current_idx > 0) {
+            $prev_field = $seq_order[$current_idx - 1];
+            $prev_uploaded = $perangkat ? $perangkat->$prev_field : null;
+            if (!$prev_uploaded) {
+                $this->session->set_flashdata('alert-type', 'danger');
+                $this->session->set_flashdata('alert', 'Gagal Generate! Anda harus mengisi/mengunggah dokumen sebelum berkas ini terlebih dahulu secara berurutan.');
+                redirect('perangkat_pembelajaran/detail/' . $id_pembelajaran_mapel);
+                return;
+            }
+        }
+
+        $field_info = $valid_fields[$field];
+
+        // Construct context info
+        $subject = $item->nama_mapel;
+        $class_level = $item->nama_tingkat;
+        $semester = $item->semester;
+        $kurikulum = isset($item->kurikulum) ? $item->kurikulum : 'Kurikulum Merdeka';
+
+        $prompt = "Anda adalah pakar kurikulum dan pendidik di Indonesia. "
+                . "Buatlah draft dokumen resmi '{$field_info['name']}' yang mendalam dan komprehensif untuk mata pelajaran '{$subject}', "
+                . "tingkat kelas '{$class_level}', semester '{$semester}', dengan acuan '{$kurikulum}'. "
+                . "Desainlah isian dokumen tersebut dengan format HTML terstruktur rapi menggunakan heading, list, dan tabel jika diperlukan. "
+                . "Pastikan isinya sangat relevan dengan kurikulum dan kebutuhan sekolah formal di Indonesia saat ini. "
+                . "Jangan gunakan pembungkus markdown code block (```html), kirimkan teks HTML mentah saja.";
+
+        $api_key = setting('google_ai_api_key');
+        if (empty($api_key) || $api_key === '0') {
+            $this->session->set_flashdata('alert-type', 'danger');
+            $this->session->set_flashdata('alert', 'API Key Google AI belum dikonfigurasi di Pengaturan API.');
+            redirect('perangkat_pembelajaran/detail/' . $id_pembelajaran_mapel);
+            return;
+        }
+
+        $model_name = setting('google_ai_model') ?: 'gemini-3.1-flash-lite';
+        $url = "https://generativelanguage.googleapis.com/v1beta/models/{$model_name}:generateContent?key=" . $api_key;
+        $payload = [
+            'contents' => [['parts' => [['text' => $prompt]]]]
+        ];
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+
+        $output = curl_exec($ch);
+        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if (!$output || $http_code !== 200) {
+            $this->session->set_flashdata('alert-type', 'danger');
+            $this->session->set_flashdata('alert', 'Gagal memproses Google AI (Gemini) untuk berkas perangkat.');
+            redirect('perangkat_pembelajaran/detail/' . $id_pembelajaran_mapel);
+            return;
+        }
+
+        $res = json_decode($output, true);
+        $html_content = isset($res['candidates'][0]['content']['parts'][0]['text']) ? $res['candidates'][0]['content']['parts'][0]['text'] : '';
+        $html_content = trim($html_content);
+        if (strpos($html_content, '```') === 0) {
+            $html_content = preg_replace('/^```(?:html)?|```$/i', '', $html_content);
+            $html_content = trim($html_content);
+        }
+
+        if (empty($html_content)) {
+            $this->session->set_flashdata('alert-type', 'danger');
+            $this->session->set_flashdata('alert', 'AI mengembalikan konten kosong.');
+            redirect('perangkat_pembelajaran/detail/' . $id_pembelajaran_mapel);
+            return;
+        }
+
+        // Build file
+        $file_name = $field . '_' . time() . '.' . $field_info['ext'];
+        $filepath = './uploads/perangkat_pembelajaran/' . $file_name;
+
+        // CodeIgniter wrapper HTML-to-Word
+        $word_html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">'
+                   . '<head><meta charset="utf-8"><title>' . html_escape($field_info['name']) . '</title>'
+                   . '<style>body { font-family: "Calibri", sans-serif; font-size: 11pt; line-height: 1.5; } h1 { font-size: 18pt; color: #1f4e78; } h2 { font-size: 14pt; color: #2e74b5; } h3 { font-size: 12pt; color: #5b9bd5; } table { border-collapse: collapse; width: 100%; margin: 12px 0; } th, td { border: 1px solid #a6a6a6; padding: 8px; text-align: left; } th { background-color: #f2f2f2; }</style></head>'
+                   . '<body>' . $html_content . '</body></html>';
+
+        file_put_contents($filepath, $word_html);
+
+        // Upload to Drive
+        $this->load->library('GoogleDrive_Helper');
+        $drive_res = $this->googledrive_helper->uploadFile($filepath, $file_name, 'application/msword', true);
+
+        // Save local
+        $uploaded = [$field => $file_name];
+        $this->perangkat_model->saveBerkas($id_pembelajaran_mapel, $uploaded);
+
+        // Save Drive ID
+        if (isset($drive_res['id'])) {
+            $key_drive = str_replace('file_', '', $field) . '_drive_file_id';
+            $drive_ids = [$key_drive => $drive_res['id']];
+            $this->perangkat_model->saveDriveIds($id_pembelajaran_mapel, $drive_ids);
+        }
+
+        $this->session->set_flashdata('alert-type', 'success');
+        $this->session->set_flashdata('alert', $field_info['name'] . ' baru berhasil digenerate oleh AI, disimpan ke Drive, dan siap diedit online.');
+        redirect('perangkat_pembelajaran/detail/' . $id_pembelajaran_mapel);
+    }
+
+    public function upload_modul_ajar($id_pembelajaran_mapel)
+    {
+        postAllowed();
+        ifPermissions('perangkat_pembelajaran_edit');
+
+        $label = post('label') ?: 'Modul Ajar';
+        $file_name = $this->uploadFile('file_modul_rpp', $id_pembelajaran_mapel);
+        if (!$file_name) {
+            $this->session->set_flashdata('alert-type', 'danger');
+            $this->session->set_flashdata('alert', 'Gagal mengunggah berkas modul ajar.');
+            redirect('perangkat_pembelajaran/detail/' . $id_pembelajaran_mapel . '?tab=modul');
+        }
+
+        $filepath = './uploads/perangkat_pembelajaran/' . $file_name;
+        $mime = mime_content_type($filepath);
+        
+        $this->load->library('GoogleDrive_Helper');
+        $drive_res = $this->googledrive_helper->uploadFile($filepath, $file_name, $mime, true);
+        $drive_file_id = isset($drive_res['id']) ? $drive_res['id'] : null;
+
+        $this->perangkat_model->saveModulAjar($id_pembelajaran_mapel, $file_name, $drive_file_id, $label);
+
+        $this->session->set_flashdata('alert-type', 'success');
+        $this->session->set_flashdata('alert', 'Modul Ajar berhasil diupload dan disinkronkan ke Google Drive.');
+        redirect('perangkat_pembelajaran/detail/' . $id_pembelajaran_mapel . '?tab=modul');
+    }
+
+    public function delete_modul_ajar($id_pembelajaran_mapel, $id_modul)
+    {
+        ifPermissions('perangkat_pembelajaran_edit');
+
+        $row = $this->perangkat_model->deleteModulAjar($id_modul);
+        if ($row && !empty($row->drive_file_id)) {
+            $this->load->library('GoogleDrive_Helper');
+            $this->googledrive_helper->deleteFile($row->drive_file_id);
+        }
+
+        $this->session->set_flashdata('alert-type', 'success');
+        $this->session->set_flashdata('alert', 'Berkas modul ajar berhasil dihapus.');
+        redirect('perangkat_pembelajaran/detail/' . $id_pembelajaran_mapel . '?tab=modul');
+    }
+
+    public function unduh_modul_ajar($id_pembelajaran_mapel, $id_modul)
+    {
+        ifPermissions('perangkat_pembelajaran_list');
+
+        $row = $this->db->get_where('perangkat_pembelajaran_modul_ajar', ['id_modul' => (int)$id_modul])->row();
+        if (!$row) {
+            show_404();
+        }
+
+        $local_path = './uploads/perangkat_pembelajaran/' . $row->nama_file;
+        if (!empty($row->drive_file_id)) {
+            $this->load->library('GoogleDrive_Helper');
+            $this->googledrive_helper->downloadGoogleFile($row->drive_file_id, $local_path, false);
+        }
+
+        $this->load->helper('download');
+        if (is_file($local_path)) {
+            force_download($local_path, NULL);
+        } else {
+            show_404();
+        }
+    }
+
+    public function generate_modul_ai($id_pembelajaran_mapel)
+    {
+        postAllowed();
+        ifPermissions('perangkat_pembelajaran_edit');
+
+        $item = $this->perangkat_model->getPembelajaranMapel($id_pembelajaran_mapel);
+        if (!$item) {
+            show_404();
+        }
+
+        $perangkat = $this->perangkat_model->getPerangkatByMapel($id_pembelajaran_mapel);
+        $atp_file = $perangkat ? $perangkat->file_atp : null;
+
+        $atp_text = "";
+        if ($atp_file) {
+            $atp_path = './uploads/perangkat_pembelajaran/' . $atp_file;
+            if (is_file($atp_path)) {
+                // Reading docx plain text or excel text
+                if (strpos($atp_file, '.docx') !== false) {
+                    $atp_text = "Telah ada berkas ATP di server lokal dengan nama berkas " . $atp_file;
+                }
+            }
+        }
+
+        $topic = post('topic') ?: 'Materi Pokok Pertemuan Pertama';
+
+        $prompt = "Anda adalah pakar pendidik Kurikulum Merdeka di Indonesia. "
+                . "Buatlah satu Rencana Pelaksanaan Pembelajaran (RPP) / Modul Ajar interaktif yang mendalam untuk kelas '{$item->nama_tingkat}' "
+                . "mata pelajaran '{$item->nama_mapel}' dengan topik spesifik '{$topic}'. "
+                . "Fokus pada struktur baku Kurikulum Merdeka yang mencakup: "
+                . "1. Informasi Umum (Identitas, Kompetensi Awal, Profil Pelajar Pancasila, Sarpras, Target Peserta Didik). "
+                . "2. Komponen Inti (Tujuan Pembelajaran, Pemahaman Bermakna, Pertanyaan Pemantik, Kegiatan Pembelajaran Pembuka-Inti-Penutup, Asesmen). "
+                . "3. Lampiran (Lembar Kerja Peserta Didik - LKPD, Bahan Bacaan Guru & Peserta Didik, Glosarium, Daftar Pustaka). "
+                . "Keluaran HARUS berupa HTML terstruktur rapi menggunakan heading (h1, h2, h3), list (ul, ol), dan tabel yang menarik untuk dibaca. "
+                . "Jangan gunakan pembungkus markdown code block (```html), kirimkan teks HTML mentah saja.";
+
+        $this->load->library('GoogleAI_Helper');
+        
+        // Temporarily override JSON generation constraint of AI helper by replacing cURL payload
+        $api_key = setting('google_ai_api_key');
+        if (empty($api_key) || $api_key === '0') {
+            $this->session->set_flashdata('alert-type', 'danger');
+            $this->session->set_flashdata('alert', 'API Key Google AI belum dikonfigurasi di Pengaturan API.');
+            redirect('perangkat_pembelajaran/detail/' . $id_pembelajaran_mapel . '?tab=modul');
+        }
+
+        $model_name = setting('google_ai_model') ?: 'gemini-3.1-flash-lite';
+        $url = "https://generativelanguage.googleapis.com/v1beta/models/{$model_name}:generateContent?key=" . $api_key;
+        $payload = [
+            'contents' => [['parts' => [['text' => $prompt]]]]
+        ];
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+
+        $output = curl_exec($ch);
+        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if (!$output || $http_code !== 200) {
+            $this->session->set_flashdata('alert-type', 'danger');
+            $this->session->set_flashdata('alert', 'Gagal memproses Google AI (Gemini) untuk Modul Ajar.');
+            redirect('perangkat_pembelajaran/detail/' . $id_pembelajaran_mapel . '?tab=modul');
+        }
+
+        $res = json_decode($output, true);
+        $html_content = isset($res['candidates'][0]['content']['parts'][0]['text']) ? $res['candidates'][0]['content']['parts'][0]['text'] : '';
+        $html_content = trim($html_content);
+        if (strpos($html_content, '```') === 0) {
+            $html_content = preg_replace('/^```(?:html)?|```$/i', '', $html_content);
+            $html_content = trim($html_content);
+        }
+
+        if (empty($html_content)) {
+            $this->session->set_flashdata('alert-type', 'danger');
+            $this->session->set_flashdata('alert', 'AI mengembalikan konten kosong.');
+            redirect('perangkat_pembelajaran/detail/' . $id_pembelajaran_mapel . '?tab=modul');
+        }
+
+        // Generate Word docx from HTML (We can wrap HTML content into a downloadable document file format)
+        $clean_label = preg_replace('/[^a-zA-Z0-9_\-\s]/', '', $topic);
+        $file_name = 'modul_ajar_' . time() . '_' . str_replace(' ', '_', strtolower($clean_label)) . '.docx';
+        $filepath = './uploads/perangkat_pembelajaran/' . $file_name;
+
+        // CodeIgniter wrapper for simple HTML-to-Word conversion format
+        $word_html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">'
+                   . '<head><meta charset="utf-8"><title>' . html_escape($topic) . '</title>'
+                   . '<style>body { font-family: "Calibri", sans-serif; font-size: 11pt; line-height: 1.5; } h1 { font-size: 18pt; color: #1f4e78; } h2 { font-size: 14pt; color: #2e74b5; } h3 { font-size: 12pt; color: #5b9bd5; } table { border-collapse: collapse; width: 100%; margin: 12px 0; } th, td { border: 1px solid #a6a6a6; padding: 8px; text-align: left; } th { background-color: #f2f2f2; }</style></head>'
+                   . '<body>' . $html_content . '</body></html>';
+
+        file_put_contents($filepath, $word_html);
+
+        // Upload to Google Drive and convert to editable Google Doc
+        $this->load->library('GoogleDrive_Helper');
+        $drive_res = $this->googledrive_helper->uploadFile($filepath, $file_name, 'application/msword', true);
+        
+        $drive_file_id = isset($drive_res['id']) ? $drive_res['id'] : null;
+
+        $this->perangkat_model->saveModulAjar($id_pembelajaran_mapel, $file_name, $drive_file_id, 'Modul: ' . $topic);
+
+        $this->session->set_flashdata('alert-type', 'success');
+        $this->session->set_flashdata('alert', 'Modul Ajar / RPP baru berhasil digenerate oleh AI, disimpan ke Drive, dan siap diedit online.');
+        redirect('perangkat_pembelajaran/detail/' . $id_pembelajaran_mapel . '?tab=modul');
     }
 
     public function generate_agenda($id_pembelajaran_mapel)

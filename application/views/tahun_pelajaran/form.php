@@ -25,6 +25,13 @@
                             </select>
                         </div>
                         <div class="mb-20">
+                            <label class="form-label fw-semibold text-sm mb-8">Kurikulum <span class="text-danger-600">*</span></label>
+                            <select class="form-control radius-8 form-select" name="kurikulum" required>
+                                <option value="Kurikulum Merdeka" <?php echo @$row->kurikulum == 'Kurikulum Merdeka' ? 'selected' : '' ?>>Kurikulum Merdeka</option>
+                                <option value="Kurikulum 2013" <?php echo @$row->kurikulum == 'Kurikulum 2013' ? 'selected' : '' ?>>Kurikulum 2013</option>
+                            </select>
+                        </div>
+                        <div class="mb-20">
                             <label class="form-label fw-semibold text-sm mb-8">Status</label>
                             <select class="form-control radius-8 form-select" name="status">
                                 <option value="Aktif" <?php echo @$row->status == 'Aktif' ? 'selected' : '' ?>>Aktif</option>

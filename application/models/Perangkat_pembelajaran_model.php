@@ -67,7 +67,7 @@ class Perangkat_pembelajaran_model extends MY_Model
 
     public function getPembelajaranMapel($id_pembelajaran_mapel)
     {
-        $this->db->select('pm.*, p.id_tahun_pelajaran, p.id_tingkat_sekolah, p.id_rombel, l.nama_lembaga, t.nama_tingkat, t.tingkat_angka, r.nama_rombel, tp.tahun_pelajaran, tp.semester, m.nama_mapel, m.mapel_singkat, ptk.nama_ptk');
+        $this->db->select('pm.*, p.id_tahun_pelajaran, p.id_tingkat_sekolah, p.id_rombel, l.nama_lembaga, t.nama_tingkat, t.tingkat_angka, r.nama_rombel, tp.tahun_pelajaran, tp.semester, tp.kurikulum, m.nama_mapel, m.mapel_singkat, ptk.nama_ptk');
         $this->db->from('pembelajaran_mapel pm');
         $this->db->join('pembelajaran p', 'p.id_pembelajaran = pm.id_pembelajaran');
         $this->db->join('lembaga l', 'l.id_lembaga = p.id_lembaga');
@@ -682,5 +682,49 @@ class Perangkat_pembelajaran_model extends MY_Model
         $this->db->order_by('r.nama_rombel', 'ASC');
 
         return $this->db->get()->result();
+    }
+
+    public function getModulAjarByMapel($id_pembelajaran_mapel)
+    {
+        $item = $this->getPembelajaranMapel($id_pembelajaran_mapel);
+        if (!$item) return [];
+
+        return $this->db->get_where('perangkat_pembelajaran_modul_ajar', [
+            'id_tahun_pelajaran' => $item->id_tahun_pelajaran,
+            'id_tingkat_sekolah' => $item->id_tingkat_sekolah,
+            'id_mapel' => $item->id_mapel
+        ])->result();
+    }
+
+    public function saveModulAjar($id_pembelajaran_mapel, $nama_file, $drive_file_id, $label)
+    {
+        $item = $this->getPembelajaranMapel($id_pembelajaran_mapel);
+        if (!$item) return false;
+
+        $now = date('Y-m-d H:i:s');
+        return $this->db->insert('perangkat_pembelajaran_modul_ajar', [
+            'id_tahun_pelajaran' => $item->id_tahun_pelajaran,
+            'id_tingkat_sekolah' => $item->id_tingkat_sekolah,
+            'id_mapel' => $item->id_mapel,
+            'nama_file' => $nama_file,
+            'drive_file_id' => $drive_file_id,
+            'label' => $label,
+            'created_at' => $now,
+            'updated_at' => $now
+        ]);
+    }
+
+    public function deleteModulAjar($id_modul)
+    {
+        $row = $this->db->get_where('perangkat_pembelajaran_modul_ajar', ['id_modul' => (int)$id_modul])->row();
+        if ($row) {
+            $filepath = './uploads/perangkat_pembelajaran/' . $row->nama_file;
+            if (is_file($filepath)) {
+                unlink($filepath);
+            }
+            $this->db->delete('perangkat_pembelajaran_modul_ajar', ['id_modul' => (int)$id_modul]);
+            return $row;
+        }
+        return false;
     }
 }
