@@ -179,7 +179,8 @@ class Update_log extends MY_Controller
             "Implement generate_berkas_ai endpoint in Perangkat_pembelajaran controller for sequential docx/xlsx file generation" => "Menyediakan endpoint untuk membuat berkas perangkat pembelajaran secara otomatis via Google AI.",
             "Implement sequential AI generation buttons with lock/unlock state based on previous file upload in detail.php view" => "Mengunci/membuka akses tombol 'Generate via AI' secara berurutan berdasarkan kelengkapan berkas sebelumnya (CP -> TP -> ATP -> Kisi/Soal STS/SAS).",
             "Show warning feedback if Google Drive upload fails during AI generation" => "Menampilkan pesan peringatan jika berkas perangkat AI gagal disinkronkan ke Google Drive.",
-            "Show detailed error feedback in generate_modul_ai when Google Drive upload fails" => "Menampilkan pesan peringatan rinci jika berkas modul ajar AI gagal disinkronkan ke Google Drive."
+            "Show detailed error feedback in generate_modul_ai when Google Drive upload fails" => "Menampilkan pesan peringatan rinci jika berkas modul ajar AI gagal disinkronkan ke Google Drive.",
+            "Fix getPembelajaranMapel query return type handling in model" => "Memperbaiki penanganan tipe data kembalian kueri pembelajaran mapel di model."
         ];
 
         if (isset($mappings[$desc])) {
