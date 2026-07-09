@@ -276,14 +276,63 @@ class Perangkat_pembelajaran extends MY_Controller
         $semester = $item->semester;
         $kurikulum = isset($item->kurikulum) ? $item->kurikulum : 'Kurikulum Merdeka';
 
-        $prompt = "Anda adalah pakar kurikulum dan pendidik di Indonesia. "
-                . "Buatlah draft dokumen resmi '{$field_info['name']}' yang mendalam dan komprehensif untuk mata pelajaran '{$subject}', "
-                . "tingkat kelas '{$class_level}', semester '{$semester}', dengan acuan '{$kurikulum}'."
-                . $prev_file_context
-                . "\nDesainlah isian dokumen tersebut dengan format HTML terstruktur rapi menggunakan heading (h1, h2, h3), list (ul, ol), dan tabel yang menarik untuk dibaca. "
-                . "Pastikan isinya sangat relevan dengan kurikulum dan kebutuhan sekolah formal di Indonesia saat ini. "
-                . "PENTING: Di dalam seluruh isi dokumen, hindari penggunaan istilah/kata 'peserta didik', ganti/gunakan kata 'murid' sebagai gantinya. "
-                . "Jangan gunakan pembungkus markdown code block (```html), kirimkan teks HTML mentah saja.";
+        $is_kisi = ($field === 'file_kisi_sts' || $field === 'file_kisi_sas');
+        $word_layout = "portrait";
+
+        if ($is_kisi) {
+            $word_layout = "landscape";
+            $jml_pg = (int) post('jumlah_pg');
+            $jml_essai = (int) post('jumlah_essai');
+            $bentuk_soal = post('bentuk_soal');
+            $alokasi_waktu = (int) post('alokasi_waktu');
+            
+            $jml_soal_str = "";
+            if ($bentuk_soal === 'Pilihan Ganda') {
+                $jml_soal_str = $jml_pg . " Soal Pilihan Ganda";
+            } elseif ($bentuk_soal === 'Essai') {
+                $jml_soal_str = $jml_essai . " Soal Essai";
+            } else {
+                $jml_soal_str = $jml_pg . " Soal Pilihan Ganda & " . $jml_essai . " Soal Essai";
+            }
+
+            $prompt = "Anda adalah pakar pembuat instrumen evaluasi pendidikan di Indonesia. "
+                    . "Buatlah DOKUMEN KISI-KISI SOAL evaluasi untuk:\n"
+                    . "Satuan Pendidikan : {$item->nama_lembaga}\n"
+                    . "Mata Pelajaran : {$subject}\n"
+                    . "Kelas/Semester : {$class_level} / {$semester}\n"
+                    . "Kurikulum yang digunakan : {$kurikulum}\n"
+                    . "Tahun Pelajaran : {$item->tahun_pelajaran}\n"
+                    . "Bentuk Penilaian : {$field_info['name']}\n"
+                    . "Jumlah Soal : {$jml_soal_str}\n"
+                    . "Alokasi Waktu : {$alokasi_waktu} Menit\n"
+                    . "Bentuk Soal : {$bentuk_soal}\n"
+                    . "Penyusun / Penulis Soal : " . ($item->nama_ptk ?: '-') . "\n\n"
+                    . "ATURAN FORMAT DOKUMEN:\n"
+                    . "1. Di bagian teratas, cetak informasi detail keterangan di atas dalam format daftar atau tabel profil yang bersih.\n"
+                    . "2. Setelah keterangan di atas, buatlah SATU tabel utama dengan kolom berurutan:\n"
+                    . "   1. No\n"
+                    . "   2. Tujuan Pembelajaran\n"
+                    . "   3. Materi\n"
+                    . "   4. Kelas/Semester\n"
+                    . "   5. Indikator Soal\n"
+                    . "   6. Level Kognitif\n"
+                    . "   7. Dimensi Pengetahuan\n"
+                    . "   8. Bentuk Soal\n"
+                    . "   9. No. Soal\n"
+                    . "   10. Skor\n"
+                    . "3. TIDAK PERLU menuliskan penjelasan pendahuluan, deskripsi lainnya, petunjuk, atau penutup apapun. Cukup keterangan atas dan tabel utama kisi-kisi saja.\n"
+                    . "4. Sesuaikan indikator, tujuan pembelajaran, dan no soal secara teratur logis sesuai kurikulum yang dipilih.\n"
+                    . "5. Tuliskan keluaran langsung berupa tag HTML mentah saja (tanpa pembungkus markdown ```html).";
+        } else {
+            $prompt = "Anda adalah pakar kurikulum dan pendidik di Indonesia. "
+                    . "Buatlah draft dokumen resmi '{$field_info['name']}' yang mendalam dan komprehensif untuk mata pelajaran '{$subject}', "
+                    . "tingkat kelas '{$class_level}', semester '{$semester}', dengan acuan '{$kurikulum}'."
+                    . $prev_file_context
+                    . "\nDesainlah isian dokumen tersebut dengan format HTML terstruktur rapi menggunakan heading (h1, h2, h3), list (ul, ol), dan tabel yang menarik untuk dibaca. "
+                    . "Pastikan isinya sangat relevan dengan kurikulum dan kebutuhan sekolah formal di Indonesia saat ini. "
+                    . "PENTING: Di dalam seluruh isi dokumen, hindari penggunaan istilah/kata 'peserta didik', ganti/gunakan kata 'murid' sebagai gantinya. "
+                    . "Jangan gunakan pembungkus markdown code block (```html), kirimkan teks HTML mentah saja.";
+        }
 
         $api_key = setting('google_ai_api_key');
         if (empty($api_key) || $api_key === '0') {
@@ -338,11 +387,16 @@ class Perangkat_pembelajaran extends MY_Controller
         $file_name = $field . '_' . time() . '.' . $field_info['ext'];
         $filepath = './uploads/perangkat_pembelajaran/' . $file_name;
 
-        // CodeIgniter wrapper HTML-to-Word
+        // CodeIgniter wrapper HTML-to-Word with Landscape option support
+        $style_extra = "";
+        if ($word_layout === 'landscape') {
+            $style_extra = "@page { size: landscape; margin: 1in; } @page Section1 { size: 11in 8.5in; margin: 1in; mso-header-margin: .5in; mso-footer-margin: .5in; mso-paper-source: 0; } div.Section1 { page: Section1; }";
+        }
+        
         $word_html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">'
                    . '<head><meta charset="utf-8"><title>' . html_escape($field_info['name']) . '</title>'
-                   . '<style>body { font-family: "Calibri", sans-serif; font-size: 11pt; line-height: 1.5; } h1 { font-size: 18pt; color: #1f4e78; } h2 { font-size: 14pt; color: #2e74b5; } h3 { font-size: 12pt; color: #5b9bd5; } table { border-collapse: collapse; width: 100%; margin: 12px 0; } th, td { border: 1px solid #a6a6a6; padding: 8px; text-align: left; } th { background-color: #f2f2f2; }</style></head>'
-                   . '<body>' . $html_content . '</body></html>';
+                   . '<style>body { font-family: "Calibri", sans-serif; font-size: 11pt; line-height: 1.5; } h1 { font-size: 18pt; color: #1f4e78; } h2 { font-size: 14pt; color: #2e74b5; } h3 { font-size: 12pt; color: #5b9bd5; } table { border-collapse: collapse; width: 100%; margin: 12px 0; } th, td { border: 1px solid #a6a6a6; padding: 8px; text-align: left; } th { background-color: #f2f2f2; } ' . $style_extra . '</style></head>'
+                   . '<body><div class="Section1">' . $html_content . '</div></body></html>';
 
         file_put_contents($filepath, $word_html);
 
