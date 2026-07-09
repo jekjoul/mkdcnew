@@ -142,7 +142,14 @@ class Update_log extends MY_Controller
             "Route download button in detail.php to the new unduh_berkas action" => "Mengarahkan tombol download berkas di antarmuka agar memicu penarikan berkas terbaru dari Google Drive.",
             "Separate Download and View buttons and implement Ajax Document Preview modal in detail.php" => "Memecah tombol unduh dan lihat dokumen, serta mengimplementasikan Ajax dokumen preview.",
             "Add Document Preview Modal HTML and Ajax handler in detail.php" => "Menambahkan elemen modal pratinjau (preview iframe) dokumen Google Drive terintegrasi di halaman detail perangkat pembelajaran.",
-            "Filter getAllPembelajaran to fetch only active pembelajaran entries having count_mapel > 0" => "Menyaring kelas/rombel pada penyusunan jadwal agar hanya memunculkan kelas yang memiliki mata pelajaran aktif."
+            "Filter getAllPembelajaran to fetch only active pembelajaran entries having count_mapel > 0" => "Menyaring kelas/rombel pada penyusunan jadwal agar hanya memunculkan kelas yang memiliki mata pelajaran aktif.",
+            "Add Google AI API Key form to api_settings view" => "Menyediakan input konfigurasi Google AI API Key di halaman pengaturan API.",
+            "Update Settings controller to save google_ai_api_key in settings database" => "Menyimpan konfigurasi Google AI API Key ke database.",
+            "Create GoogleAI_Helper library to communicate with Gemini API and fetch structured curriculum agenda" => "Membuat pustaka library GoogleAI_Helper untuk komunikasi dengan REST API Gemini.",
+            "Add generate_agenda_ai_url in Perangkat_pembelajaran controller detail page" => "Menyediakan rute aksi pemicu AI di halaman detail pembelajaran.",
+            "Add generateAgendaAI method in Perangkat_pembelajaran_model" => "Menambahkan model pengisian materi dan kegiatan agenda harian yang dirumuskan oleh AI.",
+            "Add generate_agenda_ai action to Perangkat_pembelajaran controller" => "Menambahkan endpoint controller untuk memproses silabus agenda harian via Google AI.",
+            "Add Google AI Agenda generator buttons in empty and populated agenda states in detail.php" => "Menampilkan tombol 'Generate dengan Google AI' pada antarmuka manajemen agenda harian guru."
         ];
 
         if (isset($mappings[$desc])) {

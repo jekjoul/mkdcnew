@@ -272,7 +272,17 @@
                         <?php echo form_open($generate_agenda_url, ['class' => 'd-inline']); ?>
                         <input type="hidden" name="generate" value="1">
                         <button type="submit" class="btn btn-primary-600 radius-8 px-24 py-12">
-                            <iconify-icon icon="lucide:refresh-cw" class="me-1"></iconify-icon> Generate Agenda Harian
+                            <iconify-icon icon="lucide:refresh-cw" class="me-1"></iconify-icon> Generate Template Kosong
+                        </button>
+                        <?php echo form_close(); ?>
+
+                        <!-- Generate via Google AI -->
+                        <?php echo form_open($generate_agenda_ai_url, ['class' => 'd-inline']); ?>
+                        <input type="hidden" name="generate" value="1">
+                        <button type="submit" 
+                                onclick="return confirm('Apakah Anda yakin ingin men-generate agenda secara otomatis menggunakan Google AI (Gemini)? Hal ini akan merumuskan materi secara teratur sesuai Kurikulum Merdeka.')"
+                                class="btn btn-success-600 radius-8 px-24 py-12 d-inline-flex align-items-center gap-1">
+                            <iconify-icon icon="logos:google-gemini" class="align-middle"></iconify-icon> Generate dengan Google AI
                         </button>
                         <?php echo form_close(); ?>
 
@@ -305,7 +315,17 @@
                             <button type="submit"
                                 onclick="return confirm('Re-generate akan menghapus semua data agenda rombel ini. Lanjutkan?')"
                                 class="btn btn-sm btn-outline-warning radius-8 px-16 py-8">
-                                <iconify-icon icon="lucide:refresh-cw" class="me-1"></iconify-icon> Re-Generate
+                                <iconify-icon icon="lucide:refresh-cw" class="me-1"></iconify-icon> Re-Generate Kosong
+                            </button>
+                            <?php echo form_close(); ?>
+
+                            <!-- Re-Generate via Google AI -->
+                            <?php echo form_open($generate_agenda_ai_url, ['class' => 'd-inline']); ?>
+                            <input type="hidden" name="generate" value="1">
+                            <button type="submit"
+                                onclick="return confirm('Re-generate AI akan menghapus semua data agenda saat ini dan menggantinya dengan rumusan silabus baru dari Google AI. Lanjutkan?')"
+                                class="btn btn-sm btn-outline-success radius-8 px-16 py-8 d-inline-flex align-items-center gap-1">
+                                <iconify-icon icon="logos:google-gemini" class="align-middle text-xs"></iconify-icon> Re-Generate via Google AI
                             </button>
                             <?php echo form_close(); ?>
 
