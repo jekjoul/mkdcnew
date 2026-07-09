@@ -4,7 +4,7 @@
         <div class="col-md-6">
             <div class="card h-100">
                 <div class="card-header bg-warning-900">
-                    <h6 class="mb-0 text-light">Atur Waktu Mingguan</h6>
+                    <h6 class="mb-0 text-light">Atur Kerangka Waktu</h6>
                 </div>
                 <div class="card-body d-flex flex-column gap-3">
                     <div>

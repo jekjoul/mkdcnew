@@ -141,7 +141,8 @@ class Update_log extends MY_Controller
             "Create unduh_berkas action in Perangkat_pembelajaran controller" => "Membuat rute unduh berkas dinamis untuk mendownload versi dokumen terbaru dari Google Drive sebelum diteruskan ke browser pengguna.",
             "Route download button in detail.php to the new unduh_berkas action" => "Mengarahkan tombol download berkas di antarmuka agar memicu penarikan berkas terbaru dari Google Drive.",
             "Separate Download and View buttons and implement Ajax Document Preview modal in detail.php" => "Memecah tombol unduh dan lihat dokumen, serta mengimplementasikan Ajax dokumen preview.",
-            "Add Document Preview Modal HTML and Ajax handler in detail.php" => "Menambahkan elemen modal pratinjau (preview iframe) dokumen Google Drive terintegrasi di halaman detail perangkat pembelajaran."
+            "Add Document Preview Modal HTML and Ajax handler in detail.php" => "Menambahkan elemen modal pratinjau (preview iframe) dokumen Google Drive terintegrasi di halaman detail perangkat pembelajaran.",
+            "Filter getAllPembelajaran to fetch only active pembelajaran entries having count_mapel > 0" => "Menyaring kelas/rombel pada penyusunan jadwal agar hanya memunculkan kelas yang memiliki mata pelajaran aktif."
         ];
 
         if (isset($mappings[$desc])) {
