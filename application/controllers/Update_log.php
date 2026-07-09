@@ -158,7 +158,8 @@ class Update_log extends MY_Controller
             "Fix schedule matching logic and populate exact class times in generateAgendaAI model" => "Memperbaiki pencarian jadwal pelajaran dan kalkulasi jam pelajaran di generator agenda AI.",
             "Sync istirahat_json property decoding key in generateAgendaAI to match setlah_jp_ke key name" => "Menyelaraskan kunci pembacaan data JSON istirahat pada penentuan jadwal agar tidak macet.",
             "Sync istirahat_json key check in main generateAgenda model" => "Menyelaraskan kunci pembacaan data JSON istirahat di fungsi utama jadwal pelajaran.",
-            "Escape HTML content for materi and kegiatan display to prevent code execution XSS" => "Melakukan proteksi (escape HTML) materi agenda harian agar coding tidak dieksekusi oleh web browser."
+            "Escape HTML content for materi and kegiatan display to prevent code execution XSS" => "Melakukan proteksi (escape HTML) materi agenda harian agar coding tidak dieksekusi oleh web browser.",
+            "Load text helper in Perangkat_pembelajaran constructor to fix undefined character_limiter" => "Memuat helper teks bawaan CodeIgniter untuk mendukung pembatasan panjang kalimat materi agenda harian."
         ];
 
         if (isset($mappings[$desc])) {
