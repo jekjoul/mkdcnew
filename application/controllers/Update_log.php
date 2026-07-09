@@ -155,7 +155,10 @@ class Update_log extends MY_Controller
             "Save google_ai_model settings via Settings controller post handler" => "Menyimpan pengaturan dropdown versi model Gemini AI ke database.",
             "Dynamically load google_ai_model in GoogleAI_Helper constructor" => "Memuat versi model Gemini AI secara dinamis berdasarkan konfigurasi pengaturan.",
             "Add google_ai_model config to update_production.sql migration script" => "Menyertakan migrasi query sql insert ignore google_ai_model untuk pembaruan server produksi.",
-            "Fix schedule matching logic and populate exact class times in generateAgendaAI model" => "Memperbaiki pencarian jadwal pelajaran dan kalkulasi jam pelajaran di generator agenda AI."
+            "Fix schedule matching logic and populate exact class times in generateAgendaAI model" => "Memperbaiki pencarian jadwal pelajaran dan kalkulasi jam pelajaran di generator agenda AI.",
+            "Sync istirahat_json property decoding key in generateAgendaAI to match setlah_jp_ke key name" => "Menyelaraskan kunci pembacaan data JSON istirahat pada penentuan jadwal agar tidak macet.",
+            "Sync istirahat_json key check in main generateAgenda model" => "Menyelaraskan kunci pembacaan data JSON istirahat di fungsi utama jadwal pelajaran.",
+            "Escape HTML content for materi and kegiatan display to prevent code execution XSS" => "Melakukan proteksi (escape HTML) materi agenda harian agar coding tidak dieksekusi oleh web browser."
         ];
 
         if (isset($mappings[$desc])) {
