@@ -58,6 +58,7 @@ class Perangkat_pembelajaran extends MY_Controller
         $this->page_data['save_agenda_url'] = url('perangkat_pembelajaran/simpan_agenda/' . $id_pembelajaran_mapel);
         $this->page_data['salin_perangkat_url'] = url('perangkat_pembelajaran/salin_perangkat/' . $id_pembelajaran_mapel);
         $this->page_data['salin_agenda_url'] = url('perangkat_pembelajaran/salin_agenda/' . $id_pembelajaran_mapel);
+        $this->page_data['generate_agenda_ai_url'] = url('perangkat_pembelajaran/generate_agenda_ai/' . $id_pembelajaran_mapel);
         
         $this->load->view('perangkat_pembelajaran/detail', $this->page_data);
     }
@@ -211,6 +212,66 @@ class Perangkat_pembelajaran extends MY_Controller
             $this->session->set_flashdata('alert-type', 'danger');
             $this->session->set_flashdata('alert', 'Gagal generate agenda harian. Pastikan jadwal pelajaran dan hari aktif telah digenerate.');
         }
+        redirect('perangkat_pembelajaran/detail/' . $id_pembelajaran_mapel);
+    }
+
+    public function generate_agenda_ai($id_pembelajaran_mapel)
+    {
+        postAllowed();
+        ifPermissions('perangkat_pembelajaran_edit');
+
+        $item = $this->perangkat_model->getPembelajaranMapel($id_pembelajaran_mapel);
+        if (!$item) {
+            show_404();
+        }
+
+        // Count meetings
+        $slots_by_day = [];
+        $schedules = $this->db->get_where('jadwal_pelajaran_item', ['id_pembelajaran' => $item->id_pembelajaran])->result();
+        foreach ($schedules as $sched) {
+            $slots_by_day[strtolower($sched->hari)] = true;
+        }
+
+        $active_days = $this->db->where('id_tahun_pelajaran', $item->id_tahun_pelajaran)
+            ->where_in('status', ['Efektif', 'Daring', 'Luar Kelas'])
+            ->get('pembelajaran_hari_efektif')->result();
+
+        $meetings_count = 0;
+        $day_names = [
+            0 => 'minggu', 1 => 'senin', 2 => 'selasa', 3 => 'rabu', 4 => 'kamis', 5 => 'jumat', 6 => 'sabtu'
+        ];
+        foreach ($active_days as $ad) {
+            $w = (int) date('w', strtotime($ad->tanggal));
+            if (isset($slots_by_day[$day_names[$w]])) {
+                $meetings_count++;
+            }
+        }
+
+        if ($meetings_count === 0) {
+            $this->session->set_flashdata('alert-type', 'danger');
+            $this->session->set_flashdata('alert', 'Gagal generate. Tidak ditemukan hari aktif belajar yang sesuai dengan jadwal mingguan kelas ini.');
+            redirect('perangkat_pembelajaran/detail/' . $id_pembelajaran_mapel);
+        }
+
+        $this->load->library('GoogleAI_Helper');
+        $ai_res = $this->googleai_helper->generateAgenda($item->nama_mapel, $item->nama_tingkat, $meetings_count);
+
+        if (isset($ai_res['error'])) {
+            $this->session->set_flashdata('alert-type', 'danger');
+            $this->session->set_flashdata('alert', 'Gagal memproses Google AI (Gemini): ' . $ai_res['error']);
+            redirect('perangkat_pembelajaran/detail/' . $id_pembelajaran_mapel);
+        }
+
+        $success = $this->perangkat_model->generateAgendaAI($id_pembelajaran_mapel, $ai_res);
+        if ($success) {
+            $this->activity_model->add(logged('name') . ' Generate Agenda Harian via Google AI untuk #' . $id_pembelajaran_mapel);
+            $this->session->set_flashdata('alert-type', 'success');
+            $this->session->set_flashdata('alert', 'Agenda harian otomatis berbasis Kurikulum Indonesia berhasil dibuat oleh Google AI (Gemini Flash).');
+        } else {
+            $this->session->set_flashdata('alert-type', 'danger');
+            $this->session->set_flashdata('alert', 'Gagal menyimpan agenda harian hasil AI.');
+        }
+
         redirect('perangkat_pembelajaran/detail/' . $id_pembelajaran_mapel);
     }
 

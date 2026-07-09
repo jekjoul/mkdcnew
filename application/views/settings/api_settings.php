@@ -60,6 +60,21 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                         </div>
                     </div>
 
+                    <!-- Google AI API -->
+                    <div class="mb-3">
+                        <h6 class="text-primary-600 mb-2">
+                            <iconify-icon icon="logos:google-gemini" class="align-middle mr-1"></iconify-icon>
+                            Google AI (Gemini) API
+                        </h6>
+                        <hr class="mt-1 mb-3">
+
+                        <div class="form-group mb-3">
+                            <label class="form-label fw-semibold text-secondary-light" for="google_ai_api_key">Google AI API Key</label>
+                            <input type="text" class="form-control" name="google_ai_api_key" id="google_ai_api_key" value="<?php echo htmlspecialchars(setting('google_ai_api_key'), ENT_QUOTES, 'UTF-8') ?>" placeholder="Masukkan Google AI API Key" />
+                            <div class="text-xs text-secondary-light mt-1">API Key Google AI Studio (Gemini Pro/Flash) untuk pembuatan agenda harian otomatis.</div>
+                        </div>
+                    </div>
+
                 </div>
                 
                 <div class="card-footer text-end bg-transparent border-top-0 pt-0 pb-24 px-24">
