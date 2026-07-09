@@ -134,7 +134,12 @@ class Update_log extends MY_Controller
             "Create Welcome controller to serve public landing page on root URL and bypass login redirection" => "Membuat controller Welcome untuk menyajikan landing page informasi publik di halaman utama.",
             "Create welcome.php view landing page to satisfy Google console OAuth verification guidelines" => "Membuat tampilan halaman utama (welcome landing page) publik dengan informasi aplikasi untuk kebutuhan verifikasi Google OAuth.",
             "Update default_controller to welcome in routes.php" => "Mengubah default controller rute utama aplikasi (/) ke halaman publik Welcome.",
-            "Directly link Google Docs/Sheets files using dynamic editLink from Google Drive API instead of hardcoded document URL in detail.php" => "Mengatur tautan edit online agar dinamis mendeteksi tipe file (Word diarahkan ke Google Docs, Excel diarahkan ke Google Sheets)."
+            "Directly link Google Docs/Sheets files using dynamic editLink from Google Drive API instead of hardcoded document URL in detail.php" => "Mengatur tautan edit online agar dinamis mendeteksi tipe file (Word diarahkan ke Google Docs, Excel diarahkan ke Google Sheets).",
+            "Add downloadGoogleFile function to GoogleDrive_Helper.php library" => "Menambahkan fungsi penarikan (download/export) dokumen terbaru dari Google Drive ke server lokal.",
+            "Restore deleteFile method to GoogleDrive_Helper.php library" => "Memulihkan fungsi hapus file Google Drive di helper.",
+            "Define unduh_berkas_url parameter in Perangkat_pembelajaran controller detail page" => "Menyisipkan variabel URL unduh berkas dinamis pada halaman detail perangkat pembelajaran.",
+            "Create unduh_berkas action in Perangkat_pembelajaran controller" => "Membuat rute unduh berkas dinamis untuk mendownload versi dokumen terbaru dari Google Drive sebelum diteruskan ke browser pengguna.",
+            "Route download button in detail.php to the new unduh_berkas action" => "Mengarahkan tombol download berkas di antarmuka agar memicu penarikan berkas terbaru dari Google Drive."
         ];
 
         if (isset($mappings[$desc])) {

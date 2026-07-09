@@ -133,6 +133,40 @@ class GoogleDrive_Helper
     }
 
     /**
+     * Download/export file from Google Drive to local server path
+     */
+    public function downloadGoogleFile($fileId, $localPath, $isXlsx = false)
+    {
+        $accessToken = $this->getAccessToken();
+        if (!$accessToken || !$fileId) return false;
+
+        // If converted to Google Doc/Sheet, we must export it with target mime type
+        $exportMime = $isXlsx 
+            ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+            : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+
+        $url = "https://www.googleapis.com/drive/v3/files/{$fileId}/export?mimeType=" . urlencode($exportMime);
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Authorization: Bearer ' . $accessToken]);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        $data = curl_exec($ch);
+        
+        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($http_code === 200 && $data) {
+            file_put_contents($localPath, $data);
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Delete file from Google Drive
      */
     public function deleteFile($fileId)
