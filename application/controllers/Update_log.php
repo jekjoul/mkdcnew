@@ -150,7 +150,11 @@ class Update_log extends MY_Controller
             "Add generateAgendaAI method in Perangkat_pembelajaran_model" => "Menambahkan model pengisian materi dan kegiatan agenda harian yang dirumuskan oleh AI.",
             "Add generate_agenda_ai action to Perangkat_pembelajaran controller" => "Menambahkan endpoint controller untuk memproses silabus agenda harian via Google AI.",
             "Add Google AI Agenda generator buttons in empty and populated agenda states in detail.php" => "Menampilkan tombol 'Generate dengan Google AI' pada antarmuka manajemen agenda harian guru.",
-            "Switch model name to gemini-1.5-flash-latest to support free tier API version" => "Mengubah target model Gemini ke gemini-2.0-flash demi keandalan kueri versi gratis (free tier)."
+            "Switch model name to gemini-1.5-flash-latest to support free tier API version" => "Mengubah target model Gemini ke gemini-2.0-flash demi keandalan kueri versi gratis (free tier).",
+            "Add Google AI Model selection dropdown to api_settings view" => "Menambahkan dropdown pemilihan versi model Gemini AI di halaman pengaturan API.",
+            "Save google_ai_model settings via Settings controller post handler" => "Menyimpan pengaturan dropdown versi model Gemini AI ke database.",
+            "Dynamically load google_ai_model in GoogleAI_Helper constructor" => "Memuat versi model Gemini AI secara dinamis berdasarkan konfigurasi pengaturan.",
+            "Add google_ai_model config to update_production.sql migration script" => "Menyertakan migrasi query sql insert ignore google_ai_model untuk pembaruan server produksi."
         ];
 
         if (isset($mappings[$desc])) {

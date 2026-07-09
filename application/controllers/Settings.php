@@ -180,6 +180,7 @@ class Settings extends MY_Controller {
 		$this->settings_model->updateByKey('google_client_id', post('google_client_id'));
 		$this->settings_model->updateByKey('google_client_secret', post('google_client_secret'));
 		$this->settings_model->updateByKey('google_ai_api_key', post('google_ai_api_key'));
+		$this->settings_model->updateByKey('google_ai_model', post('google_ai_model'));
 
 		$this->session->set_flashdata('alert-type', 'success');
 		$this->session->set_flashdata('alert', 'Pengaturan API berhasil diperbarui.');

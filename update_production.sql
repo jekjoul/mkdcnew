@@ -100,3 +100,9 @@ INSERT INTO `settings` (`key`, `value`)
 SELECT 'google_ai_api_key', '0' FROM DUAL 
 WHERE NOT EXISTS (SELECT 1 FROM `settings` WHERE `key` = 'google_ai_api_key');
 
+-- Tambahkan konfigurasi Google AI Model jika belum ada di tabel settings
+INSERT INTO `settings` (`key`, `value`) 
+SELECT 'google_ai_model', 'gemini-2.0-flash' FROM DUAL 
+WHERE NOT EXISTS (SELECT 1 FROM `settings` WHERE `key` = 'google_ai_model');
+
+

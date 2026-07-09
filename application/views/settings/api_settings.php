@@ -73,6 +73,18 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                             <input type="text" class="form-control" name="google_ai_api_key" id="google_ai_api_key" value="<?php echo htmlspecialchars(setting('google_ai_api_key'), ENT_QUOTES, 'UTF-8') ?>" placeholder="Masukkan Google AI API Key" />
                             <div class="text-xs text-secondary-light mt-1">API Key Google AI Studio (Gemini Pro/Flash) untuk pembuatan agenda harian otomatis.</div>
                         </div>
+
+                        <div class="form-group mb-3">
+                            <label class="form-label fw-semibold text-secondary-light" for="google_ai_model">Pilih Model Gemini AI</label>
+                            <?php $curr_model = setting('google_ai_model') ?: 'gemini-2.0-flash'; ?>
+                            <select class="form-select form-control" name="google_ai_model" id="google_ai_model">
+                                <option value="gemini-2.0-flash" <?php echo $curr_model === 'gemini-2.0-flash' ? 'selected' : ''; ?>>Gemini 2.0 Flash (Sangat Cepat - Default Free Tier)</option>
+                                <option value="gemini-2.0-flash-lite" <?php echo $curr_model === 'gemini-2.0-flash-lite' ? 'selected' : ''; ?>>Gemini 2.0 Flash Lite (Hemat Kuota)</option>
+                                <option value="gemini-1.5-flash" <?php echo $curr_model === 'gemini-1.5-flash' ? 'selected' : ''; ?>>Gemini 1.5 Flash (Keandalan Tinggi)</option>
+                                <option value="gemini-1.5-pro" <?php echo $curr_model === 'gemini-1.5-pro' ? 'selected' : ''; ?>>Gemini 1.5 Pro (Kemampuan Analisis Tinggi)</option>
+                            </select>
+                            <div class="text-xs text-secondary-light mt-1">Sesuaikan model Gemini berdasarkan kebutuhan kecepatan, akurasi, atau kompatibilitas API Key Anda.</div>
+                        </div>
                     </div>
 
                 </div>
