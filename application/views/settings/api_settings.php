@@ -76,14 +76,17 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 
                         <div class="form-group mb-3">
                             <label class="form-label fw-semibold text-secondary-light" for="google_ai_model">Pilih Model Gemini AI</label>
-                            <?php $curr_model = setting('google_ai_model') ?: 'gemini-2.0-flash'; ?>
+                            <?php $curr_model = setting('google_ai_model') ?: 'gemini-3.1-flash-lite'; ?>
                             <select class="form-select form-control" name="google_ai_model" id="google_ai_model">
-                                <option value="gemini-2.0-flash" <?php echo $curr_model === 'gemini-2.0-flash' ? 'selected' : ''; ?>>Gemini 2.0 Flash (Sangat Cepat - Default Free Tier)</option>
-                                <option value="gemini-2.0-flash-lite" <?php echo $curr_model === 'gemini-2.0-flash-lite' ? 'selected' : ''; ?>>Gemini 2.0 Flash Lite (Hemat Kuota)</option>
-                                <option value="gemini-1.5-flash" <?php echo $curr_model === 'gemini-1.5-flash' ? 'selected' : ''; ?>>Gemini 1.5 Flash (Keandalan Tinggi)</option>
-                                <option value="gemini-1.5-pro" <?php echo $curr_model === 'gemini-1.5-pro' ? 'selected' : ''; ?>>Gemini 1.5 Pro (Kemampuan Analisis Tinggi)</option>
+                                <option value="gemini-3.1-flash-lite" <?php echo $curr_model === 'gemini-3.1-flash-lite' ? 'selected' : ''; ?>>Gemini 3.1 Flash Lite (Terbaru - Paling Direkomendasikan Free Tier)</option>
+                                <option value="gemini-3.5-flash" <?php echo $curr_model === 'gemini-3.5-flash' ? 'selected' : ''; ?>>Gemini 3.5 Flash</option>
+                                <option value="gemini-3-flash" <?php echo $curr_model === 'gemini-3-flash' ? 'selected' : ''; ?>>Gemini 3 Flash</option>
+                                <option value="gemini-2.5-flash" <?php echo $curr_model === 'gemini-2.5-flash' ? 'selected' : ''; ?>>Gemini 2.5 Flash</option>
+                                <option value="gemini-2.5-flash-lite" <?php echo $curr_model === 'gemini-2.5-flash-lite' ? 'selected' : ''; ?>>Gemini 2.5 Flash Lite</option>
+                                <option value="gemini-2.0-flash" <?php echo $curr_model === 'gemini-2.0-flash' ? 'selected' : ''; ?>>Gemini 2.0 Flash</option>
+                                <option value="gemini-1.5-flash" <?php echo $curr_model === 'gemini-1.5-flash' ? 'selected' : ''; ?>>Gemini 1.5 Flash</option>
                             </select>
-                            <div class="text-xs text-secondary-light mt-1">Sesuaikan model Gemini berdasarkan kebutuhan kecepatan, akurasi, atau kompatibilitas API Key Anda.</div>
+                            <div class="text-xs text-secondary-light mt-1">Sesuaikan model Gemini berdasarkan kompatibilitas API Key Free Tier Anda.</div>
                         </div>
                     </div>
 
