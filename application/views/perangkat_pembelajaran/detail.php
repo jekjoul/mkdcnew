@@ -233,8 +233,8 @@
                                                              <?php echo form_open(url('perangkat_pembelajaran/generate_berkas_ai/' . $item->id_pembelajaran_mapel)); ?>
                                                              <input type="hidden" name="field" value="<?php echo html_escape($field) ?>">
                                                              <button type="submit" 
-                                                                 onclick="return confirm('AI akan menyusun dokumen <?php echo html_escape($cfg['label']) ?> dan menyimpannya langsung ke Google Drive sebagai berkas DOCX/XLSX. Lanjutkan?')"
-                                                                 class="btn btn-sm btn-success-100 text-success-600 radius-8 px-12 py-8 d-inline-flex align-items-center gap-1">
+                                                                 data-label="<?php echo html_escape($cfg['label']) ?>"
+                                                                 class="btn btn-sm btn-success-100 text-success-600 radius-8 px-12 py-8 d-inline-flex align-items-center gap-1 trigger-ai">
                                                                  <iconify-icon icon="logos:google-gemini" class="align-middle"></iconify-icon>
                                                                  Generate via AI
                                                              </button>
@@ -415,8 +415,9 @@
                                     <div class="text-xs text-secondary-light mt-4">Tulis topik secara mendalam agar AI dapat menyusun RPP / Modul Ajar yang lengkap dan detail.</div>
                                 </div>
                                 <button type="submit" 
+                                    data-label="Modul Ajar / RPP"
                                     onclick="return confirm('AI akan menyusun modul ajar interaktif lengkap dan menyimpannya langsung ke Google Drive sebagai berkas DOCX. Lanjutkan?')"
-                                    class="btn btn-success-600 w-100 radius-8 py-10 d-inline-flex align-items-center justify-content-center gap-1">
+                                    class="btn btn-success-600 w-100 radius-8 py-10 d-inline-flex align-items-center justify-content-center gap-1 trigger-ai">
                                     <iconify-icon icon="logos:google-gemini" class="align-middle"></iconify-icon>
                                     Generate via Google AI
                                 </button>
@@ -500,8 +501,8 @@
                         <?php echo form_open($generate_agenda_ai_url, ['class' => 'd-inline']); ?>
                         <input type="hidden" name="generate" value="1">
                         <button type="submit" 
-                                onclick="return confirm('Apakah Anda yakin ingin men-generate agenda secara otomatis menggunakan Google AI (Gemini)? Hal ini akan merumuskan materi secara teratur sesuai Kurikulum Merdeka.')"
-                                class="btn btn-success-600 radius-8 px-24 py-12 d-inline-flex align-items-center gap-1">
+                                data-label="Agenda Pembelajaran Harian"
+                                class="btn btn-success-600 radius-8 px-24 py-12 d-inline-flex align-items-center gap-1 trigger-ai">
                             <iconify-icon icon="logos:google-gemini" class="align-middle"></iconify-icon> Generate dengan Google AI
                         </button>
                         <?php echo form_close(); ?>
@@ -543,8 +544,8 @@
                             <?php echo form_open($generate_agenda_ai_url, ['class' => 'd-inline']); ?>
                             <input type="hidden" name="generate" value="1">
                             <button type="submit"
-                                onclick="return confirm('Re-generate AI akan menghapus semua data agenda saat ini dan menggantinya dengan rumusan silabus baru dari Google AI. Lanjutkan?')"
-                                class="btn btn-sm btn-outline-success radius-8 px-16 py-8 d-inline-flex align-items-center gap-1">
+                                data-label="Agenda Pembelajaran Harian"
+                                class="btn btn-sm btn-outline-success radius-8 px-16 py-8 d-inline-flex align-items-center gap-1 trigger-ai">
                                 <iconify-icon icon="logos:google-gemini" class="align-middle text-xs"></iconify-icon> Re-Generate via Google AI
                             </button>
                             <?php echo form_close(); ?>
@@ -906,6 +907,33 @@
             }, 300);
         });
 
+        // Handle Trigger AI Loading Spinner
+        $(document).on('click', '.trigger-ai', function(e) {
+            var btn = $(this);
+            var form = btn.closest('form');
+            var docLabel = btn.data('label') || 'Dokumen';
+
+            // Confirm prompt first
+            var confirmMsg = "AI akan menyusun \"" + docLabel + "\" dan menyimpannya langsung ke Google Drive. Lanjutkan?";
+            if (docLabel.indexOf('Agenda') !== -1) {
+                confirmMsg = "Apakah Anda yakin ingin men-generate agenda secara otomatis menggunakan Google AI? Proses ini akan menyusun silabus baru.";
+            }
+            if (!confirm(confirmMsg)) {
+                e.preventDefault();
+                return false;
+            }
+
+            // Show Loading Spinner Modal
+            $('#ai-progress-text').html('Sedang memproses dan menyusun <strong>' + docLabel + '</strong> via Google AI (Gemini)...');
+            $('#ai-detail-progress-text').text('Menghubungi Google AI dan mensinkronisasikan berkas ke Google Drive. Mohon tunggu, proses ini memakan waktu beberapa detik.');
+            
+            var spinnerModal = new bootstrap.Modal(document.getElementById('modalAiSpinner'), {
+                backdrop: 'static',
+                keyboard: false
+            });
+            spinnerModal.show();
+        });
+
     });
 </script>
 
@@ -922,6 +950,21 @@
             </div>
             <div class="modal-footer border-top bg-light px-24 py-16">
                 <button type="button" class="btn btn-secondary radius-8 px-20 py-10" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Loading Spinner Global Google AI -->
+<div class="modal fade" id="modalAiSpinner" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content radius-16 border-0 shadow-lg">
+            <div class="modal-body p-40 text-center">
+                <div class="mb-24">
+                    <iconify-icon icon="line-md:loading-twotone-loop" class="text-success-600" style="font-size: 80px;"></iconify-icon>
+                </div>
+                <h6 class="fw-semibold text-primary-light mb-12" id="ai-progress-text">Sedang Memproses...</h6>
+                <p class="text-secondary-light text-sm mb-0" id="ai-detail-progress-text">Menghubungi Google AI dan mensinkronisasikan berkas ke Google Drive. Mohon tunggu, proses ini memakan waktu beberapa detik.</p>
             </div>
         </div>
     </div>

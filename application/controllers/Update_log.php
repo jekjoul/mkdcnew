@@ -180,7 +180,12 @@ class Update_log extends MY_Controller
             "Implement sequential AI generation buttons with lock/unlock state based on previous file upload in detail.php view" => "Mengunci/membuka akses tombol 'Generate via AI' secara berurutan berdasarkan kelengkapan berkas sebelumnya (CP -> TP -> ATP -> Kisi/Soal STS/SAS).",
             "Show warning feedback if Google Drive upload fails during AI generation" => "Menampilkan pesan peringatan jika berkas perangkat AI gagal disinkronkan ke Google Drive.",
             "Show detailed error feedback in generate_modul_ai when Google Drive upload fails" => "Menampilkan pesan peringatan rinci jika berkas modul ajar AI gagal disinkronkan ke Google Drive.",
-            "Fix getPembelajaranMapel query return type handling in model" => "Memperbaiki penanganan tipe data kembalian kueri pembelajaran mapel di model."
+            "Fix getPembelajaranMapel query return type handling in model" => "Memperbaiki penanganan tipe data kembalian kueri pembelajaran mapel di model.",
+            "Inject previous file reference content into sequential AI prompt context" => "Menyisipkan isi berkas sebelumnya sebagai referensi wajib prompt AI agar isinya berkesinambungan.",
+            "Add loading spinner modal markup and handle form submit trigger-ai in detail.php" => "Menambahkan modal loading spinner global dan penanganan aksi pemicu progres AI di JavaScript.",
+            "Add trigger-ai class and data-label attribute to AI generation buttons in detail.php view" => "Menambahkan selektor pemicu progress loader pada tombol pemicu berkas AI.",
+            "Add trigger-ai class to Modul Ajar AI generator button in detail.php" => "Menambahkan selektor pemicu progress loader pada tombol modul ajar AI.",
+            "Add trigger-ai class to Agenda AI generator buttons in detail.php" => "Menambahkan selektor pemicu progress loader pada tombol agenda AI."
         ];
 
         if (isset($mappings[$desc])) {

@@ -250,6 +250,26 @@ class Perangkat_pembelajaran extends MY_Controller
 
         $field_info = $valid_fields[$field];
 
+        // Fetch previous file content as reference to force consistency
+        $prev_file_context = "";
+        if ($current_idx > 0) {
+            $prev_field = $seq_order[$current_idx - 1];
+            $prev_file_name = $perangkat ? $perangkat->$prev_field : null;
+            if ($prev_file_name) {
+                $prev_path = './uploads/perangkat_pembelajaran/' . $prev_file_name;
+                if (is_file($prev_path)) {
+                    // Try reading first 4000 characters of local text for prompt context
+                    $raw_prev = file_get_contents($prev_path);
+                    $clean_prev = strip_tags($raw_prev);
+                    $clean_prev = preg_replace('/\s+/', ' ', $clean_prev);
+                    $clean_prev = substr($clean_prev, 0, 3000);
+                    
+                    $prev_doc_name = $valid_fields[$prev_field]['name'];
+                    $prev_file_context = "\nSebagai referensi wajib, Anda HARUS menyelaraskan isinya agar merujuk/berkesinambungan dengan berkas sebelumnya yaitu '{$prev_doc_name}' berikut:\n--- BACAAN DOKUMEN SEBELUMNYA ---\n{$clean_prev}\n--- AKHIR DOKUMEN SEBELUMNYA ---\n";
+                }
+            }
+        }
+
         // Construct context info
         $subject = $item->nama_mapel;
         $class_level = $item->nama_tingkat;
@@ -258,8 +278,9 @@ class Perangkat_pembelajaran extends MY_Controller
 
         $prompt = "Anda adalah pakar kurikulum dan pendidik di Indonesia. "
                 . "Buatlah draft dokumen resmi '{$field_info['name']}' yang mendalam dan komprehensif untuk mata pelajaran '{$subject}', "
-                . "tingkat kelas '{$class_level}', semester '{$semester}', dengan acuan '{$kurikulum}'. "
-                . "Desainlah isian dokumen tersebut dengan format HTML terstruktur rapi menggunakan heading, list, dan tabel jika diperlukan. "
+                . "tingkat kelas '{$class_level}', semester '{$semester}', dengan acuan '{$kurikulum}'."
+                . $prev_file_context
+                . "\nDesainlah isian dokumen tersebut dengan format HTML terstruktur rapi menggunakan heading (h1, h2, h3), list (ul, ol), dan tabel yang menarik untuk dibaca. "
                 . "Pastikan isinya sangat relevan dengan kurikulum dan kebutuhan sekolah formal di Indonesia saat ini. "
                 . "Jangan gunakan pembungkus markdown code block (```html), kirimkan teks HTML mentah saja.";
 
