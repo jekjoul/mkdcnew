@@ -282,6 +282,7 @@ class Perangkat_pembelajaran extends MY_Controller
                 . $prev_file_context
                 . "\nDesainlah isian dokumen tersebut dengan format HTML terstruktur rapi menggunakan heading (h1, h2, h3), list (ul, ol), dan tabel yang menarik untuk dibaca. "
                 . "Pastikan isinya sangat relevan dengan kurikulum dan kebutuhan sekolah formal di Indonesia saat ini. "
+                . "PENTING: Di dalam seluruh isi dokumen, hindari penggunaan istilah/kata 'peserta didik', ganti/gunakan kata 'murid' sebagai gantinya. "
                 . "Jangan gunakan pembungkus markdown code block (```html), kirimkan teks HTML mentah saja.";
 
         $api_key = setting('google_ai_api_key');
@@ -474,10 +475,11 @@ class Perangkat_pembelajaran extends MY_Controller
                 . "Buatlah satu Rencana Pelaksanaan Pembelajaran (RPP) / Modul Ajar interaktif yang mendalam untuk kelas '{$item->nama_tingkat}' "
                 . "mata pelajaran '{$item->nama_mapel}' dengan topik spesifik '{$topic}'. "
                 . "Fokus pada struktur baku Kurikulum Merdeka yang mencakup: "
-                . "1. Informasi Umum (Identitas, Kompetensi Awal, Profil Pelajar Pancasila, Sarpras, Target Peserta Didik). "
+                . "1. Informasi Umum (Identitas, Kompetensi Awal, Profil Pelajar Pancasila, Sarpras, Target Murid). "
                 . "2. Komponen Inti (Tujuan Pembelajaran, Pemahaman Bermakna, Pertanyaan Pemantik, Kegiatan Pembelajaran Pembuka-Inti-Penutup, Asesmen). "
-                . "3. Lampiran (Lembar Kerja Peserta Didik - LKPD, Bahan Bacaan Guru & Peserta Didik, Glosarium, Daftar Pustaka). "
+                . "3. Lampiran (Lembar Kerja Murid - LKM, Bahan Bacaan Guru & Murid, Glosarium, Daftar Pustaka). "
                 . "Keluaran HARUS berupa HTML terstruktur rapi menggunakan heading (h1, h2, h3), list (ul, ol), dan tabel yang menarik untuk dibaca. "
+                . "PENTING: Di dalam seluruh isi dokumen, hindari penggunaan istilah/kata 'peserta didik', ganti/gunakan kata 'murid' sebagai gantinya. "
                 . "Jangan gunakan pembungkus markdown code block (```html), kirimkan teks HTML mentah saja.";
 
         $this->load->library('GoogleAI_Helper');
