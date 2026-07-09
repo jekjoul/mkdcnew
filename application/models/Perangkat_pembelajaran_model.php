@@ -437,7 +437,7 @@ class Perangkat_pembelajaran_model extends MY_Model
     public function saveBerkas($id_pembelajaran_mapel, $files)
     {
         $item = $this->getPembelajaranMapel($id_pembelajaran_mapel);
-        if (!$item) return;
+        if (!$item) return false;
 
         $existing = $this->db->get_where($this->perangkat_table, [
             'id_tahun_pelajaran' => $item->id_tahun_pelajaran,
@@ -452,20 +452,20 @@ class Perangkat_pembelajaran_model extends MY_Model
             }
         }
 
-        if (empty($data)) return;
+        if (empty($data)) return false;
 
         $now = date('Y-m-d H:i:s');
         if ($existing) {
             $data['updated_at'] = $now;
             $this->db->where('id_perangkat', $existing->id_perangkat);
-            $this->db->update($this->perangkat_table, $data);
+            return $this->db->update($this->perangkat_table, $data);
         } else {
             $data['id_tahun_pelajaran'] = $item->id_tahun_pelajaran;
             $data['id_tingkat_sekolah'] = $item->id_tingkat_sekolah;
             $data['id_mapel'] = $item->id_mapel;
             $data['created_at'] = $now;
             $data['updated_at'] = $now;
-            $this->db->insert($this->perangkat_table, $data);
+            return $this->db->insert($this->perangkat_table, $data);
         }
     }
 
