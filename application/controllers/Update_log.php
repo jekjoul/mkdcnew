@@ -149,7 +149,8 @@ class Update_log extends MY_Controller
             "Add generate_agenda_ai_url in Perangkat_pembelajaran controller detail page" => "Menyediakan rute aksi pemicu AI di halaman detail pembelajaran.",
             "Add generateAgendaAI method in Perangkat_pembelajaran_model" => "Menambahkan model pengisian materi dan kegiatan agenda harian yang dirumuskan oleh AI.",
             "Add generate_agenda_ai action to Perangkat_pembelajaran controller" => "Menambahkan endpoint controller untuk memproses silabus agenda harian via Google AI.",
-            "Add Google AI Agenda generator buttons in empty and populated agenda states in detail.php" => "Menampilkan tombol 'Generate dengan Google AI' pada antarmuka manajemen agenda harian guru."
+            "Add Google AI Agenda generator buttons in empty and populated agenda states in detail.php" => "Menampilkan tombol 'Generate dengan Google AI' pada antarmuka manajemen agenda harian guru.",
+            "Switch model name to gemini-1.5-flash-latest to support free tier API version" => "Mengubah target model Gemini ke gemini-1.5-flash-latest demi keandalan kueri versi gratis (free tier)."
         ];
 
         if (isset($mappings[$desc])) {
