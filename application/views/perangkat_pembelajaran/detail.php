@@ -360,9 +360,11 @@
 
                                     <?php if (empty($modul_ajar_list)): ?>
                                         <tr>
-                                            <td colspan="3" class="text-center py-24 text-secondary-light text-sm">
+                                            <td></td>
+                                            <td class="text-center py-24 text-secondary-light text-sm">
                                                 Belum ada file Modul Ajar / RPP yang diunggah atau digenerate.
                                             </td>
+                                            <td></td>
                                         </tr>
                                     <?php endif; ?>
                                 </tbody>
