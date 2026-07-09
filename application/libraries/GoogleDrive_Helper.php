@@ -54,11 +54,17 @@ class GoogleDrive_Helper
             }
         }
 
+        // Get or Create Parent Folder ID
+        $folderId = $this->getOrCreateFolderId($accessToken);
+
         $metadata = [
             'name' => $filename
         ];
         if ($targetMime) {
             $metadata['mimeType'] = $targetMime;
+        }
+        if ($folderId) {
+            $metadata['parents'] = [$folderId];
         }
 
         $boundary = 'foo_bar_boundary';
@@ -104,6 +110,64 @@ class GoogleDrive_Helper
         }
 
         return $res;
+    }
+
+    /**
+     * Get or create a folder named 'MKDC - Berkas Pembelajaran' on Google Drive
+     */
+    private function getOrCreateFolderId($accessToken)
+    {
+        $folderName = 'MKDC - Berkas Pembelajaran';
+        $q = "mimeType='application/vnd.google-apps.folder' and name='" . addslashes($folderName) . "' and trashed=false";
+        $url = "https://www.googleapis.com/drive/v3/files?q=" . urlencode($q) . "&fields=files(id)";
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Authorization: Bearer ' . $accessToken]);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+        $output = curl_exec($ch);
+        curl_close($ch);
+
+        if ($output) {
+            $res = json_decode($output, true);
+            if (!empty($res['files'][0]['id'])) {
+                return $res['files'][0]['id'];
+            }
+        }
+
+        // If not found, create new folder
+        $url = "https://www.googleapis.com/drive/v3/files";
+        $data = [
+            'name' => $folderName,
+            'mimeType' => 'application/vnd.google-apps.folder'
+        ];
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Authorization: Bearer ' . $accessToken,
+            'Content-Type: application/json'
+        ]);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+        $output = curl_exec($ch);
+        curl_close($ch);
+
+        if ($output) {
+            $res = json_decode($output, true);
+            if (isset($res['id'])) {
+                // Share folder permissions so files inside inherit properly
+                $this->setPermissions($res['id'], $accessToken);
+                return $res['id'];
+            }
+        }
+
+        return null;
     }
 
     /**
