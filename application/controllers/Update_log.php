@@ -171,7 +171,10 @@ class Update_log extends MY_Controller
             "Add kurikulum select dropdown to v_tahun_pelajaran_form.php" => "Menambahkan pilihan input kurikulum di formulir tahun pelajaran.",
             "Add Kurikulum column to v_tahun_pelajaran_list.php table view" => "Menambahkan kolom kurikulum di tabel daftar master tahun pelajaran.",
             "Capture and save 'kurikulum' column input in Master controller tahunPelajaran actions" => "Menyimpan pilihan kurikulum (K-13 atau Kurikulum Merdeka) di database tahun pelajaran.",
-            "Add alter table kurikulum column migration query to update_production.sql" => "Menambahkan query migrasi kolom kurikulum ke database produksi."
+            "Add alter table kurikulum column migration query to update_production.sql" => "Menambahkan query migrasi kolom kurikulum ke database produksi.",
+            "Add Kurikulum column to master tahun_pelajaran/list.php view" => "Menampilkan data kurikulum di menu navigasi utama Tahun Pelajaran.",
+            "Capture and save 'kurikulum' column input in Tahun_pelajaran controller actions" => "Menyimpan konfigurasi kurikulum pada controller utama Tahun Pelajaran.",
+            "Add kurikulum select dropdown input to tahun_pelajaran/form.php view" => "Menambahkan dropdown pemilihan kurikulum di form input utama Tahun Pelajaran."
         ];
 
         if (isset($mappings[$desc])) {
