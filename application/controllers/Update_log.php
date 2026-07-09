@@ -122,7 +122,12 @@ class Update_log extends MY_Controller
             "Create Policies controller to render privacy policy and terms of service pages without strict login requirement" => "Membuat controller Policies untuk melayani akses halaman kebijakan dan ketentuan layanan secara publik.",
             "Create privacy policy view file linking features with MKDC application context" => "Membuat tampilan dokumen Kebijakan Privasi (Privacy Policy) yang selaras dengan fitur sekolah.",
             "Create terms of service view file linking features with MKDC application context" => "Membuat tampilan dokumen Syarat & Ketentuan Layanan (Terms of Service) yang selaras dengan fitur sekolah.",
-            "Add Policy and Terms links in footer.php" => "Menyisipkan tautan Kebijakan Privasi & Syarat Layanan di bagian footer bawah aplikasi."
+            "Add Policy and Terms links in footer.php" => "Menyisipkan tautan Kebijakan Privasi & Syarat Layanan di bagian footer bawah aplikasi.",
+            "Add Google connection status indicator beside user profile dropdown in header.php navbar" => "Menampilkan indikator status koneksi Google (Ikon & Teks Terhubung/Hubungkan ke Google) di bilah navigasi (navbar) atas.",
+            "Refactor upload berkas to use per-item forms with dedicated upload buttons in detail.php" => "Mengubah tabel unggah berkas menjadi form mandiri per-item agar dapat diunggah satu per satu.",
+            "Remove global form tag and global submit button from detail.php view" => "Menghapus form pembuka dan tombol simpan global karena sudah digantikan oleh form per-item.",
+            "Remove global form open tag in detail.php" => "Menghapus tag HTML form pembuka global di dalam detail perangkat pembelajaran.",
+            "Modify simpan_berkas in Perangkat_pembelajaran controller to support single item field uploads and handle errors" => "Menyesuaikan backend controller agar mendukung unggah berkas per-item serta menangani feedback/alert error Google Drive API secara informatif."
         ];
 
         if (isset($mappings[$desc])) {

@@ -352,6 +352,26 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                             </div>
                         </div><!-- Notification dropdown end -->
 
+                        <?php
+                        $user_id = logged('id');
+                        $CI =& get_instance();
+                        $current_user = $CI->db->get_where('users', ['id' => $user_id])->row();
+                        $is_google_connected = ($current_user && !empty($current_user->google_id));
+                        ?>
+                        <div class="d-flex align-items-center gap-2 me-12">
+                            <?php if ($is_google_connected): ?>
+                                <span class="badge bg-success-focus text-success-main radius-8 px-12 py-8 d-inline-flex align-items-center gap-1">
+                                    <iconify-icon icon="logos:google-icon" class="align-middle"></iconify-icon>
+                                    <span class="text-xs fw-semibold">Terhubung ke Google</span>
+                                </span>
+                            <?php else: ?>
+                                <a href="<?php echo url('profile/index/google') ?>" class="badge bg-neutral-200 text-neutral-600 radius-8 px-12 py-8 d-inline-flex align-items-center gap-1 hover-bg-neutral-300">
+                                    <iconify-icon icon="lucide:link" class="align-middle text-xs"></iconify-icon>
+                                    <span class="text-xs fw-semibold">Hubungkan ke Google</span>
+                                </a>
+                            <?php endif; ?>
+                        </div>
+
                         <div class="dropdown">
                             <button class="d-flex justify-content-center align-items-center rounded-circle"
                                 type="button" data-bs-toggle="dropdown">
