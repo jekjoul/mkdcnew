@@ -297,12 +297,12 @@
                     </div>
                     <div class="card-body p-24">
                         <div class="table-responsive">
-                            <table class="table bordered-table align-middle">
+                            <table class="table bordered-table align-middle" style="table-layout: fixed; width: 100%;">
                                 <thead>
                                     <tr>
-                                        <th width="40" class="text-center">No</th>
+                                        <th width="50" class="text-center">No</th>
                                         <th>Nama Modul / Rencana Kegiatan</th>
-                                        <th width="120" class="text-center">Aksi</th>
+                                        <th width="150" class="text-center">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -312,9 +312,9 @@
                                     ?>
                                         <tr>
                                             <td class="text-center fw-semibold"><?php echo $no_modul++ ?></td>
-                                            <td>
+                                            <td style="word-wrap: break-word; white-space: normal;">
                                                 <span class="fw-semibold text-primary-light d-block"><?php echo html_escape($modul->label) ?></span>
-                                                <span class="text-muted text-xs d-block mt-4">
+                                                <span class="text-muted text-xs d-block mt-4" style="word-break: break-all;">
                                                     <iconify-icon icon="lucide:file-text" class="align-middle"></iconify-icon> 
                                                     <?php echo html_escape($modul->nama_file) ?>
                                                 </span>
@@ -323,7 +323,7 @@
                                                 <div class="d-flex align-items-center gap-8 justify-content-center">
                                                     <?php if ($modul->drive_file_id): ?>
                                                         <button type="button"
-                                                            class="btn btn-xs btn-info-100 text-info-600 radius-8 p-8 d-inline-flex align-items-center"
+                                                            class="btn btn-xs btn-info-100 text-info-600 radius-8 p-8 d-inline-flex align-items-center btn-preview-doc"
                                                             title="Lihat (Preview)"
                                                             data-drive-id="<?php echo html_escape($modul->drive_file_id) ?>"
                                                             data-title="<?php echo html_escape($modul->label) ?>">
