@@ -130,7 +130,10 @@ class Update_log extends MY_Controller
             "Modify simpan_berkas in Perangkat_pembelajaran controller to support single item field uploads and handle errors" => "Menyesuaikan backend controller agar mendukung unggah berkas per-item serta menangani feedback/alert error Google Drive API secara informatif.",
             "Enforce secure HTTPS redirect URI using production domain in Profile controller google oauth flow" => "Mengatur paksa URI pengalihan Google OAuth profil agar menggunakan protokol aman HTTPS dengan domain resmi sekolah.",
             "Use same secure production domain redirect URI for code exchange in Profile controller callback" => "Menyelaraskan URI pengalihan callback untuk proses pertukaran token akses Google OAuth profil.",
-            "Add Google Drive files scope to Login controller oauth flow" => "Menambahkan scope izin akses file Google Drive (drive.file) pada sistem login utama Google."
+            "Add Google Drive files scope to Login controller oauth flow" => "Menambahkan scope izin akses file Google Drive (drive.file) pada sistem login utama Google.",
+            "Create Welcome controller to serve public landing page on root URL and bypass login redirection" => "Membuat controller Welcome untuk menyajikan landing page informasi publik di halaman utama.",
+            "Create welcome.php view landing page to satisfy Google console OAuth verification guidelines" => "Membuat tampilan halaman utama (welcome landing page) publik dengan informasi aplikasi untuk kebutuhan verifikasi Google OAuth.",
+            "Update default_controller to welcome in routes.php" => "Mengubah default controller rute utama aplikasi (/) ke halaman publik Welcome."
         ];
 
         if (isset($mappings[$desc])) {
