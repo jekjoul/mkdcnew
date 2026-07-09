@@ -935,7 +935,9 @@
 
             // Submit the form after a tiny delay so the modal rendering is fully initialized
             setTimeout(function() {
-                form.submit();
+                if (form.length > 0) {
+                    form[0].submit();
+                }
             }, 300);
         });
 
