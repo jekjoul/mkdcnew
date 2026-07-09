@@ -196,13 +196,61 @@
                                                     </a>
                                                 </div>
                                             <?php else: ?>
-                                                <?php echo form_open_multipart($save_berkas_url, ['class' => 'd-flex align-items-center gap-8']); ?>
-                                                <input type="hidden" name="single_field" value="<?php echo $field ?>">
-                                                <input type="file" name="<?php echo $field ?>" required class="form-control radius-8 form-control-sm w-auto" accept="<?php echo $cfg['accept'] ?>">
-                                                <button type="submit" class="btn btn-sm btn-primary-600 radius-8 px-16 py-8 d-inline-flex align-items-center gap-1">
-                                                    <iconify-icon icon="lucide:upload-cloud"></iconify-icon> Upload
-                                                </button>
-                                                <?php echo form_close(); ?>
+                                                 <?php 
+                                                 // Determine sequential generation access
+                                                 $seq_order = ['file_cp', 'file_tp', 'file_atp', 'file_kisi_sts', 'file_soal_sts', 'file_kisi_sas', 'file_soal_sas'];
+                                                 $current_idx = array_search($field, $seq_order);
+                                                 $can_generate_ai = true;
+                                                 $prev_label = '';
+                                                 
+                                                 if ($current_idx > 0) {
+                                                     $prev_field = $seq_order[$current_idx - 1];
+                                                     $prev_uploaded = $perangkat ? $perangkat->$prev_field : null;
+                                                     if (!$prev_uploaded) {
+                                                         $can_generate_ai = false;
+                                                         // Find label of previous field
+                                                         foreach ($files_config as $f_k => $cfg_item) {
+                                                             if ($f_k === $prev_field) {
+                                                                 $prev_label = $cfg_item['label'];
+                                                                 break;
+                                                             }
+                                                         }
+                                                     }
+                                                 }
+                                                 ?>
+
+                                                 <div class="d-flex flex-column gap-2">
+                                                     <?php echo form_open_multipart($save_berkas_url, ['class' => 'd-flex align-items-center gap-8']); ?>
+                                                     <input type="hidden" name="single_field" value="<?php echo $field ?>">
+                                                     <input type="file" name="<?php echo $field ?>" required class="form-control radius-8 form-control-sm w-auto" accept="<?php echo $cfg['accept'] ?>">
+                                                     <button type="submit" class="btn btn-sm btn-primary-600 radius-8 px-12 py-8 d-inline-flex align-items-center gap-1">
+                                                         <iconify-icon icon="lucide:upload-cloud"></iconify-icon> Upload
+                                                     </button>
+                                                     <?php echo form_close(); ?>
+
+                                                     <div class="d-flex align-items-center gap-8">
+                                                         <?php if ($can_generate_ai): ?>
+                                                             <?php echo form_open(url('perangkat_pembelajaran/generate_berkas_ai/' . $item->id_pembelajaran_mapel)); ?>
+                                                             <input type="hidden" name="field" value="<?php echo html_escape($field) ?>">
+                                                             <button type="submit" 
+                                                                 onclick="return confirm('AI akan menyusun dokumen <?php echo html_escape($cfg['label']) ?> dan menyimpannya langsung ke Google Drive sebagai berkas DOCX/XLSX. Lanjutkan?')"
+                                                                 class="btn btn-sm btn-success-100 text-success-600 radius-8 px-12 py-8 d-inline-flex align-items-center gap-1">
+                                                                 <iconify-icon icon="logos:google-gemini" class="align-middle"></iconify-icon>
+                                                                 Generate via AI
+                                                             </button>
+                                                             <?php echo form_close(); ?>
+                                                         <?php else: ?>
+                                                             <button type="button" 
+                                                                 disabled 
+                                                                 title="Silakan upload/generate <?php echo html_escape($prev_label) ?> terlebih dahulu"
+                                                                 class="btn btn-sm btn-light text-muted radius-8 px-12 py-8 d-inline-flex align-items-center gap-1">
+                                                                 <iconify-icon icon="lucide:lock-keyhole" class="text-xs"></iconify-icon>
+                                                                 Generate via AI (Terkunci)
+                                                             </button>
+                                                             <span class="text-xs text-danger fst-italic">Terkunci! Butuh <?php echo html_escape(preg_replace('/^\d+\.\s+/', '', $prev_label)) ?></span>
+                                                         <?php endif; ?>
+                                                     </div>
+                                                 </div>
                                             <?php endif; ?>
                                         </td>
                                     </tr>

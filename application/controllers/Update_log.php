@@ -174,7 +174,10 @@ class Update_log extends MY_Controller
             "Add alter table kurikulum column migration query to update_production.sql" => "Menambahkan query migrasi kolom kurikulum ke database produksi.",
             "Add Kurikulum column to master tahun_pelajaran/list.php view" => "Menampilkan data kurikulum di menu navigasi utama Tahun Pelajaran.",
             "Capture and save 'kurikulum' column input in Tahun_pelajaran controller actions" => "Menyimpan konfigurasi kurikulum pada controller utama Tahun Pelajaran.",
-            "Add kurikulum select dropdown input to tahun_pelajaran/form.php view" => "Menambahkan dropdown pemilihan kurikulum di form input utama Tahun Pelajaran."
+            "Add kurikulum select dropdown input to tahun_pelajaran/form.php view" => "Menambahkan dropdown pemilihan kurikulum di form input utama Tahun Pelajaran.",
+            "Add tp.kurikulum to db select in getPembelajaranMapel model query" => "Menyertakan kurikulum aktif tahun pelajaran ke dalam model data perangkat pembelajaran.",
+            "Implement generate_berkas_ai endpoint in Perangkat_pembelajaran controller for sequential docx/xlsx file generation" => "Menyediakan endpoint untuk membuat berkas perangkat pembelajaran secara otomatis via Google AI.",
+            "Implement sequential AI generation buttons with lock/unlock state based on previous file upload in detail.php view" => "Mengunci/membuka akses tombol 'Generate via AI' secara berurutan berdasarkan kelengkapan berkas sebelumnya (CP -> TP -> ATP -> Kisi/Soal STS/SAS)."
         ];
 
         if (isset($mappings[$desc])) {
