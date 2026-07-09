@@ -5,7 +5,7 @@ class GoogleAI_Helper
 {
     protected $CI;
     protected $api_key;
-    protected $model = 'gemini-1.5-flash-latest';
+    protected $model = 'gemini-2.0-flash';
 
     public function __construct()
     {
