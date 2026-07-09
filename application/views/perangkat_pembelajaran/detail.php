@@ -297,10 +297,10 @@
                     </div>
                     <div class="card-body p-24">
                         <div class="table-responsive">
-                            <table class="table bordered-table align-middle" style="table-layout: fixed; width: 100%;">
+                            <table class="table bordered-table align-middle" id="modulAjarTable">
                                 <thead>
                                     <tr>
-                                        <th width="50" class="text-center">No</th>
+                                        <th width="40" class="text-center">No</th>
                                         <th>Nama Modul / Rencana Kegiatan</th>
                                         <th width="150" class="text-center">Aksi</th>
                                     </tr>
@@ -312,7 +312,7 @@
                                     ?>
                                         <tr>
                                             <td class="text-center fw-semibold"><?php echo $no_modul++ ?></td>
-                                            <td style="word-wrap: break-word; white-space: normal;">
+                                            <td>
                                                 <span class="fw-semibold text-primary-light d-block"><?php echo html_escape($modul->label) ?></span>
                                                 <span class="text-muted text-xs d-block mt-4" style="word-break: break-all;">
                                                     <iconify-icon icon="lucide:file-text" class="align-middle"></iconify-icon> 
@@ -828,6 +828,16 @@
         if ($('#agendaTable').length > 0) {
             $('#agendaTable').DataTable({
                 pageLength: 25,
+                order: [
+                    [0, 'asc']
+                ]
+            });
+        }
+
+        // Initialize DataTable for modul ajar list
+        if ($('#modulAjarTable').length > 0) {
+            $('#modulAjarTable').DataTable({
+                pageLength: 10,
                 order: [
                     [0, 'asc']
                 ]
