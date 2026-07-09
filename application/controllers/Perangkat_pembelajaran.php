@@ -349,25 +349,32 @@ class Perangkat_pembelajaran extends MY_Controller
         $this->load->library('GoogleDrive_Helper');
         $drive_res = $this->googledrive_helper->uploadFile($filepath, $file_name, 'application/msword', true);
 
-        // Save local
+        // Save local & Drive IDs together
         $uploaded = [$field => $file_name];
-        $this->perangkat_model->saveBerkas($id_pembelajaran_mapel, $uploaded);
-
+        
         $drive_error = null;
         if (isset($drive_res['id'])) {
             $key_drive = str_replace('file_', '', $field) . '_drive_file_id';
-            $drive_ids = [$key_drive => $drive_res['id']];
-            $this->perangkat_model->saveDriveIds($id_pembelajaran_mapel, $drive_ids);
+            $uploaded[$key_drive] = $drive_res['id'];
         } else {
             $drive_error = isset($drive_res['error']) ? $drive_res['error'] : 'Gagal terhubung ke Google Drive API.';
         }
 
-        if ($drive_error) {
-            $this->session->set_flashdata('alert-type', 'warning');
-            $this->session->set_flashdata('alert', $field_info['name'] . ' berhasil digenerate secara lokal, tetapi gagal disinkronkan ke Google Drive untuk Edit Online. Masalah: ' . $drive_error);
+        $db_saved = $this->perangkat_model->saveBerkas($id_pembelajaran_mapel, $uploaded);
+
+        if (!$db_saved) {
+            $db_error = $this->db->error();
+            $db_err_msg = isset($db_error['message']) ? $db_error['message'] : 'Query SQL gagal dieksekusi.';
+            $this->session->set_flashdata('alert-type', 'danger');
+            $this->session->set_flashdata('alert', 'Gagal menyimpan data ke database SQL! Silakan periksa tabel database Anda. Masalah: ' . $db_err_msg);
         } else {
-            $this->session->set_flashdata('alert-type', 'success');
-            $this->session->set_flashdata('alert', $field_info['name'] . ' baru berhasil digenerate oleh AI, disimpan ke Drive, dan siap diedit online.');
+            if ($drive_error) {
+                $this->session->set_flashdata('alert-type', 'warning');
+                $this->session->set_flashdata('alert', $field_info['name'] . ' berhasil digenerate secara lokal, tetapi gagal disinkronkan ke Google Drive untuk Edit Online. Masalah: ' . $drive_error);
+            } else {
+                $this->session->set_flashdata('alert-type', 'success');
+                $this->session->set_flashdata('alert', $field_info['name'] . ' baru berhasil digenerate oleh AI, disimpan ke Drive, dan siap diedit online.');
+            }
         }
         redirect('perangkat_pembelajaran/detail/' . $id_pembelajaran_mapel);
     }
