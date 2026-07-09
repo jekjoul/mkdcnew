@@ -127,7 +127,9 @@ class Update_log extends MY_Controller
             "Refactor upload berkas to use per-item forms with dedicated upload buttons in detail.php" => "Mengubah tabel unggah berkas menjadi form mandiri per-item agar dapat diunggah satu per satu.",
             "Remove global form tag and global submit button from detail.php view" => "Menghapus form pembuka dan tombol simpan global karena sudah digantikan oleh form per-item.",
             "Remove global form open tag in detail.php" => "Menghapus tag HTML form pembuka global di dalam detail perangkat pembelajaran.",
-            "Modify simpan_berkas in Perangkat_pembelajaran controller to support single item field uploads and handle errors" => "Menyesuaikan backend controller agar mendukung unggah berkas per-item serta menangani feedback/alert error Google Drive API secara informatif."
+            "Modify simpan_berkas in Perangkat_pembelajaran controller to support single item field uploads and handle errors" => "Menyesuaikan backend controller agar mendukung unggah berkas per-item serta menangani feedback/alert error Google Drive API secara informatif.",
+            "Enforce secure HTTPS redirect URI using production domain in Profile controller google oauth flow" => "Mengatur paksa URI pengalihan Google OAuth profil agar menggunakan protokol aman HTTPS dengan domain resmi sekolah.",
+            "Use same secure production domain redirect URI for code exchange in Profile controller callback" => "Menyelaraskan URI pengalihan callback untuk proses pertukaran token akses Google OAuth profil."
         ];
 
         if (isset($mappings[$desc])) {
