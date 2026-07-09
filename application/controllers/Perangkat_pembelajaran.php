@@ -8,6 +8,7 @@ class Perangkat_pembelajaran extends MY_Controller
         parent::__construct();
         $this->load->model('Perangkat_pembelajaran_model', 'perangkat_model');
         $this->perangkat_model->ensureTables();
+        $this->load->helper('text');
     }
 
     public function index()
