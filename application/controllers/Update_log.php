@@ -192,7 +192,8 @@ class Update_log extends MY_Controller
             "Add custom form properties and specific layout structure to AI prompt for Kisi-kisi generation" => "Menyematkan parameter kisi-kisi (jumlah soal, bentuk soal, alokasi waktu) dan struktur 10 kolom persis ke dalam instruksi AI.",
             "Apply Word landscape CSS styling conditionally based on layout type in generate_berkas_ai" => "Menerapkan format halaman mendatar (landscape) pada CSS berkas Word kisi-kisi hasil AI.",
             "Differentiate Kisi-kisi AI buttons to trigger configuration modal in detail.php" => "Membuat tombol generate AI khusus untuk kisi-kisi agar memicu dialog parameter input.",
-            "Add modal dialog and Javascript click triggers for Kisi-kisi AI parameter configuration in detail.php" => "Menambahkan dialog konfigurasi input jumlah soal, bentuk, alokasi waktu, serta dynamic field toggle di detail.php."
+            "Add modal dialog and Javascript click triggers for Kisi-kisi AI parameter configuration in detail.php" => "Menambahkan dialog konfigurasi input jumlah soal, bentuk, alokasi waktu, serta dynamic field toggle di detail.php.",
+            "Differentiate Soal AI prompt to force full questions matching previous Kisi-kisi reference content in generate_berkas_ai" => "Membuat prompt naskah soal AI terstruktur lengkap tanpa lompatan nomor berdasarkan berkas kisi-kisi sebelumnya."
         ];
 
         if (isset($mappings[$desc])) {
