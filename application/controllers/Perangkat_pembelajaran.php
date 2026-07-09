@@ -332,15 +332,22 @@ class Perangkat_pembelajaran extends MY_Controller
         $uploaded = [$field => $file_name];
         $this->perangkat_model->saveBerkas($id_pembelajaran_mapel, $uploaded);
 
-        // Save Drive ID
+        $drive_error = null;
         if (isset($drive_res['id'])) {
             $key_drive = str_replace('file_', '', $field) . '_drive_file_id';
             $drive_ids = [$key_drive => $drive_res['id']];
             $this->perangkat_model->saveDriveIds($id_pembelajaran_mapel, $drive_ids);
+        } else {
+            $drive_error = isset($drive_res['error']) ? $drive_res['error'] : 'Gagal terhubung ke Google Drive API.';
         }
 
-        $this->session->set_flashdata('alert-type', 'success');
-        $this->session->set_flashdata('alert', $field_info['name'] . ' baru berhasil digenerate oleh AI, disimpan ke Drive, dan siap diedit online.');
+        if ($drive_error) {
+            $this->session->set_flashdata('alert-type', 'warning');
+            $this->session->set_flashdata('alert', $field_info['name'] . ' berhasil digenerate secara lokal, tetapi gagal disinkronkan ke Google Drive untuk Edit Online. Masalah: ' . $drive_error);
+        } else {
+            $this->session->set_flashdata('alert-type', 'success');
+            $this->session->set_flashdata('alert', $field_info['name'] . ' baru berhasil digenerate oleh AI, disimpan ke Drive, dan siap diedit online.');
+        }
         redirect('perangkat_pembelajaran/detail/' . $id_pembelajaran_mapel);
     }
 
@@ -512,11 +519,17 @@ class Perangkat_pembelajaran extends MY_Controller
         $drive_res = $this->googledrive_helper->uploadFile($filepath, $file_name, 'application/msword', true);
         
         $drive_file_id = isset($drive_res['id']) ? $drive_res['id'] : null;
+        $drive_error = isset($drive_res['error']) ? $drive_res['error'] : null;
 
         $this->perangkat_model->saveModulAjar($id_pembelajaran_mapel, $file_name, $drive_file_id, 'Modul: ' . $topic);
 
-        $this->session->set_flashdata('alert-type', 'success');
-        $this->session->set_flashdata('alert', 'Modul Ajar / RPP baru berhasil digenerate oleh AI, disimpan ke Drive, dan siap diedit online.');
+        if (!$drive_file_id) {
+            $this->session->set_flashdata('alert-type', 'warning');
+            $this->session->set_flashdata('alert', 'Modul Ajar berhasil digenerate lokal, namun gagal disinkronkan ke Google Drive untuk Edit Online. Masalah: ' . ($drive_error ?: 'Google Drive tidak terhubung.'));
+        } else {
+            $this->session->set_flashdata('alert-type', 'success');
+            $this->session->set_flashdata('alert', 'Modul Ajar / RPP baru berhasil digenerate oleh AI, disimpan ke Drive, dan siap diedit online.');
+        }
         redirect('perangkat_pembelajaran/detail/' . $id_pembelajaran_mapel . '?tab=modul');
     }
 
