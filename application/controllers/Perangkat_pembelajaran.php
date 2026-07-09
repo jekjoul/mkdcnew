@@ -76,10 +76,17 @@ class Perangkat_pembelajaran extends MY_Controller
             'file_kisi_sts', 'file_soal_sts', 'file_kisi_sas', 'file_soal_sas'
         ];
 
+        // Support single field upload from item-level forms
+        $single_field = post('single_field');
+        if ($single_field && in_array($single_field, $fields, true)) {
+            $fields = [$single_field];
+        }
+
         $uploaded = [];
         $drive_ids = [];
         $this->load->library('GoogleDrive_Helper');
 
+        $drive_error = null;
         foreach ($fields as $field) {
             $file_name = $this->uploadFile($field, $id_pembelajaran_mapel);
             if ($file_name) {
@@ -93,6 +100,8 @@ class Perangkat_pembelajaran extends MY_Controller
                 if (isset($drive_res['id'])) {
                     $key_drive = str_replace('file_', '', $field) . '_drive_file_id';
                     $drive_ids[$key_drive] = $drive_res['id'];
+                } elseif (isset($drive_res['error'])) {
+                    $drive_error = $drive_res['error'];
                 }
             }
         }
@@ -105,8 +114,15 @@ class Perangkat_pembelajaran extends MY_Controller
         }
 
         $this->activity_model->add(logged('name') . ' Menyimpan Berkas Perangkat Pembelajaran untuk #' . $id_pembelajaran_mapel);
-        $this->session->set_flashdata('alert-type', 'success');
-        $this->session->set_flashdata('alert', 'Berkas perangkat pembelajaran berhasil disimpan dan disinkronkan ke Google Drive.');
+        
+        if ($drive_error) {
+            $this->session->set_flashdata('alert-type', 'warning');
+            $this->session->set_flashdata('alert', 'Berkas berhasil disimpan di server lokal, tetapi gagal sinkron ke Google Drive. Error: ' . $drive_error);
+        } else {
+            $this->session->set_flashdata('alert-type', 'success');
+            $this->session->set_flashdata('alert', 'Berkas berhasil disimpan dan disinkronkan ke Google Drive.');
+        }
+        
         redirect('perangkat_pembelajaran/detail/' . $id_pembelajaran_mapel);
     }
 
