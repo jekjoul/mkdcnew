@@ -50,10 +50,10 @@ class Login extends CI_Controller {
 			'client_id' => $client['client_id'],
 			'redirect_uri' => $this->googleRedirectUri(),
 			'response_type' => 'code',
-			'scope' => 'openid email profile',
+			'scope' => 'openid email profile https://www.googleapis.com/auth/drive.file',
 			'state' => $state,
-			'access_type' => 'online',
-			'prompt' => 'select_account',
+			'access_type' => 'offline',
+			'prompt' => 'select_account consent',
 		];
 
 		redirect($client['auth_uri'] . '?' . http_build_query($params), 'refresh');
