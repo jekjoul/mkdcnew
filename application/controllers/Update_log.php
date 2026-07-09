@@ -154,7 +154,8 @@ class Update_log extends MY_Controller
             "Add Google AI Model selection dropdown to api_settings view" => "Menambahkan dropdown pemilihan versi model Gemini AI di halaman pengaturan API.",
             "Save google_ai_model settings via Settings controller post handler" => "Menyimpan pengaturan dropdown versi model Gemini AI ke database.",
             "Dynamically load google_ai_model in GoogleAI_Helper constructor" => "Memuat versi model Gemini AI secara dinamis berdasarkan konfigurasi pengaturan.",
-            "Add google_ai_model config to update_production.sql migration script" => "Menyertakan migrasi query sql insert ignore google_ai_model untuk pembaruan server produksi."
+            "Add google_ai_model config to update_production.sql migration script" => "Menyertakan migrasi query sql insert ignore google_ai_model untuk pembaruan server produksi.",
+            "Fix schedule matching logic and populate exact class times in generateAgendaAI model" => "Memperbaiki pencarian jadwal pelajaran dan kalkulasi jam pelajaran di generator agenda AI."
         ];
 
         if (isset($mappings[$desc])) {

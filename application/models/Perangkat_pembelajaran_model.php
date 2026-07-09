@@ -297,16 +297,26 @@ class Perangkat_pembelajaran_model extends MY_Model
         // Clear existing agenda first
         $this->db->delete($this->agenda_table, ['id_pembelajaran_mapel' => $id_pembelajaran_mapel]);
 
-        // Map AI list to scheduled days
-        $slots_by_day = [];
-        $schedules = $this->db->get_where('jadwal_pelajaran_item', ['id_pembelajaran' => $item->id_pembelajaran])->result();
+        // Get class schedules (jadwal pelajaran) specifically for this mapel
+        $schedules = $this->db->get_where('jadwal_pelajaran_item', [
+            'id_pembelajaran' => $item->id_pembelajaran,
+            'id_mapel' => $item->id_mapel
+        ])->result();
+
+        if (empty($schedules)) return false;
+
+        // Get pengaturan jadwal for calculating exact time
         $pengaturan = $this->db->get_where('jadwal_pelajaran_pengaturan', ['id_pembelajaran' => $item->id_pembelajaran])->result();
+        if (empty($pengaturan)) {
+            $pengaturan = $this->db->get_where('jadwal_pelajaran_pengaturan', ['id_pembelajaran' => 0])->result();
+        }
         
         $pengaturan_by_day = [];
         foreach ($pengaturan as $p) {
             $pengaturan_by_day[strtolower($p->hari)] = $p;
         }
 
+        $slots_by_day = [];
         foreach ($schedules as $sched) {
             $day_key = strtolower($sched->hari);
             if (!isset($slots_by_day[$day_key])) {
