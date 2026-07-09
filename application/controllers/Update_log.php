@@ -188,7 +188,11 @@ class Update_log extends MY_Controller
             "Add trigger-ai class to Agenda AI generator buttons in detail.php" => "Menambahkan selektor pemicu progress loader pada tombol agenda AI.",
             "Update saveBerkas model function to return boolean status indicating DB insert/update success" => "Mengembalikan status boolean pada method penyimpanan berkas model perangkat.",
             "Add database insert/update confirmation logic and notification alert in generate_berkas_ai" => "Menambahkan penangkapan status kueri SQL dan pelaporan alert error jika database menolak input data.",
-            "Create parent folder 'MKDC - Berkas Pembelajaran' on Google Drive if it doesn't exist and upload files into it" => "Mencari atau membuat folder 'MKDC - Berkas Pembelajaran' di Google Drive secara otomatis untuk meletakkan berkas unggahan."
+            "Create parent folder 'MKDC - Berkas Pembelajaran' on Google Drive if it doesn't exist and upload files into it" => "Mencari atau membuat folder 'MKDC - Berkas Pembelajaran' di Google Drive secara otomatis untuk meletakkan berkas unggahan.",
+            "Add custom form properties and specific layout structure to AI prompt for Kisi-kisi generation" => "Menyematkan parameter kisi-kisi (jumlah soal, bentuk soal, alokasi waktu) dan struktur 10 kolom persis ke dalam instruksi AI.",
+            "Apply Word landscape CSS styling conditionally based on layout type in generate_berkas_ai" => "Menerapkan format halaman mendatar (landscape) pada CSS berkas Word kisi-kisi hasil AI.",
+            "Differentiate Kisi-kisi AI buttons to trigger configuration modal in detail.php" => "Membuat tombol generate AI khusus untuk kisi-kisi agar memicu dialog parameter input.",
+            "Add modal dialog and Javascript click triggers for Kisi-kisi AI parameter configuration in detail.php" => "Menambahkan dialog konfigurasi input jumlah soal, bentuk, alokasi waktu, serta dynamic field toggle di detail.php."
         ];
 
         if (isset($mappings[$desc])) {

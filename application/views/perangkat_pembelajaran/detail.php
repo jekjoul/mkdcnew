@@ -230,15 +230,25 @@
 
                                                      <div class="d-flex align-items-center gap-8">
                                                          <?php if ($can_generate_ai): ?>
-                                                             <?php echo form_open(url('perangkat_pembelajaran/generate_berkas_ai/' . $item->id_pembelajaran_mapel)); ?>
-                                                             <input type="hidden" name="field" value="<?php echo html_escape($field) ?>">
-                                                             <button type="submit" 
-                                                                 data-label="<?php echo html_escape($cfg['label']) ?>"
-                                                                 class="btn btn-sm btn-success-100 text-success-600 radius-8 px-12 py-8 d-inline-flex align-items-center gap-1 trigger-ai">
-                                                                 <iconify-icon icon="logos:google-gemini" class="align-middle"></iconify-icon>
-                                                                 Generate via AI
-                                                             </button>
-                                                             <?php echo form_close(); ?>
+                                                              <?php if ($cfg['key'] === 'kisi_sts' || $cfg['key'] === 'kisi_sas'): ?>
+                                                                  <button type="button" 
+                                                                      data-field="<?php echo html_escape($field) ?>"
+                                                                      data-label="<?php echo html_escape($cfg['label']) ?>"
+                                                                      class="btn btn-sm btn-success-100 text-success-600 radius-8 px-12 py-8 d-inline-flex align-items-center gap-1 btn-trigger-kisi-modal">
+                                                                      <iconify-icon icon="logos:google-gemini" class="align-middle"></iconify-icon>
+                                                                      Generate via AI
+                                                                  </button>
+                                                              <?php else: ?>
+                                                                  <?php echo form_open(url('perangkat_pembelajaran/generate_berkas_ai/' . $item->id_pembelajaran_mapel)); ?>
+                                                                  <input type="hidden" name="field" value="<?php echo html_escape($field) ?>">
+                                                                  <button type="submit" 
+                                                                      data-label="<?php echo html_escape($cfg['label']) ?>"
+                                                                      class="btn btn-sm btn-success-100 text-success-600 radius-8 px-12 py-8 d-inline-flex align-items-center gap-1 trigger-ai">
+                                                                      <iconify-icon icon="logos:google-gemini" class="align-middle"></iconify-icon>
+                                                                      Generate via AI
+                                                                  </button>
+                                                                  <?php echo form_close(); ?>
+                                                              <?php endif; ?>
                                                          <?php else: ?>
                                                              <button type="button" 
                                                                  disabled 
@@ -933,6 +943,49 @@
             }
         });
 
+        // Trigger Kisi-kisi Parameter Config Modal
+        $(document).on('click', '.btn-trigger-kisi-modal', function() {
+            var field = $(this).data('field');
+            var label = $(this).data('label');
+            
+            $('#kisi-field-input').val(field);
+            $('#kisiConfigTitle').text('Konfigurasi AI: ' + label);
+
+            // Reset forms
+            $('#kisiForm')[0].reset();
+            $('#form-group-pg, #form-group-essai').show(); // show both by default
+
+            var modalKisi = new bootstrap.Modal(document.getElementById('modalKisiConfig'));
+            modalKisi.show();
+        });
+
+        // Dynamic toggle pg / essai inputs based on select box
+        $(document).on('change', '#kisi-bentuk-soal', function() {
+            var val = $(this).val();
+            if (val === 'Pilihan Ganda') {
+                $('#form-group-pg').show();
+                $('#form-group-essai').hide();
+                $('#kisi-jumlah-essai').val('0');
+            } else if (val === 'Essai') {
+                $('#form-group-pg').hide();
+                $('#form-group-essai').show();
+                $('#kisi-jumlah-pg').val('0');
+            } else {
+                $('#form-group-pg').show();
+                $('#form-group-essai').show();
+            }
+        });
+
+        // Submit Kisi parameter form with inline button loading
+        $(document).on('submit', '#kisiForm', function() {
+            var submitBtn = $('#btn-submit-kisi-ai');
+            submitBtn.prop('disabled', true);
+            submitBtn.html('<iconify-icon icon="line-md:loading-twotone-loop" class="align-middle me-1"></iconify-icon> AI Sedang Menyusun Kisi-kisi...');
+            
+            // Keep modal open but let form submit natively
+            return true;
+        });
+
     });
 </script>
 
@@ -953,4 +1006,53 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Kisi-kisi Parameter Config -->
+<div class="modal fade" id="modalKisiConfig" tabindex="-1" aria-labelledby="kisiConfigTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content radius-16 border-0 shadow-lg">
+            <div class="modal-header border-bottom bg-light px-24 py-16">
+                <h6 class="modal-title fw-semibold text-primary-light" id="kisiConfigTitle">Konfigurasi AI Kisi-kisi</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <?php echo form_open(url('perangkat_pembelajaran/generate_berkas_ai/' . $item->id_pembelajaran_mapel), ['id' => 'kisiForm']); ?>
+            <input type="hidden" name="field" id="kisi-field-input" value="">
+            <div class="modal-body p-24">
+                
+                <div class="mb-16">
+                    <label class="form-label text-sm fw-semibold text-secondary-light">Bentuk Soal</label>
+                    <select name="bentuk_soal" id="kisi-bentuk-soal" class="form-select radius-8" required>
+                        <option value="Pilihan Ganda & Essai">Pilihan Ganda & Essai</option>
+                        <option value="Pilihan Ganda">Pilihan Ganda</option>
+                        <option value="Essai">Essai</option>
+                    </select>
+                </div>
+
+                <div class="row gy-3 mb-16">
+                    <div class="col-6" id="form-group-pg">
+                        <label class="form-label text-sm fw-semibold text-secondary-light">Jumlah Soal PG</label>
+                        <input type="number" name="jumlah_pg" id="kisi-jumlah-pg" value="20" min="0" max="100" class="form-control radius-8" required>
+                    </div>
+                    <div class="col-6" id="form-group-essai">
+                        <label class="form-label text-sm fw-semibold text-secondary-light">Jumlah Soal Essai</label>
+                        <input type="number" name="jumlah_essai" id="kisi-jumlah-essai" value="5" min="0" max="100" class="form-control radius-8" required>
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <label class="form-label text-sm fw-semibold text-secondary-light">Alokasi Waktu (Menit)</label>
+                    <input type="number" name="alokasi_waktu" value="90" min="10" max="300" class="form-control radius-8" required>
+                </div>
+
+            </div>
+            <div class="modal-footer border-top bg-light px-24 py-16">
+                <button type="button" class="btn btn-secondary radius-8 px-20 py-10" data-bs-dismiss="modal">Batal</button>
+                <button type="submit" id="btn-submit-kisi-ai" class="btn btn-success radius-8 px-20 py-10">
+                    <iconify-icon icon="logos:google-gemini" class="align-middle me-1"></iconify-icon>
+                    Generate via AI
+                </button>
+            </div>
+            <?php echo form_close(); ?>
+        </div>
+    </div>
 </div>
