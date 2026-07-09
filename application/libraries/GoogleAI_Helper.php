@@ -11,6 +11,7 @@ class GoogleAI_Helper
     {
         $this->CI =& get_instance();
         $this->api_key = setting('google_ai_api_key') ?: '';
+        $this->model = setting('google_ai_model') ?: 'gemini-2.0-flash';
     }
 
     /**
