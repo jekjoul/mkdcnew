@@ -349,18 +349,18 @@ class Perangkat_pembelajaran extends MY_Controller
         $this->load->library('GoogleDrive_Helper');
         $drive_res = $this->googledrive_helper->uploadFile($filepath, $file_name, 'application/msword', true);
 
-        // Save local
+        // Save local & Drive IDs together
         $uploaded = [$field => $file_name];
-        $this->perangkat_model->saveBerkas($id_pembelajaran_mapel, $uploaded);
-
+        
         $drive_error = null;
         if (isset($drive_res['id'])) {
             $key_drive = str_replace('file_', '', $field) . '_drive_file_id';
-            $drive_ids = [$key_drive => $drive_res['id']];
-            $this->perangkat_model->saveDriveIds($id_pembelajaran_mapel, $drive_ids);
+            $uploaded[$key_drive] = $drive_res['id'];
         } else {
             $drive_error = isset($drive_res['error']) ? $drive_res['error'] : 'Gagal terhubung ke Google Drive API.';
         }
+
+        $this->perangkat_model->saveBerkas($id_pembelajaran_mapel, $uploaded);
 
         if ($drive_error) {
             $this->session->set_flashdata('alert-type', 'warning');
