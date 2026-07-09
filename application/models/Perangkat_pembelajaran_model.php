@@ -207,7 +207,11 @@ class Perangkat_pembelajaran_model extends MY_Model
                 $istirahat = json_decode($p_day->istirahat_json) ?: [];
                 $istirahat_map = [];
                 foreach ($istirahat as $ist) {
-                    $istirahat_map[$ist->setelah_jp_ke] = $ist->durasi_menit;
+                    $after_slot = isset($ist->after) ? (int)$ist->after : (isset($ist->setelah_jp_ke) ? (int)$ist->setelah_jp_ke : 0);
+                    $durasi = isset($ist->duration) ? (int)$ist->duration : (isset($ist->durasi_menit) ? (int)$ist->durasi_menit : 0);
+                    if ($after_slot > 0) {
+                        $istirahat_map[$after_slot] = $durasi;
+                    }
                 }
 
                 // Helper to find slot times
@@ -338,7 +342,12 @@ class Perangkat_pembelajaran_model extends MY_Model
                 $istirahat = json_decode($p_day->istirahat_json) ?: [];
                 $istirahat_map = [];
                 foreach ($istirahat as $ist) {
-                    $istirahat_map[$ist->setelah_jp_ke] = $ist->durasi_menit;
+                    // Check either 'after' (used by weekly scheduler settings) or 'setelah_jp_ke'
+                    $after_slot = isset($ist->after) ? (int)$ist->after : (isset($ist->setelah_jp_ke) ? (int)$ist->setelah_jp_ke : 0);
+                    $durasi = isset($ist->duration) ? (int)$ist->duration : (isset($ist->durasi_menit) ? (int)$ist->durasi_menit : 0);
+                    if ($after_slot > 0) {
+                        $istirahat_map[$after_slot] = $durasi;
+                    }
                 }
 
                 $getSlotTime = function($target_slot) use ($p_day, $istirahat_map) {

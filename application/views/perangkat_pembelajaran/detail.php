@@ -386,7 +386,14 @@
                                             </td>
                                             <td>
                                                 <div class="text-sm text-primary-light">
-                                                    <?php echo !empty($row->materi) ? character_limiter(strip_tags($row->materi), 100) : '<span class="text-muted fst-italic text-xs">Materi belum diisi</span>' ?>
+                                                    <?php 
+                                                    if (!empty($row->materi)) {
+                                                        $materi_plain = strip_tags($row->materi);
+                                                        echo html_escape(character_limiter($materi_plain, 100));
+                                                    } else {
+                                                        echo '<span class="text-muted fst-italic text-xs">Materi belum diisi</span>';
+                                                    }
+                                                    ?>
                                                 </div>
                                                 <textarea class="d-none hidden-materi"><?php echo html_escape($row->materi) ?></textarea>
                                                 <textarea class="d-none hidden-kegiatan"><?php echo html_escape($row->kegiatan) ?></textarea>
