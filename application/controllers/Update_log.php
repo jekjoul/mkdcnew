@@ -133,7 +133,8 @@ class Update_log extends MY_Controller
             "Add Google Drive files scope to Login controller oauth flow" => "Menambahkan scope izin akses file Google Drive (drive.file) pada sistem login utama Google.",
             "Create Welcome controller to serve public landing page on root URL and bypass login redirection" => "Membuat controller Welcome untuk menyajikan landing page informasi publik di halaman utama.",
             "Create welcome.php view landing page to satisfy Google console OAuth verification guidelines" => "Membuat tampilan halaman utama (welcome landing page) publik dengan informasi aplikasi untuk kebutuhan verifikasi Google OAuth.",
-            "Update default_controller to welcome in routes.php" => "Mengubah default controller rute utama aplikasi (/) ke halaman publik Welcome."
+            "Update default_controller to welcome in routes.php" => "Mengubah default controller rute utama aplikasi (/) ke halaman publik Welcome.",
+            "Directly link Google Docs/Sheets files using dynamic editLink from Google Drive API instead of hardcoded document URL in detail.php" => "Mengatur tautan edit online agar dinamis mendeteksi tipe file (Word diarahkan ke Google Docs, Excel diarahkan ke Google Sheets)."
         ];
 
         if (isset($mappings[$desc])) {
