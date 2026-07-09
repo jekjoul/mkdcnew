@@ -295,21 +295,25 @@ class Perangkat_pembelajaran extends MY_Controller
                 $jml_soal_str = $jml_pg . " Soal Pilihan Ganda & " . $jml_essai . " Soal Essai";
             }
 
+            $jenis_sumatif = (strpos($field, 'sts') !== false) ? 'SUMATIF TENGAH SEMESTER (STS)' : 'SUMATIF AKHIR SEMESTER (SAS)';
+
             $prompt = "Anda adalah pakar pembuat instrumen evaluasi pendidikan di Indonesia. "
-                    . "Buatlah DOKUMEN KISI-KISI SOAL evaluasi untuk:\n"
-                    . "Satuan Pendidikan : {$item->nama_lembaga}\n"
-                    . "Mata Pelajaran : {$subject}\n"
-                    . "Kelas/Semester : {$class_level} / {$semester}\n"
-                    . "Kurikulum yang digunakan : {$kurikulum}\n"
-                    . "Tahun Pelajaran : {$item->tahun_pelajaran}\n"
-                    . "Bentuk Penilaian : {$field_info['name']}\n"
-                    . "Jumlah Soal : {$jml_soal_str}\n"
-                    . "Alokasi Waktu : {$alokasi_waktu} Menit\n"
-                    . "Bentuk Soal : {$bentuk_soal}\n"
-                    . "Penyusun / Penulis Soal : " . ($item->nama_ptk ?: '-') . "\n\n"
+                    . "Buatlah draft dokumen Kisi-kisi dalam format HTML.\n\n"
                     . "ATURAN FORMAT DOKUMEN:\n"
-                    . "1. Di bagian teratas, cetak informasi detail keterangan di atas dalam format daftar atau tabel profil yang bersih.\n"
-                    . "2. Setelah keterangan di atas, buatlah SATU tabel utama dengan kolom berurutan:\n"
+                    . "1. Di bagian paling atas, tuliskan judul besar berikut dengan huruf kapital tebal (bold) di tengah (center):\n"
+                    . "   <h2 style='text-align: center;'>KISI-KISI PENULISAN SOAL {$jenis_sumatif}</h2>\n"
+                    . "2. Setelah judul, cetak informasi berikut secara detail di bagian kiri menggunakan format teks biasa paragraf teratur (JANGAN gunakan tabel untuk informasi ini, cukup gunakan teks biasa dengan tanda titik dua ':'): \n"
+                    . "   Satuan Pendidikan : {$item->nama_lembaga}\n"
+                    . "   Mata Pelajaran : {$subject}\n"
+                    . "   Kelas / Semester : {$class_level} / {$semester}\n"
+                    . "   Kurikulum yang digunakan : {$kurikulum}\n"
+                    . "   Tahun Pelajaran : {$item->tahun_pelajaran}\n"
+                    . "   Bentuk Penilaian : {$field_info['name']}\n"
+                    . "   Jumlah Soal : {$jml_soal_str}\n"
+                    . "   Alokasi Waktu : {$alokasi_waktu} Menit\n"
+                    . "   Bentuk Soal : {$bentuk_soal}\n"
+                    . "   Penyusun / Penulis Soal : " . ($item->nama_ptk ?: '-') . "\n"
+                    . "3. Di bawah informasi tersebut, buatlah SATU tabel utama kisi-kisi penulisan soal dengan orientasi landscape lebar (tabel didesain agar muat banyak kolom secara mendatar). Tabel ini harus memiliki kolom berurutan:\n"
                     . "   1. No\n"
                     . "   2. Tujuan Pembelajaran\n"
                     . "   3. Materi\n"
@@ -320,9 +324,9 @@ class Perangkat_pembelajaran extends MY_Controller
                     . "   8. Bentuk Soal\n"
                     . "   9. No. Soal\n"
                     . "   10. Skor\n"
-                    . "3. TIDAK PERLU menuliskan penjelasan pendahuluan, deskripsi lainnya, petunjuk, atau penutup apapun. Cukup keterangan atas dan tabel utama kisi-kisi saja.\n"
-                    . "4. Sesuaikan indikator, tujuan pembelajaran, dan no soal secara teratur logis sesuai kurikulum yang dipilih.\n"
-                    . "5. Tuliskan keluaran langsung berupa tag HTML mentah saja (tanpa pembungkus markdown ```html).";
+                    . "4. TIDAK PERLU menuliskan penjelasan pendahuluan, deskripsi lainnya, petunjuk pengisian, atau tanda tangan penutup apapun. Cukup judul, informasi teks biasa di atas, dan tabel utama kisi-kisi saja.\n"
+                    . "5. PENTING: Di dalam seluruh isi dokumen, hindari penggunaan istilah/kata 'peserta didik', ganti/gunakan kata 'murid' sebagai gantinya.\n"
+                    . "6. Kirimkan langsung berupa tag HTML mentah saja (tanpa pembungkus markdown ```html).";
         } else {
             $prompt = "Anda adalah pakar kurikulum dan pendidik di Indonesia. "
                     . "Buatlah draft dokumen resmi '{$field_info['name']}' yang mendalam dan komprehensif untuk mata pelajaran '{$subject}', "
