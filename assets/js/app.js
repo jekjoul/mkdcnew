@@ -37,15 +37,32 @@
     let bestMatch = null;
     let maxMatchLen = -1;
 
+    let originUrl = window.location.origin;
+    // Normalize root path URL (like http://localhost/mkdc_new_draft)
+    let pathSegments = window.location.pathname.split('/').filter(Boolean);
+    let isRootPath = (pathSegments.length === 0 || (pathSegments.length === 1 && pathSegments[0] === 'mkdc_new_draft'));
+
     $("ul#sidebar-menu a").each(function () {
       let menuUrl = this.href.split('?')[0].replace(/\/$/, "");
-      if (currentUrl === menuUrl) {
-        bestMatch = $(this);
-        maxMatchLen = menuUrl.length;
-      } else if (currentUrl.startsWith(menuUrl + "/") && menuUrl.length > maxMatchLen) {
-        // Only consider partial subpath matches if it's the longest match (to avoid false parents)
-        bestMatch = $(this);
-        maxMatchLen = menuUrl.length;
+      
+      // If it is the dashboard/root link
+      let menuPathSegments = this.pathname.split('/').filter(Boolean);
+      let isMenuRoot = (menuPathSegments.length === 0 || (menuPathSegments.length === 1 && menuPathSegments[0] === 'mkdc_new_draft'));
+
+      if (isMenuRoot) {
+        // Dashboard only matches exactly
+        if (currentUrl === menuUrl) {
+          bestMatch = $(this);
+          maxMatchLen = menuUrl.length;
+        }
+      } else {
+        if (currentUrl === menuUrl) {
+          bestMatch = $(this);
+          maxMatchLen = menuUrl.length;
+        } else if (currentUrl.startsWith(menuUrl + "/") && menuUrl.length > maxMatchLen) {
+          bestMatch = $(this);
+          maxMatchLen = menuUrl.length;
+        }
       }
     });
 
