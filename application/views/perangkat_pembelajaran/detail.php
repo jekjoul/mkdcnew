@@ -296,8 +296,8 @@
                         <h6 class="mb-0 text-primary-light">Daftar Modul Ajar / RPP Aktif</h6>
                     </div>
                     <div class="card-body p-24">
-                        <div class="table-responsive">
-                            <table class="table bordered-table align-middle" id="modulAjarTable">
+                        <div class="table-responsive w-100">
+                            <table class="table bordered-table align-middle w-100" id="modulAjarTable" style="width: 100% !important;">
                                 <thead>
                                     <tr>
                                         <th width="40" class="text-center">No</th>
@@ -591,8 +591,8 @@
                     </div>
 
                     <div class="card-body p-24">
-                        <div class="table-responsive">
-                            <table class="table bordered-table" id="agendaTable">
+                        <div class="table-responsive w-100">
+                            <table class="table bordered-table w-100" id="agendaTable" style="width: 100% !important;">
                                 <thead>
                                     <tr>
                                         <th class="text-center" width="70">Pert. Ke</th>
