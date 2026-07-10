@@ -199,7 +199,8 @@ class Update_log extends MY_Controller
             "Convert Modul Ajar RPP list table into a DataTable to allow clean sorting, pagination, and prevent overflow-x layout break" => "Mengubah tabel modul ajar manual & AI menjadi DataTable agar memiliki fitur sorting, pencarian, paginasi, dan lebar kolom yang proporsional.",
             "Initialize DataTable for modulAjarTable in JavaScript on detail.php document.ready" => "Menginisialisasi JQuery DataTable untuk tabel modul ajar pada javascript dokumen.",
             "Update generate_agenda_ai controller logic to extract and inject Modul Ajar (RPP) labels as reference context to AI prompt" => "Mengambil daftar topik modul ajar (RPP) yang telah dibuat untuk dijadikan referensi wajib dalam menyelaraskan rencana pertemuan harian.",
-            "Update GoogleAI_Helper.php generateAgenda signature and insert Modul Ajar context into agenda generation prompt" => "Menambahkan parameter opsional modulListStr pada method generateAgenda serta menyuntikkan instruksi sinkronisasi silabus dengan topik RPP."
+            "Update GoogleAI_Helper.php generateAgenda signature and insert Modul Ajar context into agenda generation prompt" => "Menambahkan parameter opsional modulListStr pada method generateAgenda serta menyuntikkan instruksi sinkronisasi silabus dengan topik RPP.",
+            "Combine 'Jadwal Pelajaran' and 'Jadwal Tidak Aktif' into a single sidebar dropdown menu" => "Menggabungkan menu samping (sidebar) 'Jadwal Pelajaran' dan 'Jadwal Tidak Aktif' ke dalam satu menu dropdown Jadwal Pelajaran agar lebih teratur."
         ];
 
         if (isset($mappings[$desc])) {
