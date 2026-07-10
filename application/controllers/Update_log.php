@@ -204,7 +204,11 @@ class Update_log extends MY_Controller
             "Adjust active page JQuery path matching logic in app.js to accurately match and differentiate specific subpaths" => "Memperbaiki kalkulasi penentuan menu aktif (active-page) pada sidebar agar tidak terjadi tabrakan penandaan aktif antara halaman 'Calon Siswa' dengan halaman 'Validasi Daftar Ulang'.",
             "Refine sidebar active menu path matching to prevent root dashboard path and partial segments from clashing" => "Membatasi pencocokan otomatis menu aktif pada tautan root/dashboard agar tidak ikut menyala ketika halaman sub-fitur lainnya sedang dimuat.",
             "Fix teacher dashboard access permission check to avoid loop and access denied error" => "Memperbaiki pengecekan hak akses (permission) pada index dashboard guru dari 'guru_list' menjadi 'menu_dashboard_guru' guna mencegah eror Access Denied dan looping pengalihan halaman.",
-            "Add missing modul_ajar_list query and URL parameters to Guru.php perangkat_detail function" => "Menambahkan penarikan data modul_ajar_list dan URL endpoints generator AI di fungsi detail perangkat portal guru guna mencegah eror variabel tidak terdefinisi."
+            "Add missing modul_ajar_list query and URL parameters to Guru.php perangkat_detail function" => "Menambahkan penarikan data modul_ajar_list dan URL endpoints generator AI di fungsi detail perangkat portal guru guna mencegah eror variabel tidak terdefinisi.",
+            "Create dynamic assignment and exam input view for teachers in guru/input_nilai.php to keep it consistent with the admin view" => "Menerapkan antarmuka input sub-nilai tugas dan ujian harian dinamis beserta kalkulasi nilai harian otomatis di portal Guru.",
+            "Add extra columns to nilai_siswa and nilai_siswa_pengaturan to support dynamically defined assignment and exam sub-scores" => "Menambahkan kolom ekstra 'extra_tugas', 'extra_uh', 'labels_tugas', dan 'labels_uh' pada skema database pengaturan nilai.",
+            "Save dynamic assignment labels and student sub-score JSONs in Nilai_siswa.php simpan_nilai function" => "Menyimpan konfigurasi nama kolom sub-nilai tugas/UH serta data angka nilai siswa dalam format JSON ke database.",
+            "Update Guru.php simpan_nilai function to process dynamically defined assignments, exams, and sub-score JSONs" => "Mengintegrasikan penyimpanan database sub-nilai tugas/UH dinamis dari form input portal Guru ke server."
         ];
 
         if (isset($mappings[$desc])) {
