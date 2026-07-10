@@ -33,27 +33,38 @@
 
   //to keep the current page active
   $(function () {
-    for (
-      var nk = window.location,
-        o = $("ul#sidebar-menu a")
-          .filter(function () {
-            if (this.href == nk) return true;
-            let hrefPath = this.pathname.replace(/\/$/, "");
-            let nkPath = nk.pathname.replace(/\/$/, "");
-            if (hrefPath && nkPath && nkPath.indexOf(hrefPath + '/') === 0) {
-                return true;
-            }
-            return false;
-          })
-          .addClass("active-page") // anchor
-          .parent()
-          .addClass("active-page");
-      ;
+    let currentUrl = window.location.href.split('?')[0].replace(/\/$/, "");
+    let bestMatch = null;
+    let maxMatchLen = -1;
 
-    ) {
-      // li
-      if (!o.is("li")) break;
-      o = o.parent().addClass("show").parent().addClass("open");
+    $("ul#sidebar-menu a").each(function () {
+      let menuUrl = this.href.split('?')[0].replace(/\/$/, "");
+      if (currentUrl === menuUrl) {
+        bestMatch = $(this);
+        maxMatchLen = menuUrl.length;
+      } else if (currentUrl.startsWith(menuUrl + "/") && menuUrl.length > maxMatchLen) {
+        // Only consider partial subpath matches if it's the longest match (to avoid false parents)
+        bestMatch = $(this);
+        maxMatchLen = menuUrl.length;
+      }
+    });
+
+    if (bestMatch) {
+      bestMatch.addClass("active-page");
+      let parentLi = bestMatch.parent().addClass("active-page");
+      
+      // Traverse up to open parent dropdowns
+      let curr = parentLi;
+      while (curr.length > 0 && !curr.is("#sidebar-menu")) {
+        if (curr.is("li")) {
+          curr.addClass("open");
+        }
+        if (curr.is("ul") && curr.hasClass("sidebar-submenu")) {
+          curr.addClass("show").slideDown(0);
+          curr.parent().addClass("open dropdown-open");
+        }
+        curr = curr.parent();
+      }
     }
   });
 

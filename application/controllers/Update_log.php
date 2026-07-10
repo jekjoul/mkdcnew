@@ -200,7 +200,8 @@ class Update_log extends MY_Controller
             "Initialize DataTable for modulAjarTable in JavaScript on detail.php document.ready" => "Menginisialisasi JQuery DataTable untuk tabel modul ajar pada javascript dokumen.",
             "Update generate_agenda_ai controller logic to extract and inject Modul Ajar (RPP) labels as reference context to AI prompt" => "Mengambil daftar topik modul ajar (RPP) yang telah dibuat untuk dijadikan referensi wajib dalam menyelaraskan rencana pertemuan harian.",
             "Update GoogleAI_Helper.php generateAgenda signature and insert Modul Ajar context into agenda generation prompt" => "Menambahkan parameter opsional modulListStr pada method generateAgenda serta menyuntikkan instruksi sinkronisasi silabus dengan topik RPP.",
-            "Combine 'Jadwal Pelajaran' and 'Jadwal Tidak Aktif' into a single sidebar dropdown menu" => "Menggabungkan menu samping (sidebar) 'Jadwal Pelajaran' dan 'Jadwal Tidak Aktif' ke dalam satu menu dropdown Jadwal Pelajaran agar lebih teratur."
+            "Combine 'Jadwal Pelajaran' and 'Jadwal Tidak Aktif' into a single sidebar dropdown menu" => "Menggabungkan menu samping (sidebar) 'Jadwal Pelajaran' dan 'Jadwal Tidak Aktif' ke dalam satu menu dropdown Jadwal Pelajaran agar lebih teratur.",
+            "Adjust active page JQuery path matching logic in app.js to accurately match and differentiate specific subpaths" => "Memperbaiki kalkulasi penentuan menu aktif (active-page) pada sidebar agar tidak terjadi tabrakan penandaan aktif antara halaman 'Calon Siswa' dengan halaman 'Validasi Daftar Ulang'."
         ];
 
         if (isset($mappings[$desc])) {
