@@ -202,7 +202,8 @@ class Update_log extends MY_Controller
             "Update GoogleAI_Helper.php generateAgenda signature and insert Modul Ajar context into agenda generation prompt" => "Menambahkan parameter opsional modulListStr pada method generateAgenda serta menyuntikkan instruksi sinkronisasi silabus dengan topik RPP.",
             "Combine 'Jadwal Pelajaran' and 'Jadwal Tidak Aktif' into a single sidebar dropdown menu" => "Menggabungkan menu samping (sidebar) 'Jadwal Pelajaran' dan 'Jadwal Tidak Aktif' ke dalam satu menu dropdown Jadwal Pelajaran agar lebih teratur.",
             "Adjust active page JQuery path matching logic in app.js to accurately match and differentiate specific subpaths" => "Memperbaiki kalkulasi penentuan menu aktif (active-page) pada sidebar agar tidak terjadi tabrakan penandaan aktif antara halaman 'Calon Siswa' dengan halaman 'Validasi Daftar Ulang'.",
-            "Refine sidebar active menu path matching to prevent root dashboard path and partial segments from clashing" => "Membatasi pencocokan otomatis menu aktif pada tautan root/dashboard agar tidak ikut menyala ketika halaman sub-fitur lainnya sedang dimuat."
+            "Refine sidebar active menu path matching to prevent root dashboard path and partial segments from clashing" => "Membatasi pencocokan otomatis menu aktif pada tautan root/dashboard agar tidak ikut menyala ketika halaman sub-fitur lainnya sedang dimuat.",
+            "Fix teacher dashboard access permission check to avoid loop and access denied error" => "Memperbaiki pengecekan hak akses (permission) pada index dashboard guru dari 'guru_list' menjadi 'menu_dashboard_guru' guna mencegah eror Access Denied dan looping pengalihan halaman."
         ];
 
         if (isset($mappings[$desc])) {
