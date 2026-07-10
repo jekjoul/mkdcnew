@@ -34,18 +34,103 @@ if ($setting) {
         display: inline-block;
         min-width: 60px;
     }
+
     .editable-header:focus {
         outline: none;
         border-bottom: 2px solid #405189;
         background: #fff;
         color: #333;
     }
+
     .th-action-btn {
         padding: 0px 4px;
         font-size: 11px;
         line-height: 1;
         border-radius: 3px;
         margin-left: 2px;
+    }
+
+    /* Fixed header & Sticky columns styles */
+    .table-container-fixed {
+        max-height: 550px;
+        overflow: auto;
+        position: relative;
+    }
+
+    .table-container-fixed table {
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    /* Sticky headers */
+    .table-container-fixed thead tr:nth-child(1) th {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background-color: #f8f9fa !important;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .table-container-fixed thead tr:nth-child(2) th {
+        position: sticky;
+        top: 43px; /* tinggi baris pertama thead */
+        z-index: 10;
+        background-color: #f8f9fa !important;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    /* Sticky columns (No & Nama) */
+    .table-container-fixed thead tr:nth-child(1) th:nth-child(1),
+    .table-container-fixed tbody tr td:nth-child(1) {
+        position: sticky;
+        left: 0;
+        z-index: 5;
+        background-color: #fff !important;
+        border-right: 1px solid #dee2e6;
+    }
+    
+    .table-container-fixed thead tr:nth-child(1) th:nth-child(2),
+    .table-container-fixed tbody tr td:nth-child(2) {
+        position: sticky;
+        left: 50px; /* Lebar kolom No */
+        z-index: 5;
+        background-color: #fff !important;
+        border-right: 1px solid #dee2e6;
+    }
+
+    /* Z-Index adjustment for headers of sticky columns */
+    .table-container-fixed thead tr:nth-child(1) th:nth-child(1) {
+        z-index: 12 !important;
+        background-color: #f8f9fa !important;
+    }
+    .table-container-fixed thead tr:nth-child(1) th:nth-child(2) {
+        z-index: 12 !important;
+        background-color: #f8f9fa !important;
+    }
+
+    /* Row span compensation for sticky header row 2 for student name & no which spans 2 rows */
+    .table-container-fixed thead tr:nth-child(1) th:nth-child(3) {
+        position: sticky;
+        left: 230px; /* 50px No + 180px Nama */
+        z-index: 5;
+        background-color: #fff !important;
+        border-right: 1px solid #dee2e6;
+    }
+    .table-container-fixed tbody tr td:nth-child(3) {
+        position: sticky;
+        left: 230px;
+        z-index: 5;
+        background-color: #fff !important;
+        border-right: 1px solid #dee2e6;
+    }
+    .table-container-fixed thead tr:nth-child(1) th:nth-child(3) {
+        z-index: 12 !important;
+        background-color: #f8f9fa !important;
+    }
+
+    /* Hover effect on rows to maintain visible background */
+    .table-container-fixed tbody tr:hover td {
+        background-color: #f1f3f7 !important;
     }
 </style>
 <div class="dashboard-main-body">
@@ -99,7 +184,7 @@ if ($setting) {
                 <h6 class="mb-0">Daftar Nilai</h6>
             </div>
             <div class="card-body">
-                <div class="table-responsive">
+                <div class="table-responsive table-container-fixed">
                     <table class="table bordered-table mb-0 align-middle" id="tableNilai">
                         <thead>
                             <tr class="bg-neutral-50">
@@ -107,12 +192,12 @@ if ($setting) {
                                 <th rowspan="2" class="align-middle" style="min-width: 180px;">Nama Siswa</th>
                                 <th width="120" rowspan="2" class="text-center align-middle">NISN/NIPD</th>
                                 <th colspan="<?php echo count($labels_tugas) ?>" class="text-center table-info text-info-800" id="headerTugasParent">
-                                    Nilai Tugas (Rata-rata akan dihitung otomatis)
+                                    Nilai Tugas
                                 </th>
                                 <th colspan="<?php echo count($labels_uh) ?>" class="text-center table-primary text-primary-800" id="headerUhParent">
-                                    Nilai Ujian Harian (Rata-rata akan dihitung otomatis)
+                                    Nilai Ujian Harian
                                 </th>
-                                <th width="100" rowspan="2" class="text-center align-middle table-info text-info-900">Rata2 Harian (Tugas + UH)</th>
+                                <th width="100" rowspan="2" class="text-center align-middle table-info text-info-900">Rata2 Harian <br> (Tugas + UH)</th>
                                 <th width="100" rowspan="2" class="text-center align-middle table-warning text-warning-900">PSTS</th>
                                 <th width="100" rowspan="2" class="text-center align-middle table-success text-success-900">PSAS</th>
                                 <th width="100" rowspan="2" class="text-center align-middle bg-neutral-200">Nilai Rapor</th>
@@ -140,8 +225,8 @@ if ($setting) {
                         </thead>
                         <tbody>
                             <?php foreach ($siswa as $index => $s): ?>
-                                <?php 
-                                $row = isset($nilai[(int) $s->id_siswa]) ? $nilai[(int) $s->id_siswa] : null; 
+                                <?php
+                                $row = isset($nilai[(int) $s->id_siswa]) ? $nilai[(int) $s->id_siswa] : null;
                                 $extra_tugas_data = [];
                                 $extra_uh_data = [];
                                 if ($row) {
@@ -156,7 +241,7 @@ if ($setting) {
                                 <tr class="nilai-row" data-siswa-id="<?php echo (int) $s->id_siswa ?>">
                                     <td class="text-center"><?php echo $index + 1 ?></td>
                                     <td class="fw-semibold"><?php echo html_escape($s->nama_siswa) ?></td>
-                                    <td class="text-center text-xs"><?php echo html_escape(guru_mask_nilai($s->nisn) . ' / ' . guru_mask_nilai($s->nipd, 3)) ?></td>
+                                    <td class="text-center text-xs"><?php echo html_escape(($s->nisn ?: '-') . ' / ' . ($s->nipd ?: '-')) ?></td>
                                     <!-- Input Tugas -->
                                     <?php foreach ($labels_tugas as $idx => $lbl): ?>
                                         <td class="td-tugas" data-index="<?php echo $idx ?>">
@@ -368,7 +453,7 @@ if ($setting) {
             <span class="editable-header" contenteditable="true" onblur="updateLabel('tugas', ${newIdx}, this)">${colTitle}</span>
             <button type="button" class="btn btn-xs btn-danger th-action-btn" onclick="removeCol('tugas', ${newIdx})">&times;</button>
         </th>`;
-        
+
         if ($('.th-tugas').length > 0) {
             $('.th-tugas').last().after(newTh);
         } else {
@@ -400,7 +485,7 @@ if ($setting) {
             <span class="editable-header" contenteditable="true" onblur="updateLabel('uh', ${newIdx}, this)">${colTitle}</span>
             <button type="button" class="btn btn-xs btn-danger th-action-btn" onclick="removeCol('uh', ${newIdx})">&times;</button>
         </th>`;
-        
+
         if ($('.th-uh').length > 0) {
             $('.th-uh').last().after(newTh);
         } else if ($('.th-tugas').length > 0) {

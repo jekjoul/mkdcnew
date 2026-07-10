@@ -208,7 +208,9 @@ class Update_log extends MY_Controller
             "Create dynamic assignment and exam input view for teachers in guru/input_nilai.php to keep it consistent with the admin view" => "Menerapkan antarmuka input sub-nilai tugas dan ujian harian dinamis beserta kalkulasi nilai harian otomatis di portal Guru.",
             "Add extra columns to nilai_siswa and nilai_siswa_pengaturan to support dynamically defined assignment and exam sub-scores" => "Menambahkan kolom ekstra 'extra_tugas', 'extra_uh', 'labels_tugas', dan 'labels_uh' pada skema database pengaturan nilai.",
             "Save dynamic assignment labels and student sub-score JSONs in Nilai_siswa.php simpan_nilai function" => "Menyimpan konfigurasi nama kolom sub-nilai tugas/UH serta data angka nilai siswa dalam format JSON ke database.",
-            "Update Guru.php simpan_nilai function to process dynamically defined assignments, exams, and sub-score JSONs" => "Mengintegrasikan penyimpanan database sub-nilai tugas/UH dinamis dari form input portal Guru ke server."
+            "Update Guru.php simpan_nilai function to process dynamically defined assignments, exams, and sub-score JSONs" => "Mengintegrasikan penyimpanan database sub-nilai tugas/UH dinamis dari form input portal Guru ke server.",
+            "Implement CSS styling for vertical sticky header and horizontal sticky first two columns (No and Name) in admin input.php" => "Menerapkan CSS sticky headers untuk scroll vertikal serta sticky columns (No dan Nama Siswa) untuk navigasi horizontal yang nyaman pada form nilai Admin.",
+            "Implement CSS styling for vertical sticky header and horizontal sticky first two columns (No and Name) and remove value masking for NISN/NIPD in guru input_nilai.php" => "Menerapkan CSS sticky headers dan columns serta menghapus sensor sensor masking (bintang) pada kolom NISN & NIPD di form nilai portal Guru."
         ];
 
         if (isset($mappings[$desc])) {
