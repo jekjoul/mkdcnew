@@ -80,7 +80,7 @@
                     <li>
                         <a href="<?php echo url('guru/profil') ?>">
                             <iconify-icon icon="icon-park-outline:user-business" class="menu-icon"></iconify-icon>
-                            <span>Profil PTK</span>
+                            <span>Profil Saya</span>
                         </a>
                     </li>
                 <?php endif; ?>
