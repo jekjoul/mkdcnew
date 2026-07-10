@@ -83,6 +83,7 @@ class Guru extends MY_Controller
 
         $perangkat = $this->perangkat_model->getPerangkatByMapel($id_pembelajaran_mapel);
         $agenda = $this->perangkat_model->getAgendaByMapel($id_pembelajaran_mapel);
+        $modul_ajar_list = $this->perangkat_model->getModulAjarByMapel($id_pembelajaran_mapel);
         $has_schedule_and_days = $this->perangkat_model->hasScheduleAndEffectiveDays($id_pembelajaran_mapel);
 
         $this->setPage('Portal Guru', 'Detail Perangkat & Agenda', 'guru/perangkat_detail/' . $id_pembelajaran_mapel, 'solar:document-add-linear');
@@ -90,21 +91,29 @@ class Guru extends MY_Controller
         $this->page_data['item'] = $item;
         $this->page_data['perangkat'] = $perangkat;
         $this->page_data['agenda'] = $agenda;
+        $this->page_data['modul_ajar_list'] = $modul_ajar_list;
         $this->page_data['has_schedule_and_days'] = $has_schedule_and_days;
 
         // Copy features data
         $this->page_data['source_last_year_id'] = $this->perangkat_model->getSourceLastYearAgenda($id_pembelajaran_mapel);
         $this->page_data['other_active_rombel_agendas'] = $this->perangkat_model->getOtherActiveRombelAgendas($id_pembelajaran_mapel);
         $this->page_data['all_rombel'] = $this->perangkat_model->getAllRombelSameMapelTingkat($id_pembelajaran_mapel);
-        $this->page_data['detail_base_url'] = url('guru/detail_perangkat');
+        $this->page_data['detail_base_url'] = url('guru/perangkat_detail');
         
         $this->page_data['back_url'] = url('guru/perangkat');
         $this->page_data['save_berkas_url'] = url('guru/simpan_berkas/' . $id_pembelajaran_mapel);
         $this->page_data['hapus_berkas_url'] = url('guru/hapus_berkas/' . $id_pembelajaran_mapel);
+        $this->page_data['unduh_berkas_url'] = url('guru/unduh_berkas/' . $id_pembelajaran_mapel);
         $this->page_data['generate_agenda_url'] = url('guru/generate_agenda/' . $id_pembelajaran_mapel);
+        $this->page_data['generate_agenda_ai_url'] = url('guru/generate_agenda_ai/' . $id_pembelajaran_mapel);
         $this->page_data['save_agenda_url'] = url('guru/simpan_agenda/' . $id_pembelajaran_mapel);
         $this->page_data['salin_perangkat_url'] = url('guru/salin_perangkat/' . $id_pembelajaran_mapel);
         $this->page_data['salin_agenda_url'] = url('guru/salin_agenda/' . $id_pembelajaran_mapel);
+
+        $this->page_data['upload_modul_url'] = url('guru/upload_modul/' . $id_pembelajaran_mapel);
+        $this->page_data['generate_modul_ai_url'] = url('guru/generate_modul_ai/' . $id_pembelajaran_mapel);
+        $this->page_data['unduh_modul_url'] = url('guru/unduh_modul');
+        $this->page_data['delete_modul_url'] = url('guru/hapus_modul');
 
         $this->load->view('perangkat_pembelajaran/detail', $this->page_data);
     }
