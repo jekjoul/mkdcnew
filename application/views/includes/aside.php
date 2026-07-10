@@ -333,20 +333,30 @@ foreach ($menu_pembelajaran_siswa as $menu_row) {
         </li>
     <?php endif; ?>
 
-    <?php if (hasPermissions('menu_jadwal_pelajaran')): ?>
-        <li>
-            <a href="<?php echo url('jadwal_pelajaran') ?>">
+    <?php if (hasPermissions('menu_jadwal_pelajaran') || hasPermissions('menu_jadwal_tidak_aktif')): ?>
+        <li class="dropdown">
+            <a href="javascript:void(0)">
                 <iconify-icon icon="akar-icons:schedule" class="menu-icon"></iconify-icon>
                 <span>Jadwal Pelajaran</span>
             </a>
-        </li>
-    <?php endif; ?>
-    <?php if (hasPermissions('menu_jadwal_tidak_aktif')): ?>
-        <li>
-            <a href="<?php echo url('jadwal_pelajaran/nonaktif') ?>">
-                <iconify-icon icon="solar:archive-linear" class="menu-icon"></iconify-icon>
-                <span>Jadwal Tidak Aktif</span>
-            </a>
+            <ul class="sidebar-submenu">
+                <?php if (hasPermissions('menu_jadwal_pelajaran')): ?>
+                    <li>
+                        <a href="<?php echo url('jadwal_pelajaran') ?>">
+                            <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
+                            Daftar Jadwal
+                        </a>
+                    </li>
+                <?php endif; ?>
+                <?php if (hasPermissions('menu_jadwal_tidak_aktif')): ?>
+                    <li>
+                        <a href="<?php echo url('jadwal_pelajaran/nonaktif') ?>">
+                            <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
+                            Jadwal Tidak Aktif
+                        </a>
+                    </li>
+                <?php endif; ?>
+            </ul>
         </li>
     <?php endif; ?>
     <?php if (hasPermissions('menu_perangkat_pembelajaran')): ?>

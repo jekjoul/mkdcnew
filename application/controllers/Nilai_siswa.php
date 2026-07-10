@@ -67,7 +67,34 @@ class Nilai_siswa extends MY_Controller
             show_404();
         }
 
+        // 1. Simpan Label Kolom jika ada post labels_tugas & labels_uh
+        $labels_tugas = $this->input->post('labels_tugas');
+        $labels_uh = $this->input->post('labels_uh');
+        $labels_data = [
+            'labels_tugas' => is_array($labels_tugas) ? json_encode(array_values($labels_tugas)) : null,
+            'labels_uh' => is_array($labels_uh) ? json_encode(array_values($labels_uh)) : null,
+            'updated_at' => date('Y-m-d H:i:s')
+        ];
+
+        $existing_setting = $this->db->get_where('nilai_siswa_pengaturan', ['id_pembelajaran_mapel' => (int) $id_pembelajaran_mapel])->row();
+        if ($existing_setting) {
+            $this->db->where('id_pengaturan_nilai', $existing_setting->id_pengaturan_nilai);
+            $this->db->update('nilai_siswa_pengaturan', $labels_data);
+        } else {
+            // Salin bobot persen dari default jika setting khusus mapel belum ada
+            $default_setting = $this->db->get_where('nilai_siswa_pengaturan', ['id_pembelajaran_mapel' => 0])->row();
+            $labels_data['id_pembelajaran_mapel'] = (int) $id_pembelajaran_mapel;
+            $labels_data['persen_harian'] = $default_setting ? $default_setting->persen_harian : 40;
+            $labels_data['persen_psts'] = $default_setting ? $default_setting->persen_psts : 30;
+            $labels_data['persen_psas'] = $default_setting ? $default_setting->persen_psas : 30;
+            $labels_data['created_at'] = date('Y-m-d H:i:s');
+            $this->db->insert('nilai_siswa_pengaturan', $labels_data);
+        }
+
+        // Tarik ulang setting terbaru untuk menghitung rapor
         $setting = $this->getSetting((int) $id_pembelajaran_mapel);
+
+        // 2. Simpan Nilai Harian Siswa
         $rows = $this->input->post('nilai');
         if (is_array($rows)) {
             foreach ($rows as $id_siswa => $row) {
@@ -79,6 +106,11 @@ class Nilai_siswa extends MY_Controller
                 $nilai_harian = $this->normalizeNilai(isset($row['harian']) ? $row['harian'] : null);
                 $nilai_psts = $this->normalizeNilai(isset($row['psts']) ? $row['psts'] : null);
                 $nilai_psas = $this->normalizeNilai(isset($row['psas']) ? $row['psas'] : null);
+                
+                // Normalisasi array dinamis extra
+                $extra_tugas = isset($row['extra_tugas']) && is_array($row['extra_tugas']) ? array_map([$this, 'normalizeNilai'], $row['extra_tugas']) : null;
+                $extra_uh = isset($row['extra_uh']) && is_array($row['extra_uh']) ? array_map([$this, 'normalizeNilai'], $row['extra_uh']) : null;
+
                 $nilai_rapor = $this->hitungRapor($nilai_harian, $nilai_psts, $nilai_psas, $setting);
 
                 $data = [
@@ -88,6 +120,8 @@ class Nilai_siswa extends MY_Controller
                     'nilai_psts' => $nilai_psts,
                     'nilai_psas' => $nilai_psas,
                     'nilai_rapor' => $nilai_rapor,
+                    'extra_tugas' => $extra_tugas ? json_encode(array_values($extra_tugas)) : null,
+                    'extra_uh' => $extra_uh ? json_encode(array_values($extra_uh)) : null,
                     'updated_at' => date('Y-m-d H:i:s'),
                 ];
 
@@ -367,6 +401,14 @@ class Nilai_siswa extends MY_Controller
             $this->dbforge->create_table('nilai_siswa_pengaturan', true);
         }
 
+        // Add dynamically defined columns for assignments/exams structure to nilai_siswa_pengaturan
+        if (!$this->db->field_exists('labels_tugas', 'nilai_siswa_pengaturan')) {
+            $this->dbforge->add_column('nilai_siswa_pengaturan', [
+                'labels_tugas' => ['type' => 'TEXT', 'null' => true],
+                'labels_uh' => ['type' => 'TEXT', 'null' => true],
+            ]);
+        }
+
         if (!$this->db->table_exists('nilai_siswa')) {
             $this->dbforge->add_field([
                 'id_nilai_siswa' => ['type' => 'INT', 'constraint' => 11, 'auto_increment' => true],
@@ -383,6 +425,14 @@ class Nilai_siswa extends MY_Controller
             $this->dbforge->add_key('id_pembelajaran_mapel');
             $this->dbforge->add_key('id_siswa');
             $this->dbforge->create_table('nilai_siswa', true);
+        }
+
+        // Add dynamic value storage columns for assignment & exam scores to nilai_siswa
+        if (!$this->db->field_exists('extra_tugas', 'nilai_siswa')) {
+            $this->dbforge->add_column('nilai_siswa', [
+                'extra_tugas' => ['type' => 'TEXT', 'null' => true],
+                'extra_uh' => ['type' => 'TEXT', 'null' => true],
+            ]);
         }
     }
 }

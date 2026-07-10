@@ -33,27 +33,55 @@
 
   //to keep the current page active
   $(function () {
-    for (
-      var nk = window.location,
-        o = $("ul#sidebar-menu a")
-          .filter(function () {
-            if (this.href == nk) return true;
-            let hrefPath = this.pathname.replace(/\/$/, "");
-            let nkPath = nk.pathname.replace(/\/$/, "");
-            if (hrefPath && nkPath && nkPath.indexOf(hrefPath + '/') === 0) {
-                return true;
-            }
-            return false;
-          })
-          .addClass("active-page") // anchor
-          .parent()
-          .addClass("active-page");
-      ;
+    let currentUrl = window.location.href.split('?')[0].replace(/\/$/, "");
+    let bestMatch = null;
+    let maxMatchLen = -1;
 
-    ) {
-      // li
-      if (!o.is("li")) break;
-      o = o.parent().addClass("show").parent().addClass("open");
+    let originUrl = window.location.origin;
+    // Normalize root path URL (like http://localhost/mkdc_new_draft)
+    let pathSegments = window.location.pathname.split('/').filter(Boolean);
+    let isRootPath = (pathSegments.length === 0 || (pathSegments.length === 1 && pathSegments[0] === 'mkdc_new_draft'));
+
+    $("ul#sidebar-menu a").each(function () {
+      let menuUrl = this.href.split('?')[0].replace(/\/$/, "");
+      
+      // If it is the dashboard/root link
+      let menuPathSegments = this.pathname.split('/').filter(Boolean);
+      let isMenuRoot = (menuPathSegments.length === 0 || (menuPathSegments.length === 1 && menuPathSegments[0] === 'mkdc_new_draft'));
+
+      if (isMenuRoot) {
+        // Dashboard only matches exactly
+        if (currentUrl === menuUrl) {
+          bestMatch = $(this);
+          maxMatchLen = menuUrl.length;
+        }
+      } else {
+        if (currentUrl === menuUrl) {
+          bestMatch = $(this);
+          maxMatchLen = menuUrl.length;
+        } else if (currentUrl.startsWith(menuUrl + "/") && menuUrl.length > maxMatchLen) {
+          bestMatch = $(this);
+          maxMatchLen = menuUrl.length;
+        }
+      }
+    });
+
+    if (bestMatch) {
+      bestMatch.addClass("active-page");
+      let parentLi = bestMatch.parent().addClass("active-page");
+      
+      // Traverse up to open parent dropdowns
+      let curr = parentLi;
+      while (curr.length > 0 && !curr.is("#sidebar-menu")) {
+        if (curr.is("li")) {
+          curr.addClass("open");
+        }
+        if (curr.is("ul") && curr.hasClass("sidebar-submenu")) {
+          curr.addClass("show").slideDown(0);
+          curr.parent().addClass("open dropdown-open");
+        }
+        curr = curr.parent();
+      }
     }
   });
 
