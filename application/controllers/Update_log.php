@@ -213,7 +213,16 @@ class Update_log extends MY_Controller
             "Implement CSS styling for vertical sticky header and horizontal sticky first two columns (No and Name) and remove value masking for NISN/NIPD in guru input_nilai.php" => "Menerapkan CSS sticky headers dan columns serta menghapus sensor sensor masking (bintang) pada kolom NISN & NIPD di form nilai portal Guru.",
             "Retrieve riwayat_pendidikan, dokumen_pribadi, and jenis_dokumen in Guru.php profil method to populate detail tabs" => "Mengambil data riwayat pendidikan formal dan dokumen pribadi Guru untuk ditampilkan pada tab detail profil di portal Guru.",
             "Redesign guru/profil.php using tab navigation to match the admin ptk detail layout and consolidate PTK and Account settings into a single cohesive profile page" => "Mendesain ulang tampilan profil Guru dengan navigasi tab setara layout admin, menyatukan detail data pribadi, riwayat sekolah, arsip berkas, dan form edit.",
-            "Rename \"Profil PTK\" to \"Profil Saya\" in teacher sidebar menu" => "Mengubah label menu samping (sidebar) dari 'Profil PTK' menjadi 'Profil Saya' untuk menyelaraskan penggabungan menu akun dan profil."
+            "Rename \"Profil PTK\" to \"Profil Saya\" in teacher sidebar menu" => "Mengubah label menu samping (sidebar) dari 'Profil PTK' menjadi 'Profil Saya' untuk menyelaraskan penggabungan menu akun dan profil.",
+            "Add Kop Surat menu under Surat Menyurat dropdown in sidebar aside.php" => "Menambahkan menu Kop Surat di dalam navigasi dropdown Surat Menyurat pada sidebar.",
+            "Extend ensureTables in Surat.php to add a new 'surat_kop' table for dynamic letterheads" => "Menambahkan struktur tabel 'surat_kop' secara otomatis untuk penampungan data logo, naungan, nama lembaga, sub-lembaga, alamat, kontak, dan ukuran font.",
+            "Add Kop Surat CRUD methods (kop, kop_tambah, kop_edit, kop_simpan, kop_hapus) to Surat.php controller" => "Menyediakan API routing CRUD untuk modul penambahan, pengeditan, visualisasi, dan penghapusan data setelan Kop Surat.",
+            "Create view file for kop list in views/surat/kop_list.php" => "Membuat halaman antarmuka daftar tabel riwayat Kop Surat.",
+            "Create view file for kop form in views/surat/kop_form.php with live preview functionality" => "Membuat halaman form tambah/edit Kop Surat lengkap dengan fitur Live Preview (simulasi visual ukuran font & tata letak).",
+            "Add Kop Surat dropdown to letter writing form (keluar_form.php)" => "Menambahkan pilihan dropdown Kop Surat pada form pembuatan Surat Keluar.",
+            "Adjust column widths in keluar_form.php to accommodate Kop Surat dropdown" => "Merapikan lebar grid kolom input di formulir surat keluar agar proporsional.",
+            "Update keluar_simpan, setKeluarOptions, and getSuratKeluar in Surat.php to integrate dynamic kop_surat configurations" => "Menghubungkan penyimpanan form surat keluar dan kueri preview agar terelasi secara penuh dengan tabel Kop Surat.",
+            "Redesign preview letterhead (keluar_preview.php) to render dynamic kop_surat configurations" => "Menerapkan visualisasi Kop Surat baru yang dinamis (mengikuti ukuran font dan layout terpilih) pada halaman preview cetak Surat Keluar."
         ];
 
         if (isset($mappings[$desc])) {
