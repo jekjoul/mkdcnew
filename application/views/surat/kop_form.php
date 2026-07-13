@@ -70,20 +70,9 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold">Upload Logo Lembaga</label>
-                                <input type="file" name="logo" id="logoUpload" class="form-control" accept="image/*">
-                                <?php if (!empty($row->logo)): ?>
-                                    <div class="mt-2 d-flex align-items-center gap-2">
-                                        <img src="<?php echo url('uploads/kop_logo/' . $row->logo) ?>" style="height: 40px; border-radius:4px;">
-                                        <span class="text-xs text-secondary-light">Logo saat ini. Biarkan kosong jika tidak diganti.</span>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-
-                            <div class="col-md-6">
                                 <label class="form-label fw-semibold">Tata Letak (Layout)</label>
                                 <select name="layout_style" id="in_layout" class="form-select">
-                                    <option value="center" <?php echo @$row->layout_style === 'center' ? 'selected' : '' ?>>Tengah (Logo di Atas / Tengah)</option>
+                                    <option value="center" <?php echo @$row->layout_style === 'center' ? 'selected' : '' ?>>Tengah (Logo Kiri di Atas)</option>
                                     <option value="left_logo" <?php echo @$row->layout_style === 'left_logo' ? 'selected' : '' ?>>Logo Kiri, Teks Kanan</option>
                                     <option value="double_logo" <?php echo @$row->layout_style === 'double_logo' ? 'selected' : '' ?>>Logo Kiri & Kanan (Teks Tengah)</option>
                                 </select>
@@ -96,6 +85,31 @@
                                     <option value="Nonaktif" <?php echo @$row->status === 'Nonaktif' ? 'selected' : '' ?>>Nonaktif</option>
                                 </select>
                             </div>
+
+                            <!-- Upload Logo Kiri -->
+                            <div class="col-md-6" id="logoKiriContainer">
+                                <label class="form-label fw-semibold" id="logoKiriLabel">Upload Logo (Kiri)</label>
+                                <input type="file" name="logo" id="logoUpload" class="form-control" accept="image/*">
+                                <?php if (!empty($row->logo)): ?>
+                                    <div class="mt-2 d-flex align-items-center gap-2">
+                                        <img src="<?php echo url('uploads/kop_logo/' . $row->logo) ?>" style="height: 40px; border-radius:4px;" id="imgLogoKiriCurrent">
+                                        <span class="text-xs text-secondary-light">Logo kiri saat ini.</span>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+
+                            <!-- Upload Logo Kanan (Hanya muncul/penting ketika double_logo dipilih) -->
+                            <div class="col-md-6" id="logoKananContainer" style="<?php echo @$row->layout_style === 'double_logo' ? '' : 'display:none;' ?>">
+                                <label class="form-label fw-semibold">Upload Logo Kanan</label>
+                                <input type="file" name="logo_kanan" id="logoKananUpload" class="form-control" accept="image/*">
+                                <?php if (!empty($row->logo_kanan)): ?>
+                                    <div class="mt-2 d-flex align-items-center gap-2">
+                                        <img src="<?php echo url('uploads/kop_logo/' . $row->logo_kanan) ?>" style="height: 40px; border-radius:4px;" id="imgLogoKananCurrent">
+                                        <span class="text-xs text-secondary-light">Logo kanan saat ini.</span>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+
                         </div>
 
                         <div class="mt-4 text-end">
@@ -137,6 +151,9 @@
 <?php include viewPath('includes/footer'); ?>
 
 <script>
+    let rawLogoKiri = '<?php echo !empty($row->logo) ? url('uploads/kop_logo/' . $row->logo) : '' ?>';
+    let rawLogoKanan = '<?php echo !empty($row->logo_kanan) ? url('uploads/kop_logo/' . $row->logo_kanan) : '' ?>';
+
     function updatePreview() {
         const layout = $('#in_layout').val();
         const naungan = $('#in_naungan').val() || '';
@@ -151,8 +168,18 @@
         const szAlamat = $('#sz_alamat').val() || 9;
 
         const defaultLogo = '<?php echo $url->assets ?>images/user-grid/guru.png';
-        const currentLogoUrl = '<?php echo !empty($row->logo) ? url('uploads/kop_logo/' . $row->logo) : '' ?>';
-        const logoSrc = currentLogoUrl || defaultLogo;
+        
+        // Atur penampakan input file logo kanan
+        if (layout === 'double_logo') {
+            $('#logoKananContainer').show();
+            $('#logoKiriLabel').text('Upload Logo Kiri');
+        } else {
+            $('#logoKananContainer').hide();
+            $('#logoKiriLabel').text('Upload Logo Lembaga');
+        }
+
+        const logoKiriSrc = rawLogoKiri || defaultLogo;
+        const logoKananSrc = rawLogoKanan || defaultLogo;
 
         let contentHtml = '';
 
@@ -161,7 +188,7 @@
                 <table style="width: 100%; border-collapse: collapse;">
                     <tr>
                         <td style="width: 80px; vertical-align: middle; text-align: left; padding-right: 15px;">
-                            <img src="${logoSrc}" style="max-width: 75px; max-height: 75px; display: block;" id="previewLogoImage">
+                            <img src="${logoKiriSrc}" style="max-width: 75px; max-height: 75px; display: block;" id="previewLogoImage">
                         </td>
                         <td style="vertical-align: middle; text-align: left;">
                             ${naungan ? `<div style="font-size: ${szNaungan}px; font-weight: 550; text-transform: uppercase; line-height: 1.2;">${naungan}</div>` : ''}
@@ -178,7 +205,7 @@
                 <table style="width: 100%; border-collapse: collapse;">
                     <tr>
                         <td style="width: 70px; vertical-align: middle; text-align: left; padding-right: 10px;">
-                            <img src="${logoSrc}" style="max-width: 65px; max-height: 65px; display: block;" id="previewLogoImageLeft">
+                            <img src="${logoKiriSrc}" style="max-width: 65px; max-height: 65px; display: block;" id="previewLogoImageLeft">
                         </td>
                         <td style="vertical-align: middle; text-align: center;">
                             ${naungan ? `<div style="font-size: ${szNaungan}px; font-weight: 550; text-transform: uppercase; line-height: 1.2;">${naungan}</div>` : ''}
@@ -188,7 +215,7 @@
                             ${kontak ? `<div style="font-size: ${szAlamat}px; line-height: 1.3; color:#555;">${kontak}</div>` : ''}
                         </td>
                         <td style="width: 70px; vertical-align: middle; text-align: right; padding-left: 10px;">
-                            <img src="${logoSrc}" style="max-width: 65px; max-height: 65px; display: block;" id="previewLogoImageRight">
+                            <img src="${logoKananSrc}" style="max-width: 65px; max-height: 65px; display: block;" id="previewLogoImageRight">
                         </td>
                     </tr>
                 </table>
@@ -198,7 +225,7 @@
             contentHtml = `
                 <div style="text-align: center; width: 100%;">
                     <div style="margin-bottom: 8px; display: flex; justify-content: center;">
-                        <img src="${logoSrc}" style="max-width: 70px; max-height: 70px;" id="previewLogoImageCenter">
+                        <img src="${logoKiriSrc}" style="max-width: 70px; max-height: 70px;" id="previewLogoImageCenter">
                     </div>
                     ${naungan ? `<div style="font-size: ${szNaungan}px; font-weight: 550; text-transform: uppercase; line-height: 1.2;">${naungan}</div>` : ''}
                     <div style="font-size: ${szLembaga}px; font-weight: bold; text-transform: uppercase; line-height: 1.2; margin-top: 2px;">${lembaga}</div>
@@ -215,16 +242,27 @@
     // Event listener for inputs change
     $('input, textarea, select').on('input change', updatePreview);
 
-    // FileReader to show uploaded image in live preview
+    // FileReader to show uploaded left image in live preview
     $('#logoUpload').on('change', function() {
         const file = this.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                if ($('#previewLogoImage').length) $('#previewLogoImage').attr('src', e.target.result);
-                if ($('#previewLogoImageLeft').length) $('#previewLogoImageLeft').attr('src', e.target.result);
-                if ($('#previewLogoImageRight').length) $('#previewLogoImageRight').attr('src', e.target.result);
-                if ($('#previewLogoImageCenter').length) $('#previewLogoImageCenter').attr('src', e.target.result);
+                rawLogoKiri = e.target.result;
+                updatePreview();
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // FileReader to show uploaded right image in live preview
+    $('#logoKananUpload').on('change', function() {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                rawLogoKanan = e.target.result;
+                updatePreview();
             }
             reader.readAsDataURL(file);
         }

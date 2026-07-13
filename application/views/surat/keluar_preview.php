@@ -140,6 +140,7 @@
                 <!-- Render Kop Surat Dinamis -->
                 <?php 
                 $logo_kop = !empty($surat->kop_logo) ? url('uploads/kop_logo/' . $surat->kop_logo) : url('assets/images/user-grid/guru.png');
+                $logo_kop_kanan = !empty($surat->logo_kanan) ? url('uploads/kop_logo/' . $surat->logo_kanan) : url('assets/images/user-grid/guru.png');
                 $sz_naungan = $surat->font_size_naungan ?: 11;
                 $sz_lembaga = $surat->font_size_lembaga ?: 18;
                 $sz_sub = $surat->font_size_sub ?: 13;
@@ -173,7 +174,7 @@
                     <table style="width: 100%; border-collapse: collapse; border: 0;">
                         <tr>
                             <td style="width: 70px; vertical-align: middle; text-align: left; padding-right: 10px; border: 0;">
-                                <img src="<?php echo $logo_kop ?>" alt="Logo">
+                                <img src="<?php echo $logo_kop ?>" alt="Logo Kiri">
                             </td>
                             <td style="vertical-align: middle; text-align: center; border: 0;">
                                 <?php if (!empty($surat->naungan)): ?>
@@ -191,7 +192,7 @@
                                 <?php endif; ?>
                             </td>
                             <td style="width: 70px; vertical-align: middle; text-align: right; padding-left: 10px; border: 0;">
-                                <img src="<?php echo $logo_kop ?>" alt="Logo">
+                                <img src="<?php echo $logo_kop_kanan ?>" alt="Logo Kanan">
                             </td>
                         </tr>
                     </table>
