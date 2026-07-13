@@ -24,12 +24,21 @@
                             </div>
 
                             <div class="col-md-9">
-                                <label class="form-label fw-semibold">Lembaga Naungan (Baris 1)</label>
-                                <input type="text" name="naungan" id="in_naungan" class="form-control" value="<?php echo @$row->naungan ?>" placeholder="Contoh: YAYASAN MIFTAHUL KHOER PASIR MUKTI">
+                                <label class="form-label fw-semibold">Lembaga Naungan Baris 1</label>
+                                <input type="text" name="naungan" id="in_naungan" class="form-control" value="<?php echo @$row->naungan ?>" placeholder="Contoh: DINAS PENDIDIKAN KABUPATEN CIAMIS">
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label fw-semibold">Ukuran Font</label>
                                 <input type="number" name="font_size_naungan" id="sz_naungan" class="form-control text-center" min="8" max="40" value="<?php echo @$row->font_size_naungan ?: 11 ?>">
+                            </div>
+
+                            <div class="col-md-9">
+                                <label class="form-label fw-semibold">Lembaga Naungan Baris 2</label>
+                                <input type="text" name="naungan_2" id="in_naungan_2" class="form-control" value="<?php echo @$row->naungan_2 ?>" placeholder="Contoh: KELOMPOK KERJA KEPALA SEKOLAH (K3S)">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">Ukuran Font</label>
+                                <input type="number" name="font_size_naungan_2" id="sz_naungan_2" class="form-control text-center" min="8" max="40" value="<?php echo @$row->font_size_naungan_2 ?: 11 ?>">
                             </div>
 
                             <div class="col-md-9">
@@ -157,12 +166,14 @@
     function updatePreview() {
         const layout = $('#in_layout').val();
         const naungan = $('#in_naungan').val() || '';
+        const naungan2 = $('#in_naungan_2').val() || '';
         const lembaga = $('#in_lembaga').val() || 'NAMA LEMBAGA UTAMA';
         const sub = $('#in_sub').val() || '';
         const alamat = $('#in_alamat').val() || '';
         const kontak = $('#in_kontak').val() || '';
 
         const szNaungan = $('#sz_naungan').val() || 11;
+        const szNaungan2 = $('#sz_naungan_2').val() || 11;
         const szLembaga = $('#sz_lembaga').val() || 18;
         const szSub = $('#sz_sub').val() || 13;
         const szAlamat = $('#sz_alamat').val() || 9;
@@ -192,6 +203,7 @@
                         </td>
                         <td style="vertical-align: middle; text-align: left;">
                             ${naungan ? `<div style="font-size: ${szNaungan}px; font-weight: 550; text-transform: uppercase; line-height: 1.2;">${naungan}</div>` : ''}
+                            ${naungan2 ? `<div style="font-size: ${szNaungan2}px; font-weight: 550; text-transform: uppercase; line-height: 1.2; margin-top: 1px;">${naungan2}</div>` : ''}
                             <div style="font-size: ${szLembaga}px; font-weight: bold; text-transform: uppercase; line-height: 1.2; margin-top: 2px;">${lembaga}</div>
                             ${sub ? `<div style="font-size: ${szSub}px; font-weight: bold; text-transform: uppercase; line-height: 1.2; margin-top: 2px; color:#333;">${sub}</div>` : ''}
                             ${alamat ? `<div style="font-size: ${szAlamat}px; line-height: 1.3; margin-top: 4px; color:#555;">${alamat}</div>` : ''}
@@ -209,6 +221,7 @@
                         </td>
                         <td style="vertical-align: middle; text-align: center;">
                             ${naungan ? `<div style="font-size: ${szNaungan}px; font-weight: 550; text-transform: uppercase; line-height: 1.2;">${naungan}</div>` : ''}
+                            ${naungan2 ? `<div style="font-size: ${szNaungan2}px; font-weight: 550; text-transform: uppercase; line-height: 1.2; margin-top: 1px;">${naungan2}</div>` : ''}
                             <div style="font-size: ${szLembaga}px; font-weight: bold; text-transform: uppercase; line-height: 1.2; margin-top: 2px;">${lembaga}</div>
                             ${sub ? `<div style="font-size: ${szSub}px; font-weight: bold; text-transform: uppercase; line-height: 1.2; margin-top: 2px; color:#333;">${sub}</div>` : ''}
                             ${alamat ? `<div style="font-size: ${szAlamat}px; line-height: 1.3; margin-top: 4px; color:#555;">${alamat}</div>` : ''}
@@ -228,6 +241,7 @@
                         <img src="${logoKiriSrc}" style="max-width: 70px; max-height: 70px;" id="previewLogoImageCenter">
                     </div>
                     ${naungan ? `<div style="font-size: ${szNaungan}px; font-weight: 550; text-transform: uppercase; line-height: 1.2;">${naungan}</div>` : ''}
+                    ${naungan2 ? `<div style="font-size: ${szNaungan2}px; font-weight: 550; text-transform: uppercase; line-height: 1.2; margin-top: 1px;">${naungan2}</div>` : ''}
                     <div style="font-size: ${szLembaga}px; font-weight: bold; text-transform: uppercase; line-height: 1.2; margin-top: 2px;">${lembaga}</div>
                     ${sub ? `<div style="font-size: ${szSub}px; font-weight: bold; text-transform: uppercase; line-height: 1.2; margin-top: 2px; color:#333;">${sub}</div>` : ''}
                     ${alamat ? `<div style="font-size: ${szAlamat}px; line-height: 1.3; margin-top: 4px; color:#555;">${alamat}</div>` : ''}

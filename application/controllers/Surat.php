@@ -226,11 +226,13 @@ class Surat extends MY_Controller
         $data = [
             'nama_kop' => post('nama_kop'),
             'naungan' => post('naungan') ?: null,
+            'naungan_2' => post('naungan_2') ?: null,
             'nama_lembaga' => post('nama_lembaga'),
             'sub_nama' => post('sub_nama') ?: null,
             'alamat' => post('alamat') ?: null,
             'kontak' => post('kontak') ?: null,
             'font_size_naungan' => (int) post('font_size_naungan') ?: 11,
+            'font_size_naungan_2' => (int) post('font_size_naungan_2') ?: 11,
             'font_size_lembaga' => (int) post('font_size_lembaga') ?: 18,
             'font_size_sub' => (int) post('font_size_sub') ?: 13,
             'font_size_alamat' => (int) post('font_size_alamat') ?: 9,
@@ -443,7 +445,7 @@ class Surat extends MY_Controller
 
     private function getSuratKeluar($id)
     {
-        $this->db->select('skel.*, l.nama_lembaga, l.alamat, l.telepon, l.email, l.logo, l.id_ptk_kepsek, ptk.nama_ptk AS nama_kepsek, sk.kode_jenis, sk.nama_jenis, sk.kode_lembaga, sk.lokasi, kp.nama_kop, kp.logo as kop_logo, kp.logo_kanan, kp.naungan, kp.nama_lembaga as kop_nama_lembaga, kp.sub_nama, kp.alamat as alamat_kop, kp.kontak, kp.font_size_naungan, kp.font_size_lembaga, kp.font_size_sub, kp.font_size_alamat, kp.layout_style');
+        $this->db->select('skel.*, l.nama_lembaga, l.alamat, l.telepon, l.email, l.logo, l.id_ptk_kepsek, ptk.nama_ptk AS nama_kepsek, sk.kode_jenis, sk.nama_jenis, sk.kode_lembaga, sk.lokasi, kp.nama_kop, kp.logo as kop_logo, kp.logo_kanan, kp.naungan, kp.naungan_2, kp.nama_lembaga as kop_nama_lembaga, kp.sub_nama, kp.alamat as alamat_kop, kp.kontak, kp.font_size_naungan, kp.font_size_naungan_2, kp.font_size_lembaga, kp.font_size_sub, kp.font_size_alamat, kp.layout_style');
         $this->db->from('surat_keluar skel');
         $this->db->join('lembaga l', 'l.id_lembaga = skel.id_lembaga', 'left');
         $this->db->join('ptk', 'ptk.id_ptk = l.id_ptk_kepsek', 'left');
@@ -620,11 +622,13 @@ class Surat extends MY_Controller
                 'logo' => ['type' => 'VARCHAR', 'constraint' => 150, 'null' => true],
                 'logo_kanan' => ['type' => 'VARCHAR', 'constraint' => 150, 'null' => true],
                 'naungan' => ['type' => 'VARCHAR', 'constraint' => 150, 'null' => true],
+                'naungan_2' => ['type' => 'VARCHAR', 'constraint' => 150, 'null' => true],
                 'nama_lembaga' => ['type' => 'VARCHAR', 'constraint' => 150],
                 'sub_nama' => ['type' => 'VARCHAR', 'constraint' => 150, 'null' => true],
                 'alamat' => ['type' => 'TEXT', 'null' => true],
                 'kontak' => ['type' => 'VARCHAR', 'constraint' => 200, 'null' => true],
                 'font_size_naungan' => ['type' => 'INT', 'constraint' => 3, 'default' => 12],
+                'font_size_naungan_2' => ['type' => 'INT', 'constraint' => 3, 'default' => 12],
                 'font_size_lembaga' => ['type' => 'INT', 'constraint' => 3, 'default' => 18],
                 'font_size_sub' => ['type' => 'INT', 'constraint' => 3, 'default' => 14],
                 'font_size_alamat' => ['type' => 'INT', 'constraint' => 3, 'default' => 10],
@@ -640,6 +644,13 @@ class Surat extends MY_Controller
             if (!$this->db->field_exists('logo_kanan', 'surat_kop')) {
                 $this->dbforge->add_column('surat_kop', [
                     'logo_kanan' => ['type' => 'VARCHAR', 'constraint' => 150, 'null' => true, 'after' => 'logo']
+                ]);
+            }
+            // Cek jika kolom naungan_2 belum ada di table surat_kop
+            if (!$this->db->field_exists('naungan_2', 'surat_kop')) {
+                $this->dbforge->add_column('surat_kop', [
+                    'naungan_2' => ['type' => 'VARCHAR', 'constraint' => 150, 'null' => true, 'after' => 'naungan'],
+                    'font_size_naungan_2' => ['type' => 'INT', 'constraint' => 3, 'default' => 12, 'after' => 'font_size_naungan']
                 ]);
             }
         }

@@ -142,6 +142,7 @@
                 $logo_kop = !empty($surat->kop_logo) ? url('uploads/kop_logo/' . $surat->kop_logo) : url('assets/images/user-grid/guru.png');
                 $logo_kop_kanan = !empty($surat->logo_kanan) ? url('uploads/kop_logo/' . $surat->logo_kanan) : url('assets/images/user-grid/guru.png');
                 $sz_naungan = $surat->font_size_naungan ?: 11;
+                $sz_naungan_2 = $surat->font_size_naungan_2 ?: 11;
                 $sz_lembaga = $surat->font_size_lembaga ?: 18;
                 $sz_sub = $surat->font_size_sub ?: 13;
                 $sz_alamat = $surat->font_size_alamat ?: 9;
@@ -156,6 +157,9 @@
                             <td style="vertical-align: middle; text-align: left; border: 0;">
                                 <?php if (!empty($surat->naungan)): ?>
                                     <div class="kop-title-naungan" style="font-size: <?php echo $sz_naungan ?>px;"><?php echo html_escape($surat->naungan) ?></div>
+                                <?php endif; ?>
+                                <?php if (!empty($surat->naungan_2)): ?>
+                                    <div class="kop-title-naungan" style="font-size: <?php echo $sz_naungan_2 ?>px; margin-top: 1px;"><?php echo html_escape($surat->naungan_2) ?></div>
                                 <?php endif; ?>
                                 <div class="kop-title-lembaga" style="font-size: <?php echo $sz_lembaga ?>px;"><?php echo html_escape($surat->nama_lembaga) ?></div>
                                 <?php if (!empty($surat->sub_nama)): ?>
@@ -179,6 +183,9 @@
                             <td style="vertical-align: middle; text-align: center; border: 0;">
                                 <?php if (!empty($surat->naungan)): ?>
                                     <div class="kop-title-naungan" style="font-size: <?php echo $sz_naungan ?>px;"><?php echo html_escape($surat->naungan) ?></div>
+                                <?php endif; ?>
+                                <?php if (!empty($surat->naungan_2)): ?>
+                                    <div class="kop-title-naungan" style="font-size: <?php echo $sz_naungan_2 ?>px; margin-top: 1px;"><?php echo html_escape($surat->naungan_2) ?></div>
                                 <?php endif; ?>
                                 <div class="kop-title-lembaga" style="font-size: <?php echo $sz_lembaga ?>px;"><?php echo html_escape($surat->nama_lembaga) ?></div>
                                 <?php if (!empty($surat->sub_nama)): ?>
@@ -204,6 +211,9 @@
                         </div>
                         <?php if (!empty($surat->naungan)): ?>
                             <div class="kop-title-naungan" style="font-size: <?php echo $sz_naungan ?>px;"><?php echo html_escape($surat->naungan) ?></div>
+                        <?php endif; ?>
+                        <?php if (!empty($surat->naungan_2)): ?>
+                            <div class="kop-title-naungan" style="font-size: <?php echo $sz_naungan_2 ?>px; margin-top: 1px;"><?php echo html_escape($surat->naungan_2) ?></div>
                         <?php endif; ?>
                         <div class="kop-title-lembaga" style="font-size: <?php echo $sz_lembaga ?>px;"><?php echo html_escape($surat->nama_lembaga) ?></div>
                         <?php if (!empty($surat->sub_nama)): ?>
