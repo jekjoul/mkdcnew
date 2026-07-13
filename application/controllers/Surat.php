@@ -237,6 +237,7 @@ class Surat extends MY_Controller
             'font_size_sub' => (int) post('font_size_sub') ?: 13,
             'font_size_alamat' => (int) post('font_size_alamat') ?: 9,
             'layout_style' => post('layout_style') ?: 'center',
+            'case_style' => post('case_style') ?: 'uppercase',
             'status' => post('status') ?: 'Aktif',
             'updated_at' => date('Y-m-d H:i:s')
         ];
@@ -445,7 +446,7 @@ class Surat extends MY_Controller
 
     private function getSuratKeluar($id)
     {
-        $this->db->select('skel.*, l.nama_lembaga, l.alamat, l.telepon, l.email, l.logo, l.id_ptk_kepsek, ptk.nama_ptk AS nama_kepsek, sk.kode_jenis, sk.nama_jenis, sk.kode_lembaga, sk.lokasi, kp.nama_kop, kp.logo as kop_logo, kp.logo_kanan, kp.naungan, kp.naungan_2, kp.nama_lembaga as kop_nama_lembaga, kp.sub_nama, kp.alamat as alamat_kop, kp.kontak, kp.font_size_naungan, kp.font_size_naungan_2, kp.font_size_lembaga, kp.font_size_sub, kp.font_size_alamat, kp.layout_style');
+        $this->db->select('skel.*, l.nama_lembaga, l.alamat, l.telepon, l.email, l.logo, l.id_ptk_kepsek, ptk.nama_ptk AS nama_kepsek, sk.kode_jenis, sk.nama_jenis, sk.kode_lembaga, sk.lokasi, kp.nama_kop, kp.logo as kop_logo, kp.logo_kanan, kp.naungan, kp.naungan_2, kp.nama_lembaga as kop_nama_lembaga, kp.sub_nama, kp.alamat as alamat_kop, kp.kontak, kp.font_size_naungan, kp.font_size_naungan_2, kp.font_size_lembaga, kp.font_size_sub, kp.font_size_alamat, kp.layout_style, kp.case_style');
         $this->db->from('surat_keluar skel');
         $this->db->join('lembaga l', 'l.id_lembaga = skel.id_lembaga', 'left');
         $this->db->join('ptk', 'ptk.id_ptk = l.id_ptk_kepsek', 'left');
@@ -633,6 +634,7 @@ class Surat extends MY_Controller
                 'font_size_sub' => ['type' => 'INT', 'constraint' => 3, 'default' => 14],
                 'font_size_alamat' => ['type' => 'INT', 'constraint' => 3, 'default' => 10],
                 'layout_style' => ['type' => 'VARCHAR', 'constraint' => 30, 'default' => 'center'], // center, left_logo, double_logo
+                'case_style' => ['type' => 'VARCHAR', 'constraint' => 30, 'default' => 'uppercase'], // uppercase, custom
                 'status' => ['type' => 'VARCHAR', 'constraint' => 20, 'default' => 'Aktif'],
                 'created_at' => ['type' => 'DATETIME', 'null' => true],
                 'updated_at' => ['type' => 'DATETIME', 'null' => true],
@@ -651,6 +653,12 @@ class Surat extends MY_Controller
                 $this->dbforge->add_column('surat_kop', [
                     'naungan_2' => ['type' => 'VARCHAR', 'constraint' => 150, 'null' => true, 'after' => 'naungan'],
                     'font_size_naungan_2' => ['type' => 'INT', 'constraint' => 3, 'default' => 12, 'after' => 'font_size_naungan']
+                ]);
+            }
+            // Cek jika kolom case_style belum ada di table surat_kop
+            if (!$this->db->field_exists('case_style', 'surat_kop')) {
+                $this->dbforge->add_column('surat_kop', [
+                    'case_style' => ['type' => 'VARCHAR', 'constraint' => 30, 'default' => 'uppercase', 'after' => 'layout_style']
                 ]);
             }
         }

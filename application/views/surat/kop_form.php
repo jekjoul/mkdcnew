@@ -78,7 +78,7 @@
                                 <h6 class="text-md text-primary-light">Desain Tata Letak & Media</h6>
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label class="form-label fw-semibold">Tata Letak (Layout)</label>
                                 <select name="layout_style" id="in_layout" class="form-select">
                                     <option value="center" <?php echo @$row->layout_style === 'center' ? 'selected' : '' ?>>Tengah (Logo Kiri di Atas)</option>
@@ -87,7 +87,15 @@
                                 </select>
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Kapitalisasi Teks (Case Style)</label>
+                                <select name="case_style" id="in_case" class="form-select">
+                                    <option value="uppercase" <?php echo @$row->case_style !== 'custom' ? 'selected' : '' ?>>Huruf Besar Semua (UPPERCASE)</option>
+                                    <option value="custom" <?php echo @$row->case_style === 'custom' ? 'selected' : '' ?>>Sesuai Yang Ditulis di Form (Custom Case)</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
                                 <label class="form-label fw-semibold">Status Kop</label>
                                 <select name="status" class="form-select">
                                     <option value="Aktif" <?php echo @$row->status !== 'Nonaktif' ? 'selected' : '' ?>>Aktif</option>
@@ -165,6 +173,7 @@
 
     function updatePreview() {
         const layout = $('#in_layout').val();
+        const caseStyle = $('#in_case').val();
         const naungan = $('#in_naungan').val() || '';
         const naungan2 = $('#in_naungan_2').val() || '';
         const lembaga = $('#in_lembaga').val() || 'NAMA LEMBAGA UTAMA';
@@ -192,6 +201,8 @@
         const logoKiriSrc = rawLogoKiri || defaultLogo;
         const logoKananSrc = rawLogoKanan || defaultLogo;
 
+        const transformText = (caseStyle === 'custom') ? 'none' : 'uppercase';
+
         let contentHtml = '';
 
         if (layout === 'left_logo') {
@@ -202,10 +213,10 @@
                             <img src="${logoKiriSrc}" style="max-width: 75px; max-height: 75px; display: block;" id="previewLogoImage">
                         </td>
                         <td style="vertical-align: middle; text-align: left;">
-                            ${naungan ? `<div style="font-size: ${szNaungan}px; font-weight: 550; text-transform: uppercase; line-height: 1.2;">${naungan}</div>` : ''}
-                            ${naungan2 ? `<div style="font-size: ${szNaungan2}px; font-weight: 550; text-transform: uppercase; line-height: 1.2; margin-top: 1px;">${naungan2}</div>` : ''}
-                            <div style="font-size: ${szLembaga}px; font-weight: bold; text-transform: uppercase; line-height: 1.2; margin-top: 2px;">${lembaga}</div>
-                            ${sub ? `<div style="font-size: ${szSub}px; font-weight: bold; text-transform: uppercase; line-height: 1.2; margin-top: 2px; color:#333;">${sub}</div>` : ''}
+                            ${naungan ? `<div style="font-size: ${szNaungan}px; font-weight: 550; text-transform: ${transformText}; line-height: 1.2;">${naungan}</div>` : ''}
+                            ${naungan2 ? `<div style="font-size: ${szNaungan2}px; font-weight: 550; text-transform: ${transformText}; line-height: 1.2; margin-top: 1px;">${naungan2}</div>` : ''}
+                            <div style="font-size: ${szLembaga}px; font-weight: bold; text-transform: ${transformText}; line-height: 1.2; margin-top: 2px;">${lembaga}</div>
+                            ${sub ? `<div style="font-size: ${szSub}px; font-weight: bold; text-transform: ${transformText}; line-height: 1.2; margin-top: 2px; color:#333;">${sub}</div>` : ''}
                             ${alamat ? `<div style="font-size: ${szAlamat}px; line-height: 1.3; margin-top: 4px; color:#555;">${alamat}</div>` : ''}
                             ${kontak ? `<div style="font-size: ${szAlamat}px; line-height: 1.3; color:#555;">${kontak}</div>` : ''}
                         </td>
@@ -220,10 +231,10 @@
                             <img src="${logoKiriSrc}" style="max-width: 65px; max-height: 65px; display: block;" id="previewLogoImageLeft">
                         </td>
                         <td style="vertical-align: middle; text-align: center;">
-                            ${naungan ? `<div style="font-size: ${szNaungan}px; font-weight: 550; text-transform: uppercase; line-height: 1.2;">${naungan}</div>` : ''}
-                            ${naungan2 ? `<div style="font-size: ${szNaungan2}px; font-weight: 550; text-transform: uppercase; line-height: 1.2; margin-top: 1px;">${naungan2}</div>` : ''}
-                            <div style="font-size: ${szLembaga}px; font-weight: bold; text-transform: uppercase; line-height: 1.2; margin-top: 2px;">${lembaga}</div>
-                            ${sub ? `<div style="font-size: ${szSub}px; font-weight: bold; text-transform: uppercase; line-height: 1.2; margin-top: 2px; color:#333;">${sub}</div>` : ''}
+                            ${naungan ? `<div style="font-size: ${szNaungan}px; font-weight: 550; text-transform: ${transformText}; line-height: 1.2;">${naungan}</div>` : ''}
+                            ${naungan2 ? `<div style="font-size: ${szNaungan2}px; font-weight: 550; text-transform: ${transformText}; line-height: 1.2; margin-top: 1px;">${naungan2}</div>` : ''}
+                            <div style="font-size: ${szLembaga}px; font-weight: bold; text-transform: ${transformText}; line-height: 1.2; margin-top: 2px;">${lembaga}</div>
+                            ${sub ? `<div style="font-size: ${szSub}px; font-weight: bold; text-transform: ${transformText}; line-height: 1.2; margin-top: 2px; color:#333;">${sub}</div>` : ''}
                             ${alamat ? `<div style="font-size: ${szAlamat}px; line-height: 1.3; margin-top: 4px; color:#555;">${alamat}</div>` : ''}
                             ${kontak ? `<div style="font-size: ${szAlamat}px; line-height: 1.3; color:#555;">${kontak}</div>` : ''}
                         </td>
@@ -240,10 +251,10 @@
                     <div style="margin-bottom: 8px; display: flex; justify-content: center;">
                         <img src="${logoKiriSrc}" style="max-width: 70px; max-height: 70px;" id="previewLogoImageCenter">
                     </div>
-                    ${naungan ? `<div style="font-size: ${szNaungan}px; font-weight: 550; text-transform: uppercase; line-height: 1.2;">${naungan}</div>` : ''}
-                    ${naungan2 ? `<div style="font-size: ${szNaungan2}px; font-weight: 550; text-transform: uppercase; line-height: 1.2; margin-top: 1px;">${naungan2}</div>` : ''}
-                    <div style="font-size: ${szLembaga}px; font-weight: bold; text-transform: uppercase; line-height: 1.2; margin-top: 2px;">${lembaga}</div>
-                    ${sub ? `<div style="font-size: ${szSub}px; font-weight: bold; text-transform: uppercase; line-height: 1.2; margin-top: 2px; color:#333;">${sub}</div>` : ''}
+                    ${naungan ? `<div style="font-size: ${szNaungan}px; font-weight: 550; text-transform: ${transformText}; line-height: 1.2;">${naungan}</div>` : ''}
+                    ${naungan2 ? `<div style="font-size: ${szNaungan2}px; font-weight: 550; text-transform: ${transformText}; line-height: 1.2; margin-top: 1px;">${naungan2}</div>` : ''}
+                    <div style="font-size: ${szLembaga}px; font-weight: bold; text-transform: ${transformText}; line-height: 1.2; margin-top: 2px;">${lembaga}</div>
+                    ${sub ? `<div style="font-size: ${szSub}px; font-weight: bold; text-transform: ${transformText}; line-height: 1.2; margin-top: 2px; color:#333;">${sub}</div>` : ''}
                     ${alamat ? `<div style="font-size: ${szAlamat}px; line-height: 1.3; margin-top: 4px; color:#555;">${alamat}</div>` : ''}
                     ${kontak ? `<div style="font-size: ${szAlamat}px; line-height: 1.3; color:#555;">${kontak}</div>` : ''}
                 </div>
