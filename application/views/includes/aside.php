@@ -234,7 +234,25 @@
         </li>
     <?php endif; ?>
 
-    <?php if (hasPermissions('menu_dashboard_guru')): ?>
+    <?php 
+    $show_kedisiplinan_menu = false;
+    $userId = logged('id');
+    $user_roles_list = [];
+    if ($this->db->table_exists('user_roles')) {
+        $roles_res = $this->db->get_where('user_roles', ['user_id' => $userId])->result();
+        foreach ($roles_res as $r) {
+            $r_title = strtolower($this->db->get_where('roles', ['id' => $r->role_id])->row()->title ?? '');
+            $user_roles_list[] = $r_title;
+        }
+    }
+    // Fallback single role
+    $user_roles_list[] = strtolower($this->db->get_where('roles', ['id' => logged('role')])->row()->title ?? '');
+
+    if (in_array('guru', $user_roles_list, true) || in_array('guru bk', $user_roles_list, true) || in_array('bk', $user_roles_list, true) || in_array('admin', $user_roles_list, true) || hasPermissions('menu_dashboard_guru')) {
+        $show_kedisiplinan_menu = true;
+    }
+
+    if ($show_kedisiplinan_menu): ?>
         <li>
             <a href="<?php echo url('kedisiplinan') ?>">
                 <iconify-icon icon="solar:shield-warning-linear" class="menu-icon"></iconify-icon>

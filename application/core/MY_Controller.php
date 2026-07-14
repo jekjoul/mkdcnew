@@ -84,9 +84,9 @@ class MY_Controller extends CI_Controller {
 		}
 
 		// Redirect paksa hanya jika SATU-SATUNYA role yang dimiliki adalah Guru, 
-		// kecualikan segment menu guru, profile, dan ekstrakurikuler
+		// kecualikan segment menu guru, profile, ekstrakurikuler, dan kedisiplinan
 		$is_only_guru = (count($user_roles) === 1 && in_array('guru', $user_roles, true));
-		if ($is_only_guru && !in_array($this->uri->segment(1), ['guru', 'profile', 'ekstrakurikuler'], true)) {
+		if ($is_only_guru && !in_array($this->uri->segment(1), ['guru', 'profile', 'ekstrakurikuler', 'kedisiplinan'], true)) {
 			redirect('guru', 'refresh');
 		}
 
