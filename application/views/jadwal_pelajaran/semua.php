@@ -231,7 +231,7 @@ foreach ($hari as $h) {
         </div>
     </div>
 
-    <form action="<?php echo url('jadwal_pelajaran/simpan_semua') ?>" method="post">
+    <form id="scheduleForm" action="<?php echo url('jadwal_pelajaran/simpan_semua') ?>" method="post">
         <div class="all-schedule-layout">
             <div class="card subject-bank">
                 <div class="card-header bg-neutral-100">
@@ -357,12 +357,12 @@ foreach ($hari as $h) {
                 </div>
 
                 <div class="d-flex justify-content-end gap-2 mt-4 mb-4">
+                    <span id="saveStatus" class="align-self-center text-success-600 me-auto" style="font-size: 13px; font-weight: 550;">
+                        <iconify-icon icon="solar:check-circle-linear" class="align-middle fs-5"></iconify-icon> Semua perubahan disimpan
+                    </span>
                     <a href="<?php echo url('jadwal_pelajaran') ?>" class="btn btn-secondary">Kembali</a>
                     <button type="button" class="btn btn-outline-danger" id="clearSchedule">
                         <iconify-icon icon="lucide:trash-2"></iconify-icon> Kosongkan
-                    </button>
-                    <button type="submit" class="btn btn-primary-600">
-                        <iconify-icon icon="lucide:save"></iconify-icon> Simpan Semua Jadwal
                     </button>
                 </div>
             </div>
@@ -473,6 +473,25 @@ foreach ($hari as $h) {
             $(this).removeClass('drag-over');
         });
 
+        let saveTimeout = null;
+        function autoSaveSchedule() {
+            if (saveTimeout) clearTimeout(saveTimeout);
+            
+            $('#saveStatus').removeClass('text-success-600 text-danger-600').addClass('text-secondary-600')
+                .html('<iconify-icon icon="line-md:loading-twotone-loop" class="align-middle fs-5"></iconify-icon> Menyimpan perubahan...');
+
+            saveTimeout = setTimeout(function() {
+                const formData = $('#scheduleForm').serialize();
+                $.post($('#scheduleForm').attr('action'), formData, function() {
+                    $('#saveStatus').removeClass('text-secondary-600 text-danger-600').addClass('text-success-600')
+                        .html('<iconify-icon icon="solar:check-circle-linear" class="align-middle fs-5"></iconify-icon> Semua perubahan disimpan');
+                }).fail(function() {
+                    $('#saveStatus').removeClass('text-secondary-600 text-success-600').addClass('text-danger-600')
+                        .html('<iconify-icon icon="solar:close-circle-linear" class="align-middle fs-5"></iconify-icon> Gagal menyimpan otomatis');
+                });
+            }, 800); // Debounce save to prevent server hammer
+        }
+
         $(document).on('drop', '.schedule-dropzone', function(event) {
             event.preventDefault();
             if (!dragged) return;
@@ -489,6 +508,7 @@ foreach ($hari as $h) {
                 origin.find('input[type="hidden"]').val('');
                 setZone(zone, dragged.element.detach());
             }
+            autoSaveSchedule();
         });
 
         $(document).on('dblclick', '.scheduled-token', function() {
@@ -496,6 +516,7 @@ foreach ($hari as $h) {
             returnToBank($(this));
             zone.find('input[type="hidden"]').val('');
             refreshConflicts();
+            autoSaveSchedule();
         });
 
         $('#clearSchedule').on('click', function() {
@@ -504,6 +525,7 @@ foreach ($hari as $h) {
             });
             $('.schedule-dropzone input[type="hidden"]').val('');
             refreshConflicts();
+            autoSaveSchedule();
         });
 
         $('#generateScheduleBtn').on('click', function() {
@@ -537,6 +559,7 @@ foreach ($hari as $h) {
                         }
                     });
                     refreshConflicts();
+                    autoSaveSchedule();
                     // Alert sukses premium
                     alert('Jadwal pelajaran berhasil digenerate secara otomatis tanpa bentrok guru!');
                 } else {
