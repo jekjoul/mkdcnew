@@ -14,12 +14,45 @@ class Perangkat_pembelajaran extends MY_Controller
     public function index()
     {
         ifPermissions('perangkat_pembelajaran_list');
+        $this->loadPerangkatList('Aktif');
+    }
+
+    public function nonaktif()
+    {
+        ifPermissions('perangkat_pembelajaran_list');
+        $this->loadPerangkatList('Nonaktif');
+    }
+
+    private function loadPerangkatList($status_tahun)
+    {
+        $is_nonaktif = $status_tahun !== 'Aktif';
         $this->page_data['page']->title = 'Pembelajaran';
-        $this->page_data['page']->titleUrl = 'perangkat_pembelajaran';
-        $this->page_data['page']->subtitle = 'Perangkat Pembelajaran';
-        $this->page_data['page']->subtitleUrl = 'perangkat_pembelajaran';
+        $this->page_data['page']->titleUrl = $is_nonaktif ? 'perangkat_pembelajaran/nonaktif' : 'perangkat_pembelajaran';
+        $this->page_data['page']->subtitle = $is_nonaktif ? 'Perangkat Pembelajaran Tidak Aktif' : 'Perangkat Pembelajaran';
+        $this->page_data['page']->subtitleUrl = $is_nonaktif ? 'perangkat_pembelajaran/nonaktif' : 'perangkat_pembelajaran';
         $this->page_data['page']->icon = 'solar:document-add-linear';
-        $this->page_data['items'] = $this->perangkat_model->getAdminItems();
+
+        // Deteksi apakah yang login adalah Guru biasa (tidak memiliki akses penuh pembelajaran_list)
+        $userId = logged('id');
+        $user = $this->db->get_where('users', ['id' => $userId])->row();
+        $ptk_id = $user ? (int) $user->id_ptk : 0;
+
+        $user_roles = [];
+        foreach ($this->db->get_where('user_roles', ['user_id' => $userId])->result() as $ur) {
+            $r_row = $this->db->get_where('roles', ['id' => $ur->role_id])->row();
+            if ($r_row) {
+                $user_roles[] = strtolower((string) $r_row->title);
+            }
+        }
+        $is_admin = in_array('admin', $user_roles, true) || logged('role') == 1 || hasPermissions('pembelajaran_list');
+
+        if (!$is_admin && $ptk_id > 0) {
+            $this->page_data['items'] = $this->perangkat_model->getGuruItems($ptk_id, $status_tahun);
+        } else {
+            $this->page_data['items'] = $this->perangkat_model->getAdminItems($status_tahun);
+        }
+
+        $this->page_data['is_nonaktif'] = $is_nonaktif;
         $this->load->view('perangkat_pembelajaran/list', $this->page_data);
     }
 
