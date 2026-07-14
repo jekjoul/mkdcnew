@@ -73,3 +73,11 @@
     </form>
 </div>
 <?php include viewPath('includes/footer'); ?>
+<script>
+    $(document).ready(function() {
+        $('.select2').select2({
+            placeholder: "Pilih satu atau lebih guru pembina...",
+            allowClear: true
+        });
+    });
+</script>
