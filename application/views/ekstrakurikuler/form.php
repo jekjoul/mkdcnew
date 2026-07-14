@@ -1,7 +1,5 @@
-<!-- Load Select2 CDN untuk menjamin kompatibilitas penuh di Firefox dan browser lainnya -->
+<!-- Load Select2 CSS di awal untuk visualisasi tema -->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <?php include viewPath('includes/header'); ?>
 <div class="dashboard-main-body">
     <form action="<?php echo $form_action; ?>" method="post" enctype="multipart/form-data">
@@ -77,11 +75,16 @@
     </form>
 </div>
 <?php include viewPath('includes/footer'); ?>
+<!-- Load Select2 JS setelah jQuery bawaan tema selesai di-load di footer -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     $(document).ready(function() {
-        $('.select2').select2({
-            placeholder: "Pilih satu atau lebih guru pembina...",
-            allowClear: true
-        });
+        // Cek apakah fungsi select2 sudah terdefinisi secara aman
+        if (typeof $.fn.select2 !== 'undefined') {
+            $('.select2').select2({
+                placeholder: "Pilih satu atau lebih guru pembina...",
+                allowClear: true
+            });
+        }
     });
 </script>
