@@ -226,7 +226,9 @@ class Update_log extends MY_Controller
             "Display teacher name inside scheduled-token and makeScheduledToken helper" => "Menampilkan nama guru di kolom/card tabel jadwal pelajaran.",
             "Add Auto-Generate button to all-classes weekly schedule view" => "Menyediakan tombol pemicu generator jadwal otomatis di halaman manajemen jadwal.",
             "Implement generate_otomatis endpoint in Jadwal_pelajaran.php" => "Mengimplementasikan algoritma penjadwalan otomatis anti-bentrok guru dan penggabungan JP berkelompok di controller.",
-            "Add JS event listener for generateScheduleBtn AJAX request in semua.php" => "Menerapkan pengendali klik tombol generator otomatis melalui request AJAX."
+            "Add JS event listener for generateScheduleBtn AJAX request in semua.php" => "Menerapkan pengendali klik tombol generator otomatis melalui request AJAX.",
+            "Implement autoSaveSchedule function and bind to events in semua.php" => "Mengimplementasikan fungsi autoSaveSchedule (penyimpanan otomatis pasca drop/drag/delete) di halaman penyusunan jadwal.",
+            "Remove manual save button and replace with Auto-save indicator in semua.php" => "Menghapus tombol simpan manual dan menggantinya dengan indikator visual status autosave."
         ];
 
         if (isset($mappings[$desc])) {
