@@ -96,12 +96,20 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
                     </div>
 
+                    <?php 
+                    $user_roles = [];
+                    foreach ($this->db->get_where('user_roles', ['user_id' => $User->id])->result() as $ur) {
+                        $user_roles[] = (int) $ur->role_id;
+                    }
+                    if (empty($user_roles) && !empty($User->role)) {
+                        $user_roles[] = (int) $User->role;
+                    }
+                    ?>
                     <div class="form-group">
-                      <label for="formClient-Role"><?php echo lang('user_role') ?></label>
-                      <select name="role" id="formClient-Role" class="form-control select2" required>
-                        <option value=""><?php echo lang('user_select_role') ?></option>
+                      <label for="formClient-Role"><?php echo lang('user_role') ?> (Dapat merangkap)</label>
+                      <select name="role[]" id="formClient-Role" class="form-control select2" multiple required data-placeholder="Pilih satu atau lebih jabatan">
                         <?php foreach ($this->roles_model->get() as $row): ?>
-                          <?php $sel = !empty($User->role) && $User->role == $row->id ? 'selected' : '' ?>
+                          <?php $sel = in_array((int) $row->id, $user_roles, true) ? 'selected' : '' ?>
                           <option value="<?php echo $row->id ?>" <?php echo $sel ?>><?php echo $row->title ?></option>
                         <?php endforeach ?>
                       </select>

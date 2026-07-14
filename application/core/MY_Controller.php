@@ -64,9 +64,28 @@ class MY_Controller extends CI_Controller {
 
 		}
 
-		$role = $this->db->get_where('roles', ['id' => logged('role')])->row();
-		$role_title = $role ? strtolower((string) $role->title) : '';
-		if (strpos($role_title, 'guru') !== false && !in_array($this->uri->segment(1), ['guru', 'profile'], true)) {
+		$userId = logged('id');
+		$user_roles = [];
+		if ($userId && $this->db->table_exists('user_roles')) {
+			foreach ($this->db->get_where('user_roles', ['user_id' => $userId])->result() as $ur) {
+				$r_row = $this->db->get_where('roles', ['id' => $ur->role_id])->row();
+				if ($r_row) {
+					$user_roles[] = strtolower((string) $r_row->title);
+				}
+			}
+		}
+		
+		// Fallback ke role tunggal jika data user_roles kosong
+		if (empty($user_roles)) {
+			$role = $this->db->get_where('roles', ['id' => logged('role')])->row();
+			if ($role) {
+				$user_roles[] = strtolower((string) $role->title);
+			}
+		}
+
+		// Redirect paksa hanya jika SATU-SATUNYA role yang dimiliki adalah Guru
+		$is_only_guru = (count($user_roles) === 1 && in_array('guru', $user_roles, true));
+		if ($is_only_guru && !in_array($this->uri->segment(1), ['guru', 'profile'], true)) {
 			redirect('guru', 'refresh');
 		}
 

@@ -100,9 +100,8 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
           </div>
 
           <div class="form-group">
-            <label for="formClient-Role"><?php echo lang('user_role') ?></label>
-            <select name="role" id="formClient-Role" class="form-control select2" required>
-              <option value=""><?php echo lang('user_select_role') ?></option>
+            <label for="formClient-Role"><?php echo lang('user_role') ?> (Dapat merangkap)</label>
+            <select name="role[]" id="formClient-Role" class="form-control select2" multiple required data-placeholder="Pilih satu atau lebih jabatan">
               <?php foreach ($this->roles_model->get() as $row): ?>
                 <?php $sel = !empty(get('role')) && get('role')==$row->id ? 'selected' : '' ?>
                 <option value="<?php echo $row->id ?>" <?php echo $sel ?>><?php echo $row->title ?></option>

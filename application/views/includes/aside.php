@@ -84,11 +84,7 @@
                         </a>
                     </li>
                 <?php endif; ?>
-        </ul>
-    </div>
-</aside>
-<?php return; ?>
-<?php endif; ?>
+            <?php endif; ?>
 
 <?php if (hasPermissions('menu_dashboard_admin')): ?>
     <li>

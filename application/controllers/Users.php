@@ -42,8 +42,14 @@ class Users extends MY_Controller
 		ifPermissions('users_add');
 		postAllowed();
 
+		$roles = $this->input->post('role');
+		$primary_role = 0;
+		if (is_array($roles) && !empty($roles)) {
+			$primary_role = (int) $roles[0];
+		}
+
 		$id = $this->users_model->create([
-			'role' => post('role'),
+			'role' => $primary_role,
 			'name' => post('name'),
 			'username' => post('username'),
 			'email' => post('email'),
@@ -53,6 +59,17 @@ class Users extends MY_Controller
 			'password' => hash("sha256", post('password')),
 			'id_ptk' => post('id_ptk') ?: null,
 		]);
+
+		// Simpan ke user_roles
+		if (is_array($roles)) {
+			foreach ($roles as $r) {
+				$this->db->insert('user_roles', [
+					'user_id' => $id,
+					'role_id' => (int) $r,
+					'created_at' => date('Y-m-d H:i:s')
+				]);
+			}
+		}
 
 		if (!empty($_FILES['image']['name'])) {
 
@@ -121,8 +138,14 @@ class Users extends MY_Controller
 
 		postAllowed();
 
+		$roles = $this->input->post('role');
+		$primary_role = 0;
+		if (is_array($roles) && !empty($roles)) {
+			$primary_role = (int) $roles[0];
+		}
+
 		$data = [
-			'role' => post('role'),
+			'role' => $primary_role,
 			'name' => post('name'),
 			'username' => post('username'),
 			'email' => post('email'),
@@ -140,6 +163,18 @@ class Users extends MY_Controller
 			$data['password'] = hash("sha256", $password);
 
 		$id = $this->users_model->update($id, $data);
+
+		// Hapus dan masukkan ulang ke user_roles
+		$this->db->delete('user_roles', ['user_id' => $id]);
+		if (is_array($roles)) {
+			foreach ($roles as $r) {
+				$this->db->insert('user_roles', [
+					'user_id' => $id,
+					'role_id' => (int) $r,
+					'created_at' => date('Y-m-d H:i:s')
+				]);
+			}
+		}
 
 		if (!empty($_FILES['image']['name'])) {
 
@@ -218,6 +253,29 @@ class Users extends MY_Controller
 			$this->dbforge->add_column('users', [
 				'id_ptk' => ['type' => 'INT', 'constraint' => 11, 'null' => true, 'after' => 'role'],
 			]);
+		}
+
+		if (!$this->db->table_exists('user_roles')) {
+			$this->dbforge->add_field([
+				'id' => ['type' => 'INT', 'constraint' => 11, 'auto_increment' => true],
+				'user_id' => ['type' => 'INT', 'constraint' => 11],
+				'role_id' => ['type' => 'INT', 'constraint' => 11],
+				'created_at' => ['type' => 'TIMESTAMP', 'null' => true],
+			]);
+			$this->dbforge->add_key('id', true);
+			$this->dbforge->create_table('user_roles', true);
+
+			// Migrasi awal: salin role users lama ke user_roles
+			$users = $this->db->get('users')->result();
+			foreach ($users as $u) {
+				if ($u->role > 0) {
+					$this->db->insert('user_roles', [
+						'user_id' => $u->id,
+						'role_id' => $u->role,
+						'created_at' => date('Y-m-d H:i:s'),
+					]);
+				}
+			}
 		}
 	}
 
