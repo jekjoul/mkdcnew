@@ -719,7 +719,7 @@ class Perangkat_pembelajaran extends MY_Controller
         }
 
         $active_days = $this->db->where('id_tahun_pelajaran', $item->id_tahun_pelajaran)
-            ->where_in('status', ['Efektif', 'Daring', 'Luar Kelas'])
+            ->where('status', 'Efektif')
             ->get('pembelajaran_hari_efektif')->result();
 
         $meetings_count = 0;

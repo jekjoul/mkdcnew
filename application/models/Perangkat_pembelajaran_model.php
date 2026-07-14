@@ -270,9 +270,9 @@ class Perangkat_pembelajaran_model extends MY_Model
             ];
         }
 
-        // Get active teaching days (hari aktif pembelajaran)
+        // Get active teaching days (hari aktif pembelajaran) - Hanya yang berstatus 'Efektif' saja
         $active_days = $this->db->where('id_tahun_pelajaran', $item->id_tahun_pelajaran)
-            ->where_in('status', ['Efektif', 'Daring', 'Luar Kelas'])
+            ->where('status', 'Efektif')
             ->order_by('tanggal', 'ASC')
             ->get('pembelajaran_hari_efektif')->result();
 
@@ -405,8 +405,9 @@ class Perangkat_pembelajaran_model extends MY_Model
             ];
         }
 
+        // Hanya yang berstatus 'Efektif' saja
         $active_days = $this->db->where('id_tahun_pelajaran', $item->id_tahun_pelajaran)
-            ->where_in('status', ['Efektif', 'Daring', 'Luar Kelas'])
+            ->where('status', 'Efektif')
             ->order_by('tanggal', 'ASC')
             ->get('pembelajaran_hari_efektif')->result();
 
