@@ -45,6 +45,49 @@
                                 </option>
                             <?php endforeach; ?>
                         </select>
+                        <style>
+                            /* Menata agar input pencarian dropdown dan tag-tag terpilih berada di baris yang berbeda */
+                            .select2-container--default .select2-selection--multiple {
+                                display: flex !important;
+                                flex-direction: column-reverse !important; /* Tag terpilih dirender di bawah input dropdown */
+                                height: auto !important;
+                                padding: 6px 12px !important;
+                                border: 1px solid #d1d5db !important;
+                                border-radius: 8px !important;
+                            }
+                            .select2-container--default .select2-selection--multiple .select2-selection__rendered {
+                                display: flex !important;
+                                flex-wrap: wrap !important;
+                                gap: 6px !important;
+                                padding: 0 !important;
+                            }
+                            .select2-container--default .select2-selection--multiple .select2-selection__choice {
+                                background-color: #f3f4f6 !important;
+                                border: 1px solid #e5e7eb !important;
+                                border-radius: 6px !important;
+                                padding: 4px 10px !important;
+                                margin: 0 !important;
+                                font-size: 13px !important;
+                                color: #374151 !important;
+                                display: inline-flex !important;
+                                align-items: center !important;
+                            }
+                            .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+                                color: #ef4444 !important;
+                                margin-right: 6px !important;
+                                border: none !important;
+                                background: transparent !important;
+                            }
+                            .select2-container--default .select2-selection--multiple .select2-search--inline {
+                                width: 100% !important;
+                                margin: 0 0 6px 0 !important;
+                            }
+                            .select2-container--default .select2-selection--multiple .select2-search--inline .select2-search__field {
+                                margin: 0 !important;
+                                height: 32px !important;
+                                font-size: 14px !important;
+                            }
+                        </style>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label fw-bold">Logo Kegiatan</label>
