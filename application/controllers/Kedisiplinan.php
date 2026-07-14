@@ -108,8 +108,22 @@ class Kedisiplinan extends MY_Controller
 
     public function edit_tindak_lanjut($id)
     {
-        ifPermissions('menu_dashboard_guru'); // Biasanya BK / Admin
         postAllowed();
+        $userId = logged('id');
+        $is_admin_or_bk = (logged('role') == 1);
+        if ($this->db->table_exists('user_roles')) {
+            $roles_res = $this->db->get_where('user_roles', ['user_id' => $userId])->result();
+            foreach ($roles_res as $r) {
+                $r_title = strtolower($this->db->get_where('roles', ['id' => $r->role_id])->row()->title ?? '');
+                if ($r_title === 'admin' || $r_title === 'guru bk' || $r_title === 'bk') {
+                    $is_admin_or_bk = true;
+                }
+            }
+        }
+
+        if (!$is_admin_or_bk) {
+            show_error('Hanya Guru BK atau Admin yang diizinkan menentukan tindak lanjut pelanggaran.', 403, 'Akses Ditolak');
+        }
 
         $this->db->where('id_pelanggaran_siswa', $id);
         $this->db->update('kedisiplinan_pelanggaran_siswa', [
@@ -124,7 +138,22 @@ class Kedisiplinan extends MY_Controller
 
     public function hapus($id)
     {
-        ifPermissions('menu_dashboard_guru');
+        $userId = logged('id');
+        $is_admin_or_bk = (logged('role') == 1);
+        if ($this->db->table_exists('user_roles')) {
+            $roles_res = $this->db->get_where('user_roles', ['user_id' => $userId])->result();
+            foreach ($roles_res as $r) {
+                $r_title = strtolower($this->db->get_where('roles', ['id' => $r->role_id])->row()->title ?? '');
+                if ($r_title === 'admin' || $r_title === 'guru bk' || $r_title === 'bk') {
+                    $is_admin_or_bk = true;
+                }
+            }
+        }
+
+        if (!$is_admin_or_bk) {
+            show_error('Hanya Guru BK atau Admin yang diizinkan untuk menghapus laporan pelanggaran.', 403, 'Akses Ditolak');
+        }
+
         $this->db->delete('kedisiplinan_pelanggaran_siswa', ['id_pelanggaran_siswa' => $id]);
         $this->session->set_flashdata('alert-type', 'success');
         $this->session->set_flashdata('alert', 'Laporan pelanggaran berhasil dihapus.');
