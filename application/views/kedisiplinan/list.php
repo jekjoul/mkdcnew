@@ -55,8 +55,20 @@
                                             <td class="text-center"><?php echo $no++; ?></td>
                                             <td class="fw-semibold text-secondary-light"><?php echo html_escape($p->nama_siswa); ?></td>
                                             <td><?php echo html_escape($p->rombel ?: '-'); ?></td>
-                                            <td><span class="badge bg-danger-100 text-danger-800"><?php echo html_escape($p->nama_pelanggaran); ?></span></td>
-                                            <td class="text-center"><span class="badge bg-danger-600 text-light px-12 py-6"><?php echo (int) $p->bobot_poin; ?> Poin</span></td>
+                                            <td>
+                                                <?php if (empty($p->nama_pelanggaran) || $p->id_kategori == 0): ?>
+                                                    <span class="badge bg-warning-100 text-warning-800">Belum Diklasifikasi BK</span>
+                                                <?php else: ?>
+                                                    <span class="badge bg-danger-100 text-danger-800"><?php echo html_escape($p->nama_pelanggaran); ?></span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td class="text-center">
+                                                <?php if (empty($p->nama_pelanggaran) || $p->id_kategori == 0): ?>
+                                                    <span class="badge bg-neutral-200 text-neutral-800">- Poin</span>
+                                                <?php else: ?>
+                                                    <span class="badge bg-danger-600 text-light px-12 py-6"><?php echo (int) $p->bobot_poin; ?> Poin</span>
+                                                <?php endif; ?>
+                                            </td>
                                             <td class="text-center"><?php echo date('d-m-Y', strtotime($p->tanggal_pelanggaran)); ?></td>
                                             <td><?php echo html_escape($p->catatan ?: '-'); ?></td>
                                             <td>
@@ -87,10 +99,30 @@
                                                                 </div>
                                                                 <div class="modal-body text-start">
                                                                     <p>Siswa: <strong><?php echo html_escape($p->nama_siswa) ?></strong></p>
-                                                                    <p>Pelanggaran: <span class="badge bg-danger-100 text-danger-800"><?php echo html_escape($p->nama_pelanggaran) ?></span></p>
+                                                                    
+                                                                    <?php if (empty($p->nama_pelanggaran) || $p->id_kategori == 0): ?>
+                                                                        <div class="mb-3">
+                                                                            <label class="form-label fw-bold text-danger">Tentukan Kategori Pelanggaran (Menentukan Poin) <span class="text-danger">*</span></label>
+                                                                            <?php 
+                                                                            $all_kategori = $this->db->order_by('nama_pelanggaran', 'ASC')->get('kedisiplinan_pelanggaran_kategori')->result();
+                                                                            ?>
+                                                                            <select name="id_kategori" class="form-select" required>
+                                                                                <option value="">Pilih kategori pelanggaran...</option>
+                                                                                <?php foreach ($all_kategori as $kat): ?>
+                                                                                    <option value="<?php echo $kat->id_kategori ?>">
+                                                                                        <?php echo html_escape($kat->nama_pelanggaran) ?> (<?php echo $kat->bobot_poin ?> Poin)
+                                                                                    </option>
+                                                                                <?php endforeach; ?>
+                                                                            </select>
+                                                                        </div>
+                                                                    <?php else: ?>
+                                                                        <p>Pelanggaran: <span class="badge bg-danger-100 text-danger-800"><?php echo html_escape($p->nama_pelanggaran) ?></span></p>
+                                                                        <input type="hidden" name="id_kategori" value="<?php echo $p->id_kategori ?>">
+                                                                    <?php endif; ?>
+
                                                                     <div class="mb-3">
                                                                         <label class="form-label fw-semibold">Tindak Lanjut & Keputusan Konseling BK</label>
-                                                                        <textarea name="tindak_lanjut" class="form-control" rows="4" required><?php echo html_escape($p->tindak_lanjut) ?></textarea>
+                                                                        <textarea name="tindak_lanjut" class="form-control" rows="4" required placeholder="Tuliskan hasil konseling siswa..."><?php echo html_escape($p->tindak_lanjut !== 'Menunggu verifikasi dan konseling BK' ? $p->tindak_lanjut : '') ?></textarea>
                                                                     </div>
                                                                 </div>
                                                                 <div class="modal-footer">

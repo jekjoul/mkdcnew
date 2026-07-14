@@ -22,7 +22,7 @@ class Kedisiplinan extends MY_Controller
         $this->db->select('kp.*, s.nama_siswa, s.nisn, s.rombel, kk.nama_pelanggaran, kk.bobot_poin');
         $this->db->from('kedisiplinan_pelanggaran_siswa kp');
         $this->db->join('siswa s', 's.id_siswa = kp.id_siswa');
-        $this->db->join('kedisiplinan_pelanggaran_kategori kk', 'kk.id_kategori = kp.id_kategori');
+        $this->db->join('kedisiplinan_pelanggaran_kategori kk', 'kk.id_kategori = kp.id_kategori', 'left');
         $this->db->order_by('kp.tanggal_pelanggaran', 'DESC');
         $this->page_data['pelanggaran'] = $this->db->get()->result();
 
@@ -125,11 +125,18 @@ class Kedisiplinan extends MY_Controller
             show_error('Hanya Guru BK atau Admin yang diizinkan menentukan tindak lanjut pelanggaran.', 403, 'Akses Ditolak');
         }
 
-        $this->db->where('id_pelanggaran_siswa', $id);
-        $this->db->update('kedisiplinan_pelanggaran_siswa', [
+        $update_data = [
             'tindak_lanjut' => post('tindak_lanjut'),
             'updated_at' => date('Y-m-d H:i:s')
-        ]);
+        ];
+
+        $id_kategori = (int) post('id_kategori');
+        if ($id_kategori > 0) {
+            $update_data['id_kategori'] = $id_kategori;
+        }
+
+        $this->db->where('id_pelanggaran_siswa', $id);
+        $this->db->update('kedisiplinan_pelanggaran_siswa', $update_data);
 
         $this->session->set_flashdata('alert-type', 'success');
         $this->session->set_flashdata('alert', 'Tindak lanjut BK berhasil diperbarui.');
