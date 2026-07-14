@@ -302,7 +302,33 @@ foreach ($menu_pembelajaran_siswa as $menu_row) {
 
 
 
-<?php if (hasPermissions('menu_pembelajaran') || hasPermissions('menu_jadwal_pelajaran') || hasPermissions('menu_jadwal_tidak_aktif') || hasPermissions('menu_perangkat_pembelajaran') || hasPermissions('menu_nilai_siswa') || hasPermissions('menu_tahun_pelajaran')): ?>
+<?php 
+$show_ekskul_menu = false;
+if (hasPermissions('menu_dashboard_guru') || hasPermissions('pembelajaran_list')) {
+    $show_ekskul_menu = true;
+} else {
+    $userId = logged('id');
+    $user = $CI->db->get_where('users', ['id' => $userId])->row();
+    $ptk_id = $user ? (int) $user->id_ptk : 0;
+    if ($ptk_id > 0) {
+        $raw_ekskul = $CI->db->get('ekstrakurikuler')->result();
+        foreach ($raw_ekskul as $ekskul_row) {
+            if (!empty($ekskul_row->id_ptk_pembina)) {
+                $decoded = json_decode($ekskul_row->id_ptk_pembina, true);
+                if (is_array($decoded) && in_array($ptk_id, $decoded, true)) {
+                    $show_ekskul_menu = true;
+                    break;
+                } elseif ((int)$ekskul_row->id_ptk_pembina === $ptk_id) {
+                    $show_ekskul_menu = true;
+                    break;
+                }
+            }
+        }
+    }
+}
+?>
+
+<?php if (hasPermissions('menu_pembelajaran') || hasPermissions('menu_jadwal_pelajaran') || hasPermissions('menu_jadwal_tidak_aktif') || hasPermissions('menu_perangkat_pembelajaran') || hasPermissions('menu_nilai_siswa') || hasPermissions('menu_tahun_pelajaran') || $show_ekskul_menu): ?>
     <li class="sidebar-menu-group-title"
         style="background: #d3c5b1;
         background: linear-gradient(90deg, rgb(255, 233, 135) 0%, rgba(255, 255, 255, 0) 100%);">Pembelajaran
@@ -409,7 +435,7 @@ foreach ($menu_pembelajaran_siswa as $menu_row) {
             </a>
         </li>
     <?php endif; ?>
-    <?php if (hasPermissions('menu_dashboard_guru')): ?>
+    <?php if ($show_ekskul_menu): ?>
         <li>
             <a href="<?php echo url('ekstrakurikuler') ?>">
                 <iconify-icon icon="solar:dialog-linear" class="menu-icon"></iconify-icon>
