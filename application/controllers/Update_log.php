@@ -222,7 +222,11 @@ class Update_log extends MY_Controller
             "Add Kop Surat dropdown to letter writing form (keluar_form.php)" => "Menambahkan pilihan dropdown Kop Surat pada form pembuatan Surat Keluar.",
             "Adjust column widths in keluar_form.php to accommodate Kop Surat dropdown" => "Merapikan lebar grid kolom input di formulir surat keluar agar proporsional.",
             "Update keluar_simpan, setKeluarOptions, and getSuratKeluar in Surat.php to integrate dynamic kop_surat configurations" => "Menghubungkan penyimpanan form surat keluar dan kueri preview agar terelasi secara penuh dengan tabel Kop Surat.",
-            "Redesign preview letterhead (keluar_preview.php) to render dynamic kop_surat configurations" => "Menerapkan visualisasi Kop Surat baru yang dinamis (mengikuti ukuran font dan layout terpilih) pada halaman preview cetak Surat Keluar."
+            "Redesign preview letterhead (keluar_preview.php) to render dynamic kop_surat configurations" => "Menerapkan visualisasi Kop Surat baru yang dinamis (mengikuti ukuran font dan layout terpilih) pada halaman preview cetak Surat Keluar.",
+            "Display teacher name inside scheduled-token and makeScheduledToken helper" => "Menampilkan nama guru di kolom/card tabel jadwal pelajaran.",
+            "Add Auto-Generate button to all-classes weekly schedule view" => "Menyediakan tombol pemicu generator jadwal otomatis di halaman manajemen jadwal.",
+            "Implement generate_otomatis endpoint in Jadwal_pelajaran.php" => "Mengimplementasikan algoritma penjadwalan otomatis anti-bentrok guru dan penggabungan JP berkelompok di controller.",
+            "Add JS event listener for generateScheduleBtn AJAX request in semua.php" => "Menerapkan pengendali klik tombol generator otomatis melalui request AJAX."
         ];
 
         if (isset($mappings[$desc])) {
