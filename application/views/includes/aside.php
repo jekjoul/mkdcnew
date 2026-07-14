@@ -234,6 +234,20 @@
         </li>
     <?php endif; ?>
 
+    <?php if (hasPermissions('menu_dashboard_guru')): ?>
+        <li>
+            <a href="<?php echo url('kedisiplinan') ?>">
+                <iconify-icon icon="solar:shield-warning-linear" class="menu-icon"></iconify-icon>
+                <span>Kedisiplinan & BK</span>
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo url('ekstrakurikuler') ?>">
+                <iconify-icon icon="solar:dialog-linear" class="menu-icon"></iconify-icon>
+                <span>Ekstrakurikuler</span>
+            </a>
+        </li>
+    <?php endif; ?>
 
 <?php endif; ?>
 
