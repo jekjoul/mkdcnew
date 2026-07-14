@@ -1,6 +1,9 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
 <?php include viewPath('includes/header'); ?>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<?php
+$is_admin_or_staff = (hasPermissions('siswa_edit') || hasPermissions('menu_buku_induk_siswa'));
+?>
 
 <div class="dashboard-main-body">
     <div class="row gy-4">
@@ -36,7 +39,7 @@
                         <li class="d-flex gap-1 mb-12"><span class="w-40 fw-semibold">Nama</span><span class="w-60">: <?php echo $row->nama_siswa ?></span></li>
                         <li class="d-flex gap-1 mb-12"><span class="w-40 fw-semibold">NISN</span><span class="w-60">: <?php echo $row->nisn ?: '-' ?></span></li>
                         <li class="d-flex gap-1 mb-12"><span class="w-40 fw-semibold">NIPD</span><span class="w-60">: <?php echo $row->nipd ?: '-' ?></span></li>
-                        <li class="d-flex gap-1 mb-12"><span class="w-40 fw-semibold">NIK</span><span class="w-60">: <?php echo $row->nik ?: '-' ?></span></li>
+                        <li class="d-flex gap-1 mb-12"><span class="w-40 fw-semibold">NIK</span><span class="w-60">: <?php echo $is_admin_or_staff ? ($row->nik ?: '-') : '*** (Disensor)' ?></span></li>
                         <li class="d-flex gap-1 mb-12"><span class="w-40 fw-semibold">No HP</span><span class="w-60">: <?php echo $row->telepon ?: '-' ?></span></li>
                         <li class="d-flex gap-1 mb-12"><span class="w-40 fw-semibold">Tempat Lahir</span><span class="w-60">: <?php echo ($row->tempat_lahir ?: '-') ?> </span></li>
                         <li class="d-flex gap-1 mb-12"><span class="w-40 fw-semibold">Tanggal lahir</span><span class="w-60">: <?php echo (tanggal_indo($row->tanggal_lahir) ?: '-') ?></span></li>
@@ -51,13 +54,17 @@
                     <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-20">
                         <ul class="nav border-gradient-tab nav-pills d-inline-flex" role="tablist">
                             <li class="nav-item"><button class="nav-link px-24 active" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button">Profil</button></li>
-                            <li class="nav-item"><button class="nav-link px-24" data-bs-toggle="pill" data-bs-target="#pills-arsip" type="button">Arsip</button></li>
-                            <li class="nav-item"><button class="nav-link px-24" data-bs-toggle="pill" data-bs-target="#pills-setting" type="button">Setting</button></li>
+                            <?php if ($is_admin_or_staff): ?>
+                                <li class="nav-item"><button class="nav-link px-24" data-bs-toggle="pill" data-bs-target="#pills-arsip" type="button">Arsip</button></li>
+                                <li class="nav-item"><button class="nav-link px-24" data-bs-toggle="pill" data-bs-target="#pills-setting" type="button">Setting</button></li>
+                            <?php endif; ?>
                         </ul>
-                        <button type="button" class="btn btn-warning-600 text-light radius-8 px-20 py-11 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalMutasiSiswa">
-                            <iconify-icon icon="solar:logout-3-linear" class="text-xl"></iconify-icon>
-                            Keluar / Mutasi
-                        </button>
+                        <?php if ($is_admin_or_staff): ?>
+                            <button type="button" class="btn btn-warning-600 text-light radius-8 px-20 py-11 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalMutasiSiswa">
+                                <iconify-icon icon="solar:logout-3-linear" class="text-xl"></iconify-icon>
+                                Keluar / Mutasi
+                            </button>
+                        <?php endif; ?>
                     </div>
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="pills-profile">
@@ -71,8 +78,8 @@
                                         $items = [
                                             'Jenis Kelamin' => $row->jenis_kelamin,
                                             'Agama' => $row->agama,
-                                            'No KK' => $row->no_kk,
-                                            'No Ijazah' => isset($row->no_ijazah) ? $row->no_ijazah : null,
+                                            'No KK' => $is_admin_or_staff ? $row->no_kk : '*** (Disensor)',
+                                            'No Ijazah' => isset($row->no_ijazah) ? ($is_admin_or_staff ? $row->no_ijazah : '*** (Disensor)') : null,
                                             'Kewarganegaraan' => isset($row->kewarganegaraan) ? $row->kewarganegaraan : null,
                                             'Anak Ke' => isset($row->anak_ke) ? $row->anak_ke : null,
                                             'Tanggal Pendaftaran' => $row->tanggal_pendaftaran,
@@ -108,7 +115,7 @@
                                                 <div class="card-body">
                                                     <div class="mb-12"><span class="text-secondary-light text-sm">Nama Lengkap :</span><br><span class="fw-semibold"><?php echo $row->nama_ayah ?: '-' ?></span></div>
                                                     <div class="row">
-                                                        <div class="col-6 mb-12"><span class="text-secondary-light text-sm">NIK :</span><br><span class="fw-semibold"><?php echo $row->nik_ayah ?: '-' ?></span></div>
+                                                        <div class="col-6 mb-12"><span class="text-secondary-light text-sm">NIK :</span><br><span class="fw-semibold"><?php echo $is_admin_or_staff ? ($row->nik_ayah ?: '-') : '*** (Disensor)' ?></span></div>
                                                         <div class="col-6 mb-12"><span class="text-secondary-light text-sm">Thn Lahir :</span><br><span class="fw-semibold"><?php echo $row->tahun_lahir_ayah ?: '-' ?></span></div>
                                                     </div>
                                                     <div class="mb-12"><span class="text-secondary-light text-sm">Pekerjaan :</span><br><span class="fw-semibold"><?php echo $row->pekerjaan_ayah ?: '-' ?></span></div>
@@ -124,7 +131,7 @@
                                                 <div class="card-body">
                                                     <div class="mb-12"><span class="text-secondary-light text-sm">Nama Lengkap :</span><br><span class="fw-semibold"><?php echo $row->nama_ibu ?: '-' ?></span></div>
                                                     <div class="row">
-                                                        <div class="col-6 mb-12"><span class="text-secondary-light text-sm">NIK :</span><br><span class="fw-semibold"><?php echo $row->nik_ibu ?: '-' ?></span></div>
+                                                        <div class="col-6 mb-12"><span class="text-secondary-light text-sm">NIK :</span><br><span class="fw-semibold"><?php echo $is_admin_or_staff ? ($row->nik_ibu ?: '-') : '*** (Disensor)' ?></span></div>
                                                         <div class="col-6 mb-12"><span class="text-secondary-light text-sm">Thn Lahir :</span><br><span class="fw-semibold"><?php echo $row->tahun_lahir_ibu ?: '-' ?></span></div>
                                                     </div>
                                                     <div class="mb-12"><span class="text-secondary-light text-sm">Pekerjaan :</span><br><span class="fw-semibold"><?php echo $row->pekerjaan_ibu ?: '-' ?></span></div>

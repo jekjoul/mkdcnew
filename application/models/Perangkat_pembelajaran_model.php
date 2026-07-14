@@ -102,7 +102,7 @@ class Perangkat_pembelajaran_model extends MY_Model
         return $this->db->get_where($this->agenda_table, ['id_pembelajaran_mapel' => (int) $id_pembelajaran_mapel])->result();
     }
 
-    public function getAdminItems()
+    public function getAdminItems($status_tahun = 'Aktif')
     {
         $this->db->select('pm.id_pembelajaran_mapel, pp.id_perangkat, l.nama_lembaga, t.nama_tingkat, r.nama_rombel, tp.tahun_pelajaran, tp.semester, m.nama_mapel, ptk.nama_ptk, COUNT(ap.id_agenda) AS total_materi, SUM(CASE WHEN ap.status = "Terlaksana" THEN 1 ELSE 0 END) AS diajarkan');
         $this->db->from('pembelajaran_mapel pm');
@@ -115,13 +115,24 @@ class Perangkat_pembelajaran_model extends MY_Model
         $this->db->join('ptk', 'ptk.id_ptk = pm.id_ptk', 'left');
         $this->db->join($this->perangkat_table . ' pp', 'pp.id_tahun_pelajaran = p.id_tahun_pelajaran AND pp.id_tingkat_sekolah = p.id_tingkat_sekolah AND pp.id_mapel = pm.id_mapel', 'left');
         $this->db->join($this->agenda_table . ' ap', 'ap.id_pembelajaran_mapel = pm.id_pembelajaran_mapel', 'left');
+        
+        if ($status_tahun === 'Aktif') {
+            $this->db->where('tp.status', 'Aktif');
+            $this->db->where('p.status', 'Aktif');
+        } else {
+            $this->db->group_start();
+            $this->db->where('tp.status !=', 'Aktif');
+            $this->db->or_where('p.status !=', 'Aktif');
+            $this->db->group_end();
+        }
+
         $this->db->group_by('pm.id_pembelajaran_mapel');
         $this->db->order_by('tp.id_tahun_pelajaran', 'DESC');
         $this->db->order_by('m.nama_mapel', 'ASC');
         return $this->db->get()->result();
     }
 
-    public function getGuruItems($id_ptk)
+    public function getGuruItems($id_ptk, $status_tahun = 'Aktif')
     {
         $this->db->select('pm.id_pembelajaran_mapel, pp.id_perangkat, l.nama_lembaga, t.nama_tingkat, r.nama_rombel, tp.tahun_pelajaran, tp.semester, m.nama_mapel, COUNT(ap.id_agenda) AS total_materi, SUM(CASE WHEN ap.status = "Terlaksana" THEN 1 ELSE 0 END) AS diajarkan');
         $this->db->from('pembelajaran_mapel pm');
@@ -134,6 +145,17 @@ class Perangkat_pembelajaran_model extends MY_Model
         $this->db->join($this->perangkat_table . ' pp', 'pp.id_tahun_pelajaran = p.id_tahun_pelajaran AND pp.id_tingkat_sekolah = p.id_tingkat_sekolah AND pp.id_mapel = pm.id_mapel', 'left');
         $this->db->join($this->agenda_table . ' ap', 'ap.id_pembelajaran_mapel = pm.id_pembelajaran_mapel', 'left');
         $this->db->where('pm.id_ptk', (int) $id_ptk);
+
+        if ($status_tahun === 'Aktif') {
+            $this->db->where('tp.status', 'Aktif');
+            $this->db->where('p.status', 'Aktif');
+        } else {
+            $this->db->group_start();
+            $this->db->where('tp.status !=', 'Aktif');
+            $this->db->or_where('p.status !=', 'Aktif');
+            $this->db->group_end();
+        }
+
         $this->db->group_by('pm.id_pembelajaran_mapel');
         $this->db->order_by('m.nama_mapel', 'ASC');
         return $this->db->get()->result();
@@ -248,9 +270,9 @@ class Perangkat_pembelajaran_model extends MY_Model
             ];
         }
 
-        // Get active teaching days (hari aktif pembelajaran)
+        // Get active teaching days (hari aktif pembelajaran) - Hanya yang berstatus 'Efektif' saja
         $active_days = $this->db->where('id_tahun_pelajaran', $item->id_tahun_pelajaran)
-            ->where_in('status', ['Efektif', 'Daring', 'Luar Kelas'])
+            ->where('status', 'Efektif')
             ->order_by('tanggal', 'ASC')
             ->get('pembelajaran_hari_efektif')->result();
 
@@ -383,8 +405,9 @@ class Perangkat_pembelajaran_model extends MY_Model
             ];
         }
 
+        // Hanya yang berstatus 'Efektif' saja
         $active_days = $this->db->where('id_tahun_pelajaran', $item->id_tahun_pelajaran)
-            ->where_in('status', ['Efektif', 'Daring', 'Luar Kelas'])
+            ->where('status', 'Efektif')
             ->order_by('tanggal', 'ASC')
             ->get('pembelajaran_hari_efektif')->result();
 

@@ -966,23 +966,32 @@ if (!function_exists('hasPermissions')) {
 
 	function hasPermissions($code = '')
 	{
-
-
-
 		$CI = &get_instance();
-
-
-
-		if (!empty($CI->role_permissions_model->getByWhere(['role' => logged('role'), 'permission' => $code]))) {
-
-
-
-			return true;
+		$userId = logged('id');
+		if (!$userId) {
+			return false;
 		}
 
+		// Ambil semua role dari user_roles
+		$roles = [];
+		if ($CI->db->table_exists('user_roles')) {
+			$userRoles = $CI->db->get_where('user_roles', ['user_id' => $userId])->result();
+			foreach ($userRoles as $ur) {
+				$roles[] = (int) $ur->role_id;
+			}
+		}
 
+		// Fallback ke logged('role') bawaan jika user_roles kosong
+		if (empty($roles)) {
+			$roles[] = (int) logged('role');
+		}
 
-		return false;
+		// Periksa hak akses dari daftar role
+		$CI->db->where_in('role', $roles);
+		$CI->db->where('permission', $code);
+		$count = $CI->db->count_all_results('role_permissions');
+
+		return $count > 0;
 	}
 }
 

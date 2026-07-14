@@ -50,7 +50,27 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                       <?php echo $row->name ?>
                     </td>
                     <td><?php echo $row->email ?></td>
-                    <td><?php echo ucfirst($this->roles_model->getById($row->role)->title) ?></td>
+                    <td>
+                      <?php 
+                      $user_roles_list = [];
+                      if ($this->db->table_exists('user_roles')) {
+                          $ur_res = $this->db->get_where('user_roles', ['user_id' => $row->id])->result();
+                          foreach ($ur_res as $ur) {
+                              $r_row = $this->roles_model->getById($ur->role_id);
+                              if ($r_row) {
+                                  $user_roles_list[] = html_escape($r_row->title);
+                              }
+                          }
+                      }
+                      if (empty($user_roles_list)) {
+                          $r_row = $this->roles_model->getById($row->role);
+                          if ($r_row) {
+                              $user_roles_list[] = html_escape($r_row->title);
+                          }
+                      }
+                      echo implode(', ', $user_roles_list);
+                      ?>
+                    </td>
                     <td><?php echo ($row->last_login != '0000-00-00 00:00:00') ? date(setting('date_format'), strtotime($row->last_login)) : 'No Record' ?></td>
                     <td>
                       <?php if ($row->status == 1): ?>

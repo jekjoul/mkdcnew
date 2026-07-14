@@ -1,6 +1,5 @@
-<?php
-defined('BASEPATH') OR exit('No direct script access allowed'); ?>
-
+<!-- Load Select2 CSS CDN untuk keselarasan visual tags ganda -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <?php include viewPath('includes/header'); ?>
 
 <!-- Content Header (Page header) -->
@@ -99,15 +98,57 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
             <textarea type="text" class="form-control" name="address" id="formClient-Address" placeholder="<?php echo lang('user_enter_address') ?>" rows="3"></textarea>
           </div>
 
-          <div class="form-group">
-            <label for="formClient-Role"><?php echo lang('user_role') ?></label>
-            <select name="role" id="formClient-Role" class="form-control select2" required>
-              <option value=""><?php echo lang('user_select_role') ?></option>
+          <div class="form-group" id="role-select-wrapper">
+            <label for="formClient-Role"><?php echo lang('user_role') ?> (Dapat merangkap) <span class="text-danger">*</span></label>
+            <select name="role[]" id="formClient-Role" class="form-control select2" multiple required data-placeholder="Pilih satu atau lebih jabatan...">
               <?php foreach ($this->roles_model->get() as $row): ?>
                 <?php $sel = !empty(get('role')) && get('role')==$row->id ? 'selected' : '' ?>
                 <option value="<?php echo $row->id ?>" <?php echo $sel ?>><?php echo $row->title ?></option>
               <?php endforeach ?>
             </select>
+            <style>
+                /* Menata agar input pencarian dropdown dan tag-tag terpilih berada di baris yang berbeda */
+                #role-select-wrapper .select2-container--default .select2-selection--multiple {
+                    display: flex !important;
+                    flex-direction: column-reverse !important; /* Tag terpilih dirender di bawah input dropdown */
+                    height: auto !important;
+                    padding: 6px 12px !important;
+                    border: 1px solid #d1d5db !important;
+                    border-radius: 8px !important;
+                }
+                #role-select-wrapper .select2-container--default .select2-selection--multiple .select2-selection__rendered {
+                    display: flex !important;
+                    flex-wrap: wrap !important;
+                    gap: 6px !important;
+                    padding: 0 !important;
+                }
+                #role-select-wrapper .select2-container--default .select2-selection--multiple .select2-selection__choice {
+                    background-color: #f3f4f6 !important;
+                    border: 1px solid #e5e7eb !important;
+                    border-radius: 6px !important;
+                    padding: 4px 10px !important;
+                    margin: 0 !important;
+                    font-size: 13px !important;
+                    color: #374151 !important;
+                    display: inline-flex !important;
+                    align-items: center !important;
+                }
+                #role-select-wrapper .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+                    color: #ef4444 !important;
+                    margin-right: 6px !important;
+                    border: none !important;
+                    background: transparent !important;
+                }
+                #role-select-wrapper .select2-container--default .select2-selection--multiple .select2-search--inline {
+                    width: 100% !important;
+                    margin: 0 0 6px 0 !important;
+                }
+                #role-select-wrapper .select2-container--default .select2-selection--multiple .select2-search--inline .select2-search__field {
+                    margin: 0 !important;
+                    height: 32px !important;
+                    font-size: 14px !important;
+                }
+            </style>
           </div>
 
           <div class="form-group">
@@ -177,42 +218,38 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 <!-- /.content -->
 
 
+<?php include viewPath('includes/footer'); ?>
+<!-- Load Select2 JS setelah footer.php agar jQuery terdeteksi secara aman -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
   $(document).ready(function() {
     $('.form-validate').validate();
 
-      //Initialize Select2 Elements
-    $('.select2').select2()
-
-  })
+    if (typeof $.fn.select2 !== 'undefined') {
+        $('.select2').select2({
+            placeholder: "Pilih satu atau lebih...",
+            allowClear: true
+        });
+    }
+  });
 
   function previewImage(input, previewDom) {
-
     if (input.files && input.files[0]) {
-
       $(previewDom).show();
-
       var reader = new FileReader();
-
       reader.onload = function(e) {
         $(previewDom).find('img').attr('src', e.target.result);
       }
-
       reader.readAsDataURL(input.files[0]);
-    }else{
+    } else {
       $(previewDom).hide();
     }
-
   }
 
   function createUsername(name) {
       return name.toLowerCase()
         .replace(/ /g,'_')
-        .replace(/[^\w-]+/g,'')
-        ;;
+        .replace(/[^\w-]+/g,'');
   }
-
 </script>
-
-<?php include viewPath('includes/footer'); ?>
 
