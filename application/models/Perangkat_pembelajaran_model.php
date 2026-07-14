@@ -298,13 +298,17 @@ class Perangkat_pembelajaran_model extends MY_Model
             if (isset($scheduled_days[$day_ind])) {
                 $sched_info = $scheduled_days[$day_ind];
 
+                $current_pert = $pageNum++;
+                $materi_default = ($current_pert === 1) ? 'Perkenalan Guru dan Mata Pelajaran' : '';
+                $kegiatan_default = ($current_pert === 1) ? 'Perkenalan guru pengampu, kontrak belajar, serta pembahasan materi yang akan dipelajari selama satu semester ini.' : '';
+
                 $this->db->insert($this->agenda_table, [
                     'id_pembelajaran_mapel' => $id_pembelajaran_mapel,
                     'tanggal' => $ad->tanggal,
                     'hari' => ucfirst($day_ind),
-                    'pertemuan_ke' => $pageNum++,
-                    'materi' => '',
-                    'kegiatan' => '',
+                    'pertemuan_ke' => $current_pert,
+                    'materi' => $materi_default,
+                    'kegiatan' => $kegiatan_default,
                     'status' => 'Belum',
                     'catatan' => '',
                     'jumlah_jam' => $sched_info['jumlah_jam'],
@@ -433,14 +437,21 @@ class Perangkat_pembelajaran_model extends MY_Model
             if (isset($scheduled_days[$day_ind])) {
                 $sched_info = $scheduled_days[$day_ind];
 
-                $materi_ai = isset($ai_by_pertemuan[$pageNum]['materi']) ? $ai_by_pertemuan[$pageNum]['materi'] : '';
-                $kegiatan_ai = isset($ai_by_pertemuan[$pageNum]['kegiatan']) ? $ai_by_pertemuan[$pageNum]['kegiatan'] : '';
+                $current_pert = $pageNum++;
+                if ($current_pert === 1) {
+                    $materi_ai = 'Perkenalan Guru dan Mata Pelajaran';
+                    $kegiatan_ai = 'Perkenalan guru pengampu, kontrak belajar, serta pembahasan materi yang akan dipelajari selama satu semester ini.';
+                } else {
+                    $ai_index = $current_pert - 1;
+                    $materi_ai = isset($ai_by_pertemuan[$ai_index]['materi']) ? $ai_by_pertemuan[$ai_index]['materi'] : '';
+                    $kegiatan_ai = isset($ai_by_pertemuan[$ai_index]['kegiatan']) ? $ai_by_pertemuan[$ai_index]['kegiatan'] : '';
+                }
 
                 $this->db->insert($this->agenda_table, [
                     'id_pembelajaran_mapel' => $id_pembelajaran_mapel,
                     'tanggal' => $ad->tanggal,
                     'hari' => ucfirst($day_ind),
-                    'pertemuan_ke' => $pageNum++,
+                    'pertemuan_ke' => $current_pert,
                     'materi' => $materi_ai,
                     'kegiatan' => $kegiatan_ai,
                     'status' => 'Belum',
