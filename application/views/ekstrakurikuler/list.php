@@ -38,7 +38,29 @@
                                 </td>
                                 <td><?php echo html_escape($row->tahun_pelajaran . ' (' . $row->semester . ')') ?></td>
                                 <td class="fw-semibold text-primary-light"><?php echo html_escape($row->nama_ekskul) ?></td>
-                                <td><span class="text-secondary-light fw-medium"><?php echo html_escape($row->nama_pembina ?: 'Belum ditentukan') ?></span></td>
+                                 <td>
+                                     <span class="text-secondary-light fw-medium">
+                                         <?php 
+                                         $pembina_names = [];
+                                         if (!empty($row->id_ptk_pembina)) {
+                                             $decoded = json_decode($row->id_ptk_pembina, true);
+                                             if (is_array($decoded) && !empty($decoded)) {
+                                                 $this->db->where_in('id_ptk', array_map('intval', $decoded));
+                                                 $res = $this->db->get('ptk')->result();
+                                                 foreach ($res as $ptk) {
+                                                     $pembina_names[] = $ptk->nama_ptk;
+                                                 }
+                                             } else {
+                                                 $ptk = $this->db->get_where('ptk', ['id_ptk' => (int) $row->id_ptk_pembina])->row();
+                                                 if ($ptk) {
+                                                     $pembina_names[] = $ptk->nama_ptk;
+                                                 }
+                                             }
+                                         }
+                                         echo !empty($pembina_names) ? html_escape(implode(', ', $pembina_names)) : 'Belum ditentukan';
+                                         ?>
+                                     </span>
+                                 </td>
                                 <td><?php echo html_escape($row->keterangan ?: '-') ?></td>
                                 <td class="text-center">
                                     <div class="d-flex align-items-center gap-2 justify-content-center">

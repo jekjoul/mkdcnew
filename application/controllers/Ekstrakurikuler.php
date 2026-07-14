@@ -38,16 +38,31 @@ class Ekstrakurikuler extends MY_Controller
         
         $is_admin = in_array('admin', $user_roles, true) || logged('role') == 1 || hasPermissions('pembelajaran_list');
 
-        $this->db->select('e.*, p.nama_ptk AS nama_pembina, tp.tahun_pelajaran, tp.semester');
+        $this->db->select('e.*, tp.tahun_pelajaran, tp.semester');
         $this->db->from('ekstrakurikuler e');
-        $this->db->join('ptk p', 'p.id_ptk = e.id_ptk_pembina', 'left');
         $this->db->join('pembelajaran_tahun_pelajaran tp', 'tp.id_tahun_pelajaran = e.id_tahun_pelajaran', 'left');
-        if (!$is_admin && $ptk_id > 0) {
-            $this->db->where('e.id_ptk_pembina', $ptk_id);
-        }
         $this->db->order_by('tp.status', 'ASC');
         $this->db->order_by('e.nama_ekskul', 'ASC');
-        $this->page_data['ekskul'] = $this->db->get()->result();
+        $raw_ekskul = $this->db->get()->result();
+
+        // Filter dinamis untuk guru pembina non-admin
+        $filtered_ekskul = [];
+        foreach ($raw_ekskul as $row) {
+            if ($is_admin) {
+                $filtered_ekskul[] = $row;
+            } else {
+                if ($ptk_id > 0 && !empty($row->id_ptk_pembina)) {
+                    $decoded = json_decode($row->id_ptk_pembina, true);
+                    if (is_array($decoded) && in_array($ptk_id, $decoded, true)) {
+                        $filtered_ekskul[] = $row;
+                    } elseif ((int)$row->id_ptk_pembina === $ptk_id) {
+                        $filtered_ekskul[] = $row;
+                    }
+                }
+            }
+        }
+
+        $this->page_data['ekskul'] = $filtered_ekskul;
         $this->page_data['is_admin'] = $is_admin;
 
         // Ambil daftar guru aktif & tahun pelajaran
@@ -110,9 +125,15 @@ class Ekstrakurikuler extends MY_Controller
             ifPermissions('master_add');
         }
 
+        $pembinas = $this->input->post('id_ptk_pembina');
+        $pembinas_json = null;
+        if (is_array($pembinas) && !empty($pembinas)) {
+            $pembinas_json = json_encode(array_map('intval', $pembinas));
+        }
+
         $data = [
             'nama_ekskul' => post('nama_ekskul'),
-            'id_ptk_pembina' => post('id_ptk_pembina') ?: null,
+            'id_ptk_pembina' => $pembinas_json,
             'id_tahun_pelajaran' => post('id_tahun_pelajaran'),
             'keterangan' => post('keterangan'),
         ];

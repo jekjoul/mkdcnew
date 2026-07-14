@@ -23,11 +23,22 @@
                         </select>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label fw-bold">Guru Pembina (PTK) <span class="text-danger">*</span></label>
-                        <select name="id_ptk_pembina" class="form-select select2" required>
-                            <option value="">Pilih guru pembina...</option>
+                        <label class="form-label fw-bold">Guru Pembina (Dapat merangkap) <span class="text-danger">*</span></label>
+                        <?php 
+                        $selected_pembinas = [];
+                        if ($row && !empty($row->id_ptk_pembina)) {
+                            // Cek jika field lama berisi format JSON array pembina
+                            $decoded = json_decode($row->id_ptk_pembina, true);
+                            if (is_array($decoded)) {
+                                $selected_pembinas = array_map('intval', $decoded);
+                            } else {
+                                $selected_pembinas = [(int) $row->id_ptk_pembina];
+                            }
+                        }
+                        ?>
+                        <select name="id_ptk_pembina[]" class="form-control select2" multiple required data-placeholder="Pilih satu atau lebih guru pembina...">
                             <?php foreach ($ptk_list as $ptk): ?>
-                                <option value="<?php echo $ptk->id_ptk ?>" <?php echo $row && $row->id_ptk_pembina == $ptk->id_ptk ? 'selected' : '' ?>>
+                                <option value="<?php echo $ptk->id_ptk ?>" <?php echo in_array((int)$ptk->id_ptk, $selected_pembinas, true) ? 'selected' : '' ?>>
                                     <?php echo html_escape($ptk->nama_ptk) ?>
                                 </option>
                             <?php endforeach; ?>
