@@ -241,12 +241,6 @@
                 <span>Kedisiplinan & BK</span>
             </a>
         </li>
-        <li>
-            <a href="<?php echo url('ekstrakurikuler') ?>">
-                <iconify-icon icon="solar:dialog-linear" class="menu-icon"></iconify-icon>
-                <span>Ekstrakurikuler</span>
-            </a>
-        </li>
     <?php endif; ?>
 
 <?php endif; ?>
@@ -412,6 +406,14 @@ foreach ($menu_pembelajaran_siswa as $menu_row) {
             <a href="<?php echo url('tahun_pelajaran') ?>">
                 <iconify-icon icon="material-symbols:punch-clock-outline-sharp" class="menu-icon"></iconify-icon>
                 <span>Tahun Pelajaran</span>
+            </a>
+        </li>
+    <?php endif; ?>
+    <?php if (hasPermissions('menu_dashboard_guru')): ?>
+        <li>
+            <a href="<?php echo url('ekstrakurikuler') ?>">
+                <iconify-icon icon="solar:dialog-linear" class="menu-icon"></iconify-icon>
+                <span>Ekstrakurikuler</span>
             </a>
         </li>
     <?php endif; ?>
