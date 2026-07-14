@@ -1,6 +1,6 @@
 -- ======================================================================
 -- FILE PERUBAHAN DATABASE (PRODUCTION UPDATE)
--- IMPLEMENTASI SISTEM MULTI-ROLE & MODUL KEDISIPLINAN/BK
+-- IMPLEMENTASI SISTEM MULTI-ROLE, EKSTRAKURIKULER, & KEDISIPLINAN/BK
 -- ======================================================================
 
 -- 1. Membuat tabel relasi untuk multi-role (user_roles)
@@ -14,10 +14,33 @@ CREATE TABLE IF NOT EXISTS `user_roles` (
   KEY `idx_user_roles_role` (`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- 2. Migrasi tipe data pembina ekstrakurikuler agar mendukung ganda (JSON Array)
+-- 2. Membuat tabel Ekstrakurikuler Utama (jika belum ada)
+CREATE TABLE IF NOT EXISTS `ekstrakurikuler` (
+  `id_ekskul` int(11) NOT NULL AUTO_INCREMENT,
+  `id_tahun_pelajaran` int(11) DEFAULT NULL,
+  `nama_ekskul` varchar(100) NOT NULL,
+  `id_ptk_pembina` text,
+  `logo` varchar(255) DEFAULT NULL,
+  `keterangan` text,
+  PRIMARY KEY (`id_ekskul`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Migrasi tipe data pembina ekstrakurikuler agar mendukung ganda (JSON Array)
 ALTER TABLE `ekstrakurikuler` MODIFY COLUMN `id_ptk_pembina` TEXT NULL DEFAULT NULL;
 
--- 3. Membuat tabel Kategori Pelanggaran Kedisiplinan
+-- 3. Membuat tabel Siswa Anggota & Nilai Ekstrakurikuler
+CREATE TABLE IF NOT EXISTS `ekstrakurikuler_siswa` (
+  `id_ekskul_siswa` int(11) NOT NULL AUTO_INCREMENT,
+  `id_ekskul` int(11) NOT NULL,
+  `id_siswa` int(11) NOT NULL,
+  `nilai` varchar(5) DEFAULT NULL,
+  `catatan` text,
+  PRIMARY KEY (`id_ekskul_siswa`),
+  KEY `idx_ekskul_siswa_ekskul` (`id_ekskul`),
+  KEY `idx_ekskul_siswa_siswa` (`id_siswa`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- 4. Membuat tabel Kategori Pelanggaran Kedisiplinan
 CREATE TABLE IF NOT EXISTS `kedisiplinan_pelanggaran_kategori` (
   `id_kategori` int(11) NOT NULL AUTO_INCREMENT,
   `nama_pelanggaran` varchar(150) NOT NULL,
@@ -25,7 +48,7 @@ CREATE TABLE IF NOT EXISTS `kedisiplinan_pelanggaran_kategori` (
   PRIMARY KEY (`id_kategori`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- 4. Seed default data Kategori Pelanggaran Kedisiplinan
+-- Seed default data Kategori Pelanggaran Kedisiplinan
 INSERT INTO `kedisiplinan_pelanggaran_kategori` (`id_kategori`, `nama_pelanggaran`, `bobot_poin`) VALUES
 (1, 'Terlambat Masuk Sekolah', 5),
 (2, 'Membolos di Jam Pelajaran', 10),
