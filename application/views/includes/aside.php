@@ -328,11 +328,14 @@ if (hasPermissions('menu_dashboard_guru') || hasPermissions('pembelajaran_list')
 }
 ?>
 
-<?php if (hasPermissions('menu_pembelajaran') || hasPermissions('menu_jadwal_pelajaran') || hasPermissions('menu_jadwal_tidak_aktif') || hasPermissions('menu_perangkat_pembelajaran') || hasPermissions('menu_nilai_siswa') || hasPermissions('menu_tahun_pelajaran') || $show_ekskul_menu): ?>
+<?php if (hasPermissions('menu_pembelajaran') || hasPermissions('menu_jadwal_pelajaran') || hasPermissions('menu_jadwal_tidak_aktif') || hasPermissions('menu_perangkat_pembelajaran') || hasPermissions('menu_nilai_siswa') || hasPermissions('menu_tahun_pelajaran')): ?>
     <li class="sidebar-menu-group-title"
         style="background: #d3c5b1;
         background: linear-gradient(90deg, rgb(255, 233, 135) 0%, rgba(255, 255, 255, 0) 100%);">Pembelajaran
     </li>
+<?php endif; ?>
+
+<?php if (hasPermissions('menu_pembelajaran') || hasPermissions('menu_jadwal_pelajaran') || hasPermissions('menu_jadwal_tidak_aktif') || hasPermissions('menu_perangkat_pembelajaran') || hasPermissions('menu_nilai_siswa') || hasPermissions('menu_tahun_pelajaran') || $show_ekskul_menu): ?>
 
     <?php if (hasPermissions('menu_pembelajaran')): ?>
         <li class="dropdown">

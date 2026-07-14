@@ -75,7 +75,13 @@ class Ekstrakurikuler extends MY_Controller
 
     public function tambah()
     {
-        ifPermissions('master_add');
+        $userId = logged('id');
+        $user = $this->db->get_where('users', ['id' => $userId])->row();
+        $is_admin = (logged('role') == 1 || $this->db->get_where('user_roles', ['user_id' => $userId, 'role_id' => 1])->num_row() > 0);
+        if (!$is_admin) {
+            show_error('Hanya Admin yang diizinkan untuk menambah kegiatan ekstrakurikuler.', 403, 'Akses Ditolak');
+        }
+
         $this->page_data['page']->title = 'Ekstrakurikuler';
         $this->page_data['page']->titleUrl = 'ekstrakurikuler';
         $this->page_data['page']->subtitle = 'Tambah Ekstrakurikuler';
@@ -93,7 +99,12 @@ class Ekstrakurikuler extends MY_Controller
 
     public function edit($id)
     {
-        ifPermissions('master_edit');
+        $userId = logged('id');
+        $is_admin = (logged('role') == 1 || $this->db->get_where('user_roles', ['user_id' => $userId, 'role_id' => 1])->num_rows() > 0);
+        if (!$is_admin) {
+            show_error('Hanya Admin yang diizinkan untuk mengubah konfigurasi ekstrakurikuler.', 403, 'Akses Ditolak');
+        }
+
         $ekskul = $this->db->get_where('ekstrakurikuler', ['id_ekskul' => $id])->row();
         if (!$ekskul) {
             show_404();
@@ -117,14 +128,13 @@ class Ekstrakurikuler extends MY_Controller
     public function simpan()
     {
         postAllowed();
-        $id = (int) post('id_ekskul');
-
-        if ($id > 0) {
-            ifPermissions('master_edit');
-        } else {
-            ifPermissions('master_add');
+        $userId = logged('id');
+        $is_admin = (logged('role') == 1 || $this->db->get_where('user_roles', ['user_id' => $userId, 'role_id' => 1])->num_rows() > 0);
+        if (!$is_admin) {
+            show_error('Hanya Admin yang diizinkan untuk menyimpan data ekstrakurikuler.', 403, 'Akses Ditolak');
         }
 
+        $id = (int) post('id_ekskul');
         $pembinas = $this->input->post('id_ptk_pembina');
         $pembinas_json = null;
         if (is_array($pembinas) && !empty($pembinas)) {
@@ -181,7 +191,12 @@ class Ekstrakurikuler extends MY_Controller
 
     public function hapus($id)
     {
-        ifPermissions('master_delete');
+        $userId = logged('id');
+        $is_admin = (logged('role') == 1 || $this->db->get_where('user_roles', ['user_id' => $userId, 'role_id' => 1])->num_rows() > 0);
+        if (!$is_admin) {
+            show_error('Hanya Admin yang diizinkan untuk menghapus data ekstrakurikuler.', 403, 'Akses Ditolak');
+        }
+
         $old = $this->db->get_where('ekstrakurikuler', ['id_ekskul' => $id])->row();
         if ($old && !empty($old->logo) && file_exists('./uploads/ekskul/' . $old->logo)) {
             unlink('./uploads/ekskul/' . $old->logo);
@@ -193,12 +208,37 @@ class Ekstrakurikuler extends MY_Controller
         redirect('ekstrakurikuler');
     }
 
+    private function checkPembinaAccess($ekskul)
+    {
+        $userId = logged('id');
+        $user = $this->db->get_where('users', ['id' => $userId])->row();
+        $ptk_id = $user ? (int) $user->id_ptk : 0;
+        
+        $is_admin = (logged('role') == 1 || $this->db->get_where('user_roles', ['user_id' => $userId, 'role_id' => 1])->num_rows() > 0);
+        if ($is_admin) {
+            return true;
+        }
+
+        if ($ptk_id > 0 && !empty($ekskul->id_ptk_pembina)) {
+            $decoded = json_decode($ekskul->id_ptk_pembina, true);
+            if (is_array($decoded) && in_array($ptk_id, $decoded, true)) {
+                return true;
+            } elseif ((int)$ekskul->id_ptk_pembina === $ptk_id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public function daftar_siswa($id)
     {
-        ifPermissions('menu_dashboard_guru');
         $ekskul = $this->db->get_where('ekstrakurikuler', ['id_ekskul' => $id])->row();
         if (!$ekskul) {
             show_404();
+        }
+
+        if (!$this->checkPembinaAccess($ekskul)) {
+            show_error('Anda tidak memiliki akses ke data anggota ekstrakurikuler ini.', 403, 'Akses Ditolak');
         }
 
         $this->page_data['page']->title = 'Ekstrakurikuler';
@@ -251,10 +291,13 @@ class Ekstrakurikuler extends MY_Controller
 
     public function detail($id)
     {
-        ifPermissions('menu_dashboard_guru');
         $ekskul = $this->db->get_where('ekstrakurikuler', ['id_ekskul' => $id])->row();
         if (!$ekskul) {
             show_404();
+        }
+
+        if (!$this->checkPembinaAccess($ekskul)) {
+            show_error('Anda tidak memiliki akses ke halaman nilai ekstrakurikuler ini.', 403, 'Akses Ditolak');
         }
 
         $this->page_data['page']->title = 'Ekstrakurikuler';
@@ -278,8 +321,15 @@ class Ekstrakurikuler extends MY_Controller
 
     public function update_nilai($id_ekskul)
     {
-        ifPermissions('menu_dashboard_guru');
         postAllowed();
+        $ekskul = $this->db->get_where('ekstrakurikuler', ['id_ekskul' => $id_ekskul])->row();
+        if (!$ekskul) {
+            show_404();
+        }
+
+        if (!$this->checkPembinaAccess($ekskul)) {
+            show_error('Anda tidak memiliki akses untuk mengubah nilai ekstrakurikuler ini.', 403, 'Akses Ditolak');
+        }
 
         $id_ekskul_siswa_arr = $this->input->post('id_ekskul_siswa');
         $nilai_arr = $this->input->post('nilai');
