@@ -308,7 +308,7 @@ class Ekstrakurikuler extends MY_Controller
                 'id_ekskul' => ['type' => 'INT', 'constraint' => 11, 'auto_increment' => true],
                 'id_tahun_pelajaran' => ['type' => 'INT', 'constraint' => 11, 'null' => true],
                 'nama_ekskul' => ['type' => 'VARCHAR', 'constraint' => 100],
-                'id_ptk_pembina' => ['type' => 'INT', 'constraint' => 11, 'null' => true],
+                'id_ptk_pembina' => ['type' => 'TEXT', 'null' => true],
                 'logo' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
                 'keterangan' => ['type' => 'TEXT', 'null' => true],
             ]);
@@ -326,6 +326,14 @@ class Ekstrakurikuler extends MY_Controller
                 $this->dbforge->add_column('ekstrakurikuler', [
                     'logo' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true, 'after' => 'id_ptk_pembina']
                 ]);
+            }
+            
+            // Ubah tipe kolom id_ptk_pembina menjadi TEXT jika sebelumnya bertipe INT
+            $field_data = $this->db->field_data('ekstrakurikuler');
+            foreach ($field_data as $field) {
+                if ($field->name === 'id_ptk_pembina' && strpos(strtolower($field->type), 'int') !== false) {
+                    $this->db->query("ALTER TABLE ekstrakurikuler MODIFY id_ptk_pembina TEXT NULL");
+                }
             }
         }
 
