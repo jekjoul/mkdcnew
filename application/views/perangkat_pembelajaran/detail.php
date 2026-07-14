@@ -815,6 +815,22 @@
 <script>
     $(document).ready(function() {
 
+        // Cek jika baru saja berhasil men-generate berkas/agenda via AI
+        if (localStorage.getItem('ai_generated_just_now') === 'true') {
+            localStorage.removeItem('ai_generated_just_now');
+            Swal.fire({
+                title: '<span style="color:#ef4444; font-weight:bold; font-size:20px;">PENTING: Mohon Telaah Ulang Hasil Dokumen</span>',
+                html: '<div style="text-align:justify; font-size:14px; line-height:1.6; color:#374151;">' +
+                      '<p>Dokumen ini dihasilkan oleh kecerdasan buatan (AI). Perlu diingat bahwa AI adalah alat bantu, bukan penentu.</p>' +
+                      '<p style="margin-top:12px; font-weight: 500;">Sebagai pendidik, Anda adalah benteng utama yang menyaring ilmu. Harap cek kembali kesesuaian materi ini dengan kurikulum dan norma yang berlaku. Jangan biarkan kesalahan teknis teknologi menyesatkan logika dan moral generasi anak bangsa. <strong>Tinjau, edit, dan sempurnakan!</strong></p>' +
+                      '</div>',
+                icon: 'warning',
+                confirmButtonColor: '#ef4444',
+                confirmButtonText: 'Saya Mengerti dan Akan Memeriksa',
+                allowOutsideClick: false
+            });
+        }
+
         // Handle URL tab parameter
         const urlParams = new URLSearchParams(window.location.search);
         const activeTab = urlParams.get('tab');
@@ -936,23 +952,35 @@
             var form = btn.closest('form');
             var docLabel = btn.data('label') || 'Dokumen';
 
-            // Confirm prompt first
             var confirmMsg = "AI akan menyusun \"" + docLabel + "\" dan menyimpannya langsung ke Google Drive. Lanjutkan?";
             if (docLabel.indexOf('Agenda') !== -1) {
                 confirmMsg = "Apakah Anda yakin ingin men-generate agenda secara otomatis menggunakan Google AI? Proses ini akan menyusun silabus baru.";
             }
-            if (!confirm(confirmMsg)) {
-                return false;
-            }
 
-            // Inline Loading Spinner
-            btn.addClass('btn-warning-100 text-warning-600').removeClass('btn-success-100 btn-success text-success-600');
-            btn.html('<iconify-icon icon="line-md:loading-twotone-loop" class="align-middle me-1"></iconify-icon> Menyusun ' + docLabel + ' via AI...');
+            Swal.fire({
+                title: 'Konfirmasi AI',
+                text: confirmMsg,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#22c55e',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Ya, Lanjutkan',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Inline Loading Spinner
+                    btn.addClass('btn-warning-100 text-warning-600').removeClass('btn-success-100 btn-success text-success-600');
+                    btn.html('<iconify-icon icon="line-md:loading-twotone-loop" class="align-middle me-1"></iconify-icon> Menyusun ' + docLabel + ' via AI...');
 
-            // Submit form native
-            if (form.length > 0) {
-                form[0].submit();
-            }
+                    // Set flag untuk deteksi reload
+                    localStorage.setItem('ai_generated_just_now', 'true');
+
+                    // Submit form native
+                    if (form.length > 0) {
+                        form[0].submit();
+                    }
+                }
+            });
         });
 
         // Trigger Kisi-kisi Parameter Config Modal
@@ -993,6 +1021,9 @@
             var submitBtn = $('#btn-submit-kisi-ai');
             submitBtn.prop('disabled', true);
             submitBtn.html('<iconify-icon icon="line-md:loading-twotone-loop" class="align-middle me-1"></iconify-icon> AI Sedang Menyusun Kisi-kisi...');
+            
+            // Set flag untuk deteksi reload
+            localStorage.setItem('ai_generated_just_now', 'true');
             
             // Keep modal open but let form submit natively
             return true;
