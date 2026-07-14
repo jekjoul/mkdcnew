@@ -73,9 +73,7 @@ class Ekstrakurikuler extends MY_Controller
 
     public function tambah()
     {
-        $userId = logged('id');
-        $user = $this->db->get_where('users', ['id' => $userId])->row();
-        $is_admin = (logged('role') == 1 || $this->db->get_where('user_roles', ['user_id' => $userId, 'role_id' => 1])->num_row() > 0);
+        $is_admin = (logged('role') == 1 || ($this->db->table_exists('user_roles') && $this->db->get_where('user_roles', ['user_id' => $userId, 'role_id' => 1])->num_rows() > 0));
         if (!$is_admin) {
             show_error('Hanya Admin yang diizinkan untuk menambah kegiatan ekstrakurikuler.', 403, 'Akses Ditolak');
         }
@@ -212,7 +210,7 @@ class Ekstrakurikuler extends MY_Controller
         $user = $this->db->get_where('users', ['id' => $userId])->row();
         $ptk_id = $user ? (int) $user->id_ptk : 0;
         
-        $is_admin = (logged('role') == 1 || $this->db->get_where('user_roles', ['user_id' => $userId, 'role_id' => 1])->num_rows() > 0);
+        $is_admin = (logged('role') == 1 || ($this->db->table_exists('user_roles') && $this->db->get_where('user_roles', ['user_id' => $userId, 'role_id' => 1])->num_rows() > 0));
         if ($is_admin) {
             return true;
         }
