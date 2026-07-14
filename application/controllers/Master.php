@@ -9,6 +9,17 @@ class Master extends MY_Controller
         parent::__construct();
         $this->load->model('Master_model', 'master_model');
         $this->load->model('tahun_pelajaran_model');
+        $this->ensureRombelWaliKelasColumn();
+    }
+
+    private function ensureRombelWaliKelasColumn()
+    {
+        $this->load->dbforge();
+        if (!$this->db->field_exists('id_ptk_walikelas', 'rombel')) {
+            $this->dbforge->add_column('rombel', [
+                'id_ptk_walikelas' => ['type' => 'INT', 'constraint' => 11, 'null' => true, 'after' => 'status'],
+            ]);
+        }
     }
 
     public $jenis_ruangan = 'master_jenis_ruangan';
@@ -602,6 +613,7 @@ class Master extends MY_Controller
         $data = [
             'nama_rombel' => $nama,
             'status' => post('status'),
+            'id_ptk_walikelas' => post('id_ptk_walikelas') ?: null,
         ];
 
         if ($this->db->insert($this->rombel, $data)) {
@@ -629,6 +641,9 @@ class Master extends MY_Controller
             show_404();
         }
 
+        $this->db->order_by('nama_ptk', 'ASC');
+        $this->page_data['ptk_list'] = $this->db->get_where('ptk', ['status_keaktifan' => 'Aktif'])->result();
+
         $this->load->view('master/v_rombel_form', $this->page_data);
     }
 
@@ -641,6 +656,7 @@ class Master extends MY_Controller
         $data = [
             'nama_rombel' => $nama,
             'status' => post('status'),
+            'id_ptk_walikelas' => post('id_ptk_walikelas') ?: null,
         ];
 
         $this->db->where('id_rombel', $id);

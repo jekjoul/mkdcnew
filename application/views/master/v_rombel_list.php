@@ -26,6 +26,7 @@
                                 <tr>
                                     <th scope="col" class="text-center">No</th>
                                     <th scope="col">Nama Rombel</th>
+                                    <th scope="col">Wali Kelas</th>
                                     <th scope="col" class="text-center">Status</th>
                                     <th scope="col" class="text-center">Aksi</th>
                                 </tr>
@@ -33,9 +34,19 @@
                             <tbody>
                                 <?php $no = 1;
                                 foreach ($rombel as $r): ?>
+                                    <?php
+                                    $wk = '-';
+                                    if (!empty($r->id_ptk_walikelas)) {
+                                        $ptk_wk = $this->db->get_where('ptk', ['id_ptk' => $r->id_ptk_walikelas])->row();
+                                        if ($ptk_wk) {
+                                            $wk = $ptk_wk->nama_ptk;
+                                        }
+                                    }
+                                    ?>
                                     <tr>
                                         <td class="text-center"><?php echo $no++; ?></td>
                                         <td><?php echo $r->nama_rombel; ?></td>
+                                        <td><span class="fw-semibold text-secondary-light"><?php echo html_escape($wk) ?></span></td>
                                         <td class="text-center">
                                             <span class="badge <?php echo $r->status == 'Aktif' ? 'bg-success-100 text-success-600' : 'bg-danger-100 text-danger-600'; ?>">
                                                 <?php echo $r->status; ?>
@@ -75,6 +86,18 @@
                     <div class="mb-20">
                         <label class="form-label fw-semibold text-sm mb-8">Nama Rombel <span class="text-danger-600">*</span></label>
                         <input type="text" class="form-control radius-8" name="nama_rombel" required placeholder="Contoh: Al Farabi (tanpa tingkat)">
+                    </div>
+                    <div class="mb-20">
+                        <label class="form-label fw-semibold text-sm mb-8">Wali Kelas</label>
+                        <select class="form-control radius-8 form-select select2" name="id_ptk_walikelas" data-placeholder="Belum ditentukan">
+                            <option value="">Belum ditentukan</option>
+                            <?php 
+                            $ptk_list = $this->db->order_by('nama_ptk', 'ASC')->get_where('ptk', ['status_keaktifan' => 'Aktif'])->result();
+                            foreach ($ptk_list as $ptk): 
+                            ?>
+                                <option value="<?php echo $ptk->id_ptk ?>"><?php echo html_escape($ptk->nama_ptk) ?></option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
                     <div class="mb-20">
                         <label class="form-label fw-semibold text-sm mb-8">Status</label>
