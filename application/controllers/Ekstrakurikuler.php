@@ -11,8 +11,6 @@ class Ekstrakurikuler extends MY_Controller
 
     public function index()
     {
-        ifPermissions('menu_dashboard_guru'); // Guru pembina, Admin, dll
-
         $this->page_data['page']->title = 'Ekstrakurikuler';
         $this->page_data['page']->titleUrl = 'ekstrakurikuler';
         $this->page_data['page']->subtitle = 'Daftar Kegiatan Ekstrakurikuler';
@@ -265,8 +263,15 @@ class Ekstrakurikuler extends MY_Controller
 
     public function simpan_siswa($id)
     {
-        ifPermissions('menu_dashboard_guru');
         postAllowed();
+        $ekskul = $this->db->get_where('ekstrakurikuler', ['id_ekskul' => $id])->row();
+        if (!$ekskul) {
+            show_404();
+        }
+
+        if (!$this->checkPembinaAccess($ekskul)) {
+            show_error('Anda tidak memiliki akses untuk mengubah anggota ekstrakurikuler ini.', 403, 'Akses Ditolak');
+        }
 
         $this->db->delete('ekstrakurikuler_siswa', ['id_ekskul' => $id]);
         $siswa_ids = $this->input->post('siswa');
