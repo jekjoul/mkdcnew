@@ -282,14 +282,48 @@ class Perangkat_pembelajaran_model extends MY_Model
         $now = date('Y-m-d H:i:s');
         
         $day_names = [
-            0 => 'minggu',
-            1 => 'senin',
-            2 => 'selasa',
-            3 => 'rabu',
-            4 => 'kamis',
-            5 => 'jumat',
-            6 => 'sabtu'
+            0 => 'minggu', 1 => 'senin', 2 => 'selasa', 3 => 'rabu', 4 => 'kamis', 5 => 'jumat', 6 => 'sabtu'
         ];
+
+        // Hitung total pertemuan valid N terlebih dahulu
+        $valid_count = 0;
+        foreach ($active_days as $ad) {
+            $w = (int) date('w', strtotime($ad->tanggal));
+            $day_ind = $day_names[$w];
+            if (isset($scheduled_days[$day_ind])) {
+                $valid_count++;
+            }
+        }
+
+        // Tentukan indeks Tugas (minimal 3) & Ujian Harian (minimal 2) secara berkala
+        $used = [1 => true]; // Indeks 1 sudah dipakai untuk perkenalan
+        $target_tugas = [
+            max(2, (int)floor($valid_count * 0.25)),
+            max(3, (int)floor($valid_count * 0.55)),
+            max(4, (int)floor($valid_count * 0.85))
+        ];
+        $target_uh = [
+            max(3, (int)floor($valid_count * 0.40)),
+            max(5, (int)floor($valid_count * 0.75))
+        ];
+
+        $final_tugas = [];
+        foreach ($target_tugas as $t) {
+            while (isset($used[$t]) && $t < $valid_count) {
+                $t++;
+            }
+            $used[$t] = true;
+            $final_tugas[] = $t;
+        }
+
+        $final_uh = [];
+        foreach ($target_uh as $u) {
+            while (isset($used[$u]) && $u < $valid_count) {
+                $u++;
+            }
+            $used[$u] = true;
+            $final_uh[] = $u;
+        }
 
         foreach ($active_days as $ad) {
             $w = (int) date('w', strtotime($ad->tanggal));
@@ -297,18 +331,34 @@ class Perangkat_pembelajaran_model extends MY_Model
             
             if (isset($scheduled_days[$day_ind])) {
                 $sched_info = $scheduled_days[$day_ind];
-
                 $current_pert = $pageNum++;
-                $materi_default = ($current_pert === 1) ? 'Perkenalan Guru dan Mata Pelajaran' : '';
-                $kegiatan_default = ($current_pert === 1) ? 'Perkenalan guru pengampu, kontrak belajar, serta pembahasan materi yang akan dipelajari selama satu semester ini.' : '';
+                
+                $materi = '';
+                $kegiatan = '';
+                
+                if ($current_pert === 1) {
+                    $materi = 'Perkenalan Guru dan Mata Pelajaran';
+                    $kegiatan = 'Perkenalan guru pengampu, kontrak belajar, serta pembahasan materi yang akan dipelajari selama satu semester ini.';
+                } else {
+                    $tugas_num = array_search($current_pert, $final_tugas);
+                    $uh_num = array_search($current_pert, $final_uh);
+                    
+                    if ($tugas_num !== false) {
+                        $materi = 'Pemberian Tugas Mandiri/Kelompok ' . ($tugas_num + 1);
+                        $kegiatan = 'Pemberian tugas terstruktur untuk mengukur pemahaman konsep siswa terhadap kompetensi dasar.';
+                    } elseif ($uh_num !== false) {
+                        $materi = 'Penilaian Harian (PH) / Ujian Harian ' . ($uh_num + 1);
+                        $kegiatan = 'Melaksanakan kegiatan Ujian Harian tertulis/praktik secara objektif untuk menilai kompetensi siswa.';
+                    }
+                }
 
                 $this->db->insert($this->agenda_table, [
                     'id_pembelajaran_mapel' => $id_pembelajaran_mapel,
                     'tanggal' => $ad->tanggal,
                     'hari' => ucfirst($day_ind),
                     'pertemuan_ke' => $current_pert,
-                    'materi' => $materi_default,
-                    'kegiatan' => $kegiatan_default,
+                    'materi' => $materi,
+                    'kegiatan' => $kegiatan,
                     'status' => 'Belum',
                     'catatan' => '',
                     'jumlah_jam' => $sched_info['jumlah_jam'],
@@ -423,6 +473,46 @@ class Perangkat_pembelajaran_model extends MY_Model
             0 => 'minggu', 1 => 'senin', 2 => 'selasa', 3 => 'rabu', 4 => 'kamis', 5 => 'jumat', 6 => 'sabtu'
         ];
 
+        // Hitung total pertemuan valid N terlebih dahulu
+        $valid_count = 0;
+        foreach ($active_days as $ad) {
+            $w = (int) date('w', strtotime($ad->tanggal));
+            $day_ind = $day_names[$w];
+            if (isset($scheduled_days[$day_ind])) {
+                $valid_count++;
+            }
+        }
+
+        // Tentukan indeks Tugas (minimal 3) & Ujian Harian (minimal 2) secara berkala
+        $used = [1 => true]; // Indeks 1 sudah dipakai untuk perkenalan
+        $target_tugas = [
+            max(2, (int)floor($valid_count * 0.25)),
+            max(3, (int)floor($valid_count * 0.55)),
+            max(4, (int)floor($valid_count * 0.85))
+        ];
+        $target_uh = [
+            max(3, (int)floor($valid_count * 0.40)),
+            max(5, (int)floor($valid_count * 0.75))
+        ];
+
+        $final_tugas = [];
+        foreach ($target_tugas as $t) {
+            while (isset($used[$t]) && $t < $valid_count) {
+                $t++;
+            }
+            $used[$t] = true;
+            $final_tugas[] = $t;
+        }
+
+        $final_uh = [];
+        foreach ($target_uh as $u) {
+            while (isset($used[$u]) && $u < $valid_count) {
+                $u++;
+            }
+            $used[$u] = true;
+            $final_uh[] = $u;
+        }
+
         $ai_by_pertemuan = [];
         foreach ($ai_data as $ai_row) {
             if (isset($ai_row['pertemuan'])) {
@@ -436,8 +526,8 @@ class Perangkat_pembelajaran_model extends MY_Model
             
             if (isset($scheduled_days[$day_ind])) {
                 $sched_info = $scheduled_days[$day_ind];
-
                 $current_pert = $pageNum++;
+                
                 if ($current_pert === 1) {
                     $materi_ai = 'Perkenalan Guru dan Mata Pelajaran';
                     $kegiatan_ai = 'Perkenalan guru pengampu, kontrak belajar, serta pembahasan materi yang akan dipelajari selama satu semester ini.';
@@ -445,6 +535,17 @@ class Perangkat_pembelajaran_model extends MY_Model
                     $ai_index = $current_pert - 1;
                     $materi_ai = isset($ai_by_pertemuan[$ai_index]['materi']) ? $ai_by_pertemuan[$ai_index]['materi'] : '';
                     $kegiatan_ai = isset($ai_by_pertemuan[$ai_index]['kegiatan']) ? $ai_by_pertemuan[$ai_index]['kegiatan'] : '';
+                    
+                    $tugas_num = array_search($current_pert, $final_tugas);
+                    $uh_num = array_search($current_pert, $final_uh);
+                    
+                    if ($tugas_num !== false) {
+                        $materi_ai = '[Tugas Mandiri/Kelompok ' . ($tugas_num + 1) . '] ' . $materi_ai;
+                        $kegiatan_ai = 'Pemberian tugas terstruktur. ' . $kegiatan_ai;
+                    } elseif ($uh_num !== false) {
+                        $materi_ai = '[Penilaian Harian ' . ($uh_num + 1) . '] ' . $materi_ai;
+                        $kegiatan_ai = 'Melaksanakan Ujian Harian / Penilaian Harian (PH) tertulis. ' . $kegiatan_ai;
+                    }
                 }
 
                 $this->db->insert($this->agenda_table, [
