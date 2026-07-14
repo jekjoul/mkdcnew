@@ -15,17 +15,6 @@
                             <input type="text" class="form-control radius-8" name="nama_rombel" value="<?php echo $row->nama_rombel ?>" required>
                         </div>
                         <div class="mb-20">
-                            <label class="form-label fw-semibold text-sm mb-8">Wali Kelas</label>
-                            <select class="form-control radius-8 form-select select2" name="id_ptk_walikelas">
-                                <option value="">Belum ditentukan</option>
-                                <?php foreach ($ptk_list as $ptk): ?>
-                                    <option value="<?php echo $ptk->id_ptk ?>" <?php echo !empty($row->id_ptk_walikelas) && (int) $row->id_ptk_walikelas === (int) $ptk->id_ptk ? 'selected' : '' ?>>
-                                        <?php echo html_escape($ptk->nama_ptk) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div class="mb-20">
                             <label class="form-label fw-semibold text-sm mb-8">Status</label>
                             <select class="form-control radius-8 form-select" name="status">
                                 <option value="Aktif" <?php echo $row->status == 'Aktif' ? 'selected' : '' ?>>Aktif</option>

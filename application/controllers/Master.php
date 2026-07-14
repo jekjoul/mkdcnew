@@ -613,7 +613,6 @@ class Master extends MY_Controller
         $data = [
             'nama_rombel' => $nama,
             'status' => post('status'),
-            'id_ptk_walikelas' => post('id_ptk_walikelas') ?: null,
         ];
 
         if ($this->db->insert($this->rombel, $data)) {
@@ -641,9 +640,6 @@ class Master extends MY_Controller
             show_404();
         }
 
-        $this->db->order_by('nama_ptk', 'ASC');
-        $this->page_data['ptk_list'] = $this->db->get_where('ptk', ['status_keaktifan' => 'Aktif'])->result();
-
         $this->load->view('master/v_rombel_form', $this->page_data);
     }
 
@@ -656,7 +652,6 @@ class Master extends MY_Controller
         $data = [
             'nama_rombel' => $nama,
             'status' => post('status'),
-            'id_ptk_walikelas' => post('id_ptk_walikelas') ?: null,
         ];
 
         $this->db->where('id_rombel', $id);
