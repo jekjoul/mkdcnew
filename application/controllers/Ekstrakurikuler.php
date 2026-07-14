@@ -25,10 +25,15 @@ class Ekstrakurikuler extends MY_Controller
         $ptk_id = $user ? (int) $user->id_ptk : 0;
 
         $user_roles = [];
-        foreach ($this->db->get_where('user_roles', ['user_id' => $userId])->result() as $ur) {
-            $r_row = $this->db->get_where('roles', ['id' => $ur->role_id])->row();
-            if ($r_row) {
-                $user_roles[] = strtolower((string) $r_row->title);
+        if ($this->db->table_exists('user_roles')) {
+            $ur_res = $this->db->get_where('user_roles', ['user_id' => $userId])->result();
+            if ($ur_res) {
+                foreach ($ur_res as $ur) {
+                    $r_row = $this->db->get_where('roles', ['id' => $ur->role_id])->row();
+                    if ($r_row) {
+                        $user_roles[] = strtolower((string) $r_row->title);
+                    }
+                }
             }
         }
         
