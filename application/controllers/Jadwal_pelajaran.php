@@ -165,6 +165,147 @@ class Jadwal_pelajaran extends MY_Controller
         redirect('jadwal_pelajaran/semua');
     }
 
+    public function generate_otomatis()
+    {
+        ifPermissions('jadwal_pelajaran_list');
+
+        $settings = $this->getSettings(0);
+        $pembelajaran = $this->getAllPembelajaran('Aktif');
+
+        // Struktur penampung jadwal: $hasil_jadwal[$id_pembelajaran][$hari][$slot_ke] = $id_mapel
+        $hasil_jadwal = [];
+        
+        // Tracking bentrok guru: $guru_busy[$hari][$slot_ke][$id_ptk] = true
+        $guru_busy = [];
+
+        // Inisialisasi struktur jadwal kosong
+        foreach ($pembelajaran as $kelas) {
+            $hasil_jadwal[$kelas->id_pembelajaran] = [];
+            foreach ($this->hari as $hari) {
+                if (!empty($settings[$hari]['aktif'])) {
+                    $hasil_jadwal[$kelas->id_pembelajaran][$hari] = [];
+                    $jumlah_jp = (int) $settings[$hari]['jumlah_jp'];
+                    for ($slot = 1; $slot <= $jumlah_jp; $slot++) {
+                        $hasil_jadwal[$kelas->id_pembelajaran][$hari][$slot] = null;
+                    }
+                }
+            }
+        }
+
+        // Kumpulkan semua mapel yang harus dijadwalkan per kelas
+        $daftar_tugas = [];
+        foreach ($pembelajaran as $kelas) {
+            $mapel_list = $this->getMapelPembelajaran($kelas->id_pembelajaran);
+            foreach ($mapel_list as $m) {
+                $jumlah_jam = (int) $m->jumlah_jam;
+                if ($jumlah_jam <= 0) continue;
+
+                // Pecah jumlah_jam menjadi blok-blok 2 JP atau 3 JP agar tidak terlalu acak
+                $blok_list = [];
+                while ($jumlah_jam > 0) {
+                    if ($jumlah_jam >= 4) {
+                        $blok_list[] = 2;
+                        $jumlah_jam -= 2;
+                    } else if ($jumlah_jam == 3) {
+                        $blok_list[] = 3;
+                        $jumlah_jam -= 3;
+                    } else if ($jumlah_jam == 2) {
+                        $blok_list[] = 2;
+                        $jumlah_jam -= 2;
+                    } else {
+                        $blok_list[] = 1;
+                        $jumlah_jam -= 1;
+                    }
+                }
+
+                foreach ($blok_list as $ukuran_blok) {
+                    $daftar_tugas[] = [
+                        'id_pembelajaran' => $kelas->id_pembelajaran,
+                        'id_mapel' => $m->id_mapel,
+                        'id_ptk' => (int) $m->id_ptk,
+                        'ukuran_blok' => $ukuran_blok,
+                    ];
+                }
+            }
+        }
+
+        // Acak daftar tugas sedikit agar memberikan variasi jika digenerate ulang
+        shuffle($daftar_tugas);
+
+        // Algoritma Backtracking Sederhana untuk menempatkan blok JP
+        foreach ($daftar_tugas as $tugas) {
+            $placed = false;
+            
+            // Coba tempatkan di setiap hari aktif secara berurutan
+            foreach ($this->hari as $hari) {
+                if (empty($settings[$hari]['aktif'])) continue;
+                if ($placed) break;
+
+                $jumlah_jp = (int) $settings[$hari]['jumlah_jp'];
+                $blok = $tugas['ukuran_blok'];
+
+                // Cari slot kosong berurutan sebesar $blok
+                for ($start_slot = 1; $start_slot <= ($jumlah_jp - $blok + 1); $start_slot++) {
+                    $bisa_ditempatkan = true;
+
+                    for ($offset = 0; $offset < $blok; $offset++) {
+                        $curr_slot = $start_slot + $offset;
+
+                        // Pastikan slot di kelas ini kosong
+                        if ($hasil_jadwal[$tugas['id_pembelajaran']][$hari][$curr_slot] !== null) {
+                            $bisa_ditempatkan = false;
+                            break;
+                        }
+
+                        // Pastikan guru tidak sedang mengajar di kelas lain pada hari & slot yang sama
+                        $id_ptk = $tugas['id_ptk'];
+                        if ($id_ptk > 0 && !empty($guru_busy[$hari][$curr_slot][$id_ptk])) {
+                            $bisa_ditempatkan = false;
+                            break;
+                        }
+                    }
+
+                    if ($bisa_ditempatkan) {
+                        // Plot ke jadwal
+                        for ($offset = 0; $offset < $blok; $offset++) {
+                            $curr_slot = $start_slot + $offset;
+                            $hasil_jadwal[$tugas['id_pembelajaran']][$hari][$curr_slot] = $tugas['id_mapel'];
+                            
+                            $id_ptk = $tugas['id_ptk'];
+                            if ($id_ptk > 0) {
+                                $guru_busy[$hari][$curr_slot][$id_ptk] = true;
+                            }
+                        }
+                        $placed = true;
+                        break; // Lanjut ke tugas berikutnya
+                    }
+                }
+            }
+        }
+
+        // Flatten hasil ke array list sederhana untuk dikirim ke frontend AJAX
+        $data_json = [];
+        foreach ($hasil_jadwal as $id_pembelajaran => $days) {
+            foreach ($days as $hari => $slots) {
+                foreach ($slots as $slot => $id_mapel) {
+                    if ($id_mapel !== null) {
+                        $data_json[] = [
+                            'id_pembelajaran' => $id_pembelajaran,
+                            'hari' => $hari,
+                            'slot_ke' => $slot,
+                            'id_mapel' => $id_mapel,
+                        ];
+                    }
+                }
+            }
+        }
+
+        $this->output->set_content_type('application/json')->set_output(json_encode([
+            'status' => 'success',
+            'data' => $data_json
+        ]));
+    }
+
     public function simpan_pengaturan($id_pembelajaran)
     {
         redirect('jadwal_pelajaran/waktu');

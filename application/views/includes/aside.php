@@ -443,6 +443,12 @@ foreach ($menu_pembelajaran_siswa as $menu_row) {
                     Template Surat
                 </a>
             </li>
+            <li>
+                <a href="<?php echo url('surat/kop') ?>">
+                    <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
+                    Kop Surat
+                </a>
+            </li>
         </ul>
     </li>
 

@@ -189,6 +189,107 @@ class Surat extends MY_Controller
         redirect('surat/template');
     }
 
+    public function kop()
+    {
+        ifPermissions('surat_list'); // Menggunakan permission surat_list yang relevan untuk modul ini
+        $this->setPage('Pengaturan Kop Surat', 'surat/kop', 'solar:document-text-linear');
+        $this->db->order_by('id_kop_surat', 'DESC');
+        $this->page_data['kop'] = $this->db->get('surat_kop')->result();
+        $this->load->view('surat/kop_list', $this->page_data);
+    }
+
+    public function kop_tambah()
+    {
+        ifPermissions('surat_list');
+        $this->setPage('Tambah Kop Surat', 'surat/kop_tambah', 'solar:document-text-linear');
+        $this->page_data['row'] = null;
+        $this->load->view('surat/kop_form', $this->page_data);
+    }
+
+    public function kop_edit($id)
+    {
+        ifPermissions('surat_list');
+        $this->setPage('Edit Kop Surat', 'surat/kop_edit/' . $id, 'solar:document-text-linear');
+        $this->page_data['row'] = $this->db->get_where('surat_kop', ['id_kop_surat' => $id])->row();
+        if (!$this->page_data['row']) {
+            show_404();
+        }
+        $this->load->view('surat/kop_form', $this->page_data);
+    }
+
+    public function kop_simpan()
+    {
+        postAllowed();
+        ifPermissions('surat_list');
+
+        $id = (int) post('id_kop_surat');
+        $data = [
+            'nama_kop' => post('nama_kop'),
+            'naungan' => post('naungan') ?: null,
+            'naungan_2' => post('naungan_2') ?: null,
+            'nama_lembaga' => post('nama_lembaga'),
+            'sub_nama' => post('sub_nama') ?: null,
+            'alamat' => post('alamat') ?: null,
+            'kontak' => post('kontak') ?: null,
+            'font_size_naungan' => (int) post('font_size_naungan') ?: 11,
+            'font_size_naungan_2' => (int) post('font_size_naungan_2') ?: 11,
+            'font_size_lembaga' => (int) post('font_size_lembaga') ?: 18,
+            'font_size_sub' => (int) post('font_size_sub') ?: 13,
+            'font_size_alamat' => (int) post('font_size_alamat') ?: 9,
+            'layout_style' => post('layout_style') ?: 'center',
+            'case_style' => post('case_style') ?: 'uppercase',
+            'status' => post('status') ?: 'Aktif',
+            'updated_at' => date('Y-m-d H:i:s')
+        ];
+
+        if ($id > 0) {
+            $this->db->where('id_kop_surat', $id);
+            $this->db->update('surat_kop', $data);
+        } else {
+            $data['created_at'] = date('Y-m-d H:i:s');
+            $this->db->insert('surat_kop', $data);
+            $id = $this->db->insert_id();
+        }
+
+        // Upload Logo Kop Surat (Kiri)
+        if (!empty($_FILES['logo']['name'])) {
+            $path = './uploads/kop_logo/';
+            if (!is_dir($path)) {
+                mkdir($path, 0777, true);
+            }
+            $upload = $this->uploadFile('logo', 'kop_logo', 'kop-logo-' . $id);
+            if ($upload !== false && $upload !== null) {
+                $this->db->where('id_kop_surat', $id);
+                $this->db->update('surat_kop', ['logo' => $upload]);
+            }
+        }
+
+        // Upload Logo Kop Surat Kanan (jika ada)
+        if (!empty($_FILES['logo_kanan']['name'])) {
+            $path = './uploads/kop_logo/';
+            if (!is_dir($path)) {
+                mkdir($path, 0777, true);
+            }
+            $upload_kanan = $this->uploadFile('logo_kanan', 'kop_logo', 'kop-logo-kanan-' . $id);
+            if ($upload_kanan !== false && $upload_kanan !== null) {
+                $this->db->where('id_kop_surat', $id);
+                $this->db->update('surat_kop', ['logo_kanan' => $upload_kanan]);
+            }
+        }
+
+        $this->flashSuccess('Pengaturan kop surat berhasil disimpan');
+        redirect('surat/kop');
+    }
+
+    public function kop_hapus($id)
+    {
+        ifPermissions('surat_list');
+        $this->db->where('id_kop_surat', $id);
+        $this->db->delete('surat_kop');
+        $this->flashSuccess('Kop surat berhasil dihapus');
+        redirect('surat/kop');
+    }
+
     public function keluar()
     {
         $this->setPage('Surat Keluar', 'surat/keluar', 'solar:inbox-out-linear');
@@ -245,6 +346,7 @@ class Surat extends MY_Controller
             'id_lembaga' => $kode->id_lembaga,
             'id_kode_surat' => $kode->id_kode_surat,
             'id_template_surat' => post('id_template_surat') ?: null,
+            'id_kop_surat' => post('id_kop_surat') ?: null,
             'tanggal_surat' => $tanggal,
             'nomor_urut' => $nomor_urut,
             'nomor_surat' => $nomor_surat,
@@ -335,15 +437,21 @@ class Surat extends MY_Controller
         $this->db->where('status_keaktifan', 'Aktif');
         $this->db->order_by('nama_ptk', 'ASC');
         $this->page_data['ptk'] = $this->db->get('ptk')->result();
+        
+        // Ambil list Kop Surat Aktif untuk dropdown
+        $this->db->where('status', 'Aktif');
+        $this->db->order_by('nama_kop', 'ASC');
+        $this->page_data['kop_list'] = $this->db->get('surat_kop')->result();
     }
 
     private function getSuratKeluar($id)
     {
-        $this->db->select('skel.*, l.nama_lembaga, l.alamat, l.telepon, l.email, l.logo, l.id_ptk_kepsek, ptk.nama_ptk AS nama_kepsek, sk.kode_jenis, sk.nama_jenis, sk.kode_lembaga, sk.lokasi');
+        $this->db->select('skel.*, l.nama_lembaga, l.alamat, l.telepon, l.email, l.logo, l.id_ptk_kepsek, ptk.nama_ptk AS nama_kepsek, sk.kode_jenis, sk.nama_jenis, sk.kode_lembaga, sk.lokasi, kp.nama_kop, kp.logo as kop_logo, kp.logo_kanan, kp.naungan, kp.naungan_2, kp.nama_lembaga as kop_nama_lembaga, kp.sub_nama, kp.alamat as alamat_kop, kp.kontak, kp.font_size_naungan, kp.font_size_naungan_2, kp.font_size_lembaga, kp.font_size_sub, kp.font_size_alamat, kp.layout_style, kp.case_style');
         $this->db->from('surat_keluar skel');
         $this->db->join('lembaga l', 'l.id_lembaga = skel.id_lembaga', 'left');
         $this->db->join('ptk', 'ptk.id_ptk = l.id_ptk_kepsek', 'left');
         $this->db->join('surat_kode sk', 'sk.id_kode_surat = skel.id_kode_surat', 'left');
+        $this->db->join('surat_kop kp', 'kp.id_kop_surat = skel.id_kop_surat', 'left');
         $this->db->where('skel.id_surat_keluar', $id);
         return $this->db->get()->row();
     }
@@ -483,6 +591,7 @@ class Surat extends MY_Controller
                 'id_lembaga' => ['type' => 'INT', 'constraint' => 11],
                 'id_kode_surat' => ['type' => 'INT', 'constraint' => 11],
                 'id_template_surat' => ['type' => 'INT', 'constraint' => 11, 'null' => true],
+                'id_kop_surat' => ['type' => 'INT', 'constraint' => 11, 'null' => true],
                 'tanggal_surat' => ['type' => 'DATE'],
                 'nomor_urut' => ['type' => 'INT', 'constraint' => 11],
                 'nomor_surat' => ['type' => 'VARCHAR', 'constraint' => 180],
@@ -498,6 +607,60 @@ class Surat extends MY_Controller
             ]);
             $this->dbforge->add_key('id_surat_keluar', true);
             $this->dbforge->create_table('surat_keluar', true);
+        } else {
+            // Cek jika kolom id_kop_surat belum ada di table surat_keluar
+            if (!$this->db->field_exists('id_kop_surat', 'surat_keluar')) {
+                $this->dbforge->add_column('surat_keluar', [
+                    'id_kop_surat' => ['type' => 'INT', 'constraint' => 11, 'null' => true, 'after' => 'id_template_surat']
+                ]);
+            }
+        }
+
+        if (!$this->db->table_exists('surat_kop')) {
+            $this->dbforge->add_field([
+                'id_kop_surat' => ['type' => 'INT', 'constraint' => 11, 'auto_increment' => true],
+                'nama_kop' => ['type' => 'VARCHAR', 'constraint' => 100],
+                'logo' => ['type' => 'VARCHAR', 'constraint' => 150, 'null' => true],
+                'logo_kanan' => ['type' => 'VARCHAR', 'constraint' => 150, 'null' => true],
+                'naungan' => ['type' => 'VARCHAR', 'constraint' => 150, 'null' => true],
+                'naungan_2' => ['type' => 'VARCHAR', 'constraint' => 150, 'null' => true],
+                'nama_lembaga' => ['type' => 'VARCHAR', 'constraint' => 150],
+                'sub_nama' => ['type' => 'VARCHAR', 'constraint' => 150, 'null' => true],
+                'alamat' => ['type' => 'TEXT', 'null' => true],
+                'kontak' => ['type' => 'VARCHAR', 'constraint' => 200, 'null' => true],
+                'font_size_naungan' => ['type' => 'INT', 'constraint' => 3, 'default' => 12],
+                'font_size_naungan_2' => ['type' => 'INT', 'constraint' => 3, 'default' => 12],
+                'font_size_lembaga' => ['type' => 'INT', 'constraint' => 3, 'default' => 18],
+                'font_size_sub' => ['type' => 'INT', 'constraint' => 3, 'default' => 14],
+                'font_size_alamat' => ['type' => 'INT', 'constraint' => 3, 'default' => 10],
+                'layout_style' => ['type' => 'VARCHAR', 'constraint' => 30, 'default' => 'center'], // center, left_logo, double_logo
+                'case_style' => ['type' => 'VARCHAR', 'constraint' => 30, 'default' => 'uppercase'], // uppercase, custom
+                'status' => ['type' => 'VARCHAR', 'constraint' => 20, 'default' => 'Aktif'],
+                'created_at' => ['type' => 'DATETIME', 'null' => true],
+                'updated_at' => ['type' => 'DATETIME', 'null' => true],
+            ]);
+            $this->dbforge->add_key('id_kop_surat', true);
+            $this->dbforge->create_table('surat_kop', true);
+        } else {
+            // Cek jika kolom logo_kanan belum ada di table surat_kop
+            if (!$this->db->field_exists('logo_kanan', 'surat_kop')) {
+                $this->dbforge->add_column('surat_kop', [
+                    'logo_kanan' => ['type' => 'VARCHAR', 'constraint' => 150, 'null' => true, 'after' => 'logo']
+                ]);
+            }
+            // Cek jika kolom naungan_2 belum ada di table surat_kop
+            if (!$this->db->field_exists('naungan_2', 'surat_kop')) {
+                $this->dbforge->add_column('surat_kop', [
+                    'naungan_2' => ['type' => 'VARCHAR', 'constraint' => 150, 'null' => true, 'after' => 'naungan'],
+                    'font_size_naungan_2' => ['type' => 'INT', 'constraint' => 3, 'default' => 12, 'after' => 'font_size_naungan']
+                ]);
+            }
+            // Cek jika kolom case_style belum ada di table surat_kop
+            if (!$this->db->field_exists('case_style', 'surat_kop')) {
+                $this->dbforge->add_column('surat_kop', [
+                    'case_style' => ['type' => 'VARCHAR', 'constraint' => 30, 'default' => 'uppercase', 'after' => 'layout_style']
+                ]);
+            }
         }
     }
 }

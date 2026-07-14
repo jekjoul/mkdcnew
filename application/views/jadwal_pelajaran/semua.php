@@ -214,9 +214,14 @@ foreach ($hari as $h) {
     <div class="card mb-4">
         <div class="card-header bg-warning-900 d-flex flex-wrap justify-content-between align-items-center gap-2">
             <h6 class="mb-0 text-light">Susun Jadwal Mingguan Semua Kelas</h6>
-            <a href="<?php echo url('jadwal_pelajaran/waktu') ?>" class="btn btn-warning-600 btn-sm d-inline-flex align-items-center gap-2">
-                <iconify-icon icon="lucide:settings"></iconify-icon> Atur Waktu
-            </a>
+            <div class="d-flex gap-2">
+                <button type="button" id="generateScheduleBtn" class="btn btn-warning-600 btn-sm d-inline-flex align-items-center gap-2">
+                    <iconify-icon icon="solar:magic-stick-3-linear"></iconify-icon> Generate Jadwal Otomatis
+                </button>
+                <a href="<?php echo url('jadwal_pelajaran/waktu') ?>" class="btn btn-secondary btn-sm d-inline-flex align-items-center gap-2 text-light border-0" style="background-color: rgba(255,255,255,0.15);">
+                    <iconify-icon icon="lucide:settings"></iconify-icon> Atur Waktu
+                </a>
+            </div>
         </div>
         <div class="card-body d-flex flex-wrap gap-2">
             <span class="badge bg-primary-100 text-primary-600"><?php echo (int) $menit_jp ?> menit / JP</span>
@@ -336,6 +341,7 @@ foreach ($hari as $h) {
                                                         <?php $color_style = ptk_color_style($selected->id_ptk); ?>
                                                         <div class="scheduled-token" draggable="true" style="<?php echo $color_style ?>" data-color-style="<?php echo htmlspecialchars($color_style, ENT_QUOTES, 'UTF-8') ?>" data-class-id="<?php echo $kelas->id_pembelajaran ?>" data-mapel-id="<?php echo $selected->id_mapel ?>" data-ptk-id="<?php echo (int) $selected->id_ptk ?>" data-nama="<?php echo htmlspecialchars($selected->mapel_singkat ?: $selected->nama_mapel, ENT_QUOTES, 'UTF-8') ?>" data-ptk="<?php echo htmlspecialchars($selected->nama_ptk ?: '-', ENT_QUOTES, 'UTF-8') ?>" data-class-label="<?php echo htmlspecialchars($class_label, ENT_QUOTES, 'UTF-8') ?>">
                                                             <div class="fw-semibold"><?php echo $selected->mapel_singkat ?: $selected->nama_mapel ?></div>
+                                                            <div class="text-secondary-light text-sm" style="font-size: 11px; opacity: 0.85;"><?php echo $selected->nama_ptk ?: '-' ?></div>
                                                             <div class="teacher-conflict d-none"></div>
                                                         </div>
                                                     <?php endif; ?>
@@ -384,6 +390,7 @@ foreach ($hari as $h) {
             const colorStyle = token.attr('data-color-style') || '';
             return $('<div class="scheduled-token" draggable="true" style="' + escapeAttr(colorStyle) + '" data-color-style="' + escapeAttr(colorStyle) + '" data-class-id="' + token.data('class-id') + '" data-mapel-id="' + token.data('mapel-id') + '" data-ptk-id="' + token.data('ptk-id') + '" data-nama="' + escapeAttr(token.data('nama')) + '" data-ptk="' + escapeAttr(token.data('ptk')) + '" data-class-label="' + escapeAttr(token.data('class-label')) + '">' +
                 '<div class="fw-semibold">' + escapeHtml(token.data('nama')) + '</div>' +
+                '<div class="text-secondary-light text-sm" style="font-size: 11px; opacity: 0.85;">' + escapeHtml(token.data('ptk')) + '</div>' +
                 '<div class="teacher-conflict d-none"></div>' +
                 '</div>');
         }
@@ -497,6 +504,48 @@ foreach ($hari as $h) {
             });
             $('.schedule-dropzone input[type="hidden"]').val('');
             refreshConflicts();
+        });
+
+        $('#generateScheduleBtn').on('click', function() {
+            const btn = $(this);
+            const originalHtml = btn.html();
+            btn.prop('disabled', true).html('<iconify-icon icon="line-md:loading-twotone-loop" class="align-middle"></iconify-icon> Menjadwalkan...');
+
+            // Kosongkan jadwal yang ada saat ini terlebih dahulu
+            $('#clearSchedule').trigger('click');
+
+            $.getJSON('<?php echo url('jadwal_pelajaran/generate_otomatis') ?>', function(res) {
+                btn.prop('disabled', false).html(originalHtml);
+                if (res.status === 'success' && Array.isArray(res.data)) {
+                    res.data.forEach(function(item) {
+                        const classId = item.id_pembelajaran;
+                        const hari = item.hari;
+                        const slot = item.slot_ke;
+                        const mapelId = item.id_mapel;
+
+                        // Cari token pertama di bank mapel kelas yang sesuai
+                        const tokenEl = $('.token-list[data-class-id="' + classId + '"][data-mapel-id="' + mapelId + '"] .subject-token').first();
+                        if (tokenEl.length) {
+                            // Cari dropzone yang pas
+                            const zone = $('.schedule-dropzone[data-class-id="' + classId + '"][data-hari="' + hari + '"][data-slot="' + slot + '"]');
+                            if (zone.length) {
+                                const scheduled = makeScheduledToken(tokenEl);
+                                tokenEl.remove();
+                                zone.append(scheduled);
+                                zone.find('input[type="hidden"]').val(mapelId);
+                            }
+                        }
+                    });
+                    refreshConflicts();
+                    // Alert sukses premium
+                    alert('Jadwal pelajaran berhasil digenerate secara otomatis tanpa bentrok guru!');
+                } else {
+                    alert('Gagal menghasilkan jadwal pelajaran otomatis.');
+                }
+            }).fail(function() {
+                btn.prop('disabled', false).html(originalHtml);
+                alert('Koneksi server gagal saat menggenerate jadwal pelajaran.');
+            });
         });
 
         function escapeHtml(value) {

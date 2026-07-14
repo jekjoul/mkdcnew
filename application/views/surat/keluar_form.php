@@ -9,7 +9,18 @@
             </div>
             <div class="card-body">
                 <div class="row gy-3">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">Pilih Kop Surat <span class="text-danger">*</span></label>
+                        <select name="id_kop_surat" class="form-select" required>
+                            <option value="">Pilih Kop Surat</option>
+                            <?php foreach ($kop_list as $kp): ?>
+                                <option value="<?php echo $kp->id_kop_surat ?>" <?php echo @$row->id_kop_surat == $kp->id_kop_surat ? 'selected' : '' ?>>
+                                    <?php echo $kp->nama_kop ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
                         <label class="form-label">Kode Surat</label>
                         <select name="id_kode_surat" id="kodeSelect" class="form-select" required>
                             <option value="">Pilih kode surat</option>
@@ -20,7 +31,7 @@
                             <?php endforeach; ?>
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label class="form-label">Template</label>
                         <select name="id_template_surat" id="templateSelect" class="form-select">
                             <option value="">Tanpa template</option>
@@ -29,7 +40,7 @@
                             <?php endforeach; ?>
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label class="form-label">Tanggal Surat</label>
                         <input type="date" name="tanggal_surat" class="form-control" value="<?php echo @$row->tanggal_surat ?: date('Y-m-d') ?>" required>
                     </div>

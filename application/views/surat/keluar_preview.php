@@ -37,30 +37,36 @@
             padding: 20mm 22mm;
             box-sizing: border-box;
         }
-        .kop {
-            display: grid;
-            grid-template-columns: 78px 1fr;
-            gap: 14px;
-            align-items: center;
-            border-bottom: 3px double #111827;
-            padding-bottom: 10px;
-            margin-bottom: 18px;
-        }
-        .kop img {
-            max-width: 72px;
-            max-height: 72px;
-        }
-        .kop h1 {
-            margin: 0;
-            font-size: 19px;
-            text-align: center;
-            text-transform: uppercase;
-        }
-        .kop p {
-            margin: 4px 0 0;
-            text-align: center;
-            font-size: 12px;
-        }
+         .kop {
+             border-bottom: 3px double #111827;
+             padding-bottom: 10px;
+             margin-bottom: 18px;
+             width: 100%;
+         }
+         .kop img {
+             max-width: 80px;
+             max-height: 80px;
+         }
+         .kop-title-naungan {
+             font-weight: 550;
+             line-height: 1.2;
+         }
+         .kop-title-lembaga {
+             font-weight: bold;
+             line-height: 1.2;
+             margin-top: 2px;
+         }
+         .kop-title-sub {
+             font-weight: bold;
+             line-height: 1.2;
+             margin-top: 2px;
+             color: #333;
+         }
+         .kop-text-alamat {
+             line-height: 1.3;
+             margin-top: 4px;
+             color: #4b5563;
+         }
         .meta {
             width: 100%;
             margin-bottom: 18px;
@@ -127,16 +133,119 @@
     </div>
     <main class="paper">
         <header class="kop">
-            <div>
-                <?php if (!empty($surat->logo)): ?>
-                    <img src="<?php echo url('uploads/lembaga/' . $surat->logo) ?>" alt="Logo">
+            <?php if (!empty($surat->nama_kop)): ?>
+                <!-- Render Kop Surat Dinamis -->
+                <?php 
+                $logo_kop = !empty($surat->kop_logo) ? url('uploads/kop_logo/' . $surat->kop_logo) : url('assets/images/user-grid/guru.png');
+                $logo_kop_kanan = !empty($surat->logo_kanan) ? url('uploads/kop_logo/' . $surat->logo_kanan) : url('assets/images/user-grid/guru.png');
+                $sz_naungan = $surat->font_size_naungan ?: 11;
+                $sz_naungan_2 = $surat->font_size_naungan_2 ?: 11;
+                $sz_lembaga = $surat->font_size_lembaga ?: 18;
+                $sz_sub = $surat->font_size_sub ?: 13;
+                $sz_alamat = $surat->font_size_alamat ?: 9;
+                $transform_text = ($surat->case_style === 'custom') ? 'none' : 'uppercase';
+                ?>
+                
+                <?php if ($surat->layout_style === 'left_logo'): ?>
+                    <table style="width: 100%; border-collapse: collapse; border: 0;">
+                        <tr>
+                            <td style="width: 80px; vertical-align: middle; text-align: left; padding-right: 15px; border: 0;">
+                                <img src="<?php echo $logo_kop ?>" alt="Logo">
+                            </td>
+                            <td style="vertical-align: middle; text-align: left; border: 0;">
+                                <?php if (!empty($surat->naungan)): ?>
+                                    <div class="kop-title-naungan" style="font-size: <?php echo $sz_naungan ?>px; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($surat->naungan) ?></div>
+                                <?php endif; ?>
+                                <?php if (!empty($surat->naungan_2)): ?>
+                                    <div class="kop-title-naungan" style="font-size: <?php echo $sz_naungan_2 ?>px; margin-top: 1px; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($surat->naungan_2) ?></div>
+                                <?php endif; ?>
+                                <div class="kop-title-lembaga" style="font-size: <?php echo $sz_lembaga ?>px; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($surat->nama_lembaga) ?></div>
+                                <?php if (!empty($surat->sub_nama)): ?>
+                                    <div class="kop-title-sub" style="font-size: <?php echo $sz_sub ?>px; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($surat->sub_nama) ?></div>
+                                <?php endif; ?>
+                                <?php if (!empty($surat->alamat_kop)): ?>
+                                    <div class="kop-text-alamat" style="font-size: <?php echo $sz_alamat ?>px;"><?php echo html_escape($surat->alamat_kop) ?></div>
+                                <?php endif; ?>
+                                <?php if (!empty($surat->kontak)): ?>
+                                    <div class="kop-text-alamat" style="font-size: <?php echo $sz_alamat ?>px; margin-top: 0;"><?php echo html_escape($surat->kontak) ?></div>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                    </table>
+                <?php elseif ($surat->layout_style === 'double_logo'): ?>
+                    <table style="width: 100%; border-collapse: collapse; border: 0;">
+                        <tr>
+                            <td style="width: 70px; vertical-align: middle; text-align: left; padding-right: 10px; border: 0;">
+                                <img src="<?php echo $logo_kop ?>" alt="Logo Kiri">
+                            </td>
+                            <td style="vertical-align: middle; text-align: center; border: 0;">
+                                <?php if (!empty($surat->naungan)): ?>
+                                    <div class="kop-title-naungan" style="font-size: <?php echo $sz_naungan ?>px; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($surat->naungan) ?></div>
+                                <?php endif; ?>
+                                <?php if (!empty($surat->naungan_2)): ?>
+                                    <div class="kop-title-naungan" style="font-size: <?php echo $sz_naungan_2 ?>px; margin-top: 1px; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($surat->naungan_2) ?></div>
+                                <?php endif; ?>
+                                <div class="kop-title-lembaga" style="font-size: <?php echo $sz_lembaga ?>px; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($surat->nama_lembaga) ?></div>
+                                <?php if (!empty($surat->sub_nama)): ?>
+                                    <div class="kop-title-sub" style="font-size: <?php echo $sz_sub ?>px; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($surat->sub_nama) ?></div>
+                                <?php endif; ?>
+                                <?php if (!empty($surat->alamat_kop)): ?>
+                                    <div class="kop-text-alamat" style="font-size: <?php echo $sz_alamat ?>px;"><?php echo html_escape($surat->alamat_kop) ?></div>
+                                <?php endif; ?>
+                                <?php if (!empty($surat->kontak)): ?>
+                                    <div class="kop-text-alamat" style="font-size: <?php echo $sz_alamat ?>px; margin-top: 0;"><?php echo html_escape($surat->kontak) ?></div>
+                                <?php endif; ?>
+                            </td>
+                            <td style="width: 70px; vertical-align: middle; text-align: right; padding-left: 10px; border: 0;">
+                                <img src="<?php echo $logo_kop_kanan ?>" alt="Logo Kanan">
+                            </td>
+                        </tr>
+                    </table>
+                <?php else: ?>
+                    <!-- Default: Center -->
+                    <div style="text-align: center; width: 100%;">
+                        <div style="margin-bottom: 8px; display: flex; justify-content: center;">
+                            <img src="<?php echo $logo_kop ?>" alt="Logo">
+                        </div>
+                        <?php if (!empty($surat->naungan)): ?>
+                            <div class="kop-title-naungan" style="font-size: <?php echo $sz_naungan ?>px; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($surat->naungan) ?></div>
+                        <?php endif; ?>
+                        <?php if (!empty($surat->naungan_2)): ?>
+                            <div class="kop-title-naungan" style="font-size: <?php echo $sz_naungan_2 ?>px; margin-top: 1px; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($surat->naungan_2) ?></div>
+                        <?php endif; ?>
+                        <div class="kop-title-lembaga" style="font-size: <?php echo $sz_lembaga ?>px; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($surat->nama_lembaga) ?></div>
+                        <?php if (!empty($surat->sub_nama)): ?>
+                            <div class="kop-title-sub" style="font-size: <?php echo $sz_sub ?>px; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($surat->sub_nama) ?></div>
+                        <?php endif; ?>
+                        <?php if (!empty($surat->alamat_kop)): ?>
+                            <div class="kop-text-alamat" style="font-size: <?php echo $sz_alamat ?>px;"><?php echo html_escape($surat->alamat_kop) ?></div>
+                        <?php endif; ?>
+                        <?php if (!empty($surat->kontak)): ?>
+                            <div class="kop-text-alamat" style="font-size: <?php echo $sz_alamat ?>px; margin-top: 0;"><?php echo html_escape($surat->kontak) ?></div>
+                        <?php endif; ?>
+                    </div>
                 <?php endif; ?>
-            </div>
-            <div>
-                <h1><?php echo $surat->nama_lembaga ?></h1>
-                <p><?php echo $surat->alamat ?: '' ?></p>
-                <p><?php echo trim(($surat->telepon ? 'Telp. ' . $surat->telepon : '') . ($surat->email ? ' | Email: ' . $surat->email : '')) ?></p>
-            </div>
+            <?php else: ?>
+                <!-- Fallback: Kop Lembaga Lama -->
+                <table style="width: 100%; border-collapse: collapse; border: 0;">
+                    <tr>
+                        <td style="width: 80px; vertical-align: middle; text-align: left; padding-right: 15px; border: 0;">
+                            <?php if (!empty($surat->logo)): ?>
+                                <img src="<?php echo url('uploads/logo_lembaga/' . $surat->logo) ?>" alt="Logo">
+                            <?php endif; ?>
+                        </td>
+                        <td style="vertical-align: middle; text-align: left; border: 0;">
+                            <div class="kop-title-lembaga" style="font-size: 18px;"><?php echo html_escape($surat->nama_lembaga) ?></div>
+                            <?php if (!empty($surat->alamat)): ?>
+                                <div class="kop-text-alamat" style="font-size: 10px;"><?php echo html_escape($surat->alamat) ?></div>
+                            <?php endif; ?>
+                            <div class="kop-text-alamat" style="font-size: 10px; margin-top: 0;">
+                                <?php echo trim(($surat->telepon ? 'Telp. ' . $surat->telepon : '') . ($surat->email ? ' | Email: ' . $surat->email : '')) ?>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            <?php endif; ?>
         </header>
 
         <table class="meta">
