@@ -175,7 +175,7 @@
     <?php endif; ?>
 <?php endif; ?>
 
-<?php if (hasPermissions('menu_data_ptk') || hasPermissions('menu_ptk_nonaktif') || hasPermissions('menu_sinkron_dapodik_gtk')): ?>
+<?php if (hasPermissions('menu_data_ptk') || hasPermissions('menu_ptk_nonaktif') || hasPermissions('menu_sinkron_dapodik_gtk') || hasPermissions('menu_generate_niy') || hasPermissions('menu_edit_inline_ptk')): ?>
     <li
         class="sidebar-menu-group-title"
         style="background: #bdd3b1;
@@ -187,6 +187,22 @@
             <a href="<?php echo url('ptk/ptk') ?>">
                 <iconify-icon icon="icon-park-outline:user-business" class="menu-icon"></iconify-icon>
                 <span>Data PTK</span>
+            </a>
+        </li>
+    <?php endif; ?>
+    <?php if (hasPermissions('menu_generate_niy')): ?>
+        <li>
+            <a href="<?php echo url('generate_niy') ?>">
+                <iconify-icon icon="solar:user-id-linear" class="menu-icon"></iconify-icon>
+                <span>Generate NIY</span>
+            </a>
+        </li>
+    <?php endif; ?>
+    <?php if (hasPermissions('menu_edit_inline_ptk')): ?>
+        <li>
+            <a href="<?php echo url('edit_inline_ptk') ?>">
+                <iconify-icon icon="solar:pen-new-square-linear" class="menu-icon"></iconify-icon>
+                <span>Edit Inline PTK</span>
             </a>
         </li>
     <?php endif; ?>
@@ -210,7 +226,7 @@
 
 
 
-<?php if (hasPermissions('menu_kesiswaan_data_siswa') || hasPermissions('menu_sinkron_dapodik')): ?>
+<?php if (hasPermissions('menu_kesiswaan_data_siswa') || hasPermissions('menu_sinkron_dapodik') || hasPermissions('menu_generate_nipd') || hasPermissions('menu_edit_inline_siswa')): ?>
     <li class="sidebar-menu-group-title"
         style="background: rgb(205, 204, 252);
         background: linear-gradient(90deg, rgb(207, 219, 255) 0%, rgba(255, 255, 255, 0) 100%);">Kesiswaan
@@ -221,6 +237,22 @@
             <a href="<?php echo url('siswa/all') ?>">
                 <iconify-icon icon="icon-park-outline:every-user" class="menu-icon"></iconify-icon>
                 <span>Data Siswa</span>
+            </a>
+        </li>
+    <?php endif; ?>
+    <?php if (hasPermissions('menu_generate_nipd')): ?>
+        <li>
+            <a href="<?php echo url('generate_nipd') ?>">
+                <iconify-icon icon="solar:user-id-linear" class="menu-icon"></iconify-icon>
+                <span>Generate NIPD</span>
+            </a>
+        </li>
+    <?php endif; ?>
+    <?php if (hasPermissions('menu_edit_inline_siswa')): ?>
+        <li>
+            <a href="<?php echo url('edit_inline_siswa') ?>">
+                <iconify-icon icon="solar:pen-new-square-linear" class="menu-icon"></iconify-icon>
+                <span>Edit Inline Siswa</span>
             </a>
         </li>
     <?php endif; ?>
