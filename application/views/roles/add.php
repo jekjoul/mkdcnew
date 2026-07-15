@@ -299,11 +299,12 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                         <?php foreach ($permission_tree as $gIndex => $group): ?>
                           <!-- LEVEL 1 -->
                           <li class="group-container mb-20">
-                            <div class="level-1-title">
-                              <span><i class="ri-folder-open-fill text-warning-main"></i> <?php echo $group['title'] ?></span>
-                              <div class="form-check m-0">
+                            <div class="level-1-title d-flex align-items-center justify-content-start gap-2">
+                              <div class="form-check m-0 d-flex align-items-center gap-2">
                                 <input type="checkbox" class="form-check-input check-lvl-1" id="group_<?php echo $gIndex ?>">
-                                <label for="group_<?php echo $gIndex ?>" class="form-check-label text-xs fw-bold cursor-pointer">Pilih Grup</label>
+                                <label for="group_<?php echo $gIndex ?>" class="form-check-label text-sm fw-bold cursor-pointer mb-0">
+                                  <i class="ri-folder-open-fill text-warning-main me-1"></i> <?php echo $group['title'] ?>
+                                </label>
                               </div>
                             </div>
 
@@ -311,13 +312,19 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                             <ul>
                               <?php foreach ($group['sub'] as $sIndex => $sub): ?>
                                 <li class="sub-container">
-                                  <div class="level-2-title">
+                                  <div class="level-2-title d-flex align-items-center justify-content-start gap-2">
                                     <?php if (isset($sub['code'])): ?>
                                       <?php $isChecked = in_array($sub['code'], $role_permissions) ? 'checked' : ''; ?>
-                                      <span><i class="ri-checkbox-circle-line text-primary"></i> <?php echo $sub['title'] ?></span>
-                                      <input type="checkbox" class="form-check-input check-lvl-2" name="permission[]" value="<?php echo $sub['code'] ?>" <?php echo $isChecked ?> id="sub_<?php echo $gIndex ?>_<?php echo $sIndex ?>">
+                                      <div class="form-check m-0 d-flex align-items-center gap-2">
+                                        <input type="checkbox" class="form-check-input check-lvl-2" name="permission[]" value="<?php echo $sub['code'] ?>" <?php echo $isChecked ?> id="sub_<?php echo $gIndex ?>_<?php echo $sIndex ?>">
+                                        <label for="sub_<?php echo $gIndex ?>_<?php echo $sIndex ?>" class="form-check-label text-xs fw-semibold cursor-pointer mb-0">
+                                          <i class="ri-checkbox-circle-line text-primary me-1"></i> <?php echo $sub['title'] ?>
+                                        </label>
+                                      </div>
                                     <?php else: ?>
-                                      <span><i class="ri-settings-4-line text-secondary"></i> <?php echo $sub['title'] ?></span>
+                                      <span class="text-xs fw-semibold text-secondary-light">
+                                        <i class="ri-settings-4-line text-secondary me-1"></i> <?php echo $sub['title'] ?>
+                                      </span>
                                     <?php endif; ?>
                                   </div>
 
