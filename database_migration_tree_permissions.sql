@@ -1,89 +1,21 @@
--- ======================================================================
--- FILE PERUBAHAN DATABASE (PRODUCTION UPDATE)
--- IMPLEMENTASI SISTEM MULTI-ROLE, EKSTRAKURIKULER, & KEDISIPLINAN/BK
--- ======================================================================
+-- ====================================================================
+-- MIGRASI DATABASE: SISTEM HIERARKI TREE PERMISSIONS (DATABASE-DRIVEN)
+-- ====================================================================
+-- Menambahkan kolom parent_id dan level, serta menyinkronkan data
+-- permissions dan role_permissions hasil penyisiran menu & fitur lengkap.
+-- ====================================================================
 
--- 1. Membuat tabel relasi untuk multi-role (user_roles)
-CREATE TABLE IF NOT EXISTS `user_roles` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
-  `role_id` int(11) NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `idx_user_roles_user` (`user_id`),
-  KEY `idx_user_roles_role` (`role_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- 2. Membuat tabel Ekstrakurikuler Utama (jika belum ada)
-CREATE TABLE IF NOT EXISTS `ekstrakurikuler` (
-  `id_ekskul` int(11) NOT NULL AUTO_INCREMENT,
-  `id_tahun_pelajaran` int(11) DEFAULT NULL,
-  `nama_ekskul` varchar(100) NOT NULL,
-  `id_ptk_pembina` text,
-  `logo` varchar(255) DEFAULT NULL,
-  `keterangan` text,
-  PRIMARY KEY (`id_ekskul`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- Migrasi tipe data pembina ekstrakurikuler agar mendukung ganda (JSON Array)
-ALTER TABLE `ekstrakurikuler` MODIFY COLUMN `id_ptk_pembina` TEXT NULL DEFAULT NULL;
-
--- 3. Membuat tabel Siswa Anggota & Nilai Ekstrakurikuler
-CREATE TABLE IF NOT EXISTS `ekstrakurikuler_siswa` (
-  `id_ekskul_siswa` int(11) NOT NULL AUTO_INCREMENT,
-  `id_ekskul` int(11) NOT NULL,
-  `id_siswa` int(11) NOT NULL,
-  `nilai` varchar(5) DEFAULT NULL,
-  `catatan` text,
-  PRIMARY KEY (`id_ekskul_siswa`),
-  KEY `idx_ekskul_siswa_ekskul` (`id_ekskul`),
-  KEY `idx_ekskul_siswa_siswa` (`id_siswa`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- 4. Membuat tabel Kategori Pelanggaran Kedisiplinan
-CREATE TABLE IF NOT EXISTS `kedisiplinan_pelanggaran_kategori` (
-  `id_kategori` int(11) NOT NULL AUTO_INCREMENT,
-  `nama_pelanggaran` varchar(150) NOT NULL,
-  `bobot_poin` int(5) NOT NULL,
-  PRIMARY KEY (`id_kategori`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- Seed default data Kategori Pelanggaran Kedisiplinan
-INSERT INTO `kedisiplinan_pelanggaran_kategori` (`id_kategori`, `nama_pelanggaran`, `bobot_poin`) VALUES
-(1, 'Terlambat Masuk Sekolah', 5),
-(2, 'Membolos di Jam Pelajaran', 10),
-(3, 'Tidak Mengerjakan Tugas', 5),
-(4, 'Merusak Sarana Kelas', 20),
-(5, 'Membawa HP / Gadget Tanpa Izin', 10),
-(6, 'Tawuran / Berkelahi', 75),
-(7, 'Mencuri / Mengambil Hak Orang Lain', 50)
-ON DUPLICATE KEY UPDATE `nama_pelanggaran`=VALUES(`nama_pelanggaran`), `bobot_poin`=VALUES(`bobot_poin`);
-
--- 5. Membuat tabel Laporan Pelanggaran Siswa
-CREATE TABLE IF NOT EXISTS `kedisiplinan_pelanggaran_siswa` (
-  `id_pelanggaran_siswa` int(11) NOT NULL AUTO_INCREMENT,
-  `id_siswa` int(11) NOT NULL,
-  `id_kategori` int(11) NOT NULL,
-  `tanggal_pelanggaran` date NOT NULL,
-  `catatan` text,
-  `tindak_lanjut` text,
-  `created_at` datetime DEFAULT NULL,
-  `updated_at` datetime DEFAULT NULL,
-  PRIMARY KEY (`id_pelanggaran_siswa`),
-  KEY `idx_pelanggaran_siswa` (`id_siswa`),
-  KEY `idx_pelanggaran_kategori` (`id_kategori`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- -- 6. Modifikasi skema tabel permissions untuk hierarki tree
+-- 1. Modifikasi Skema Tabel `permissions` (DDL)
+-- Tambahkan kolom parent_id dan level jika belum ada
 ALTER TABLE `permissions` ADD COLUMN `parent_id` INT NULL DEFAULT NULL AFTER `id`;
 ALTER TABLE `permissions` ADD COLUMN `level` TINYINT NOT NULL DEFAULT 1 AFTER `parent_id`;
 
--- Kosongkan data permissions lama agar tersusun secara hierarki
+-- 2. Kosongkan Data Permissions Lama (Untuk Membangun Tree Baru)
 SET FOREIGN_KEY_CHECKS = 0;
 TRUNCATE TABLE `permissions`;
 SET FOREIGN_KEY_CHECKS = 1;
 
--- Seeding data permissions hasil penyisiran lengkap (100% riil)
+-- 3. Seeding Data Permissions Berjenjang 3 Level (DML)
 INSERT INTO `permissions` (`id`, `parent_id`, `level`, `code`, `title`) VALUES
 -- L1: Dashboard Utama
 (1, NULL, 1, 'group_dashboard', 'Dashboard Utama'),
@@ -221,7 +153,7 @@ INSERT INTO `permissions` (`id`, `parent_id`, `level`, `code`, `title`) VALUES
 (113, 110, 3, 'login_theme', 'Pengaturan Tema Halaman Login'),
 (114, 110, 3, 'email_templates', 'Pengaturan Template Email');
 
--- 7. Seed list Roles jabatan fungsional baru
+-- 4. Seed List Roles Jabatan Fungsional
 INSERT INTO `roles` (`id`, `title`) VALUES
 (1, 'Admin'),
 (2, 'User'),
@@ -234,7 +166,7 @@ INSERT INTO `roles` (`id`, `title`) VALUES
 (10, 'Kepala Sekolah')
 ON DUPLICATE KEY UPDATE `title`=VALUES(`title`);
 
--- 8. Menghapus & Sync ulang mapping Permissions dari ke-8 role tersebut
+-- 5. Sinkronisasi Data Mapping Role-Permissions
 DELETE FROM `role_permissions` WHERE `role` IN (1, 3, 4, 6, 7, 8, 9, 10);
 
 INSERT INTO `role_permissions` (`role`, `permission`) VALUES

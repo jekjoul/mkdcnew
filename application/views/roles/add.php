@@ -23,84 +23,200 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
             </div>
 
             <div class="form-group">
-              <label class="fw-bold mb-3"><?php echo lang('permissions') ?></label>
-              <div class="row">
-                <?php 
-                $all_perms = $this->permissions_model->get();
-                $menu_perms = [];
-                $feature_perms = [];
-                if (!empty($all_perms)) {
-                    foreach ($all_perms as $p) {
-                        if (strpos($p->code, 'menu_') === 0) {
-                            $menu_perms[] = $p;
-                        } else {
-                            $feature_perms[] = $p;
-                        }
-                    }
+              <style>
+                .permission-tree {
+                    list-style: none;
+                    padding-left: 0;
                 }
-                ?>
-                <!-- Tabel 1: Hak Akses Menu Sidebar -->
-                <div class="col-md-6">
-                  <div class="card border shadow-none mb-3">
-                    <div class="card-header bg-info-50 d-flex justify-content-between align-items-center py-2 px-3">
-                      <h6 class="text-info-800 mb-0 fw-bold"><i class="ri-side-bar-line"></i> Hak Akses Menu Sidebar</h6>
-                      <div class="form-check m-0">
-                        <input type="checkbox" id="checkAllMenu" class="form-check-input">
-                        <label for="checkAllMenu" class="form-check-label text-xs fw-bold cursor-pointer">Pilih Semua</label>
-                      </div>
-                    </div>
-                    <div class="card-body p-0" style="max-height: 400px; overflow-y: auto;">
-                      <table class="table table-bordered table-striped m-0">
-                        <tbody>
-                          <?php if (!empty($menu_perms)): ?>
-                            <?php foreach ($menu_perms as $row): ?>
-                              <tr>
-                                <td><?php echo ucfirst(str_replace('_', ' ', $row->title)) ?></td>
-                                <td class="text-center" width="80">
-                                  <input type="checkbox" class="form-check-input check-menu-p" name="permission[]" value="<?php echo $row->code ?>">
-                                </td>
-                              </tr>
-                            <?php endforeach ?>
-                          <?php else: ?>
-                            <tr>
-                              <td class="text-center py-3 text-secondary">Tidak ada hak akses menu.</td>
-                            </tr>
-                          <?php endif ?>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
+                .permission-tree ul {
+                    list-style: none;
+                    padding-left: 28px;
+                    border-left: 1px dashed #cbd5e1;
+                    margin-top: 8px;
+                    margin-bottom: 8px;
+                    position: relative;
+                }
+                .permission-tree li {
+                    margin-bottom: 12px;
+                    position: relative;
+                }
+                .permission-tree li::before {
+                    content: "";
+                    position: absolute;
+                    left: -28px;
+                    top: 12px;
+                    width: 20px;
+                    height: 1px;
+                    border-top: 1px dashed #cbd5e1;
+                }
+                .permission-tree > li::before {
+                    display: none;
+                }
+                .level-1-title {
+                    font-size: 15px;
+                    font-weight: 700;
+                    color: #1e293b;
+                    background: #f1f5f9;
+                    padding: 10px 16px;
+                    border-radius: 8px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 8px;
+                    border: 1px solid #e2e8f0;
+                }
+                .level-2-title {
+                    font-size: 14px;
+                    font-weight: 600;
+                    color: #334155;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 8px;
+                    padding: 4px 0;
+                }
+                .level-3-box {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 8px;
+                    padding: 10px 14px;
+                    background: #f8fafc;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 8px;
+                    margin-top: 6px;
+                    margin-bottom: 6px;
+                }
+                .level-3-item {
+                    font-size: 12px;
+                    color: #475569;
+                    background: #ffffff;
+                    border: 1px solid #cbd5e1;
+                    padding: 5px 12px;
+                    border-radius: 6px;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 6px;
+                    transition: all 0.2s;
+                    cursor: pointer;
+                }
+                .level-3-item:hover {
+                    border-color: #94a3b8;
+                    background: #f1f5f9;
+                }
+                .form-check-input {
+                    cursor: pointer;
+                }
+              </style>
 
-                <!-- Tabel 2: Hak Akses Fitur & Aksi -->
-                <div class="col-md-6">
+              <div class="row">
+                <div class="col-md-12">
                   <div class="card border shadow-none mb-3">
-                    <div class="card-header bg-success-50 d-flex justify-content-between align-items-center py-2 px-3">
-                      <h6 class="text-success-800 mb-0 fw-bold"><i class="ri-key-2-line"></i> Hak Akses Fitur & Aksi</h6>
-                      <div class="form-check m-0">
-                        <input type="checkbox" id="checkAllFeature" class="form-check-input">
-                        <label for="checkAllFeature" class="form-check-label text-xs fw-bold cursor-pointer">Pilih Semua</label>
+                    <div class="card-header bg-danger-50 d-flex justify-content-between align-items-center py-2 px-3">
+                      <h6 class="text-danger-800 mb-0 fw-bold"><i class="ri-node-tree"></i> Konfigurasi Hak Akses Role (Hierarchy Tree)</h6>
+                      <div class="d-flex align-items-center gap-3">
+                        <button type="button" id="btnSelectAllTree" class="btn btn-xs btn-primary radius-6 px-10 py-4 text-xs">Pilih Semua</button>
+                        <button type="button" id="btnDeselectAllTree" class="btn btn-xs btn-outline-secondary radius-6 px-10 py-4 text-xs">Kosongkan</button>
                       </div>
                     </div>
-                    <div class="card-body p-0" style="max-height: 400px; overflow-y: auto;">
-                      <table class="table table-bordered table-striped m-0">
-                        <tbody>
-                          <?php if (!empty($feature_perms)): ?>
-                            <?php foreach ($feature_perms as $row): ?>
-                              <tr>
-                                <td><?php echo ucfirst(str_replace('_', ' ', $row->title)) ?></td>
-                                <td class="text-center" width="80">
-                                  <input type="checkbox" class="form-check-input check-feature-p" name="permission[]" value="<?php echo $row->code ?>">
-                                </td>
-                              </tr>
-                            <?php endforeach ?>
-                          <?php else: ?>
-                            <tr>
-                              <td class="text-center py-3 text-secondary">Tidak ada hak akses fitur.</td>
-                            </tr>
-                          <?php endif ?>
-                        </tbody>
-                      </table>
+                    <div class="card-body p-24" style="max-height: 700px; overflow-y: auto;">
+                      
+                      <?php
+                      // Definisikan role_permissions kosong untuk mode tambah role
+                      $role_permissions = [];
+
+                      // 1. Ambil semua permissions secara dinamis dari database
+                      $raw_permissions = $this->db->order_by('id', 'asc')->get('permissions')->result();
+
+                      $permission_tree = [];
+                      $lookup = [];
+
+                      // Buat map index agar pencarian parent cepat
+                      foreach ($raw_permissions as $p) {
+                          $p->sub = [];
+                          $p->features = [];
+                          $lookup[$p->id] = $p;
+                      }
+
+                      // Susun struktur pohonnya (Level 1, 2, dan 3)
+                      foreach ($raw_permissions as $p) {
+                          if ($p->level == 1) {
+                              $permission_tree[$p->id] = $p;
+                          } elseif ($p->level == 2) {
+                              if (isset($lookup[$p->parent_id])) {
+                                  $lookup[$p->parent_id]->sub[] = $p;
+                              } else {
+                                  // Fallback ke Level 1 jika parent tidak ditemukan
+                                  $p->level = 1;
+                                  $permission_tree[$p->id] = $p;
+                              }
+                          } elseif ($p->level == 3) {
+                              if (isset($lookup[$p->parent_id])) {
+                                  $lookup[$p->parent_id]->features[] = $p;
+                              } else {
+                                  // Fallback ke Level 1 jika parent tidak ditemukan
+                                  $p->level = 1;
+                                  $permission_tree[$p->id] = $p;
+                              }
+                          }
+                      }
+                      ?>
+
+                      <ul class="permission-tree">
+                        <?php foreach ($permission_tree as $gId => $group): ?>
+                          <!-- LEVEL 1 -->
+                          <li class="group-container mb-20">
+                            <div class="level-1-title d-flex align-items-center justify-content-start gap-2">
+                              <div class="form-check m-0 d-flex align-items-center gap-2">
+                                <input type="checkbox" class="form-check-input check-lvl-1" id="group_<?php echo $gId ?>">
+                                <label for="group_<?php echo $gId ?>" class="form-check-label text-sm fw-bold cursor-pointer mb-0">
+                                  <?php echo $group->title ?>
+                                </label>
+                              </div>
+                            </div>
+
+                            <!-- LEVEL 2 -->
+                            <?php if (!empty($group->sub)): ?>
+                              <ul>
+                                <?php foreach ($group->sub as $sub): ?>
+                                  <li class="sub-container">
+                                    <div class="level-2-title d-flex align-items-center justify-content-start gap-2">
+                                      <?php if (!empty($sub->code)): ?>
+                                        <?php $isChecked = in_array($sub->code, $role_permissions) ? 'checked' : ''; ?>
+                                        <div class="form-check m-0 d-flex align-items-center gap-2">
+                                          <input type="checkbox" class="form-check-input check-lvl-2" name="permission[]" value="<?php echo $sub->code ?>" <?php echo $isChecked ?> id="sub_<?php echo $sub->id ?>">
+                                          <label for="sub_<?php echo $sub->id ?>" class="form-check-label text-xs fw-semibold cursor-pointer mb-0">
+                                            <?php echo $sub->title ?>
+                                          </label>
+                                        </div>
+                                      <?php else: ?>
+                                        <span class="text-xs fw-semibold text-secondary-light">
+                                          <?php echo $sub->title ?>
+                                        </span>
+                                      <?php endif; ?>
+                                    </div>
+
+                                    <!-- LEVEL 3 -->
+                                    <?php if (!empty($sub->features)): ?>
+                                      <div class="level-3-box">
+                                        <?php foreach ($sub->features as $feat): ?>
+                                          <?php $isChecked = in_array($feat->code, $role_permissions) ? 'checked' : ''; ?>
+                                          <label class="level-3-item m-0" for="feat_<?php echo $feat->id ?>">
+                                            <input type="checkbox" class="form-check-input check-lvl-3 m-0" name="permission[]" value="<?php echo $feat->code ?>" <?php echo $isChecked ?> id="feat_<?php echo $feat->id ?>">
+                                            <span><?php echo $feat->title ?></span>
+                                          </label>
+                                        <?php endforeach; ?>
+                                      </div>
+                                    <?php endif; ?>
+
+                                  </li>
+                                <?php endforeach; ?>
+                              </ul>
+                            <?php endif; ?>
+
+                          </li>
+                        <?php endforeach; ?>
+                      </ul>
+
                     </div>
                   </div>
                 </div>
@@ -148,16 +264,75 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
       }
     });
 
-    $('#checkAllMenu').on('change', function() {
-      $('.check-menu-p').prop('checked', $(this).is(':checked'));
+    // Klik Level 1 (Grup Utama)
+    $(document).on('change', '.check-lvl-1', function() {
+      const isChecked = $(this).is(':checked');
+      const container = $(this).closest('.group-container');
+      container.find('.check-lvl-2, .check-lvl-3').prop('checked', isChecked);
     });
 
-    $('#checkAllFeature').on('change', function() {
-      $('.check-feature-p').prop('checked', $(this).is(':checked'));
+    // Klik Level 2 (Submenu / Menu)
+    $(document).on('change', '.check-lvl-2', function() {
+      const isChecked = $(this).is(':checked');
+      const container = $(this).closest('.sub-container');
+      container.find('.check-lvl-3').prop('checked', isChecked);
+      
+      if (isChecked) {
+        $(this).closest('.group-container').find('.check-lvl-1').prop('checked', true);
+      } else {
+        // Uncheck Level 1 jika seluruh Level 2 di grup tersebut kosong
+        const group = $(this).closest('.group-container');
+        if (group.find('.check-lvl-2:checked').length === 0) {
+          group.find('.check-lvl-1').prop('checked', false);
+        }
+      }
     });
 
-    $('.table-DT').DataTable({
-      "ordering": false,
+    // Klik Level 3 (Fitur / Aksi)
+    $(document).on('change', '.check-lvl-3', function() {
+      const isChecked = $(this).is(':checked');
+      
+      if (isChecked) {
+        $(this).closest('.sub-container').find('.check-lvl-2').prop('checked', true);
+        $(this).closest('.group-container').find('.check-lvl-1').prop('checked', true);
+      } else {
+        // Uncheck Level 2 jika seluruh Level 3 di submenu tersebut kosong
+        const sub = $(this).closest('.sub-container');
+        if (sub.find('.check-lvl-3:checked').length === 0) {
+          sub.find('.check-lvl-2').prop('checked', false);
+        }
+        // Uncheck Level 1 jika seluruh Level 2 di grup tersebut kosong
+        const group = $(this).closest('.group-container');
+        if (group.find('.check-lvl-2:checked').length === 0) {
+          group.find('.check-lvl-1').prop('checked', false);
+        }
+      }
+    });
+
+    // Tombol Pilih Semua
+    $('#btnSelectAllTree').on('click', function() {
+      $('.check-lvl-1, .check-lvl-2, .check-lvl-3').prop('checked', true);
+    });
+
+    // Tombol Kosongkan
+    $('#btnDeselectAllTree').on('click', function() {
+      $('.check-lvl-1, .check-lvl-2, .check-lvl-3').prop('checked', false);
+    });
+
+    // Sinkronisasi status checked awal saat halaman dimuat
+    $('.group-container').each(function() {
+      const group = $(this);
+      if (group.find('.check-lvl-2:checked, .check-lvl-3:checked').length > 0) {
+        group.find('.check-lvl-1').prop('checked', true);
+      }
+      
+      group.find('.sub-container').each(function() {
+        const sub = $(this);
+        if (sub.find('.check-lvl-3:checked').length > 0) {
+          sub.find('.check-lvl-2').prop('checked', true);
+          group.find('.check-lvl-1').prop('checked', true);
+        }
+      });
     });
   })
 </script>

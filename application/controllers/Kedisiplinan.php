@@ -11,7 +11,7 @@ class Kedisiplinan extends MY_Controller
 
     public function index()
     {
-        ifPermissions('menu_dashboard_guru'); // Guru, BK, Admin, Kepsek, Wakasek
+        ifPermissions('menu_kedisiplinan');
         
         $this->page_data['page']->title = 'Kedisiplinan';
         $this->page_data['page']->titleUrl = 'kedisiplinan';
@@ -70,7 +70,7 @@ class Kedisiplinan extends MY_Controller
 
     public function tambah()
     {
-        ifPermissions('menu_dashboard_guru'); // Guru, BK, Admin
+        ifPermissions('kedisiplinan_add');
         $this->page_data['page']->title = 'Kedisiplinan';
         $this->page_data['page']->titleUrl = 'kedisiplinan';
         $this->page_data['page']->subtitle = 'Input Pelanggaran Baru';
@@ -88,7 +88,7 @@ class Kedisiplinan extends MY_Controller
 
     public function simpan()
     {
-        ifPermissions('menu_dashboard_guru');
+        ifPermissions('kedisiplinan_add');
         postAllowed();
 
         $data = [
@@ -109,21 +109,7 @@ class Kedisiplinan extends MY_Controller
     public function edit_tindak_lanjut($id)
     {
         postAllowed();
-        $userId = logged('id');
-        $is_admin_or_bk = (logged('role') == 1);
-        if ($this->db->table_exists('user_roles')) {
-            $roles_res = $this->db->get_where('user_roles', ['user_id' => $userId])->result();
-            foreach ($roles_res as $r) {
-                $r_title = strtolower($this->db->get_where('roles', ['id' => $r->role_id])->row()->title ?? '');
-                if ($r_title === 'admin' || $r_title === 'guru bk' || $r_title === 'bk') {
-                    $is_admin_or_bk = true;
-                }
-            }
-        }
-
-        if (!$is_admin_or_bk) {
-            show_error('Hanya Guru BK atau Admin yang diizinkan menentukan tindak lanjut pelanggaran.', 403, 'Akses Ditolak');
-        }
+        ifPermissions('kedisiplinan_bk');
 
         $update_data = [
             'tindak_lanjut' => post('tindak_lanjut'),
@@ -145,21 +131,7 @@ class Kedisiplinan extends MY_Controller
 
     public function hapus($id)
     {
-        $userId = logged('id');
-        $is_admin_or_bk = (logged('role') == 1);
-        if ($this->db->table_exists('user_roles')) {
-            $roles_res = $this->db->get_where('user_roles', ['user_id' => $userId])->result();
-            foreach ($roles_res as $r) {
-                $r_title = strtolower($this->db->get_where('roles', ['id' => $r->role_id])->row()->title ?? '');
-                if ($r_title === 'admin' || $r_title === 'guru bk' || $r_title === 'bk') {
-                    $is_admin_or_bk = true;
-                }
-            }
-        }
-
-        if (!$is_admin_or_bk) {
-            show_error('Hanya Guru BK atau Admin yang diizinkan untuk menghapus laporan pelanggaran.', 403, 'Akses Ditolak');
-        }
+        ifPermissions('kedisiplinan_delete');
 
         $this->db->delete('kedisiplinan_pelanggaran_siswa', ['id_pelanggaran_siswa' => $id]);
         $this->session->set_flashdata('alert-type', 'success');

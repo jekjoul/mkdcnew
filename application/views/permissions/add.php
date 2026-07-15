@@ -27,8 +27,21 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
             </div>
 
             <div class="form-group">
+              <label for="formClient-Parent"> Parent Permission</label>
+              <select name="parent_id" id="formClient-Parent" class="form-control select2">
+                <option value="">-- No Parent (Level 1: Modul Group) --</option>
+                <?php foreach ($parents as $p): ?>
+                  <option value="<?php echo $p->id ?>">
+                    <?php echo ($p->level == 2 ? '&nbsp;&nbsp;-- ' : '') . html_escape($p->title) ?> (L<?php echo $p->level ?>)
+                  </option>
+                <?php endforeach; ?>
+              </select>
+              <p class="help-block" style="font-size: 12px; color: #888;">Pilih permission induk. Jika tidak ada, ini akan bertindak sebagai Modul Utama (L1).</p>
+            </div>
+
+            <div class="form-group">
               <label for="formClient-Code"> <?php echo lang('permission_code') ?></label>
-              <input type="text" class="form-control" data-rule-remote="<?php echo url('permissions/checkIfUnique') ?>" name="code" id="formClient-Code" required placeholder="Enter Code" autofocus />
+              <input type="text" class="form-control" data-rule-remote="<?php echo url('permissions/checkIfUnique') ?>" name="code" id="formClient-Code" required placeholder="Enter Code" />
               <p style="color: red;"> <?php echo lang('permission_code_unique') ?></p>
             </div>
 
