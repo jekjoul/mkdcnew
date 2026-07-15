@@ -190,6 +190,14 @@
             </a>
         </li>
     <?php endif; ?>
+    <?php if (hasPermissions('menu_generate_niy')): ?>
+        <li>
+            <a href="<?php echo url('generate_niy') ?>">
+                <iconify-icon icon="solar:user-id-linear" class="menu-icon"></iconify-icon>
+                <span>Generate NIY</span>
+            </a>
+        </li>
+    <?php endif; ?>
     <?php if (hasPermissions('menu_ptk_nonaktif')): ?>
         <li>
             <a href="<?php echo url('ptk/ptkNonaktif') ?>">
@@ -221,6 +229,12 @@
             <a href="<?php echo url('siswa/all') ?>">
                 <iconify-icon icon="icon-park-outline:every-user" class="menu-icon"></iconify-icon>
                 <span>Data Siswa</span>
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo url('generate_nipd') ?>">
+                <iconify-icon icon="solar:user-id-linear" class="menu-icon"></iconify-icon>
+                <span>Generate NIPD</span>
             </a>
         </li>
     <?php endif; ?>
