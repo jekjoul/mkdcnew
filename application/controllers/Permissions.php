@@ -20,7 +20,14 @@ class Permissions extends MY_Controller
 		$this->page_data['page']->subtitleUrl = 'permissions';
 		$this->page_data['page']->icon = 'simple-icons:openaccess';
 		ifPermissions('permissions_list');
-		$this->page_data['permissions'] = $this->permissions_model->getSortByName();
+		
+		// Mengambil seluruh data permissions beserta parent title untuk list view
+		$this->db->select('p.*, parent.title as parent_title');
+		$this->db->from('permissions p');
+		$this->db->join('permissions parent', 'p.parent_id = parent.id', 'left');
+		$this->db->order_by('p.id', 'DESC');
+		$this->page_data['permissions'] = $this->db->get()->result();
+		
 		$this->load->view('permissions/list', $this->page_data);
 	}
 
@@ -32,6 +39,14 @@ class Permissions extends MY_Controller
 		$this->page_data['page']->subtitleUrl = 'permissions';
 		$this->page_data['page']->icon = 'simple-icons:openaccess';
 		ifPermissions('permissions_add');
+
+		// Ambil list permission yang bertindak sebagai parent (level 1 dan level 2)
+		$this->db->select('*');
+		$this->db->from('permissions');
+		$this->db->where('level <', 3);
+		$this->db->order_by('level', 'ASC');
+		$this->db->order_by('title', 'ASC');
+		$this->page_data['parents'] = $this->db->get()->result();
 
 		$this->load->view('permissions/add', $this->page_data);
 	}
@@ -46,6 +61,16 @@ class Permissions extends MY_Controller
 		ifPermissions('permissions_edit');
 
 		$this->page_data['permission'] = $this->permissions_model->getById($id);
+
+		// Ambil list parent permission kecuali dirinya sendiri agar tidak sirkular reference
+		$this->db->select('*');
+		$this->db->from('permissions');
+		$this->db->where('level <', 3);
+		$this->db->where('id !=', $id);
+		$this->db->order_by('level', 'ASC');
+		$this->db->order_by('title', 'ASC');
+		$this->page_data['parents'] = $this->db->get()->result();
+
 		$this->load->view('permissions/edit', $this->page_data);
 	}
 
@@ -56,9 +81,22 @@ class Permissions extends MY_Controller
 
 		ifPermissions('permissions_add');
 
+		$parent_id = $this->input->post('parent_id');
+		$level = 1;
+		if (!empty($parent_id)) {
+			$parent = $this->permissions_model->getById($parent_id);
+			if ($parent) {
+				$level = $parent->level + 1;
+			}
+		} else {
+			$parent_id = null;
+		}
+
 		$permission = $this->permissions_model->create([
 			'title' => $this->input->post('name'),
 			'code' => $this->input->post('code'),
+			'parent_id' => $parent_id,
+			'level' => $level,
 		]);
 
 		$this->activity_model->add("New Permission #$permission Created by User: #" . logged('id'));
@@ -76,9 +114,22 @@ class Permissions extends MY_Controller
 
 		ifPermissions('permissions_edit');
 
+		$parent_id = $this->input->post('parent_id');
+		$level = 1;
+		if (!empty($parent_id)) {
+			$parent = $this->permissions_model->getById($parent_id);
+			if ($parent) {
+				$level = $parent->level + 1;
+			}
+		} else {
+			$parent_id = null;
+		}
+
 		$data = [
 			'title' => $this->input->post('name'),
 			'code' => $this->input->post('code'),
+			'parent_id' => $parent_id,
+			'level' => $level,
 		];
 
 		$permission = $this->permissions_model->update($id, $data);

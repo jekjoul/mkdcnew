@@ -28,6 +28,8 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                   <tr>
                     <th><?php echo lang('id') ?></th>
                     <th><?php echo lang('permission_name') ?></th>
+                    <th>Parent Induk</th>
+                    <th>Level</th>
                     <th><?php echo lang('permission_code') ?></th>
                     <th><?php echo lang('action') ?></th>
                   </tr>
@@ -39,10 +41,26 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                     <tr>
                       <td width="60"><?php echo $no ?></td>
                       <td>
-                        <?php echo $row->title ?>
+                        <strong><?php echo html_escape($row->title) ?></strong>
                       </td>
                       <td>
-                        <?php echo $row->code ?>
+                        <?php if (!empty($row->parent_title)): ?>
+                          <span class="text-secondary"><?php echo html_escape($row->parent_title) ?></span>
+                        <?php else: ?>
+                          <span class="text-muted" style="font-style: italic;">(Tanpa Parent)</span>
+                        <?php endif; ?>
+                      </td>
+                      <td>
+                        <?php if ($row->level == 1): ?>
+                          <span class="badge bg-primary-100 text-primary-600">L1: Grup</span>
+                        <?php elseif ($row->level == 2): ?>
+                          <span class="badge bg-info-100 text-info-600">L2: Menu</span>
+                        <?php else: ?>
+                          <span class="badge bg-warning-100 text-warning-600">L3: Fitur</span>
+                        <?php endif; ?>
+                      </td>
+                      <td>
+                        <code><?php echo html_escape($row->code) ?></code>
                       </td>
                       <td>
                         <div class="d-flex align-items-center gap-10 justify-content-center">
