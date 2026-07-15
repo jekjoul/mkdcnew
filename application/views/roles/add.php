@@ -124,226 +124,94 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                       // Definisikan role_permissions kosong untuk mode tambah role
                       $role_permissions = [];
 
-                      // Definisikan struktur Tree Permission fungsional 3 Level
-                      $permission_tree = [
-                          [
-                              'title' => 'Dashboard Utama',
-                              'sub' => [
-                                  ['code' => 'menu_dashboard', 'title' => 'Dashboard Admin'],
-                                  ['code' => 'menu_dashboard_guru', 'title' => 'Dashboard Guru']
-                              ]
-                          ],
-                          [
-                              'title' => 'Kelembagaan & Sarpras',
-                              'sub' => [
-                                  ['code' => 'menu_lembaga', 'title' => 'Data Lembaga'],
-                                  ['code' => 'menu_sarpras', 'title' => 'Data Sarana Prasarana (Sarpras)']
-                              ]
-                          ],
-                          [
-                              'title' => 'Kepegawaian (PTK)',
-                              'sub' => [
-                                  ['code' => 'menu_data_ptk', 'title' => 'Daftar Kepegawaian GTK/PTK'],
-                                  ['code' => 'menu_ptk_nonaktif', 'title' => 'PTK Nonaktif'],
-                                  ['code' => 'menu_sinkron_dapodik_gtk', 'title' => 'Sinkron Dapodik GTK']
-                              ]
-                          ],
-                          [
-                              'title' => 'Kesiswaan & Kedisiplinan',
-                              'sub' => [
-                                  ['code' => 'menu_kesiswaan_data_siswa', 'title' => 'Data Siswa Utama (Admin/Kesiswaan)'],
-                                  ['code' => 'menu_data_siswa_guru', 'title' => 'Data Siswa Rombel (Portal Guru)'],
-                                  ['code' => 'menu_sinkron_dapodik', 'title' => 'Sinkron Dapodik Siswa'],
-                                  [
-                                      'code' => 'menu_kedisiplinan',
-                                      'title' => 'Kedisiplinan & BK',
-                                      'features' => [
-                                          ['code' => 'kedisiplinan_add', 'title' => 'Laporkan Pelanggaran Murid'],
-                                          ['code' => 'kedisiplinan_bk', 'title' => 'Tindak Lanjut Konseling BK & Poin'],
-                                          ['code' => 'kedisiplinan_delete', 'title' => 'Hapus Laporan Pelanggaran']
-                                      ]
-                                  ]
-                              ]
-                          ],
-                          [
-                              'title' => 'Kurikulum & Pembelajaran',
-                              'sub' => [
-                                  ['code' => 'menu_pembelajaran_guru', 'title' => 'Pembelajaran Saya (Portal Guru)'],
-                                  ['code' => 'menu_perangkat_guru', 'title' => 'Perangkat Mengajar (Portal Guru)'],
-                                  ['code' => 'menu_jadwal_guru', 'title' => 'Jadwal Mengajar (Portal Guru)'],
-                                  ['code' => 'menu_input_nilai_guru', 'title' => 'Input Nilai Siswa (Portal Guru)'],
-                                  ['code' => 'menu_profil_ptk_guru', 'title' => 'Profil PTK (Portal Guru)'],
-                                  [
-                                      'code' => 'menu_pembelajaran',
-                                      'title' => 'Manajemen Pembelajaran Rombel',
-                                      'features' => [
-                                          ['code' => 'pembelajaran_list', 'title' => 'Melihat Daftar Rombel'],
-                                          ['code' => 'pembelajaran_add', 'title' => 'Atur Rombel Baru'],
-                                          ['code' => 'pembelajaran_edit', 'title' => 'Ubah Pembelajaran Rombel'],
-                                          ['code' => 'pembelajaran_delete', 'title' => 'Hapus Pembelajaran Rombel']
-                                      ]
-                                  ],
-                                  ['code' => 'menu_jadwal_pelajaran', 'title' => 'Jadwal Pelajaran Rombel'],
-                                  ['code' => 'menu_jadwal_tidak_aktif', 'title' => 'Jadwal Tidak Aktif'],
-                                  ['code' => 'menu_perangkat_pembelajaran', 'title' => 'Perangkat Pembelajaran Rombel'],
-                                  ['code' => 'menu_nilai_siswa', 'title' => 'Penilaian Siswa Rombel'],
-                                  ['code' => 'menu_tahun_pelajaran', 'title' => 'Tahun Pelajaran & Kalender Akademik'],
-                                  [
-                                      'code' => 'menu_ekstrakurikuler',
-                                      'title' => 'Ekstrakurikuler & Roster',
-                                      'features' => [
-                                          ['code' => 'ekstrakurikuler_add', 'title' => 'Menambah Ekskul Baru'],
-                                          ['code' => 'ekstrakurikuler_edit', 'title' => 'Mengubah Ekskul'],
-                                          ['code' => 'ekstrakurikuler_delete', 'title' => 'Menghapus Ekskul'],
-                                          ['code' => 'ekstrakurikuler_anggota', 'title' => 'Mengelola Anggota Ekskul'],
-                                          ['code' => 'ekstrakurikuler_nilai', 'title' => 'Input Nilai Ekskul']
-                                      ]
-                                  ]
-                              ]
-                          ],
-                          [
-                              'title' => 'Pencetakan & Administrasi Surat',
-                              'sub' => [
-                                  ['code' => 'menu_surat_menyurat', 'title' => 'Surat Menyurat & Arsip Masuk/Keluar']
-                              ]
-                          ],
-                          [
-                              'title' => 'Alumni & Dokumen Sekolah',
-                              'sub' => [
-                                  ['code' => 'menu_alumni', 'title' => 'Data Alumni Siswa'],
-                                  ['code' => 'menu_buku_induk_siswa', 'title' => 'Buku Induk Siswa']
-                              ]
-                          ],
-                          [
-                              'title' => 'Master Data Referensi',
-                              'sub' => [
-                                  ['code' => 'menu_master_lembaga', 'title' => 'Master Lembaga'],
-                                  ['code' => 'menu_master_tingkat', 'title' => 'Master Tingkat Sekolah'],
-                                  ['code' => 'menu_master_rombel', 'title' => 'Master Rombel'],
-                                  ['code' => 'menu_master_rombel_nonaktif', 'title' => 'Master Rombel Nonaktif'],
-                                  ['code' => 'menu_master_mapel', 'title' => 'Master Mata Pelajaran'],
-                                  ['code' => 'menu_master_sarana', 'title' => 'Master Sarana & Prasarana'],
-                                  [
-                                      'title' => 'Aksi Master Data Referensi',
-                                      'features' => [
-                                          ['code' => 'master_list', 'title' => 'Melihat Master'],
-                                          ['code' => 'master_add', 'title' => 'Menambah Master'],
-                                          ['code' => 'master_edit', 'title' => 'Mengubah Master'],
-                                          ['code' => 'master_delete', 'title' => 'Menghapus Master']
-                                      ]
-                                  ]
-                              ]
-                          ],
-                          [
-                              'title' => 'Manajemen Pengguna',
-                              'sub' => [
-                                  [
-                                      'code' => 'menu_users',
-                                      'title' => 'Akun Pengguna',
-                                      'features' => [
-                                          ['code' => 'users_list', 'title' => 'Melihat Akun'],
-                                          ['code' => 'users_add', 'title' => 'Tambah Akun'],
-                                          ['code' => 'users_edit', 'title' => 'Ubah Akun'],
-                                          ['code' => 'users_delete', 'title' => 'Hapus Akun']
-                                      ]
-                                  ],
-                                  [
-                                      'code' => 'menu_roles',
-                                      'title' => 'Hak Akses Role & Permissions',
-                                      'features' => [
-                                          ['code' => 'roles_list', 'title' => 'Melihat Role'],
-                                          ['code' => 'roles_add', 'title' => 'Tambah Role'],
-                                          ['code' => 'roles_edit', 'title' => 'Ubah Role']
-                                      ]
-                                  ]
-                              ]
-                          ]
-                      ];
+                      // 1. Ambil semua permissions secara dinamis dari database
+                      $raw_permissions = $this->db->order_by('id', 'asc')->get('permissions')->result();
 
-                      // Ambil fallback permissions yang belum terpetakan di tree
-                      $mapped_codes = [];
-                      foreach ($permission_tree as $g) {
-                          foreach ($g['sub'] as $s) {
-                              if (isset($s['code'])) $mapped_codes[] = $s['code'];
-                              if (isset($s['features'])) {
-                                  foreach ($s['features'] as $f) {
-                                      $mapped_codes[] = $f['code'];
-                                  }
+                      $permission_tree = [];
+                      $lookup = [];
+
+                      // Buat map index agar pencarian parent cepat
+                      foreach ($raw_permissions as $p) {
+                          $p->sub = [];
+                          $p->features = [];
+                          $lookup[$p->id] = $p;
+                      }
+
+                      // Susun struktur pohonnya (Level 1, 2, dan 3)
+                      foreach ($raw_permissions as $p) {
+                          if ($p->level == 1) {
+                              $permission_tree[$p->id] = $p;
+                          } elseif ($p->level == 2) {
+                              if (isset($lookup[$p->parent_id])) {
+                                  $lookup[$p->parent_id]->sub[] = $p;
+                              } else {
+                                  // Fallback ke Level 1 jika parent tidak ditemukan
+                                  $p->level = 1;
+                                  $permission_tree[$p->id] = $p;
+                              }
+                          } elseif ($p->level == 3) {
+                              if (isset($lookup[$p->parent_id])) {
+                                  $lookup[$p->parent_id]->features[] = $p;
+                              } else {
+                                  // Fallback ke Level 1 jika parent tidak ditemukan
+                                  $p->level = 1;
+                                  $permission_tree[$p->id] = $p;
                               }
                           }
-                      }
-                      $all_perms = $this->permissions_model->get();
-                      $fallback_perms = [];
-                      if (!empty($all_perms)) {
-                          foreach ($all_perms as $p) {
-                              if (!in_array($p->code, $mapped_codes)) {
-                                  $fallback_perms[] = $p;
-                              }
-                          }
-                      }
-                      
-                      // Tambahkan fallback jika ada
-                      if (!empty($fallback_perms)) {
-                          $fallback_sub = [];
-                          foreach ($fallback_perms as $fp) {
-                              $fallback_sub[] = ['code' => $fp->code, 'title' => $fp->title];
-                          }
-                          $permission_tree[] = [
-                              'title' => 'Fitur & Aksi Lainnya (Fallback)',
-                              'sub' => $fallback_sub
-                          ];
                       }
                       ?>
 
                       <ul class="permission-tree">
-                        <?php foreach ($permission_tree as $gIndex => $group): ?>
+                        <?php foreach ($permission_tree as $gId => $group): ?>
                           <!-- LEVEL 1 -->
                           <li class="group-container mb-20">
                             <div class="level-1-title d-flex align-items-center justify-content-start gap-2">
                               <div class="form-check m-0 d-flex align-items-center gap-2">
-                                <input type="checkbox" class="form-check-input check-lvl-1" id="group_<?php echo $gIndex ?>">
-                                <label for="group_<?php echo $gIndex ?>" class="form-check-label text-sm fw-bold cursor-pointer mb-0">
-                                  <?php echo $group['title'] ?>
+                                <input type="checkbox" class="form-check-input check-lvl-1" id="group_<?php echo $gId ?>">
+                                <label for="group_<?php echo $gId ?>" class="form-check-label text-sm fw-bold cursor-pointer mb-0">
+                                  <?php echo $group->title ?>
                                 </label>
                               </div>
                             </div>
 
                             <!-- LEVEL 2 -->
-                            <ul>
-                              <?php foreach ($group['sub'] as $sIndex => $sub): ?>
-                                <li class="sub-container">
-                                  <div class="level-2-title d-flex align-items-center justify-content-start gap-2">
-                                    <?php if (isset($sub['code'])): ?>
-                                      <?php $isChecked = in_array($sub['code'], $role_permissions) ? 'checked' : ''; ?>
-                                      <div class="form-check m-0 d-flex align-items-center gap-2">
-                                        <input type="checkbox" class="form-check-input check-lvl-2" name="permission[]" value="<?php echo $sub['code'] ?>" <?php echo $isChecked ?> id="sub_<?php echo $gIndex ?>_<?php echo $sIndex ?>">
-                                        <label for="sub_<?php echo $gIndex ?>_<?php echo $sIndex ?>" class="form-check-label text-xs fw-semibold cursor-pointer mb-0">
-                                          <?php echo $sub['title'] ?>
-                                        </label>
-                                      </div>
-                                    <?php else: ?>
-                                      <span class="text-xs fw-semibold text-secondary-light">
-                                        <?php echo $sub['title'] ?>
-                                      </span>
-                                    <?php endif; ?>
-                                  </div>
-
-                                  <!-- LEVEL 3 -->
-                                  <?php if (isset($sub['features'])): ?>
-                                    <div class="level-3-box">
-                                      <?php foreach ($sub['features'] as $fIndex => $feat): ?>
-                                        <?php $isChecked = in_array($feat['code'], $role_permissions) ? 'checked' : ''; ?>
-                                        <label class="level-3-item m-0" for="feat_<?php echo $gIndex ?>_<?php echo $sIndex ?>_<?php echo $fIndex ?>">
-                                          <input type="checkbox" class="form-check-input check-lvl-3 m-0" name="permission[]" value="<?php echo $feat['code'] ?>" <?php echo $isChecked ?> id="feat_<?php echo $gIndex ?>_<?php echo $sIndex ?>_<?php echo $fIndex ?>">
-                                          <span><?php echo $feat['title'] ?></span>
-                                        </label>
-                                      <?php endforeach; ?>
+                            <?php if (!empty($group->sub)): ?>
+                              <ul>
+                                <?php foreach ($group->sub as $sub): ?>
+                                  <li class="sub-container">
+                                    <div class="level-2-title d-flex align-items-center justify-content-start gap-2">
+                                      <?php if (!empty($sub->code)): ?>
+                                        <?php $isChecked = in_array($sub->code, $role_permissions) ? 'checked' : ''; ?>
+                                        <div class="form-check m-0 d-flex align-items-center gap-2">
+                                          <input type="checkbox" class="form-check-input check-lvl-2" name="permission[]" value="<?php echo $sub->code ?>" <?php echo $isChecked ?> id="sub_<?php echo $sub->id ?>">
+                                          <label for="sub_<?php echo $sub->id ?>" class="form-check-label text-xs fw-semibold cursor-pointer mb-0">
+                                            <?php echo $sub->title ?>
+                                          </label>
+                                        </div>
+                                      <?php else: ?>
+                                        <span class="text-xs fw-semibold text-secondary-light">
+                                          <?php echo $sub->title ?>
+                                        </span>
+                                      <?php endif; ?>
                                     </div>
-                                  <?php endif; ?>
 
-                                </li>
-                              <?php endforeach; ?>
-                            </ul>
+                                    <!-- LEVEL 3 -->
+                                    <?php if (!empty($sub->features)): ?>
+                                      <div class="level-3-box">
+                                        <?php foreach ($sub->features as $feat): ?>
+                                          <?php $isChecked = in_array($feat->code, $role_permissions) ? 'checked' : ''; ?>
+                                          <label class="level-3-item m-0" for="feat_<?php echo $feat->id ?>">
+                                            <input type="checkbox" class="form-check-input check-lvl-3 m-0" name="permission[]" value="<?php echo $feat->code ?>" <?php echo $isChecked ?> id="feat_<?php echo $feat->id ?>">
+                                            <span><?php echo $feat->title ?></span>
+                                          </label>
+                                        <?php endforeach; ?>
+                                      </div>
+                                    <?php endif; ?>
+
+                                  </li>
+                                <?php endforeach; ?>
+                              </ul>
+                            <?php endif; ?>
 
                           </li>
                         <?php endforeach; ?>

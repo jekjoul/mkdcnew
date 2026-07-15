@@ -74,55 +74,101 @@ CREATE TABLE IF NOT EXISTS `kedisiplinan_pelanggaran_siswa` (
   KEY `idx_pelanggaran_kategori` (`id_kategori`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- 6. Insert / Update all Permissions fitur dan menu sidebar baru
-INSERT INTO `permissions` (`code`, `title`) VALUES
-('menu_dashboard', 'Menu Dashboard'),
-('menu_kesiswaan_data_siswa', 'Menu Data Siswa'),
-('menu_sinkron_dapodik', 'Menu Sinkron Dapodik'),
-('menu_pembelajaran', 'Menu Pembelajaran'),
-('menu_jadwal_pelajaran', 'Menu Jadwal Pelajaran'),
-('menu_jadwal_tidak_aktif', 'Menu Jadwal Tidak Aktif'),
-('menu_perangkat_pembelajaran', 'Menu Perangkat Pembelajaran'),
-('menu_nilai_siswa', 'Menu Nilai Siswa'),
-('menu_tahun_pelajaran', 'Menu Tahun Pelajaran'),
-('menu_surat_menyurat', 'Menu Surat & Pencetakan'),
-('menu_alumni', 'Menu Alumni'),
-('menu_buku_induk_siswa', 'Menu Buku Induk Siswa'),
-('menu_master_lembaga', 'Menu Master Lembaga'),
-('menu_master_tingkat', 'Menu Master Tingkat'),
-('menu_master_rombel', 'Menu Master Rombel'),
-('menu_master_rombel_nonaktif', 'Menu Master Rombel Nonaktif'),
-('menu_master_mapel', 'Menu Master Mapel'),
-('menu_master_sarana', 'Menu Master Sarana'),
-('menu_users', 'Menu Akun Pengguna'),
-('menu_roles', 'Menu Hak Akses (Roles)'),
-('menu_dashboard_guru', 'Menu Portal Utama Guru'),
-('users_list', 'Melihat Daftar Akun'),
-('users_add', 'Menambah Akun Baru'),
-('users_edit', 'Mengubah Data Akun'),
-('users_delete', 'Menghapus Akun'),
-('roles_list', 'Melihat Hak Akses (Roles)'),
-('roles_add', 'Menambah Role Baru'),
-('roles_edit', 'Mengubah Role & Permissions'),
-('master_list', 'Melihat Master Data'),
-('master_add', 'Menambah Master Data'),
-('master_edit', 'Mengubah Master Data'),
-('master_delete', 'Menghapus Master Data'),
-('pembelajaran_list', 'Mengelola Data Pembelajaran'),
-('pembelajaran_add', 'Menambah Pembelajaran Rombel'),
-('pembelajaran_edit', 'Mengubah Pembelajaran Rombel'),
-('pembelajaran_delete', 'Menghapus Pembelajaran Rombel'),
-('menu_ekstrakurikuler', 'Menu Ekstrakurikuler'),
-('ekstrakurikuler_add', 'Menambah Ekstrakurikuler Baru'),
-('ekstrakurikuler_edit', 'Mengubah Konfigurasi Ekstrakurikuler'),
-('ekstrakurikuler_delete', 'Menghapus Kegiatan Ekstrakurikuler'),
-('ekstrakurikuler_anggota', 'Mengelola Siswa Anggota Roster Ekskul'),
-('ekstrakurikuler_nilai', 'Menginput Predikat Nilai & Evaluasi Ekskul'),
-('menu_kedisiplinan', 'Menu Kedisiplinan & BK'),
-('kedisiplinan_add', 'Melaporkan Pelanggaran Murid Baru'),
-('kedisiplinan_bk', 'Memproses Tindak Lanjut Konseling BK & Poin Pelanggaran'),
-('kedisiplinan_delete', 'Menghapus Laporan Pelanggaran Murid')
-ON DUPLICATE KEY UPDATE `title`=VALUES(`title`);
+-- -- 6. Modifikasi skema tabel permissions untuk hierarki tree
+ALTER TABLE `permissions` ADD COLUMN `parent_id` INT NULL DEFAULT NULL AFTER `id`;
+ALTER TABLE `permissions` ADD COLUMN `level` TINYINT NOT NULL DEFAULT 1 AFTER `parent_id`;
+
+-- Kosongkan data permissions lama agar tersusun secara hierarki
+SET FOREIGN_KEY_CHECKS = 0;
+TRUNCATE TABLE `permissions`;
+SET FOREIGN_KEY_CHECKS = 1;
+
+-- Seeding data permissions dengan id, parent_id, level, code, title
+INSERT INTO `permissions` (`id`, `parent_id`, `level`, `code`, `title`) VALUES
+-- L1: Dashboard Utama
+(1, NULL, 1, 'group_dashboard', 'Dashboard Utama'),
+(2, 1, 2, 'menu_dashboard', 'Dashboard Admin'),
+(3, 1, 2, 'menu_dashboard_guru', 'Dashboard Guru'),
+
+-- L1: Kelembagaan & Sarpras
+(4, NULL, 1, 'group_kelembagaan', 'Kelembagaan & Sarpras'),
+(5, 4, 2, 'menu_lembaga', 'Data Lembaga'),
+(6, 4, 2, 'menu_sarpras', 'Data Sarana Prasarana (Sarpras)'),
+
+-- L1: Kepegawaian (PTK)
+(7, NULL, 1, 'group_kepegawaian', 'Kepegawaian (PTK)'),
+(8, 7, 2, 'menu_data_ptk', 'Daftar Kepegawaian GTK/PTK'),
+(9, 7, 2, 'menu_ptk_nonaktif', 'PTK Nonaktif'),
+(10, 7, 2, 'menu_sinkron_dapodik_gtk', 'Sinkron Dapodik GTK'),
+
+-- L1: Kesiswaan & Kedisiplinan
+(11, NULL, 1, 'group_kesiswaan', 'Kesiswaan & Kedisiplinan'),
+(12, 11, 2, 'menu_kesiswaan_data_siswa', 'Data Siswa Utama (Admin/Kesiswaan)'),
+(13, 11, 2, 'menu_data_siswa_guru', 'Data Siswa Rombel (Portal Guru)'),
+(14, 11, 2, 'menu_sinkron_dapodik', 'Sinkron Dapodik Siswa'),
+(15, 11, 2, 'menu_kedisiplinan', 'Kedisiplinan & BK'),
+(16, 15, 3, 'kedisiplinan_add', 'Laporkan Pelanggaran Murid'),
+(17, 15, 3, 'kedisiplinan_bk', 'Tindak Lanjut Konseling BK & Poin'),
+(18, 15, 3, 'kedisiplinan_delete', 'Hapus Laporan Pelanggaran'),
+
+-- L1: Kurikulum & Pembelajaran
+(19, NULL, 1, 'group_pembelajaran', 'Kurikulum & Pembelajaran'),
+(20, 19, 2, 'menu_pembelajaran_guru', 'Pembelajaran Saya (Portal Guru)'),
+(21, 19, 2, 'menu_perangkat_guru', 'Perangkat Mengajar (Portal Guru)'),
+(22, 19, 2, 'menu_jadwal_guru', 'Jadwal Mengajar (Portal Guru)'),
+(23, 19, 2, 'menu_input_nilai_guru', 'Input Nilai Siswa (Portal Guru)'),
+(24, 19, 2, 'menu_profil_ptk_guru', 'Profil PTK (Portal Guru)'),
+(25, 19, 2, 'menu_pembelajaran', 'Manajemen Pembelajaran Rombel'),
+(26, 25, 3, 'pembelajaran_list', 'Melihat Daftar Rombel'),
+(27, 25, 3, 'pembelajaran_add', 'Atur Rombel Baru'),
+(28, 25, 3, 'pembelajaran_edit', 'Ubah Pembelajaran Rombel'),
+(29, 25, 3, 'pembelajaran_delete', 'Hapus Pembelajaran Rombel'),
+(30, 19, 2, 'menu_jadwal_pelajaran', 'Jadwal Pelajaran Rombel'),
+(31, 19, 2, 'menu_jadwal_tidak_aktif', 'Jadwal Tidak Aktif'),
+(32, 19, 2, 'menu_perangkat_pembelajaran', 'Perangkat Pembelajaran Rombel'),
+(33, 19, 2, 'menu_nilai_siswa', 'Penilaian Siswa Rombel'),
+(34, 19, 2, 'menu_tahun_pelajaran', 'Tahun Pelajaran & Kalender Akademik'),
+(35, 19, 2, 'menu_ekstrakurikuler', 'Ekstrakurikuler & Roster'),
+(36, 35, 3, 'ekstrakurikuler_add', 'Menambah Ekskul Baru'),
+(37, 35, 3, 'ekstrakurikuler_edit', 'Mengubah Ekskul'),
+(38, 35, 3, 'ekstrakurikuler_delete', 'Menghapus Ekskul'),
+(39, 35, 3, 'ekstrakurikuler_anggota', 'Mengelola Anggota Ekskul'),
+(40, 35, 3, 'ekstrakurikuler_nilai', 'Input Nilai Ekskul'),
+
+-- L1: Pencetakan & Administrasi Surat
+(41, NULL, 1, 'group_surat', 'Pencetakan & Administrasi Surat'),
+(42, 41, 2, 'menu_surat_menyurat', 'Surat Menyurat & Arsip Masuk/Keluar'),
+
+-- L1: Alumni & Dokumen Sekolah
+(43, NULL, 1, 'group_alumni', 'Alumni & Dokumen Sekolah'),
+(44, 43, 2, 'menu_alumni', 'Data Alumni Siswa'),
+(45, 43, 2, 'menu_buku_induk_siswa', 'Buku Induk Siswa'),
+
+-- L1: Master Data Referensi
+(46, NULL, 1, 'group_master', 'Master Data Referensi'),
+(47, 46, 2, 'menu_master_lembaga', 'Master Lembaga'),
+(48, 46, 2, 'menu_master_tingkat', 'Master Tingkat Sekolah'),
+(49, 46, 2, 'menu_master_rombel', 'Master Rombel'),
+(50, 46, 2, 'menu_master_rombel_nonaktif', 'Master Rombel Nonaktif'),
+(51, 46, 2, 'menu_master_mapel', 'Master Mata Pelajaran'),
+(52, 46, 2, 'menu_master_sarana', 'Master Sarana & Prasarana'),
+(53, 46, 2, 'sub_master_aksi', 'Aksi Master Data Referensi'),
+(54, 53, 3, 'master_list', 'Melihat Master'),
+(55, 53, 3, 'master_add', 'Menambah Master'),
+(56, 53, 3, 'master_edit', 'Mengubah Master'),
+(57, 53, 3, 'master_delete', 'Menghapus Master'),
+
+-- L1: Manajemen Pengguna
+(58, NULL, 1, 'group_users', 'Manajemen Pengguna'),
+(59, 58, 2, 'menu_users', 'Akun Pengguna'),
+(60, 59, 3, 'users_list', 'Melihat Akun'),
+(61, 59, 3, 'users_add', 'Tambah Akun'),
+(62, 59, 3, 'users_edit', 'Ubah Akun'),
+(63, 59, 3, 'users_delete', 'Hapus Akun'),
+(64, 58, 2, 'menu_roles', 'Hak Akses Role & Permissions'),
+(65, 64, 3, 'roles_list', 'Melihat Role'),
+(66, 64, 3, 'roles_add', 'Tambah Role'),
+(67, 64, 3, 'roles_edit', 'Ubah Role');
 
 -- 7. Seed list Roles jabatan fungsional baru
 INSERT INTO `roles` (`id`, `title`) VALUES
