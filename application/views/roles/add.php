@@ -303,7 +303,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                               <div class="form-check m-0 d-flex align-items-center gap-2">
                                 <input type="checkbox" class="form-check-input check-lvl-1" id="group_<?php echo $gIndex ?>">
                                 <label for="group_<?php echo $gIndex ?>" class="form-check-label text-sm fw-bold cursor-pointer mb-0">
-                                  <i class="ri-folder-open-fill text-warning-main me-1"></i> <?php echo $group['title'] ?>
+                                  <?php echo $group['title'] ?>
                                 </label>
                               </div>
                             </div>
@@ -318,12 +318,12 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                       <div class="form-check m-0 d-flex align-items-center gap-2">
                                         <input type="checkbox" class="form-check-input check-lvl-2" name="permission[]" value="<?php echo $sub['code'] ?>" <?php echo $isChecked ?> id="sub_<?php echo $gIndex ?>_<?php echo $sIndex ?>">
                                         <label for="sub_<?php echo $gIndex ?>_<?php echo $sIndex ?>" class="form-check-label text-xs fw-semibold cursor-pointer mb-0">
-                                          <i class="ri-checkbox-circle-line text-primary me-1"></i> <?php echo $sub['title'] ?>
+                                          <?php echo $sub['title'] ?>
                                         </label>
                                       </div>
                                     <?php else: ?>
                                       <span class="text-xs fw-semibold text-secondary-light">
-                                        <i class="ri-settings-4-line text-secondary me-1"></i> <?php echo $sub['title'] ?>
+                                        <?php echo $sub['title'] ?>
                                       </span>
                                     <?php endif; ?>
                                   </div>
