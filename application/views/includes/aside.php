@@ -236,25 +236,7 @@
 
 <?php endif; ?>
 
-<?php 
-$show_kedisiplinan_menu = false;
-$userId = logged('id');
-$user_roles_list = [];
-if ($this->db->table_exists('user_roles')) {
-    $roles_res = $this->db->get_where('user_roles', ['user_id' => $userId])->result();
-    foreach ($roles_res as $r) {
-        $r_title = strtolower($this->db->get_where('roles', ['id' => $r->role_id])->row()->title ?? '');
-        $user_roles_list[] = $r_title;
-    }
-}
-// Fallback single role
-$user_roles_list[] = strtolower($this->db->get_where('roles', ['id' => logged('role')])->row()->title ?? '');
-
-if (in_array('guru', $user_roles_list, true) || in_array('guru bk', $user_roles_list, true) || in_array('bk', $user_roles_list, true) || in_array('admin', $user_roles_list, true) || hasPermissions('menu_dashboard_guru')) {
-    $show_kedisiplinan_menu = true;
-}
-
-if ($show_kedisiplinan_menu): ?>
+<?php if (hasPermissions('menu_kedisiplinan')): ?>
     <li>
         <a href="<?php echo url('kedisiplinan') ?>">
             <iconify-icon icon="solar:shield-warning-linear" class="menu-icon"></iconify-icon>
@@ -320,40 +302,14 @@ foreach ($menu_pembelajaran_siswa as $menu_row) {
 
 
 
-<?php 
-$show_ekskul_menu = false;
-if (hasPermissions('menu_dashboard_guru') || hasPermissions('pembelajaran_list')) {
-    $show_ekskul_menu = true;
-} else {
-    $userId = logged('id');
-    $user = $CI->db->get_where('users', ['id' => $userId])->row();
-    $ptk_id = $user ? (int) $user->id_ptk : 0;
-    if ($ptk_id > 0) {
-        $raw_ekskul = $CI->db->get('ekstrakurikuler')->result();
-        foreach ($raw_ekskul as $ekskul_row) {
-            if (!empty($ekskul_row->id_ptk_pembina)) {
-                $decoded = json_decode($ekskul_row->id_ptk_pembina, true);
-                if (is_array($decoded) && in_array($ptk_id, $decoded, true)) {
-                    $show_ekskul_menu = true;
-                    break;
-                } elseif ((int)$ekskul_row->id_ptk_pembina === $ptk_id) {
-                    $show_ekskul_menu = true;
-                    break;
-                }
-            }
-        }
-    }
-}
-?>
-
-<?php if (hasPermissions('menu_pembelajaran') || hasPermissions('menu_jadwal_pelajaran') || hasPermissions('menu_jadwal_tidak_aktif') || hasPermissions('menu_perangkat_pembelajaran') || hasPermissions('menu_nilai_siswa') || hasPermissions('menu_tahun_pelajaran')): ?>
+<?php if (hasPermissions('menu_pembelajaran') || hasPermissions('menu_jadwal_pelajaran') || hasPermissions('menu_jadwal_tidak_aktif') || hasPermissions('menu_perangkat_pembelajaran') || hasPermissions('menu_nilai_siswa') || hasPermissions('menu_tahun_pelajaran') || hasPermissions('menu_ekstrakurikuler')): ?>
     <li class="sidebar-menu-group-title"
         style="background: #d3c5b1;
         background: linear-gradient(90deg, rgb(255, 233, 135) 0%, rgba(255, 255, 255, 0) 100%);">Pembelajaran
     </li>
 <?php endif; ?>
 
-<?php if (hasPermissions('menu_pembelajaran') || hasPermissions('menu_jadwal_pelajaran') || hasPermissions('menu_jadwal_tidak_aktif') || hasPermissions('menu_perangkat_pembelajaran') || hasPermissions('menu_nilai_siswa') || hasPermissions('menu_tahun_pelajaran') || $show_ekskul_menu): ?>
+<?php if (hasPermissions('menu_pembelajaran') || hasPermissions('menu_jadwal_pelajaran') || hasPermissions('menu_jadwal_tidak_aktif') || hasPermissions('menu_perangkat_pembelajaran') || hasPermissions('menu_nilai_siswa') || hasPermissions('menu_tahun_pelajaran') || hasPermissions('menu_ekstrakurikuler')): ?>
 
     <?php if (hasPermissions('menu_pembelajaran')): ?>
         <li class="dropdown">
@@ -456,7 +412,7 @@ if (hasPermissions('menu_dashboard_guru') || hasPermissions('pembelajaran_list')
             </a>
         </li>
     <?php endif; ?>
-    <?php if ($show_ekskul_menu): ?>
+    <?php if (hasPermissions('menu_ekstrakurikuler')): ?>
         <li>
             <a href="<?php echo url('ekstrakurikuler') ?>">
                 <iconify-icon icon="solar:dialog-linear" class="menu-icon"></iconify-icon>

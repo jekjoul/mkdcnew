@@ -111,11 +111,25 @@ INSERT INTO `permissions` (`code`, `title`) VALUES
 ('pembelajaran_list', 'Mengelola Data Pembelajaran'),
 ('pembelajaran_add', 'Menambah Pembelajaran Rombel'),
 ('pembelajaran_edit', 'Mengubah Pembelajaran Rombel'),
-('pembelajaran_delete', 'Menghapus Pembelajaran Rombel')
+('pembelajaran_delete', 'Menghapus Pembelajaran Rombel'),
+('menu_ekstrakurikuler', 'Menu Ekstrakurikuler'),
+('ekstrakurikuler_add', 'Menambah Ekstrakurikuler Baru'),
+('ekstrakurikuler_edit', 'Mengubah Konfigurasi Ekstrakurikuler'),
+('ekstrakurikuler_delete', 'Menghapus Kegiatan Ekstrakurikuler'),
+('ekstrakurikuler_anggota', 'Mengelola Siswa Anggota Roster Ekskul'),
+('ekstrakurikuler_nilai', 'Menginput Predikat Nilai & Evaluasi Ekskul'),
+('menu_kedisiplinan', 'Menu Kedisiplinan & BK'),
+('kedisiplinan_add', 'Melaporkan Pelanggaran Murid Baru'),
+('kedisiplinan_bk', 'Memproses Tindak Lanjut Konseling BK & Poin Pelanggaran'),
+('kedisiplinan_delete', 'Menghapus Laporan Pelanggaran Murid')
 ON DUPLICATE KEY UPDATE `title`=VALUES(`title`);
 
 -- 7. Seed list Roles jabatan fungsional baru
 INSERT INTO `roles` (`id`, `title`) VALUES
+(1, 'Admin'),
+(2, 'User'),
+(3, 'Tenaga Administrasi Sekolah'),
+(4, 'Guru'),
 (6, 'Wakasek Kesiswaan'),
 (7, 'Wakasek Kurikulum'),
 (8, 'Wakasek Sarpras'),
@@ -123,24 +137,56 @@ INSERT INTO `roles` (`id`, `title`) VALUES
 (10, 'Kepala Sekolah')
 ON DUPLICATE KEY UPDATE `title`=VALUES(`title`);
 
--- 8. Menghapus & Sync ulang mapping Permissions dari ke-6 role tersebut
-DELETE FROM `role_permissions` WHERE `role` IN (3, 6, 7, 8, 9, 10);
+-- 8. Menghapus & Sync ulang mapping Permissions dari ke-8 role tersebut
+DELETE FROM `role_permissions` WHERE `role` IN (1, 3, 4, 6, 7, 8, 9, 10);
 
 INSERT INTO `role_permissions` (`role`, `permission`) VALUES
--- Wakasek Kesiswaan (ID 6)
-(6, 'menu_kesiswaan_data_siswa'), (6, 'menu_alumni'), (6, 'menu_buku_induk_siswa'), (6, 'menu_dashboard'), (6, 'master_list'), (6, 'users_list'),
-
--- Wakasek Kurikulum (ID 7)
-(7, 'menu_pembelajaran'), (7, 'menu_jadwal_pelajaran'), (7, 'menu_jadwal_tidak_aktif'), (7, 'menu_perangkat_pembelajaran'), (7, 'menu_nilai_siswa'), (7, 'menu_tahun_pelajaran'), (7, 'menu_dashboard'), (7, 'pembelajaran_list'), (7, 'pembelajaran_add'), (7, 'pembelajaran_edit'), (7, 'pembelajaran_delete'), (7, 'master_list'), (7, 'master_add'), (7, 'master_edit'),
-
--- Wakasek Sarpras (ID 8)
-(8, 'menu_master_sarana'), (8, 'menu_dashboard'), (8, 'master_list'), (8, 'master_add'), (8, 'master_edit'), (8, 'master_delete'),
-
--- Guru BK (ID 9)
-(9, 'menu_kesiswaan_data_siswa'), (9, 'menu_dashboard_guru'), (9, 'menu_dashboard'), (9, 'master_list'),
+-- Admin (ID 1)
+(1, 'menu_dashboard'), (1, 'menu_kesiswaan_data_siswa'), (1, 'menu_sinkron_dapodik'), (1, 'menu_pembelajaran'), 
+(1, 'menu_jadwal_pelajaran'), (1, 'menu_jadwal_tidak_aktif'), (1, 'menu_perangkat_pembelajaran'), (1, 'menu_nilai_siswa'), 
+(1, 'menu_tahun_pelajaran'), (1, 'menu_surat_menyurat'), (1, 'menu_alumni'), (1, 'menu_buku_induk_siswa'), 
+(1, 'menu_master_lembaga'), (1, 'menu_master_tingkat'), (1, 'menu_master_rombel'), (1, 'menu_master_rombel_nonaktif'), 
+(1, 'menu_master_mapel'), (1, 'menu_master_sarana'), (1, 'menu_users'), (1, 'menu_roles'), (1, 'menu_dashboard_guru'), 
+(1, 'users_list'), (1, 'users_add'), (1, 'users_edit'), (1, 'users_delete'), (1, 'roles_list'), (1, 'roles_add'), (1, 'roles_edit'), 
+(1, 'master_list'), (1, 'master_add'), (1, 'master_edit'), (1, 'master_delete'), (1, 'pembelajaran_list'), (1, 'pembelajaran_add'), 
+(1, 'pembelajaran_edit'), (1, 'pembelajaran_delete'), (1, 'menu_ekstrakurikuler'), (1, 'ekstrakurikuler_add'), 
+(1, 'ekstrakurikuler_edit'), (1, 'ekstrakurikuler_delete'), (1, 'ekstrakurikuler_anggota'), (1, 'ekstrakurikuler_nilai'), 
+(1, 'menu_kedisiplinan'), (1, 'kedisiplinan_add'), (1, 'kedisiplinan_bk'), (1, 'kedisiplinan_delete'),
 
 -- Tenaga Administrasi Sekolah (ID 3)
-(3, 'menu_kesiswaan_data_siswa'), (3, 'menu_alumni'), (3, 'menu_buku_induk_siswa'), (3, 'menu_surat_menyurat'), (3, 'menu_master_lembaga'), (3, 'menu_master_tingkat'), (3, 'menu_master_rombel'), (3, 'menu_master_rombel_nonaktif'), (3, 'menu_master_mapel'), (3, 'menu_dashboard'), (3, 'master_list'), (3, 'master_add'), (3, 'master_edit'),
+(3, 'menu_dashboard'), (3, 'menu_kesiswaan_data_siswa'), (3, 'menu_alumni'), (3, 'menu_buku_induk_siswa'), 
+(3, 'menu_surat_menyurat'), (3, 'menu_master_lembaga'), (3, 'menu_master_tingkat'), (3, 'menu_master_rombel'), 
+(3, 'menu_master_rombel_nonaktif'), (3, 'menu_master_mapel'), (3, 'master_list'), (3, 'master_add'), (3, 'master_edit'),
+(3, 'menu_ekstrakurikuler'), (3, 'ekstrakurikuler_anggota'), (3, 'menu_kedisiplinan'), (3, 'kedisiplinan_add'),
+
+-- Guru (ID 4)
+(4, 'menu_dashboard_guru'), (4, 'menu_data_siswa_guru'), (4, 'menu_pembelajaran_guru'), (4, 'menu_perangkat_guru'), 
+(4, 'menu_jadwal_guru'), (4, 'menu_input_nilai_guru'), (4, 'menu_profil_ptk_guru'), 
+(4, 'menu_ekstrakurikuler'), (4, 'ekstrakurikuler_anggota'), (4, 'ekstrakurikuler_nilai'),
+(4, 'menu_kedisiplinan'), (4, 'kedisiplinan_add'),
+
+-- Wakasek Kesiswaan (ID 6)
+(6, 'menu_dashboard'), (6, 'menu_kesiswaan_data_siswa'), (6, 'menu_alumni'), (6, 'menu_buku_induk_siswa'), 
+(6, 'master_list'), (6, 'users_list'),
+(6, 'menu_ekstrakurikuler'), (6, 'ekstrakurikuler_add'), (6, 'ekstrakurikuler_edit'), (6, 'ekstrakurikuler_delete'), 
+(6, 'ekstrakurikuler_anggota'), (6, 'ekstrakurikuler_nilai'), 
+(6, 'menu_kedisiplinan'), (6, 'kedisiplinan_add'), (6, 'kedisiplinan_bk'), (6, 'kedisiplinan_delete'),
+
+-- Wakasek Kurikulum (ID 7)
+(7, 'menu_dashboard'), (7, 'menu_pembelajaran'), (7, 'menu_jadwal_pelajaran'), (7, 'menu_jadwal_tidak_aktif'), 
+(7, 'menu_perangkat_pembelajaran'), (7, 'menu_nilai_siswa'), (7, 'menu_tahun_pelajaran'), 
+(7, 'pembelajaran_list'), (7, 'pembelajaran_add'), (7, 'pembelajaran_edit'), (7, 'pembelajaran_delete'), 
+(7, 'master_list'), (7, 'master_add'), (7, 'master_edit'),
+
+-- Wakasek Sarpras (ID 8)
+(8, 'menu_dashboard'), (8, 'menu_master_sarana'), (8, 'master_list'), (8, 'master_add'), (8, 'master_edit'), (8, 'master_delete'),
+
+-- Guru BK (ID 9)
+(9, 'menu_dashboard'), (9, 'menu_kesiswaan_data_siswa'), (9, 'menu_dashboard_guru'), (9, 'master_list'),
+(9, 'menu_kedisiplinan'), (9, 'kedisiplinan_add'), (9, 'kedisiplinan_bk'), (9, 'kedisiplinan_delete'),
 
 -- Kepala Sekolah (ID 10)
-(10, 'menu_kesiswaan_data_siswa'), (10, 'menu_pembelajaran'), (10, 'menu_jadwal_pelajaran'), (10, 'menu_perangkat_pembelajaran'), (10, 'menu_nilai_siswa'), (10, 'menu_tahun_pelajaran'), (10, 'menu_alumni'), (10, 'menu_buku_induk_siswa'), (10, 'menu_master_sarana'), (10, 'menu_dashboard'), (10, 'master_list'), (10, 'pembelajaran_list'), (10, 'users_list');
+(10, 'menu_dashboard'), (10, 'menu_kesiswaan_data_siswa'), (10, 'menu_pembelajaran'), (10, 'menu_jadwal_pelajaran'), 
+(10, 'menu_perangkat_pembelajaran'), (10, 'menu_nilai_siswa'), (10, 'menu_tahun_pelajaran'), (10, 'menu_alumni'), 
+(10, 'menu_buku_induk_siswa'), (10, 'menu_master_sarana'), (10, 'master_list'), (10, 'pembelajaran_list'), (10, 'users_list'),
+(10, 'menu_ekstrakurikuler'), (10, 'menu_kedisiplinan');
