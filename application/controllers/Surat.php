@@ -299,29 +299,104 @@ class Surat extends MY_Controller
         $this->db->join('surat_kode sk', 'sk.id_kode_surat = skel.id_kode_surat', 'left');
         $this->db->order_by('skel.tanggal_surat', 'DESC');
         $this->db->order_by('skel.id_surat_keluar', 'DESC');
-        $this->page_data['surat'] = $this->db->get()->result();
+        $surat_list = $this->db->get()->result();
+
+        foreach ($surat_list as $s) {
+            $this->db->select('ptk.nama_ptk, skp.jabatan');
+            $this->db->from('surat_keluar_penandatangan skp');
+            $this->db->join('ptk', 'ptk.id_ptk = skp.id_ptk', 'left');
+            $this->db->where('skp.id_surat_keluar', $s->id_surat_keluar);
+            $s->penandatangan = $this->db->get()->result();
+        }
+
+        $this->page_data['surat'] = $surat_list;
         $this->load->view('surat/keluar_list', $this->page_data);
     }
 
-    public function keluar_tambah()
+    public function keluar_tambah_manual()
     {
-        $this->setPage('Buat Surat Keluar', 'surat/keluar_tambah', 'solar:inbox-out-linear');
+        $this->setPage('Buat Surat Keluar Manual', 'surat/keluar_tambah_manual', 'solar:inbox-out-linear');
         $this->setKeluarOptions();
         $this->page_data['row'] = null;
-        $this->page_data['prediksi_nomor'] = '';
-        $this->load->view('surat/keluar_form', $this->page_data);
+        $this->page_data['selected_penandatangan'] = [];
+        $this->page_data['penandatangan_jabatan_map'] = [];
+        $this->load->view('surat/keluar_form_manual', $this->page_data);
     }
 
-    public function keluar_edit($id)
+    public function keluar_tambah_otomatis()
     {
-        $this->setPage('Edit Surat Keluar', 'surat/keluar_edit/' . $id, 'solar:inbox-out-linear');
+        $this->setPage('Buat Surat Keluar Otomatis', 'surat/keluar_tambah_otomatis', 'solar:inbox-out-linear');
         $this->setKeluarOptions();
-        $this->page_data['row'] = $this->db->get_where('surat_keluar', ['id_surat_keluar' => $id])->row();
-        if (!$this->page_data['row']) {
+        $this->page_data['row'] = null;
+        $this->page_data['selected_penandatangan'] = [];
+        $this->page_data['penandatangan_jabatan_map'] = [];
+        $this->load->view('surat/keluar_form_otomatis', $this->page_data);
+    }
+
+    public function keluar_edit_manual($id)
+    {
+        $this->setPage('Edit Surat Keluar Manual', 'surat/keluar_edit_manual/' . $id, 'solar:inbox-out-linear');
+        $this->setKeluarOptions();
+        $row = $this->db->get_where('surat_keluar', ['id_surat_keluar' => $id])->row();
+        if (!$row) {
             show_404();
         }
-        $this->page_data['prediksi_nomor'] = $this->page_data['row']->nomor_surat;
-        $this->load->view('surat/keluar_form', $this->page_data);
+        $this->page_data['row'] = $row;
+        
+        $penandatangan = $this->db->get_where('surat_keluar_penandatangan', ['id_surat_keluar' => $id])->result();
+        $selected = [];
+        $jabatan_map = [];
+        foreach ($penandatangan as $p) {
+            $selected[] = $p->id_ptk;
+            $jabatan_map[$p->id_ptk] = $p->jabatan;
+        }
+        $this->page_data['selected_penandatangan'] = $selected;
+        $this->page_data['penandatangan_jabatan_map'] = $jabatan_map;
+        $this->load->view('surat/keluar_form_manual', $this->page_data);
+    }
+
+    public function keluar_edit_otomatis($id)
+    {
+        $this->setPage('Edit Surat Keluar Otomatis', 'surat/keluar_edit_otomatis/' . $id, 'solar:inbox-out-linear');
+        $this->setKeluarOptions();
+        $row = $this->db->get_where('surat_keluar', ['id_surat_keluar' => $id])->row();
+        if (!$row) {
+            show_404();
+        }
+        $this->page_data['row'] = $row;
+        
+        $penandatangan = $this->db->get_where('surat_keluar_penandatangan', ['id_surat_keluar' => $id])->result();
+        $selected = [];
+        $jabatan_map = [];
+        foreach ($penandatangan as $p) {
+            $selected[] = $p->id_ptk;
+            $jabatan_map[$p->id_ptk] = $p->jabatan;
+        }
+        $this->page_data['selected_penandatangan'] = $selected;
+        $this->page_data['penandatangan_jabatan_map'] = $jabatan_map;
+        $this->load->view('surat/keluar_form_otomatis', $this->page_data);
+    }
+
+    public function get_next_nomor_ajax()
+    {
+        $id_kode_surat = (int) $this->input->get('id_kode_surat');
+        $tanggal = $this->input->get('tanggal_surat') ?: date('Y-m-d');
+        $exclude_id = (int) $this->input->get('exclude_id');
+
+        $kode = $this->db->get_where('surat_kode', ['id_kode_surat' => $id_kode_surat])->row();
+        if (!$kode) {
+            $this->output->set_content_type('application/json')->set_output(json_encode(['error' => 'Kode surat tidak ditemukan']));
+            return;
+        }
+
+        $tahun = (int) date('Y', strtotime($tanggal));
+        $nomor_urut = $this->nextNomorUrut($id_kode_surat, $tahun, $exclude_id);
+        $nomor_surat = $this->formatNomorSurat($kode, $nomor_urut, $tahun);
+
+        $this->output->set_content_type('application/json')->set_output(json_encode([
+            'nomor_urut' => $nomor_urut,
+            'nomor_surat' => $nomor_surat
+        ]));
     }
 
     public function keluar_simpan()
@@ -331,32 +406,34 @@ class Surat extends MY_Controller
         $kode = $this->db->get_where('surat_kode', ['id_kode_surat' => post('id_kode_surat')])->row();
         if (!$kode) {
             $this->flashDanger('Kode surat belum dipilih');
-            redirect('surat/keluar_tambah');
+            redirect('surat/keluar');
             return;
         }
 
         $tanggal = post('tanggal_surat') ?: date('Y-m-d');
         $tahun = (int) date('Y', strtotime($tanggal));
         $nomor_custom = post('nomor_custom');
+        
         $nomor_urut = post('nomor_urut') !== '' ? (int) post('nomor_urut') : $this->nextNomorUrut($kode->id_kode_surat, $tahun, $id);
-        $nomor_surat = $nomor_custom ?: $this->formatNomorSurat($kode, $nomor_urut, $tahun);
+        $nomor_surat = post('nomor_surat') ?: ($nomor_custom ?: $this->formatNomorSurat($kode, $nomor_urut, $tahun));
         $token = post('token_validasi') ?: bin2hex(random_bytes(16));
+        $metode = post('metode_pembuatan') ?: 'Manual';
 
         $data = [
             'id_lembaga' => $kode->id_lembaga,
             'id_kode_surat' => $kode->id_kode_surat,
-            'id_template_surat' => post('id_template_surat') ?: null,
-            'id_kop_surat' => post('id_kop_surat') ?: null,
+            'metode_pembuatan' => $metode,
+            'id_template_surat' => ($metode === 'Otomatis') ? (post('id_template_surat') ?: null) : null,
+            'id_kop_surat' => ($metode === 'Otomatis') ? (post('id_kop_surat') ?: null) : null,
             'tanggal_surat' => $tanggal,
             'nomor_urut' => $nomor_urut,
             'nomor_surat' => $nomor_surat,
             'nomor_custom' => $nomor_custom ?: null,
             'tujuan_surat' => post('tujuan_surat'),
             'perihal' => post('perihal'),
-            'isi_surat' => post('isi_surat'),
-            'penandatangan_nama' => post('penandatangan_nama') ?: null,
-            'penandatangan_jabatan' => post('penandatangan_jabatan') ?: null,
-            'status' => post('status') ?: 'Draft',
+            'isi_surat' => ($metode === 'Otomatis') ? post('isi_surat') : null,
+            'keterangan' => ($metode === 'Manual') ? post('keterangan') : null,
+            'status' => ($metode === 'Otomatis') ? (post('status') ?: 'Draft') : 'Manual',
             'token_validasi' => $token,
         ];
 
@@ -366,6 +443,20 @@ class Surat extends MY_Controller
         } else {
             $this->db->insert('surat_keluar', $data);
             $id = $this->db->insert_id();
+        }
+
+        $this->db->delete('surat_keluar_penandatangan', ['id_surat_keluar' => $id]);
+        $penandatangan_list = $this->input->post('id_ptk_penandatangan');
+        $jabatan_list = $this->input->post('jabatan_penandatangan');
+        if (!empty($penandatangan_list) && is_array($penandatangan_list)) {
+            foreach ($penandatangan_list as $ptk_id) {
+                $jabatan = isset($jabatan_list[$ptk_id]) ? $jabatan_list[$ptk_id] : '';
+                $this->db->insert('surat_keluar_penandatangan', [
+                    'id_surat_keluar' => $id,
+                    'id_ptk' => (int) $ptk_id,
+                    'jabatan' => $jabatan
+                ]);
+            }
         }
 
         $this->flashSuccess('Surat keluar berhasil disimpan');
@@ -453,7 +544,16 @@ class Surat extends MY_Controller
         $this->db->join('surat_kode sk', 'sk.id_kode_surat = skel.id_kode_surat', 'left');
         $this->db->join('surat_kop kp', 'kp.id_kop_surat = skel.id_kop_surat', 'left');
         $this->db->where('skel.id_surat_keluar', $id);
-        return $this->db->get()->row();
+        $surat = $this->db->get()->row();
+
+        if ($surat) {
+            $this->db->select('ptk.nama_ptk, ptk.nik, ptk.id_ptk, ptk.niy, skp.jabatan');
+            $this->db->from('surat_keluar_penandatangan skp');
+            $this->db->join('ptk', 'ptk.id_ptk = skp.id_ptk', 'left');
+            $this->db->where('skp.id_surat_keluar', $id);
+            $surat->penandatangan = $this->db->get()->result();
+        }
+        return $surat;
     }
 
     private function nextNomorUrut($id_kode_surat, $tahun, $exclude_id = 0)
@@ -614,6 +714,33 @@ class Surat extends MY_Controller
                     'id_kop_surat' => ['type' => 'INT', 'constraint' => 11, 'null' => true, 'after' => 'id_template_surat']
                 ]);
             }
+            // Cek jika kolom metode_pembuatan belum ada di table surat_keluar
+            if (!$this->db->field_exists('metode_pembuatan', 'surat_keluar')) {
+                $this->dbforge->add_column('surat_keluar', [
+                    'metode_pembuatan' => ['type' => 'VARCHAR', 'constraint' => 20, 'default' => 'Manual', 'after' => 'id_template_surat']
+                ]);
+            }
+            // Cek jika kolom keterangan belum ada di table surat_keluar
+            if (!$this->db->field_exists('keterangan', 'surat_keluar')) {
+                $this->dbforge->add_column('surat_keluar', [
+                    'keterangan' => ['type' => 'TEXT', 'null' => true, 'after' => 'isi_surat']
+                ]);
+            }
+            // Jadikan kolom isi_surat nullable
+            $this->dbforge->modify_column('surat_keluar', [
+                'isi_surat' => ['name' => 'isi_surat', 'type' => 'TEXT', 'null' => true]
+            ]);
+        }
+
+        if (!$this->db->table_exists('surat_keluar_penandatangan')) {
+            $this->dbforge->add_field([
+                'id' => ['type' => 'INT', 'constraint' => 11, 'auto_increment' => true],
+                'id_surat_keluar' => ['type' => 'INT', 'constraint' => 11],
+                'id_ptk' => ['type' => 'INT', 'constraint' => 11],
+                'created_at' => ['type' => 'TIMESTAMP', 'default' => 'CURRENT_TIMESTAMP']
+            ]);
+            $this->dbforge->add_key('id', true);
+            $this->dbforge->create_table('surat_keluar_penandatangan', true);
         }
 
         if (!$this->db->table_exists('surat_kop')) {
