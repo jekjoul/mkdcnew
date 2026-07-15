@@ -15,12 +15,13 @@ class Pencetakan extends MY_Controller
 
         if ($id_pembelajaran) {
             // Load detail pembelajaran
-            $this->db->select('p.*, l.nama_lembaga, l.npsn, l.alamat, l.logo, l.bentuk_pendidikan, l.telepon, l.email, l.website, l.no_sk_akreditasi, l.akreditasi, t.nama_tingkat, r.nama_rombel, tp.tahun_pelajaran, tp.semester');
+            $this->db->select('p.*, l.nama_lembaga, l.npsn, l.alamat, l.logo, l.bentuk_pendidikan, l.telepon, l.email, l.website, l.no_sk_akreditasi, l.akreditasi, t.nama_tingkat, r.nama_rombel, tp.tahun_pelajaran, tp.semester, w.nama_ptk as nama_walikelas');
             $this->db->from('pembelajaran p');
             $this->db->join('lembaga l', 'p.id_lembaga = l.id_lembaga');
             $this->db->join('master_tingkat_sekolah t', 'p.id_tingkat_sekolah = t.id_tingkat_sekolah');
             $this->db->join('rombel r', 'p.id_rombel = r.id_rombel');
             $this->db->join('pembelajaran_tahun_pelajaran tp', 'p.id_tahun_pelajaran = tp.id_tahun_pelajaran');
+            $this->db->join('ptk w', 'p.id_ptk_wali = w.id_ptk', 'left');
             $this->db->where('p.id_pembelajaran', $id_pembelajaran);
             $pembelajaran = $this->db->get()->row();
 
@@ -49,10 +50,46 @@ class Pencetakan extends MY_Controller
                 }
             }
 
+            // Load Kop Surat aktif
+            $kop = $this->db->get_where('surat_kop', ['status' => 'Aktif'])->row();
+            if (!$kop) {
+                $kop = $this->db->get('surat_kop')->row();
+            }
+
+            $has_submit = $this->input->get('id_pembelajaran') !== null;
+            $pakai_kop = $has_submit ? ($this->input->get('pakai_kop') === '1') : true;
+            $pakai_ttd = $has_submit ? ($this->input->get('pakai_ttd') === '1') : true;
+            $size = $this->input->get('size') ?: 'landscape';
+
             $this->page_data['pembelajaran'] = $pembelajaran;
             $this->page_data['students'] = $students;
             $this->page_data['kepsek'] = $kepsek ?: '...........................';
-            $this->load->view('pencetakan/v_absensi_print', $this->page_data);
+            $this->page_data['kop'] = $kop;
+            $this->page_data['pakai_kop'] = $pakai_kop;
+            $this->page_data['pakai_ttd'] = $pakai_ttd;
+            $this->page_data['size'] = $size;
+
+            $format = $this->input->get('format');
+            if ($format === 'pdf') {
+                $this->page_data['is_pdf'] = true;
+                $html = $this->load->view('pencetakan/v_absensi_print', $this->page_data, true);
+                
+                $options = new \Dompdf\Options();
+                $options->set('isHtml5ParserEnabled', true);
+                $options->set('isRemoteEnabled', true);
+                
+                $dompdf = new \Dompdf\Dompdf($options);
+                $dompdf->loadHtml($html);
+                $dompdf->setPaper('A4', 'landscape');
+                $dompdf->render();
+                
+                $filename = 'Daftar_Hadir_Siswa_' . str_replace(' ', '_', $pembelajaran->nama_tingkat . '_' . $pembelajaran->nama_rombel) . '.pdf';
+                $dompdf->stream($filename, array("Attachment" => 1));
+                return;
+            } else {
+                $this->page_data['is_pdf'] = false;
+                $this->load->view('pencetakan/v_absensi_print', $this->page_data);
+            }
         } else {
             // Display filter page
             $this->page_data['page']->title = 'Pencetakan';

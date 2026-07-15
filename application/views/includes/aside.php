@@ -175,7 +175,7 @@
     <?php endif; ?>
 <?php endif; ?>
 
-<?php if (hasPermissions('menu_data_ptk') || hasPermissions('menu_ptk_nonaktif') || hasPermissions('menu_sinkron_dapodik_gtk') || hasPermissions('menu_generate_niy') || hasPermissions('menu_edit_inline_ptk')): ?>
+<?php if (hasPermissions('menu_data_ptk') || hasPermissions('menu_ptk_nonaktif') || hasPermissions('menu_sinkron_dapodik_gtk') || hasPermissions('menu_generate_niy')): ?>
     <li
         class="sidebar-menu-group-title"
         style="background: #bdd3b1;
@@ -195,14 +195,6 @@
             <a href="<?php echo url('generate_niy') ?>">
                 <iconify-icon icon="solar:user-id-linear" class="menu-icon"></iconify-icon>
                 <span>Generate NIY</span>
-            </a>
-        </li>
-    <?php endif; ?>
-    <?php if (hasPermissions('menu_edit_inline_ptk')): ?>
-        <li>
-            <a href="<?php echo url('edit_inline_ptk') ?>">
-                <iconify-icon icon="solar:pen-new-square-linear" class="menu-icon"></iconify-icon>
-                <span>Edit Inline PTK</span>
             </a>
         </li>
     <?php endif; ?>
@@ -226,7 +218,7 @@
 
 
 
-<?php if (hasPermissions('menu_kesiswaan_data_siswa') || hasPermissions('menu_sinkron_dapodik') || hasPermissions('menu_generate_nipd') || hasPermissions('menu_edit_inline_siswa')): ?>
+<?php if (hasPermissions('menu_kesiswaan_data_siswa') || hasPermissions('menu_sinkron_dapodik') || hasPermissions('menu_generate_nipd')): ?>
     <li class="sidebar-menu-group-title"
         style="background: rgb(205, 204, 252);
         background: linear-gradient(90deg, rgb(207, 219, 255) 0%, rgba(255, 255, 255, 0) 100%);">Kesiswaan
@@ -245,14 +237,6 @@
             <a href="<?php echo url('generate_nipd') ?>">
                 <iconify-icon icon="solar:user-id-linear" class="menu-icon"></iconify-icon>
                 <span>Generate NIPD</span>
-            </a>
-        </li>
-    <?php endif; ?>
-    <?php if (hasPermissions('menu_edit_inline_siswa')): ?>
-        <li>
-            <a href="<?php echo url('edit_inline_siswa') ?>">
-                <iconify-icon icon="solar:pen-new-square-linear" class="menu-icon"></iconify-icon>
-                <span>Edit Inline Siswa</span>
             </a>
         </li>
     <?php endif; ?>
@@ -334,14 +318,14 @@ foreach ($menu_pembelajaran_siswa as $menu_row) {
 
 
 
-<?php if (hasPermissions('menu_pembelajaran') || hasPermissions('menu_jadwal_pelajaran') || hasPermissions('menu_jadwal_tidak_aktif') || hasPermissions('menu_perangkat_pembelajaran') || hasPermissions('menu_nilai_siswa') || hasPermissions('menu_tahun_pelajaran') || hasPermissions('menu_ekstrakurikuler')): ?>
+<?php if (hasPermissions('menu_pembelajaran') || hasPermissions('menu_tugas_tambahan_ptk') || hasPermissions('menu_jadwal_pelajaran') || hasPermissions('menu_jadwal_tidak_aktif') || hasPermissions('menu_perangkat_pembelajaran') || hasPermissions('menu_nilai_siswa') || hasPermissions('menu_tahun_pelajaran') || hasPermissions('menu_ekstrakurikuler')): ?>
     <li class="sidebar-menu-group-title"
         style="background: #d3c5b1;
         background: linear-gradient(90deg, rgb(255, 233, 135) 0%, rgba(255, 255, 255, 0) 100%);">Pembelajaran
     </li>
 <?php endif; ?>
 
-<?php if (hasPermissions('menu_pembelajaran') || hasPermissions('menu_jadwal_pelajaran') || hasPermissions('menu_jadwal_tidak_aktif') || hasPermissions('menu_perangkat_pembelajaran') || hasPermissions('menu_nilai_siswa') || hasPermissions('menu_tahun_pelajaran') || hasPermissions('menu_ekstrakurikuler')): ?>
+<?php if (hasPermissions('menu_pembelajaran') || hasPermissions('menu_tugas_tambahan_ptk') || hasPermissions('menu_jadwal_pelajaran') || hasPermissions('menu_jadwal_tidak_aktif') || hasPermissions('menu_perangkat_pembelajaran') || hasPermissions('menu_nilai_siswa') || hasPermissions('menu_tahun_pelajaran') || hasPermissions('menu_ekstrakurikuler')): ?>
 
     <?php if (hasPermissions('menu_pembelajaran')): ?>
         <li class="dropdown">
@@ -369,6 +353,15 @@ foreach ($menu_pembelajaran_siswa as $menu_row) {
                     </a>
                 </li>
             </ul>
+        </li>
+    <?php endif; ?>
+
+    <?php if (hasPermissions('menu_tugas_tambahan_ptk')): ?>
+        <li>
+            <a href="<?php echo url('tugas_tambahan_ptk') ?>">
+                <iconify-icon icon="solar:user-id-linear" class="menu-icon"></iconify-icon>
+                <span>Tugas Tambahan PTK</span>
+            </a>
         </li>
     <?php endif; ?>
 
@@ -543,7 +536,7 @@ foreach ($menu_pembelajaran_siswa as $menu_row) {
 
 <?php endif; ?>
 
-<?php if (hasPermissions('menu_master_lembaga') || hasPermissions('menu_master_tingkat') || hasPermissions('menu_master_rombel') || hasPermissions('menu_master_rombel_nonaktif') || hasPermissions('menu_master_mapel') || hasPermissions('menu_master_sarana')): ?>
+<?php if (hasPermissions('menu_master_lembaga') || hasPermissions('menu_master_tingkat') || hasPermissions('menu_master_rombel') || hasPermissions('menu_master_rombel_nonaktif') || hasPermissions('menu_master_mapel') || hasPermissions('menu_master_sarana') || hasPermissions('menu_master_tugas_tambahan')): ?>
     <li class="sidebar-menu-group-title">Master Data</li>
 
     <?php if (hasPermissions('menu_master_lembaga')): ?>
@@ -616,6 +609,15 @@ foreach ($menu_pembelajaran_siswa as $menu_row) {
             </ul>
         </li>
     <?php endif; ?>
+
+    <?php if (hasPermissions('menu_master_tugas_tambahan')): ?>
+        <li>
+            <a href="<?php echo url('master_tugas_tambahan') ?>">
+                <iconify-icon icon="material-symbols:database" class="menu-icon"></iconify-icon>
+                <span>Master Tugas Tambahan</span>
+            </a>
+        </li>
+    <?php endif; ?>
 <?php endif; ?>
 
 
@@ -656,6 +658,30 @@ foreach ($menu_pembelajaran_siswa as $menu_row) {
                         Permission</a>
                 </li>
             </ul>
+        </li>
+    <?php endif; ?>
+<?php endif; ?>
+
+<?php if (hasPermissions('menu_edit_inline_ptk') || hasPermissions('menu_edit_inline_siswa')): ?>
+    <li class="sidebar-menu-group-title"
+        style="background: #bdd3b1;
+               background: linear-gradient(90deg, rgb(255, 220, 185) 0%, rgba(255, 255, 255, 0) 100%);">
+        Alat Khusus
+    </li>
+    <?php if (hasPermissions('menu_edit_inline_ptk')): ?>
+        <li>
+            <a href="<?php echo url('edit_inline_ptk') ?>">
+                <iconify-icon icon="solar:pen-new-square-linear" class="menu-icon"></iconify-icon>
+                <span>Edit Inline PTK</span>
+            </a>
+        </li>
+    <?php endif; ?>
+    <?php if (hasPermissions('menu_edit_inline_siswa')): ?>
+        <li>
+            <a href="<?php echo url('edit_inline_siswa') ?>">
+                <iconify-icon icon="solar:pen-new-square-linear" class="menu-icon"></iconify-icon>
+                <span>Edit Inline Siswa</span>
+            </a>
         </li>
     <?php endif; ?>
 <?php endif; ?>
