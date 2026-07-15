@@ -45,14 +45,14 @@
         </div>
         <div class="col-sm-6">
             <div class="mb-20">
-                <label for="setting_tempat_lahir" class="form-label fw-semibold text-primary-light text-sm mb-8">Tempat Lahir <span class="text-danger-600">*</span></label>
-                <input type="text" class="form-control radius-8" id="setting_tempat_lahir" name="tempat_lahir" required value="<?php echo htmlspecialchars($row->tempat_lahir, ENT_QUOTES, 'UTF-8') ?>">
+                <label for="setting_tempat_lahir" class="form-label fw-semibold text-primary-light text-sm mb-8">Tempat Lahir</label>
+                <input type="text" class="form-control radius-8" id="setting_tempat_lahir" name="tempat_lahir" value="<?php echo htmlspecialchars($row->tempat_lahir, ENT_QUOTES, 'UTF-8') ?>">
             </div>
         </div>
         <div class="col-sm-6">
             <div class="mb-20">
-                <label for="setting_tanggal_lahir" class="form-label fw-semibold text-primary-light text-sm mb-8">Tanggal Lahir <span class="text-danger-600">*</span></label>
-                <input type="date" class="form-control radius-8" id="setting_tanggal_lahir" name="tanggal_lahir" required value="<?php echo $row->tanggal_lahir ?>">
+                <label for="setting_tanggal_lahir" class="form-label fw-semibold text-primary-light text-sm mb-8">Tanggal Lahir</label>
+                <input type="date" class="form-control radius-8" id="setting_tanggal_lahir" name="tanggal_lahir" value="<?php echo $row->tanggal_lahir ?>">
             </div>
         </div>
         <div class="col-sm-6">
@@ -77,20 +77,20 @@
         </div>
         <div class="col-sm-6">
             <div class="mb-20">
-                <label for="setting_nama_ibu_kandung" class="form-label fw-semibold text-primary-light text-sm mb-8">Nama Ibu Kandung <span class="text-danger-600">*</span></label>
-                <input type="text" class="form-control radius-8" id="setting_nama_ibu_kandung" name="nama_ibu_kandung" required value="<?php echo htmlspecialchars($row->nama_ibu_kandung, ENT_QUOTES, 'UTF-8') ?>">
+                <label for="setting_nama_ibu_kandung" class="form-label fw-semibold text-primary-light text-sm mb-8">Nama Ibu Kandung</label>
+                <input type="text" class="form-control radius-8" id="setting_nama_ibu_kandung" name="nama_ibu_kandung" value="<?php echo htmlspecialchars($row->nama_ibu_kandung, ENT_QUOTES, 'UTF-8') ?>">
             </div>
         </div>
         <div class="col-sm-6">
             <div class="mb-20">
-                <label for="setting_nik" class="form-label fw-semibold text-primary-light text-sm mb-8">NIK <span class="text-danger-600">*</span></label>
-                <input type="text" class="form-control radius-8" id="setting_nik" name="nik" required value="<?php echo htmlspecialchars($row->nik, ENT_QUOTES, 'UTF-8') ?>">
+                <label for="setting_nik" class="form-label fw-semibold text-primary-light text-sm mb-8">NIK</label>
+                <input type="text" class="form-control radius-8" id="setting_nik" name="nik" value="<?php echo htmlspecialchars($row->nik, ENT_QUOTES, 'UTF-8') ?>">
             </div>
         </div>
         <div class="col-sm-6">
             <div class="mb-20">
-                <label for="setting_niy" class="form-label fw-semibold text-primary-light text-sm mb-8">NIY <span class="text-danger-600">*</span></label>
-                <input type="text" class="form-control radius-8" id="setting_niy" name="niy" required value="<?php echo htmlspecialchars($row->niy, ENT_QUOTES, 'UTF-8') ?>">
+                <label for="setting_niy" class="form-label fw-semibold text-primary-light text-sm mb-8">NIY</label>
+                <input type="text" class="form-control radius-8" id="setting_niy" name="niy" value="<?php echo htmlspecialchars($row->niy, ENT_QUOTES, 'UTF-8') ?>">
             </div>
         </div>
         <div class="col-sm-6">
