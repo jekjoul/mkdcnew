@@ -27,7 +27,6 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                     <th scope="col">No</th>
                                     <th scope="col">Jenis PTK</th>
                                     <th scope="col">Nama PTK</th>
-                                    <th scope="col">NUPTK</th>
                                     <th scope="col">NIY</th>
                                     <th scope="col" class="text-center">Akun MKDC</th>
                                     <th scope="col" class="text-center">Aksi</th>
@@ -41,7 +40,6 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                         <td><?php echo $no++; ?></td>
                                         <td><?php echo $row->status_pegawai; ?></td>
                                         <td><?php echo $row->nama_ptk; ?></td>
-                                        <td><?php echo $row->nuptk; ?></td>
                                         <td><?php echo $row->niy; ?></td>
                                         <td class="text-center">
                                             <?php if (isset($user_map[$row->id_ptk])): ?>

@@ -21,7 +21,65 @@ class Profile extends MY_Controller
 		$this->page_data['user'] = $this->users_model->getById(logged('id'));
 		$this->page_data['user']->role = $this->roles_model->getById(logged('role'));
 		$this->page_data['activeTab'] = $tab;
-		$this->load->view('account/profile', $this->page_data);
+
+		$id_ptk = $this->page_data['user']->id_ptk;
+		if (!empty($id_ptk)) {
+			$row = $this->db->get_where('ptk', ['id_ptk' => $id_ptk])->row();
+		}
+
+		if (!empty($row)) {
+			$this->page_data['row'] = $row;
+			$this->db->order_by('tahun_lulus', 'DESC');
+			$this->db->order_by('tanggal_lulus', 'DESC');
+			$this->page_data['riwayat_pendidikan'] = $this->db->get_where('ptk_riwayat_pendidikan', ['id_ptk' => $id_ptk])->result();
+			$this->db->select('ptk_dokumen_pribadi.*, master_jenis_dokumen_ptk.nama_jenis_dokumen');
+			$this->db->from('ptk_dokumen_pribadi');
+			$this->db->join('master_jenis_dokumen_ptk', 'master_jenis_dokumen_ptk.id_jenis_dokumen = ptk_dokumen_pribadi.id_jenis_dokumen', 'left');
+			$this->db->where('ptk_dokumen_pribadi.id_ptk', $id_ptk);
+			$this->db->order_by('master_jenis_dokumen_ptk.nama_jenis_dokumen', 'ASC');
+			$this->page_data['dokumen_pribadi'] = $this->db->get()->result();
+		} else {
+			// Mock data for non-PTK users
+			$mock = new stdClass();
+			$mock->id_ptk = null;
+			$mock->nama_ptk = $this->page_data['user']->name;
+			$mock->email = $this->page_data['user']->email;
+			$mock->telepon = $this->page_data['user']->phone ?? '-';
+			$mock->gelar_depan = '';
+			$mock->gelar_belakang = '';
+			$mock->penugasan = $this->page_data['user']->role->title ?? '-';
+			$mock->status_pegawai = '-';
+			$mock->niy = '-';
+			$mock->nik = '-';
+			$mock->tempat_lahir = '-';
+			$mock->tanggal_lahir = date('Y-m-d');
+			$mock->tgl_sk_pengangkatan = null;
+			$mock->no_sk_pengangkatan = '-';
+			$mock->nuptk = '-';
+			$mock->jenis_kelamin = '-';
+			$mock->agama = '-';
+			$mock->status_perkawinan = '-';
+			$mock->nama_ibu_kandung = '-';
+			$mock->alamat = $this->page_data['user']->address ?? '-';
+			$mock->rt = '-';
+			$mock->rw = '-';
+			$mock->kelurahan_desa = '-';
+			$mock->kecamatan = '-';
+			$mock->kabupaten = '-';
+			$mock->provinsi = '-';
+			$mock->status_keaktifan = 'Aktif';
+			$mock->foto = '';
+			
+			$this->page_data['row'] = $mock;
+			$this->page_data['riwayat_pendidikan'] = [];
+			$this->page_data['dokumen_pribadi'] = [];
+		}
+
+		$this->db->order_by('nama_jenis_dokumen', 'ASC');
+		$this->page_data['jenis_dokumen'] = $this->db->get_where('master_jenis_dokumen_ptk', ['status' => 'Aktif'])->result();
+		$this->page_data['provinsi'] = $this->db->get('reg_provinsi')->result();
+
+		$this->load->view('account/profile_guru', $this->page_data);
 	}
 
 	public function updateProfile()
@@ -42,12 +100,60 @@ class Profile extends MY_Controller
 
 		$id = $this->users_model->update($id, $data);
 
+		// Synchronize with PTK if linked
+		$user_row = $this->db->get_where('users', ['id' => $id])->row();
+		if ($user_row && !empty($user_row->id_ptk)) {
+			$ptk_data = [
+				'nama_ptk' => $data['name'],
+				'email'    => $data['email']
+			];
+			$this->db->where('id_ptk', $user_row->id_ptk);
+			$this->db->update('ptk', $ptk_data);
+		}
+
+
 		$this->activity_model->add("User #$id updated the profile");
 
 		$this->session->set_flashdata('alert-type', 'success');
 		$this->session->set_flashdata('alert', 'Profile has been Updated Successfully');
 
 		redirect('profile/index/edit');
+	}
+
+	public function updateProfileFallback()
+	{
+		$id = logged('id');
+
+		postAllowed();
+
+		$data = [
+			'name' => post('nama_ptk'),
+			'email' => post('email'),
+			'phone' => post('telepon'),
+			'address' => post('alamat'),
+		];
+
+		$this->users_model->update($id, $data);
+
+		if (!empty($_FILES['foto']['name'])) {
+			$path = $_FILES['foto']['name'];
+			$ext = pathinfo($path, PATHINFO_EXTENSION);
+			$this->uploadlib->initialize([
+				'file_name' => $id . '.' . $ext
+			]);
+			$image = $this->uploadlib->uploadImage('foto', '/users');
+
+			if ($image['status']) {
+				$this->users_model->update($id, ['img_type' => $ext]);
+			}
+		}
+
+		$this->activity_model->add("User #$id updated the profile");
+
+		$this->session->set_flashdata('alert-type', 'success');
+		$this->session->set_flashdata('alert', 'Profile has been Updated Successfully');
+
+		redirect('profile');
 	}
 
 	public function updatePassword()
@@ -106,6 +212,31 @@ class Profile extends MY_Controller
 
 			if ($image['status']) {
 				$this->users_model->update($id, ['img_type' => $ext]);
+
+				// Synchronize image to PTK if linked
+				$user_row = $this->db->get_where('users', ['id' => $id])->row();
+				if ($user_row && !empty($user_row->id_ptk)) {
+					$source = FCPATH . 'uploads/users/' . $id . '.' . $ext;
+					$ptk_foto_name = 'ptk_' . $user_row->id_ptk . '_' . time() . '.' . $ext;
+					$dest_dir = FCPATH . 'uploads/ptk_foto/';
+					if (!is_dir($dest_dir)) {
+						mkdir($dest_dir, 0777, true);
+					}
+					
+					if (copy($source, $dest_dir . $ptk_foto_name)) {
+						// Delete old PTK photo if it exists
+						$old_ptk = $this->db->get_where('ptk', ['id_ptk' => $user_row->id_ptk])->row();
+						if ($old_ptk && $old_ptk->foto && $old_ptk->foto != 'default.png') {
+							$old_path = $dest_dir . $old_ptk->foto;
+							if (is_file($old_path)) {
+								unlink($old_path);
+							}
+						}
+						
+						$this->db->where('id_ptk', $user_row->id_ptk);
+						$this->db->update('ptk', ['foto' => $ptk_foto_name]);
+					}
+				}
 			}
 
 			$this->activity_model->add("User #$id Updated his/her Profile Image.");

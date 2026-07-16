@@ -164,6 +164,17 @@ class Users extends MY_Controller
 
 		$id = $this->users_model->update($id, $data);
 
+		// Synchronize with PTK if linked
+		if (!empty($data['id_ptk'])) {
+			$ptk_data = [
+				'nama_ptk' => $data['name'],
+				'email'    => $data['email']
+			];
+			$this->db->where('id_ptk', $data['id_ptk']);
+			$this->db->update('ptk', $ptk_data);
+		}
+
+
 		// Hapus dan masukkan ulang ke user_roles
 		$this->db->delete('user_roles', ['user_id' => $id]);
 		if (is_array($roles)) {
@@ -187,6 +198,30 @@ class Users extends MY_Controller
 
 			if ($image['status']) {
 				$this->users_model->update($id, ['img_type' => $ext]);
+
+				// Synchronize image to PTK if linked
+				if (!empty($data['id_ptk'])) {
+					$source = FCPATH . 'uploads/users/' . $id . '.' . $ext;
+					$ptk_foto_name = 'ptk_' . $data['id_ptk'] . '_' . time() . '.' . $ext;
+					$dest_dir = FCPATH . 'uploads/ptk_foto/';
+					if (!is_dir($dest_dir)) {
+						mkdir($dest_dir, 0777, true);
+					}
+					
+					if (copy($source, $dest_dir . $ptk_foto_name)) {
+						// Delete old PTK photo if it exists
+						$old_ptk = $this->db->get_where('ptk', ['id_ptk' => $data['id_ptk']])->row();
+						if ($old_ptk && $old_ptk->foto && $old_ptk->foto != 'default.png') {
+							$old_path = $dest_dir . $old_ptk->foto;
+							if (is_file($old_path)) {
+								unlink($old_path);
+							}
+						}
+						
+						$this->db->where('id_ptk', $data['id_ptk']);
+						$this->db->update('ptk', ['foto' => $ptk_foto_name]);
+					}
+				}
 			}
 		}
 

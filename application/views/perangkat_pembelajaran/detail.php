@@ -134,10 +134,11 @@
                                     'file_cp'        => ['label' => '1. Capaian Pembelajaran (CP)',              'key' => 'cp',        'accept' => '.docx,.xlsx',                                                          'hint' => 'DOCX / XLSX saja'],
                                     'file_tp'        => ['label' => '2. Tujuan Pembelajaran (TP)',               'key' => 'tp',        'accept' => '.docx,.xlsx',                                                          'hint' => 'DOCX / XLSX saja'],
                                     'file_atp'       => ['label' => '3. Alur Tujuan Pembelajaran (ATP)',         'key' => 'atp',       'accept' => '.docx,.xlsx',                                                          'hint' => 'DOCX / XLSX saja'],
-                                    'file_kisi_sts'  => ['label' => '4. Kisi-kisi Sumatif Tengah Semester (STS)', 'key' => 'kisi_sts', 'accept' => '.docx,.xlsx',                                                          'hint' => 'DOCX / XLSX saja'],
-                                    'file_soal_sts'  => ['label' => '5. Soal Sumatif Tengah Semester (STS)',    'key' => 'soal_sts',  'accept' => '.docx,.xlsx',                                                          'hint' => 'DOCX / XLSX saja'],
-                                    'file_kisi_sas'  => ['label' => '6. Kisi-kisi Sumatif Akhir Semester (SAS)', 'key' => 'kisi_sas',  'accept' => '.docx,.xlsx',                                                          'hint' => 'DOCX / XLSX saja'],
-                                    'file_soal_sas'  => ['label' => '7. Soal Sumatif Akhir Semester (SAS)',     'key' => 'soal_sas',  'accept' => '.docx,.xlsx',                                                          'hint' => 'DOCX / XLSX saja'],
+                                    'file_kktp'      => ['label' => '4. Kriteria Ketercapaian Tujuan Pembelajaran (KKTP)', 'key' => 'kktp', 'accept' => '.docx,.xlsx',                                                      'hint' => 'DOCX / XLSX saja'],
+                                    'file_kisi_sts'  => ['label' => '5. Kisi-kisi Sumatif Tengah Semester (STS)', 'key' => 'kisi_sts', 'accept' => '.docx,.xlsx',                                                          'hint' => 'DOCX / XLSX saja'],
+                                    'file_soal_sts'  => ['label' => '6. Soal Sumatif Tengah Semester (STS)',    'key' => 'soal_sts',  'accept' => '.docx,.xlsx',                                                          'hint' => 'DOCX / XLSX saja'],
+                                    'file_kisi_sas'  => ['label' => '7. Kisi-kisi Sumatif Akhir Semester (SAS)', 'key' => 'kisi_sas',  'accept' => '.docx,.xlsx',                                                          'hint' => 'DOCX / XLSX saja'],
+                                    'file_soal_sas'  => ['label' => '8. Soal Sumatif Akhir Semester (SAS)',     'key' => 'soal_sas',  'accept' => '.docx,.xlsx',                                                          'hint' => 'DOCX / XLSX saja'],
                                 ];
                                 $no = 1;
                                 foreach ($files_config as $field => $cfg):
@@ -198,7 +199,7 @@
                                             <?php else: ?>
                                                  <?php 
                                                  // Determine sequential generation access
-                                                 $seq_order = ['file_cp', 'file_tp', 'file_atp', 'file_kisi_sts', 'file_soal_sts', 'file_kisi_sas', 'file_soal_sas'];
+                                                 $seq_order = ['file_cp', 'file_tp', 'file_atp', 'file_kktp', 'file_kisi_sts', 'file_soal_sts', 'file_kisi_sas', 'file_soal_sas'];
                                                  $current_idx = array_search($field, $seq_order);
                                                  $can_generate_ai = true;
                                                  $prev_label = '';

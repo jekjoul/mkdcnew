@@ -136,7 +136,11 @@ class Ptk extends MY_Controller
 			$this->session->set_flashdata('alert', 'Riwayat Pendidikan Gagal Ditambahkan');
 		}
 
-		redirect('ptk/ptkDetail/' . $id_ptk);
+		if (isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], 'profile') !== false) {
+			redirect('profile');
+		} else {
+			redirect('ptk/ptkDetail/' . $id_ptk);
+		}
 	}
 
 	public function ptkPendidikanUpdate($id_pendidikan)
@@ -161,7 +165,11 @@ class Ptk extends MY_Controller
 			$this->session->set_flashdata('alert', 'Riwayat Pendidikan Gagal Diperbarui');
 		}
 
-		redirect('ptk/ptkDetail/' . $pendidikan->id_ptk);
+		if (isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], 'profile') !== false) {
+			redirect('profile');
+		} else {
+			redirect('ptk/ptkDetail/' . $pendidikan->id_ptk);
+		}
 	}
 
 	public function ptkPendidikanHapus($id_pendidikan)
@@ -185,7 +193,11 @@ class Ptk extends MY_Controller
 			$this->session->set_flashdata('alert', 'Riwayat Pendidikan Gagal Dihapus');
 		}
 
-		redirect('ptk/ptkDetail/' . $pendidikan->id_ptk);
+		if (isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], 'profile') !== false) {
+			redirect('profile');
+		} else {
+			redirect('ptk/ptkDetail/' . $pendidikan->id_ptk);
+		}
 	}
 
 	public function ptkPendidikanUpload($id_pendidikan)
@@ -213,7 +225,11 @@ class Ptk extends MY_Controller
 			$this->session->set_flashdata('alert', $upload['message']);
 		}
 
-		redirect('ptk/ptkDetail/' . $pendidikan->id_ptk);
+		if (isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], 'profile') !== false) {
+			redirect('profile');
+		} else {
+			redirect('ptk/ptkDetail/' . $pendidikan->id_ptk);
+		}
 	}
 
 	private function pendidikanData($id_ptk)
@@ -602,14 +618,74 @@ class Ptk extends MY_Controller
 			'status_keaktifan' => post('status_keaktifan'),
 		];
 
+		if (!empty($_FILES['foto']['name'])) {
+			$upload_path = FCPATH . 'uploads/ptk_foto/';
+			if (!is_dir($upload_path)) {
+				mkdir($upload_path, 0777, true);
+			}
+
+			$ext = pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION);
+			$config['upload_path'] = $upload_path;
+			$config['allowed_types'] = 'jpg|jpeg|png';
+			$config['max_size'] = 2048;
+			$config['file_name'] = 'ptk_' . $id . '_' . time() . '.' . $ext;
+
+			$this->load->library('upload');
+			$this->upload->initialize($config);
+
+			if ($this->upload->do_upload('foto')) {
+				$upload_data = $this->upload->data();
+				$data['foto'] = $upload_data['file_name'];
+				
+				// Delete old file
+				$old_ptk = $this->db->get_where($this->table, ['id_ptk' => $id])->row();
+				if ($old_ptk && $old_ptk->foto && $old_ptk->foto != 'default.png') {
+					if (is_file($upload_path . $old_ptk->foto)) {
+						unlink($upload_path . $old_ptk->foto);
+					}
+				}
+			}
+		}
+
 		$this->db->where('id_ptk', $id);
 		$this->db->update($this->table, $data);
+
+		// Synchronize with Users table if linked
+		$user = $this->db->get_where('users', ['id_ptk' => $id])->row();
+		if ($user) {
+			$user_data = [
+				'name' => $data['nama_ptk'],
+				'email' => $data['email']
+			];
+
+			if (isset($data['foto'])) {
+				// Copy from uploads/ptk_foto/ to uploads/users/
+				$source = FCPATH . 'uploads/ptk_foto/' . $data['foto'];
+				$ext = pathinfo($data['foto'], PATHINFO_EXTENSION);
+				$dest_dir = FCPATH . 'uploads/users/';
+				if (!is_dir($dest_dir)) {
+					mkdir($dest_dir, 0777, true);
+				}
+				
+				if (copy($source, $dest_dir . $user->id . '.' . $ext)) {
+					$user_data['img_type'] = $ext;
+				}
+			}
+
+			$this->db->where('id_ptk', $id);
+			$this->db->update('users', $user_data);
+		}
 
 		$this->activity_model->add(logged('name') . ' Mengubah data PTK: ' . $data['nama_ptk'], logged('id'));
 
 		$this->session->set_flashdata('alert-type', 'success');
 		$this->session->set_flashdata('alert', 'Data PTK Berhasil Diperbarui');
-		redirect('ptk/ptk');
+		
+		if (isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], 'profile') !== false) {
+			redirect('profile');
+		} else {
+			redirect('ptk/ptk');
+		}
 	}
 
 	public function ptkHapus($id)

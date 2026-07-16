@@ -586,26 +586,28 @@ class Guru extends MY_Controller
             return $this->notLinked();
         }
 
-        $id = $ptk->id_ptk;
-        $this->setPage('Portal Guru', 'Profil Saya', 'guru/profil', 'icon-park-outline:user-business');
-        $this->page_data['row'] = $ptk;
+        $id_ptk = $ptk->id_ptk;
+        $row = $this->db->get_where('ptk', ['id_ptk' => $id_ptk])->row();
+
+        $this->setPage('Portal Guru', 'Profil Saya', 'guru/profil', 'solar:user-circle-linear');
         $this->page_data['ptk'] = $ptk;
+        $this->page_data['row'] = $row;
 
         $this->db->order_by('tahun_lulus', 'DESC');
         $this->db->order_by('tanggal_lulus', 'DESC');
-        $this->page_data['riwayat_pendidikan'] = $this->db->get_where('ptk_riwayat_pendidikan', ['id_ptk' => $id])->result();
+        $this->page_data['riwayat_pendidikan'] = $this->db->get_where('ptk_riwayat_pendidikan', ['id_ptk' => $id_ptk])->result();
 
         $this->db->select('ptk_dokumen_pribadi.*, master_jenis_dokumen_ptk.nama_jenis_dokumen');
         $this->db->from('ptk_dokumen_pribadi');
         $this->db->join('master_jenis_dokumen_ptk', 'master_jenis_dokumen_ptk.id_jenis_dokumen = ptk_dokumen_pribadi.id_jenis_dokumen', 'left');
-        $this->db->where('ptk_dokumen_pribadi.id_ptk', $id);
+        $this->db->where('ptk_dokumen_pribadi.id_ptk', $id_ptk);
         $this->db->order_by('master_jenis_dokumen_ptk.nama_jenis_dokumen', 'ASC');
         $this->page_data['dokumen_pribadi'] = $this->db->get()->result();
 
         $this->db->order_by('nama_jenis_dokumen', 'ASC');
         $this->page_data['jenis_dokumen'] = $this->db->get_where('master_jenis_dokumen_ptk', ['status' => 'Aktif'])->result();
-
         $this->page_data['provinsi'] = $this->db->get('reg_provinsi')->result();
+
         $this->load->view('guru/profil', $this->page_data);
     }
 
