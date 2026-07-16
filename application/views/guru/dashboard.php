@@ -22,7 +22,7 @@
         <div class="col-md-4">
             <div class="card h-100">
                 <div class="card-body">
-                    <span class="text-secondary-light d-block">Jadwal Mengajar</span>
+                    <span class="text-secondary-light d-block">Total Jam Mengajar</span>
                     <h4 class="mb-0"><?php echo (int) $jumlah_jadwal ?></h4>
                     <a href="<?php echo url('guru/jadwal') ?>" class="btn btn-sm btn-warning-600 mt-3">Lihat Jadwal</a>
                 </div>
@@ -30,7 +30,7 @@
         </div>
     </div>
 
-    <div class="card">
+    <div class="card mt-20">
         <div class="card-header bg-warning-900">
             <h6 class="text-light mb-0">Portal Guru</h6>
         </div>
