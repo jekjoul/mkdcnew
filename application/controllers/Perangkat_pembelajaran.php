@@ -132,7 +132,12 @@ class Perangkat_pembelajaran extends MY_Controller
         $this->load->library('GoogleDrive_Helper');
 
         $drive_error = null;
+        $upload_error = null;
         foreach ($fields as $field) {
+            if (empty($_FILES[$field]['name'])) {
+                continue;
+            }
+            
             $file_name = $this->uploadFile($field, $id_pembelajaran_mapel);
             if ($file_name) {
                 $uploaded[$field] = $file_name;
@@ -148,7 +153,16 @@ class Perangkat_pembelajaran extends MY_Controller
                 } elseif (isset($drive_res['error'])) {
                     $drive_error = $drive_res['error'];
                 }
+            } else {
+                $upload_error = $this->upload->display_errors('', '');
             }
+        }
+
+        if ($upload_error) {
+            $this->session->set_flashdata('alert-type', 'danger');
+            $this->session->set_flashdata('alert', 'Gagal mengunggah berkas: ' . $upload_error);
+            redirect('perangkat_pembelajaran/detail/' . $id_pembelajaran_mapel);
+            return;
         }
 
         if (!empty($uploaded)) {
@@ -847,7 +861,7 @@ class Perangkat_pembelajaran extends MY_Controller
         if (empty($_FILES[$fieldName]['name'])) return null;
 
         $config['upload_path'] = './uploads/perangkat_pembelajaran/';
-        $config['allowed_types'] = 'docx|xlsx';
+        $config['allowed_types'] = 'docx|xlsx|pdf|doc|xls';
         $config['max_size'] = 10240; // 10MB
         $config['file_name'] = $fieldName . '_' . $id_pembelajaran_mapel . '_' . time();
 
