@@ -21,8 +21,8 @@
                         <?php foreach ($items as $row): ?>
                             <tr>
                                 <td><?php echo html_escape($row->tahun_pelajaran) ?> (<?php echo html_escape($row->semester) ?>)</td>
-                                <td><?php echo html_escape(trim($row->nama_lembaga . ' ' . $row->nama_tingkat . ' ' . $row->nama_rombel)) ?></td>
-                                <td><?php echo html_escape($row->nama_mapel) ?> <?php echo $row->mapel_singkat ? '(' . html_escape($row->mapel_singkat) . ')' : '' ?></td>
+                                <td>(<?php echo html_escape(trim((isset($row->nama_lembaga_singkat) && $row->nama_lembaga_singkat ? $row->nama_lembaga_singkat : $row->nama_lembaga) . ') ' . $row->nama_tingkat . ' - ' . $row->nama_rombel)) ?></td>
+                                <td><?php echo html_escape($row->nama_mapel) ?> </td>
                                 <td><?php echo (int) $row->jumlah_siswa ?></td>
                                 <td><?php echo (int) $row->jumlah_dinilai ?></td>
                                 <td>

@@ -40,15 +40,6 @@
                     </li>
                 <?php endif; ?>
 
-                <?php if (hasPermissions('menu_pembelajaran_guru')): ?>
-                    <li>
-                        <a href="<?php echo url('guru/pembelajaran') ?>">
-                            <iconify-icon icon="solar:notebook-bookmark-linear" class="menu-icon"></iconify-icon>
-                            <span>Pembelajaran Saya</span>
-                        </a>
-                    </li>
-                <?php endif; ?>
-
                 <?php if (hasPermissions('menu_perangkat_guru')): ?>
                     <li>
                         <a href="<?php echo url('guru/perangkat') ?>">
@@ -261,51 +252,13 @@
     </li>
 <?php endif; ?>
 
-<?php
-$CI->db->select('p.id_pembelajaran, l.nama_lembaga, l.nama_lembaga_singkat, t.nama_tingkat, t.tingkat_angka, r.nama_rombel');
-$CI->db->from('pembelajaran p');
-$CI->db->join('lembaga l', 'p.id_lembaga = l.id_lembaga');
-$CI->db->join('master_tingkat_sekolah t', 'p.id_tingkat_sekolah = t.id_tingkat_sekolah');
-$CI->db->join('rombel r', 'p.id_rombel = r.id_rombel');
-$CI->db->join('pembelajaran_tahun_pelajaran tp', 'p.id_tahun_pelajaran = tp.id_tahun_pelajaran');
-$CI->db->where('tp.status', 'Aktif');
-$CI->db->where('p.status', 'Aktif');
-$CI->db->order_by('l.nama_lembaga', 'ASC');
-$CI->db->order_by('t.tingkat_angka', 'ASC');
-$CI->db->order_by('r.nama_rombel', 'ASC');
-$menu_pembelajaran_siswa = $CI->db->get()->result();
-$menu_siswa_lembaga = [];
-foreach ($menu_pembelajaran_siswa as $menu_row) {
-    $menu_siswa_lembaga[$menu_row->nama_lembaga_singkat][] = $menu_row;
-}
-?>
 <?php if (hasPermissions('menu_kesiswaan_data_siswa')): ?>
-    <?php foreach ($menu_siswa_lembaga as $nama_lembaga_singkat => $menu_rows): ?>
-        <li class="dropdown">
-            <a href="javascript:void(0)">
-                <iconify-icon icon="lucide:users" class="menu-icon"></iconify-icon>
-                <span>Data Siswa <?php echo html_escape($nama_lembaga_singkat) ?></span>
-            </a>
-            <ul class="sidebar-submenu">
-                <?php foreach ($menu_rows as $menu_row): ?>
-                    <li>
-                        <a href="<?php echo url('siswa/pembelajaran/' . $menu_row->id_pembelajaran) ?>">
-                            <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> <?php echo $menu_row->nama_tingkat ?> - <?php echo $menu_row->nama_rombel ?>
-                        </a>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-        </li>
-    <?php endforeach; ?>
-
-    <?php if (hasPermissions('menu_kesiswaan_data_siswa')): ?>
         <li>
             <a href="<?php echo url('siswa/nonaktif') ?>">
                 <iconify-icon icon="lucide:user-x" class="menu-icon"></iconify-icon>
                 <span>Data Siswa Tidak Aktif</span>
             </a>
         </li>
-    <?php endif; ?>
 
     <!-- <li>
         <a href="<?php echo url('siswa/kelulusan') ?>">
@@ -316,45 +269,12 @@ foreach ($menu_pembelajaran_siswa as $menu_row) {
 
 <?php endif; ?>
 
-
-
-<?php if (hasPermissions('menu_pembelajaran') || hasPermissions('menu_tugas_tambahan_ptk') || hasPermissions('menu_jadwal_pelajaran') || hasPermissions('menu_jadwal_tidak_aktif') || hasPermissions('menu_perangkat_pembelajaran') || hasPermissions('menu_nilai_siswa') || hasPermissions('menu_tahun_pelajaran') || hasPermissions('menu_ekstrakurikuler')): ?>
+<?php if (hasPermissions('menu_tugas_tambahan_ptk') || hasPermissions('menu_jadwal_pelajaran') || hasPermissions('menu_jadwal_tidak_aktif') || hasPermissions('menu_perangkat_pembelajaran') || hasPermissions('menu_nilai_siswa') || hasPermissions('menu_tahun_pelajaran') || hasPermissions('menu_ekstrakurikuler')): ?>
     <li class="sidebar-menu-group-title"
         style="background: #d3c5b1;
-        background: linear-gradient(90deg, rgb(255, 233, 135) 0%, rgba(255, 255, 255, 0) 100%);">Pembelajaran
+        background: linear-gradient(90deg, rgb(255, 233, 135) 0%, rgba(255, 255, 255, 0) 100%);">
+        Pembelajaran
     </li>
-<?php endif; ?>
-
-<?php if (hasPermissions('menu_pembelajaran') || hasPermissions('menu_tugas_tambahan_ptk') || hasPermissions('menu_jadwal_pelajaran') || hasPermissions('menu_jadwal_tidak_aktif') || hasPermissions('menu_perangkat_pembelajaran') || hasPermissions('menu_nilai_siswa') || hasPermissions('menu_tahun_pelajaran') || hasPermissions('menu_ekstrakurikuler')): ?>
-
-    <?php if (hasPermissions('menu_pembelajaran')): ?>
-        <li class="dropdown">
-            <a href="#">
-                <iconify-icon icon="material-symbols:bookmark-added-outline" class="menu-icon"></iconify-icon>
-                <span>Pembelajaran</span>
-            </a>
-            <ul class="sidebar-submenu">
-                <li>
-                    <a href="<?php echo url('pembelajaran') ?>">
-                        <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
-                        Daftar Pembelajaran
-                    </a>
-                </li>
-                <li>
-                    <a href="<?php echo url('pembelajaran/nonaktif') ?>">
-                        <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
-                        Data Tidak Aktif
-                    </a>
-                </li>
-                <li>
-                    <a href="<?php echo url('pembelajaran/tambah') ?>">
-                        <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
-                        Atur Pembelajaran Baru
-                    </a>
-                </li>
-            </ul>
-        </li>
-    <?php endif; ?>
 
     <?php if (hasPermissions('menu_tugas_tambahan_ptk')): ?>
         <li>
