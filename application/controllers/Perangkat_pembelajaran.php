@@ -117,7 +117,7 @@ class Perangkat_pembelajaran extends MY_Controller
         }
 
         $fields = [
-            'file_cp', 'file_tp', 'file_atp', 'file_modul_ajar',
+            'file_cp', 'file_tp', 'file_atp', 'file_kktp', 'file_modul_ajar',
             'file_kisi_sts', 'file_soal_sts', 'file_kisi_sas', 'file_soal_sas'
         ];
 
@@ -190,7 +190,7 @@ class Perangkat_pembelajaran extends MY_Controller
         ifPermissions('perangkat_pembelajaran_edit');
         
         $fields = [
-            'cp' => 'file_cp', 'tp' => 'file_tp', 'atp' => 'file_atp', 'modul_ajar' => 'file_modul_ajar',
+            'cp' => 'file_cp', 'tp' => 'file_tp', 'atp' => 'file_atp', 'kktp' => 'file_kktp', 'modul_ajar' => 'file_modul_ajar',
             'kisi_sts' => 'file_kisi_sts', 'soal_sts' => 'file_soal_sts', 'kisi_sas' => 'file_kisi_sas', 'soal_sas' => 'file_soal_sas'
         ];
 
@@ -221,7 +221,7 @@ class Perangkat_pembelajaran extends MY_Controller
         ifPermissions('perangkat_pembelajaran_list');
 
         $fields = [
-            'cp' => 'file_cp', 'tp' => 'file_tp', 'atp' => 'file_atp', 'modul_ajar' => 'file_modul_ajar',
+            'cp' => 'file_cp', 'tp' => 'file_tp', 'atp' => 'file_atp', 'kktp' => 'file_kktp', 'modul_ajar' => 'file_modul_ajar',
             'kisi_sts' => 'file_kisi_sts', 'soal_sts' => 'file_soal_sts', 'kisi_sas' => 'file_kisi_sas', 'soal_sas' => 'file_soal_sas'
         ];
 
@@ -270,6 +270,7 @@ class Perangkat_pembelajaran extends MY_Controller
             'file_cp' => ['name' => 'Capaian Pembelajaran (CP)', 'ext' => 'docx', 'type' => 'word'],
             'file_tp' => ['name' => 'Tujuan Pembelajaran (TP)', 'ext' => 'docx', 'type' => 'word'],
             'file_atp' => ['name' => 'Alur Tujuan Pembelajaran (ATP)', 'ext' => 'docx', 'type' => 'word'],
+            'file_kktp' => ['name' => 'Kriteria Ketercapaian Tujuan Pembelajaran (KKTP)', 'ext' => 'docx', 'type' => 'word'],
             'file_kisi_sts' => ['name' => 'Kisi-kisi STS', 'ext' => 'docx', 'type' => 'word'],
             'file_soal_sts' => ['name' => 'Soal STS', 'ext' => 'docx', 'type' => 'word'],
             'file_kisi_sas' => ['name' => 'Kisi-kisi SAS', 'ext' => 'docx', 'type' => 'word'],
@@ -281,7 +282,7 @@ class Perangkat_pembelajaran extends MY_Controller
         }
 
         // Sequential validation check
-        $seq_order = ['file_cp', 'file_tp', 'file_atp', 'file_kisi_sts', 'file_soal_sts', 'file_kisi_sas', 'file_soal_sas'];
+        $seq_order = ['file_cp', 'file_tp', 'file_atp', 'file_kktp', 'file_kisi_sts', 'file_soal_sts', 'file_kisi_sas', 'file_soal_sas'];
         $current_idx = array_search($field, $seq_order);
         $perangkat = $this->perangkat_model->getPerangkatByMapel($id_pembelajaran_mapel);
 
@@ -367,7 +368,7 @@ class Perangkat_pembelajaran extends MY_Controller
                     . "   3. Materi\n"
                     . "   4. Kelas/Semester\n"
                     . "   5. Indikator Soal\n"
-                    . "   6. Level Kognitif\n"
+                    . "   6. Level Kognitif (PENTING: Isi dengan format lengkap kombinasi level L dan taksonomi Bloom C, contoh: 'L3 (C4 - Analisis)' atau 'L3 (C5)'. JANGAN HANYA menulis 'L3' saja)\n"
                     . "   7. Dimensi Pengetahuan\n"
                     . "   8. Bentuk Soal\n"
                     . "   9. No. Soal\n"
@@ -405,10 +406,29 @@ class Perangkat_pembelajaran extends MY_Controller
                         . "5. PENTING: Di dalam seluruh isi dokumen, hindari penggunaan istilah/kata 'peserta didik', ganti/gunakan kata 'murid' sebagai gantinya.\n"
                         . "6. Kirimkan langsung berupa tag HTML mentah saja (tanpa pembungkus markdown ```html).";
             } else {
+                $cp_instruction = "";
+                if ($field === 'file_cp') {
+                    $cp_instruction = "\nKHUSUS UNTUK CAPAIAN PEMBELAJARAN (CP), pastikan dokumen memuat struktur dan urutan judul persis seperti berikut (jangan ada yang terlewat):"
+                                    . "\nA. Rasional Mata Pelajaran"
+                                    . "\nB. Tujuan Mata Pelajaran"
+                                    . "\nC. Karakteristik Mata Pelajaran (harus memuat penjelasan dan tabel yang berisi kolom Elemen dan Deskripsinya)"
+                                    . "\nD. Capaian Pembelajaran (harus memuat tabel yang berisi kolom Elemen dan Capaian Pembelajaran)\n";
+                } elseif ($field === 'file_atp') {
+                    $cp_instruction = "\nKHUSUS UNTUK ALUR TUJUAN PEMBELAJARAN (ATP), pastikan dokumen memuat struktur dan urutan judul persis seperti berikut (jangan ada yang terlewat):"
+                                    . "\nA. Rasional dan Konteks"
+                                    . "\nB. Capaian Pembelajaran Fase Terkait"
+                                    . "\nC. Capaian Pembelajaran Berdasarkan Elemen (harus memuat tabel Elemen dan Capaian Pembelajaran)"
+                                    . "\nD. Peta Konsep (jelaskan secara naratif)"
+                                    . "\nE. Tujuan Pembelajaran Kelas Terkait (harus memuat tabel Elemen dan Tujuan Pembelajaran)"
+                                    . "\nF. Alur Tujuan Pembelajaran"
+                                    . "\nG. Contoh Urutan Pembelajaran (harus memuat tabel Program Semester yang memuat urutan per minggu, materi, kode aktivitas, dan asesmen)\n";
+                }
+
                 $prompt = "Anda adalah pakar kurikulum dan pendidik di Indonesia. "
                         . "Buatlah draft dokumen resmi '{$field_info['name']}' yang mendalam dan komprehensif untuk mata pelajaran '{$subject}', "
                         . "tingkat kelas '{$class_level}', semester '{$semester}', dengan acuan '{$kurikulum}'."
                         . $prev_file_context
+                        . $cp_instruction
                         . "\nDesainlah isian dokumen tersebut dengan format HTML terstruktur rapi menggunakan heading (h1, h2, h3), list (ul, ol), dan tabel yang menarik untuk dibaca. "
                         . "Pastikan isinya sangat relevan dengan kurikulum dan kebutuhan sekolah formal di Indonesia saat ini. "
                         . "PENTING: Di dalam seluruh isi dokumen, hindari penggunaan istilah/kata 'peserta didik', ganti/gunakan kata 'murid' sebagai gantinya. "
@@ -614,14 +634,31 @@ class Perangkat_pembelajaran extends MY_Controller
         $topic = post('topic') ?: 'Materi Pokok Pertemuan Pertama';
 
         $prompt = "Anda adalah pakar pendidik Kurikulum Merdeka di Indonesia. "
-                . "Buatlah satu Rencana Pelaksanaan Pembelajaran (RPP) / Modul Ajar interaktif yang mendalam untuk kelas '{$item->nama_tingkat}' "
+                . "Buatlah satu Modul Ajar (RPP) interaktif yang mendalam untuk kelas '{$item->nama_tingkat}' "
                 . "mata pelajaran '{$item->nama_mapel}' dengan topik spesifik '{$topic}'. "
-                . "Fokus pada struktur baku Kurikulum Merdeka yang mencakup: "
-                . "1. Informasi Umum (Identitas, Kompetensi Awal, Profil Pelajar Pancasila, Sarpras, Target Murid). "
-                . "2. Komponen Inti (Tujuan Pembelajaran, Pemahaman Bermakna, Pertanyaan Pemantik, Kegiatan Pembelajaran Pembuka-Inti-Penutup, Asesmen). "
-                . "3. Lampiran (Lembar Kerja Murid - LKM, Bahan Bacaan Guru & Murid, Glosarium, Daftar Pustaka). "
-                . "Keluaran HARUS berupa HTML terstruktur rapi menggunakan heading (h1, h2, h3), list (ul, ol), dan tabel yang menarik untuk dibaca. "
-                . "PENTING: Di dalam seluruh isi dokumen, hindari penggunaan istilah/kata 'peserta didik', ganti/gunakan kata 'murid' sebagai gantinya. "
+                . "\n\nPastikan dokumen memuat struktur dan urutan judul persis seperti berikut (jangan ada yang terlewat): "
+                . "\nINFORMASI UMUM"
+                . "\nI. IDENTITAS MODUL"
+                . "\nII. KOMPETENSI AWAL"
+                . "\nIII. PROFIL PELAJAR PANCASILA"
+                . "\nIV. SARANA DAN PRASARANA"
+                . "\nV. TARGET MURID"
+                . "\nVI. MODEL PEMBELAJARAN"
+                . "\n\nKOMPONEN INTI"
+                . "\nI. TUJUAN PEMBELAJARAN"
+                . "\nII. PEMAHAMAN BERMAKNA"
+                . "\nIII. PERTANYAAN PEMANTIK"
+                . "\nIV. KEGIATAN PEMBELAJARAN (Terdiri dari Kegiatan Pendahuluan, Inti, Penutup)"
+                . "\nV. ASESMEN (Beserta Rubrik Penilaian)"
+                . "\nVI. PENGAYAAN DAN REMEDIAL"
+                . "\nVII. REFLEKSI GURU DAN MURID"
+                . "\n\nLAMPIRAN-LAMPIRAN"
+                . "\nLAMPIRAN 1 LEMBAR KERJA MURID (LKM)"
+                . "\nLAMPIRAN 2 BAHAN BACAAN GURU DAN MURID"
+                . "\nLAMPIRAN 3 GLOSARIUM"
+                . "\nLAMPIRAN 4 DAFTAR PUSTAKA"
+                . "\n\nKeluaran HARUS berupa HTML terstruktur rapi menggunakan heading (h1, h2, h3, h4), list (ul, ol), dan tabel yang menarik untuk dibaca. "
+                . "PENTING: Di dalam seluruh isi dokumen, hindari penggunaan istilah/kata 'peserta didik' atau 'siswa', ganti/gunakan kata 'murid' sebagai gantinya (seperti tercermin pada judul di atas). "
                 . "Jangan gunakan pembungkus markdown code block (```html), kirimkan teks HTML mentah saja.";
 
         $this->load->library('GoogleAI_Helper');

@@ -31,6 +31,15 @@
                     <li class="sidebar-menu-group-title">Portal Guru</li>
                 <?php endif; ?>
 
+                <?php if (hasPermissions('menu_profil_ptk_guru')): ?>
+                    <li>
+                        <a href="<?php echo url('profile') ?>">
+                            <iconify-icon icon="icon-park-outline:user-business" class="menu-icon"></iconify-icon>
+                            <span>Profil Saya</span>
+                        </a>
+                    </li>
+                <?php endif; ?>
+
                 <?php if (hasPermissions('menu_data_siswa_guru')): ?>
                     <li>
                         <a href="<?php echo url('guru/siswa') ?>">
@@ -67,14 +76,7 @@
                     </li>
                 <?php endif; ?>
 
-                <?php if (hasPermissions('menu_profil_ptk_guru')): ?>
-                    <li>
-                        <a href="<?php echo url('guru/profil') ?>">
-                            <iconify-icon icon="icon-park-outline:user-business" class="menu-icon"></iconify-icon>
-                            <span>Profil Saya</span>
-                        </a>
-                    </li>
-                <?php endif; ?>
+                
             <?php endif; ?>
 
 <?php if (hasPermissions('menu_dashboard')): ?>

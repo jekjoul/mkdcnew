@@ -90,17 +90,10 @@ if (empty($row->id_ptk)) {
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link d-flex align-items-center px-24" id="pills-pembelajaran-tab"
-                                data-bs-toggle="pill" data-bs-target="#pills-pembelajaran" type="button" role="tab"
-                                aria-controls="pills-pembelajaran" aria-selected="false" tabindex="-1">
-                                Pembelajaran
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link d-flex align-items-center px-24" id="pills-riwayat-tab"
-                                data-bs-toggle="pill" data-bs-target="#pills-riwayat" type="button" role="tab"
-                                aria-controls="pills-riwayat" aria-selected="false" tabindex="-1">
-                                Jadwal Mengajar
+                            <button class="nav-link d-flex align-items-center px-24" id="pills-riwayat-pendidikan-tab"
+                                data-bs-toggle="pill" data-bs-target="#pills-riwayat-pendidikan" type="button" role="tab"
+                                aria-controls="pills-riwayat-pendidikan" aria-selected="false" tabindex="-1">
+                                Riwayat Pendidikan
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
@@ -124,13 +117,7 @@ if (empty($row->id_ptk)) {
                                 Keamanan
                             </button>
                         </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link d-flex align-items-center px-24" id="pills-google-tab"
-                                data-bs-toggle="pill" data-bs-target="#pills-google" type="button" role="tab"
-                                aria-controls="pills-google" aria-selected="false" tabindex="-1">
-                                Integrasi
-                            </button>
-                        </li>
+                        
                     </ul>
 
                     <div class="tab-content" id="pills-tabContent">
@@ -388,6 +375,15 @@ if (empty($row->id_ptk)) {
 
                             </div>
 
+                            
+
+
+
+                        </div>
+                        <!-- End of Profil -->
+
+                        <!-- Riwayat Pendidikan -->
+                        <div class="tab-pane fade" id="pills-riwayat-pendidikan" role="tabpanel" aria-labelledby="pills-riwayat-pendidikan-tab" tabindex="0">
                             <div class="row mt-20">
                                 <div class="col-xl-12">
                                     <div class="card shadow">
@@ -498,517 +494,8 @@ if (empty($row->id_ptk)) {
                                     </div>
                                 </div>
                             </div>
-
-
-
                         </div>
-                        <!-- End of Profil -->
-
-                        <!-- Pembelajaran -->
-                        <div class="tab-pane fade" id="pills-pembelajaran" role="tabpanel" aria-labelledby="pills-pembelajaran-tab" tabindex="0">
-                            <div class="row">
-                                <div class="col-xl-12">
-                                    <div class="card shadow">
-                                        <div class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
-                                            <h6 class="text-lg mb-0">Pembelajaran Aktif</h6>
-                                            <button type="button" class="text-xl line-height-1">
-                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon>
-                                            </button>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="table-responsive">
-                                                <table class="table bordered-table" data-page-length='10'>
-                                                    <thead>
-                                                        <tr>
-                                                            <th scope="col">No</th>
-                                                            <th scope="col">Mata Pelajaran</th>
-                                                            <th scope="col">Jml Jam</th>
-                                                            <th scope="col">Rombel</th>
-                                                            <th scope="col">Tahun Pelajaran</th>
-                                                            <th scope="col" class="text-center">Aksi</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr>
-                                                            <td>1</td>
-                                                            <td>Seni & Budaya</td>
-                                                            <td>2</td>
-                                                            <td>VII - Al Maturidi</td>
-                                                            <td>2025/2026 Ganjil</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </a>
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>2</td>
-                                                            <td>Seni & Budaya</td>
-                                                            <td>2</td>
-                                                            <td>VII - Az Zahrawi</td>
-                                                            <td>2025/2026 Ganjil</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </a>
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>3</td>
-                                                            <td>Seni & Budaya</td>
-                                                            <td>2</td>
-                                                            <td>VIII - Maliki</td>
-                                                            <td>2025/2026 Ganjil</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </a>
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>4</td>
-                                                            <td>Seni & Budaya</td>
-                                                            <td>2</td>
-                                                            <td>VII - Syafi'i</td>
-                                                            <td>2025/2026 Ganjil</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </a>
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>5</td>
-                                                            <td>Seni & Budaya</td>
-                                                            <td>2</td>
-                                                            <td>IX - Az Zarnuji</td>
-                                                            <td>2025/2026 Ganjil</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </a>
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>6</td>
-                                                            <td>Seni & Budaya</td>
-                                                            <td>2</td>
-                                                            <td>IX - Sonhaji</td>
-                                                            <td>2025/2026 Ganjil</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </a>
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>7</td>
-                                                            <td>Seni & Budaya</td>
-                                                            <td>2</td>
-                                                            <td>X - Al Jazari</td>
-                                                            <td>2025/2026 Ganjil</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </a>
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>8</td>
-                                                            <td>Seni & Budaya</td>
-                                                            <td>2</td>
-                                                            <td>XI - Hanafi</td>
-                                                            <td>2025/2026 Ganjil</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </a>
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>9</td>
-                                                            <td>Seni & Budaya</td>
-                                                            <td>2</td>
-                                                            <td>XII - Khalid</td>
-                                                            <td>2025/2026 Ganjil</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </a>
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row mt-20">
-                                <div class="col-md-12">
-                                    <div class="card shadow">
-                                        <div class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
-                                            <h6 class="text-lg mb-0">Riwayat Pembelajaran</h6>
-                                            <button type="button" class="text-xl line-height-1">
-                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon>
-                                            </button>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="table-responsive">
-                                                <table class="table bordered-table " id="dataTable" data-page-length='5' style="width:100% !important">
-                                                    <thead>
-                                                        <tr>
-                                                            <th scope="col">No</th>
-                                                            <th scope="col">Mata Pelajaran</th>
-                                                            <th scope="col">Jml Jam</th>
-                                                            <th scope="col">Rombel</th>
-                                                            <th scope="col">Tahun Pelajaran</th>
-                                                            <th scope="col" class="text-center">Aksi</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr>
-                                                            <td>1</td>
-                                                            <td>Seni & Budaya</td>
-                                                            <td>2</td>
-                                                            <td>VII - Al Maturidi</td>
-                                                            <td>2024/2025 Genap</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </a>
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>2</td>
-                                                            <td>Seni & Budaya</td>
-                                                            <td>2</td>
-                                                            <td>VII - Az Zahrawi</td>
-                                                            <td>2024/2025 Ganjil</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </a>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>3</td>
-                                                            <td>Seni & Budaya</td>
-                                                            <td>2</td>
-                                                            <td>VIII - Maliki</td>
-                                                            <td>2024/2025 Ganjil</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </a>
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>4</td>
-                                                            <td>Seni & Budaya</td>
-                                                            <td>2</td>
-                                                            <td>VII - Syafi'i</td>
-                                                            <td>2024/2025 Ganjil</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </a>
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>5</td>
-                                                            <td>Seni & Budaya</td>
-                                                            <td>2</td>
-                                                            <td>IX - Az Zarnuji</td>
-                                                            <td>2024/2025 Ganjil</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </a>
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>6</td>
-                                                            <td>Seni & Budaya</td>
-                                                            <td>2</td>
-                                                            <td>IX - Sonhaji</td>
-                                                            <td>2024/2025 Ganjil</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </a>
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>7</td>
-                                                            <td>Seni & Budaya</td>
-                                                            <td>2</td>
-                                                            <td>X - Al Jazari</td>
-                                                            <td>2024/2025 Ganjil</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </a>
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>8</td>
-                                                            <td>Seni & Budaya</td>
-                                                            <td>2</td>
-                                                            <td>XI - Hanafi</td>
-                                                            <td>2024/2025 Ganjil</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </a>
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>9</td>
-                                                            <td>Seni & Budaya</td>
-                                                            <td>2</td>
-                                                            <td>XII - Khalid</td>
-                                                            <td>2024/2025 Ganjil</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </a>
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- End of Pembelajaran -->
-
-                        <!-- Jadwal -->
-                        <div class="tab-pane fade" id="pills-riwayat" role="tabpanel" aria-labelledby="pills-riwayat-tab" tabindex="0">
-                            <div class="row">
-                                <div class="col-xl-12">
-                                    <div class="card shadow">
-                                        <div class="card-header py-16 px-24 bg-base d-flex align-items-center gap-1 justify-content-between border border-end-0 border-start-0 border-top-0">
-                                            <h6 class="text-lg mb-0">Jadwal Pembelajaran</h6>
-                                            <button type="button" class="text-xl line-height-1">
-                                                <iconify-icon icon="material-symbols:book-5-rounded" class="text-xl"></iconify-icon>
-                                            </button>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="table-responsive">
-                                                <table class="table bordered-table" data-page-length='10'>
-                                                    <thead>
-                                                        <tr>
-                                                            <th scope="col">No</th>
-                                                            <th scope="col">Mata Pelajaran</th>
-                                                            <th scope="col">Rombel</th>
-                                                            <th scope="col">Hari</th>
-                                                            <th scope="col">Jam</th>
-                                                            <th scope="col" class="text-center">Aksi</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr>
-                                                            <td>1</td>
-                                                            <td>Seni & Budaya</td>
-                                                            <td>VII - Al Maturidi</td>
-                                                            <td>Senin</td>
-                                                            <td>08.00-09.20</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </a>
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="bg-success-focus">2</td>
-                                                            <td class="bg-success-focus">Seni & Budaya</td>
-                                                            <td class="bg-success-focus">VII - Az Zahrawi</td>
-                                                            <td class="bg-success-focus">Senin</td>
-                                                            <td class="bg-success-focus">09.40-10.20</td>
-                                                            <td class="bg-success-focus">
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </a>
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>3</td>
-                                                            <td>Seni & Budaya</td>
-                                                            <td>VIII - Maliki</td>
-                                                            <td>Selasa</td>
-                                                            <td>08.00-09.20</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </a>
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>4</td>
-                                                            <td>Seni & Budaya</td>
-                                                            <td>VII - Syafi'i</td>
-                                                            <td>Senin</td>
-                                                            <td>08.00-09.20</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </a>
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>5</td>
-                                                            <td>Seni & Budaya</td>
-                                                            <td>IX - Az Zarnuji</td>
-                                                            <td>Senin</td>
-                                                            <td>08.00-09.20</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </a>
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>6</td>
-                                                            <td>Seni & Budaya</td>
-                                                            <td>IX - Sonhaji</td>
-                                                            <td>Senin</td>
-                                                            <td>08.00-09.20</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </a>
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>7</td>
-                                                            <td>Seni & Budaya</td>
-                                                            <td>X - Al Jazari</td>
-                                                            <td>Senin</td>
-                                                            <td>08.00-09.20</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </a>
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>8</td>
-                                                            <td>Seni & Budaya</td>
-                                                            <td>XI - Hanafi</td>
-                                                            <td>Senin</td>
-                                                            <td>08.00-09.20</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </a>
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>9</td>
-                                                            <td>Seni & Budaya</td>
-                                                            <td>XII - Khalid</td>
-                                                            <td>Senin</td>
-                                                            <td>08.00-09.20</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <a href="<?php echo url('ptk/ptkDetail') ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Detail Pembelajaran">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </a>
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- End of Jadwal -->
+                        <!-- End of Riwayat Pendidikan -->
 
                         <!-- Arsip -->
                         <div class="tab-pane fade" id="pills-arsip" role="tabpanel" aria-labelledby="pills-arsip-tab" tabindex="0">
@@ -1266,48 +753,7 @@ if (empty($row->id_ptk)) {
                         </div>
                         <!-- End Keamanan -->
 
-                        <!-- Integrasi -->
-                        <div class="tab-pane fade" id="pills-google" role="tabpanel" aria-labelledby="pills-google-tab" tabindex="0">
-                            <div class="card radius-12 h-100 shadow">
-                                <div class="card-header py-16 px-24 bg-base border border-end-0 border-start-0 border-top-0">
-                                    <h6 class="text-lg mb-0">Integrasi Pihak Ketiga</h6>
-                                </div>
-                                <div class="card-body p-24">
-                                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-16">
-                                        <div>
-                                            <h6 class="text-primary-light mb-4">Hubungkan Akun Google</h6>
-                                            <p class="text-secondary-light text-xs mb-0">Menghubungkan akun Google memungkinkan Anda masuk dengan sekali klik dan sinkronisasi file pembelajaran langsung ke Google Drive.</p>
-                                        </div>
-                                        <?php if (!empty($user->google_id)): ?>
-                                            <span class="badge bg-success-focus text-success-main px-12 py-6 radius-4">Terhubung</span>
-                                        <?php else: ?>
-                                            <span class="badge bg-neutral-200 text-neutral-600 px-12 py-6 radius-4">Belum Terhubung</span>
-                                        <?php endif; ?>
-                                    </div>
-
-                                    <?php if (!empty($user->google_id)): ?>
-                                        <div class="bg-success-50 border border-success-100 p-16 radius-8 mb-24 d-flex align-items-center gap-12">
-                                            <iconify-icon icon="logos:google-icon" style="font-size: 24px;"></iconify-icon>
-                                            <div>
-                                                <span class="d-block text-success-800 fw-semibold text-sm">Akun Google Anda Berhasil Terintegrasi</span>
-                                                <span class="text-secondary-light text-xs">Anda saat ini terdaftar sebagai Audience di Google Console. Login cepat dan sinkronisasi Google Docs/Sheets siap digunakan.</span>
-                                            </div>
-                                        </div>
-
-                                        <a href="<?php echo url('profile/disconnectGoogle') ?>" 
-                                            onclick="return confirm('Apakah Anda yakin ingin mematikan sinkronisasi & memutuskan integrasi Google?')" 
-                                            class="btn btn-outline-danger radius-8 px-20 py-10 d-inline-flex align-items-center gap-2">
-                                            <iconify-icon icon="lucide:link-2-off"></iconify-icon> Putuskan Akun Google
-                                        </a>
-                                    <?php else: ?>
-                                        <a href="<?php echo $this->google_client->createAuthUrl(); ?>" class="btn btn-outline-primary radius-8 px-20 py-10 d-inline-flex align-items-center gap-2">
-                                            <iconify-icon icon="logos:google-icon"></iconify-icon> Hubungkan dengan Google
-                                        </a>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- End Integrasi -->
+                        
 
 
                     </div>
@@ -1527,7 +973,7 @@ if (empty($row->id_ptk)) {
                         <div class="col-md-12">
                             <div class="mb-20">
                                 <label class="form-label fw-semibold text-primary-light text-sm mb-8">Upload Berkas <span class="text-danger-600">*</span></label>
-                                <input type="file" class="form-control radius-8" name="berkas" accept=".pdf,.jpg,.jpeg,.png" required>
+                                <input type="file" class="form-control radius-8 scan-enabled" name="berkas" accept=".pdf,.jpg,.jpeg,.png" required>
                                 <small class="text-secondary-light">Format: PDF, JPG, JPEG, PNG. Maksimal 5 MB.</small>
                             </div>
                         </div>
@@ -1595,7 +1041,7 @@ if (empty($row->id_ptk)) {
                         <div class="col-md-12">
                             <div class="mb-20">
                                 <label class="form-label fw-semibold text-primary-light text-sm mb-8">Ganti Berkas</label>
-                                <input type="file" class="form-control radius-8" name="berkas" accept=".pdf,.jpg,.jpeg,.png">
+                                <input type="file" class="form-control radius-8 scan-enabled" name="berkas" accept=".pdf,.jpg,.jpeg,.png">
                                 <small class="text-secondary-light">Kosongkan jika berkas tidak diganti. Format: PDF, JPG, JPEG, PNG. Maksimal 5 MB.</small>
                             </div>
                         </div>
@@ -1630,7 +1076,7 @@ if (empty($row->id_ptk)) {
                     <input type="hidden" name="upload_ijazah" value="1">
                     <div class="mb-20">
                         <label class="form-label fw-semibold text-primary-light text-sm mb-8">Pilih Berkas <span class="text-danger-600">*</span></label>
-                        <input type="file" class="form-control radius-8" name="berkas" accept=".pdf,.jpg,.jpeg,.png" required>
+                        <input type="file" class="form-control radius-8 scan-enabled" name="berkas" accept=".pdf,.jpg,.jpeg,.png" required>
                         <small class="text-secondary-light">Format: PDF, JPG, PNG. Maksimal 5 MB.</small>
                     </div>
                 </div>
