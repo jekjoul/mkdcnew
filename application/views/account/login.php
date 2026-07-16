@@ -59,13 +59,23 @@
                 </div>
             <?php endif; ?>
             <form action="<?php echo url('/login/check') ?>" method="POST">
-                <div class="icon-field mb-16">
+                
+                <div class="mt-32 d-flex align-items-center gap-3">
+                    <a href="<?php echo url('login/google') ?>" class="fw-semibold text-primary-light py-16 px-24 w-100 border radius-12 text-md d-flex align-items-center justify-content-center gap-12 line-height-1 bg-hover-primary-50">
+                        <iconify-icon icon="logos:google-icon" class="text-primary-600 text-xl line-height-1"></iconify-icon>
+                        Google / Akun belajar.id
+                    </a>
+                </div>
+                <div class="mt-32 mb-32 center-border-horizontal text-center">
+                    <span class="bg-base z-1 px-4">Atau login menggunakan username & password</span>
+                </div>
+<div class="icon-field mb-16">
                     <span class="icon top-50 translate-middle-y">
                         <iconify-icon icon="mage:email"></iconify-icon>
                     </span>
                     <input type="text" name="username" class="form-control h-56-px bg-neutral-50 radius-12" placeholder="Email">
                 </div>
-                <div class="position-relative mb-20">
+                <div class="position-relative mb-1">
                     <div class="icon-field">
                         <span class="icon top-50 translate-middle-y">
                             <iconify-icon icon="solar:lock-password-outline"></iconify-icon>
@@ -74,7 +84,7 @@
                     </div>
                     <span class="toggle-password ri-eye-line cursor-pointer position-absolute end-0 top-50 translate-middle-y me-16 text-secondary-light" data-toggle="#your-password"></span>
                 </div>
-                <div class="">
+                <!-- <div class="">
                     <div class="d-flex justify-content-between gap-2">
                         <div class="form-check style-check d-flex align-items-center">
                             <input class="form-check-input border border-neutral-300" type="checkbox" value="" id="remeber">
@@ -82,19 +92,11 @@
                         </div>
                         <a href="javascript:void(0)" class="text-primary-600 fw-medium">Lupa Password?</a>
                     </div>
-                </div>
+                </div> -->
 
                 <button type="submit" class="btn btn-primary text-sm btn-sm px-12 py-16 w-100 radius-12 mt-32"> Login</button>
 
-                <div class="mt-32 center-border-horizontal text-center">
-                    <span class="bg-base z-1 px-4">Atau login menggunakan</span>
-                </div>
-                <div class="mt-32 d-flex align-items-center gap-3">
-                    <a href="<?php echo url('login/google') ?>" class="fw-semibold text-primary-light py-16 px-24 w-100 border radius-12 text-md d-flex align-items-center justify-content-center gap-12 line-height-1 bg-hover-primary-50"> 
-                        <iconify-icon icon="logos:google-icon" class="text-primary-600 text-xl line-height-1"></iconify-icon>
-                        Google / Akun belajar.id
-                    </a>
-                </div>
+
                 
                 
             </form>

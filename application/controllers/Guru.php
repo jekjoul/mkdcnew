@@ -729,7 +729,7 @@ class Guru extends MY_Controller
 
     private function getPembelajaranMapel($id_ptk)
     {
-        $this->db->select('pm.id_pembelajaran_mapel, pm.id_pembelajaran, pm.jumlah_jam, l.nama_lembaga, t.nama_tingkat, t.tingkat_angka, r.nama_rombel, tp.tahun_pelajaran, tp.semester, m.nama_mapel, m.mapel_singkat, COUNT(DISTINCT ps.peserta_didik_id) AS jumlah_siswa');
+        $this->db->select('pm.id_pembelajaran_mapel, pm.id_pembelajaran, pm.jumlah_jam, l.nama_lembaga, l.nama_lembaga_singkat, t.nama_tingkat, t.tingkat_angka, r.nama_rombel, tp.tahun_pelajaran, tp.semester, m.nama_mapel, m.mapel_singkat, COUNT(DISTINCT ps.peserta_didik_id) AS jumlah_siswa');
         $this->db->from('pembelajaran_mapel pm');
         $this->db->join('pembelajaran p', 'p.id_pembelajaran = pm.id_pembelajaran');
         $this->db->join('lembaga l', 'l.id_lembaga = p.id_lembaga');
@@ -783,7 +783,7 @@ class Guru extends MY_Controller
 
     private function getNilaiMapel($id_ptk)
     {
-        $this->db->select('pm.id_pembelajaran_mapel, l.nama_lembaga, t.nama_tingkat, r.nama_rombel, tp.tahun_pelajaran, tp.semester, m.nama_mapel, m.mapel_singkat, COUNT(DISTINCT ps.peserta_didik_id) AS jumlah_siswa, COUNT(DISTINCT ns.id_nilai_siswa) AS jumlah_dinilai');
+        $this->db->select('pm.id_pembelajaran_mapel, l.nama_lembaga, l.nama_lembaga_singkat, t.nama_tingkat, r.nama_rombel, tp.tahun_pelajaran, tp.semester, m.nama_mapel, m.mapel_singkat, COUNT(DISTINCT ps.peserta_didik_id) AS jumlah_siswa, COUNT(DISTINCT ns.id_nilai_siswa) AS jumlah_dinilai');
         $this->db->from('pembelajaran_mapel pm');
         $this->db->join('pembelajaran p', 'p.id_pembelajaran = pm.id_pembelajaran');
         $this->db->join('lembaga l', 'l.id_lembaga = p.id_lembaga');
