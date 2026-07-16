@@ -537,6 +537,12 @@ class Perangkat_pembelajaran extends MY_Controller
         $drive_file_id = isset($drive_res['id']) ? $drive_res['id'] : null;
 
         $this->perangkat_model->saveModulAjar($id_pembelajaran_mapel, $file_name, $drive_file_id, $label);
+        // Save file name to main perangkat table
+        $this->perangkat_model->saveBerkas($id_pembelajaran_mapel, ['file_modul_ajar' => $file_name]);
+        // Save drive file ID if available
+        if ($drive_file_id) {
+            $this->perangkat_model->saveDriveIds($id_pembelajaran_mapel, ['modul_ajar_drive_file_id' => $drive_file_id]);
+        }
 
         $this->session->set_flashdata('alert-type', 'success');
         $this->session->set_flashdata('alert', 'Modul Ajar berhasil diupload dan disinkronkan ke Google Drive.');
