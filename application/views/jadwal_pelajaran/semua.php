@@ -519,56 +519,107 @@ foreach ($hari as $h) {
             autoSaveSchedule();
         });
 
-        $('#clearSchedule').on('click', function() {
+        function showConfirm(title, text, type, callback) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: title,
+                    text: text,
+                    icon: type,
+                    showCancelButton: true,
+                    confirmButtonColor: type === 'warning' ? '#d33' : '#3085d6',
+                    cancelButtonColor: '#aaa',
+                    confirmButtonText: 'Ya',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        callback();
+                    }
+                });
+            } else {
+                if (confirm(title + '\n\n' + text)) {
+                    callback();
+                }
+            }
+        }
+
+        function showAlert(title, text, type) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire(title, text, type);
+            } else {
+                alert(title + ': ' + text);
+            }
+        }
+
+        function performClearSchedule(quiet) {
             $('.scheduled-token').each(function() {
                 returnToBank($(this));
             });
             $('.schedule-dropzone input[type="hidden"]').val('');
             refreshConflicts();
             autoSaveSchedule();
+            if (!quiet) {
+                showAlert('Dikosongkan!', 'Jadwal telah berhasil dikosongkan.', 'success');
+            }
+        }
+
+        $('#clearSchedule').on('click', function() {
+            showConfirm(
+                'Apakah Anda yakin?',
+                'Semua jadwal yang sudah disusun akan dikosongkan kembali!',
+                'warning',
+                function() {
+                    performClearSchedule(false);
+                }
+            );
         });
 
         $('#generateScheduleBtn').on('click', function() {
-            const btn = $(this);
-            const originalHtml = btn.html();
-            btn.prop('disabled', true).html('<iconify-icon icon="line-md:loading-twotone-loop" class="align-middle"></iconify-icon> Menjadwalkan...');
+            showConfirm(
+                'Generate Jadwal Otomatis?',
+                'Jadwal saat ini akan dikosongkan terlebih dahulu dan digantikan dengan jadwal otomatis yang baru.',
+                'question',
+                function() {
+                    const btn = $('#generateScheduleBtn');
+                    const originalHtml = btn.html();
+                    btn.prop('disabled', true).html('<iconify-icon icon="line-md:loading-twotone-loop" class="align-middle"></iconify-icon> Menjadwalkan...');
 
-            // Kosongkan jadwal yang ada saat ini terlebih dahulu
-            $('#clearSchedule').trigger('click');
+                    // Kosongkan jadwal yang ada saat ini secara senyap
+                    performClearSchedule(true);
 
-            $.getJSON('<?php echo url('jadwal_pelajaran/generate_otomatis') ?>', function(res) {
-                btn.prop('disabled', false).html(originalHtml);
-                if (res.status === 'success' && Array.isArray(res.data)) {
-                    res.data.forEach(function(item) {
-                        const classId = item.id_pembelajaran;
-                        const hari = item.hari;
-                        const slot = item.slot_ke;
-                        const mapelId = item.id_mapel;
+                    $.getJSON('<?php echo url('jadwal_pelajaran/generate_otomatis') ?>', function(res) {
+                        btn.prop('disabled', false).html(originalHtml);
+                        if (res.status === 'success' && Array.isArray(res.data)) {
+                            res.data.forEach(function(item) {
+                                const classId = item.id_pembelajaran;
+                                const hari = item.hari;
+                                const slot = item.slot_ke;
+                                const mapelId = item.id_mapel;
 
-                        // Cari token pertama di bank mapel kelas yang sesuai
-                        const tokenEl = $('.token-list[data-class-id="' + classId + '"][data-mapel-id="' + mapelId + '"] .subject-token').first();
-                        if (tokenEl.length) {
-                            // Cari dropzone yang pas
-                            const zone = $('.schedule-dropzone[data-class-id="' + classId + '"][data-hari="' + hari + '"][data-slot="' + slot + '"]');
-                            if (zone.length) {
-                                const scheduled = makeScheduledToken(tokenEl);
-                                tokenEl.remove();
-                                zone.append(scheduled);
-                                zone.find('input[type="hidden"]').val(mapelId);
-                            }
+                                // Cari token pertama di bank mapel kelas yang sesuai
+                                const tokenEl = $('.token-list[data-class-id="' + classId + '"][data-mapel-id="' + mapelId + '"] .subject-token').first();
+                                if (tokenEl.length) {
+                                    // Cari dropzone yang pas
+                                    const zone = $('.schedule-dropzone[data-class-id="' + classId + '"][data-hari="' + hari + '"][data-slot="' + slot + '"]');
+                                    if (zone.length) {
+                                        const scheduled = makeScheduledToken(tokenEl);
+                                        tokenEl.remove();
+                                        zone.append(scheduled);
+                                        zone.find('input[type="hidden"]').val(mapelId);
+                                    }
+                                }
+                            });
+                            refreshConflicts();
+                            autoSaveSchedule();
+                            showAlert('Sukses!', 'Jadwal pelajaran berhasil digenerate secara otomatis tanpa bentrok guru!', 'success');
+                        } else {
+                            showAlert('Gagal!', 'Gagal menghasilkan jadwal pelajaran otomatis.', 'error');
                         }
+                    }).fail(function() {
+                        btn.prop('disabled', false).html(originalHtml);
+                        showAlert('Error!', 'Koneksi server gagal saat menggenerate jadwal pelajaran.', 'error');
                     });
-                    refreshConflicts();
-                    autoSaveSchedule();
-                    // Alert sukses premium
-                    alert('Jadwal pelajaran berhasil digenerate secara otomatis tanpa bentrok guru!');
-                } else {
-                    alert('Gagal menghasilkan jadwal pelajaran otomatis.');
                 }
-            }).fail(function() {
-                btn.prop('disabled', false).html(originalHtml);
-                alert('Koneksi server gagal saat menggenerate jadwal pelajaran.');
-            });
+            );
         });
 
         function escapeHtml(value) {
