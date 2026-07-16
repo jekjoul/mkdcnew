@@ -269,12 +269,35 @@
 
 <?php endif; ?>
 
-<?php if (hasPermissions('menu_tugas_tambahan_ptk') || hasPermissions('menu_jadwal_pelajaran') || hasPermissions('menu_jadwal_tidak_aktif') || hasPermissions('menu_perangkat_pembelajaran') || hasPermissions('menu_nilai_siswa') || hasPermissions('menu_tahun_pelajaran') || hasPermissions('menu_ekstrakurikuler')): ?>
+<?php if (hasPermissions('pembelajaran_list') || hasPermissions('menu_tugas_tambahan_ptk') || hasPermissions('menu_jadwal_pelajaran') || hasPermissions('menu_jadwal_tidak_aktif') || hasPermissions('menu_perangkat_pembelajaran') || hasPermissions('menu_nilai_siswa') || hasPermissions('menu_tahun_pelajaran') || hasPermissions('menu_ekstrakurikuler')): ?>
     <li class="sidebar-menu-group-title"
         style="background: #d3c5b1;
         background: linear-gradient(90deg, rgb(255, 233, 135) 0%, rgba(255, 255, 255, 0) 100%);">
         Pembelajaran
     </li>
+
+    <?php if (hasPermissions('pembelajaran_list')): ?>
+        <li class="dropdown">
+            <a href="javascript:void(0)">
+                <iconify-icon icon="solar:book-bookmark-linear" class="menu-icon"></iconify-icon>
+                <span>Data Pembelajaran</span>
+            </a>
+            <ul class="sidebar-submenu">
+                <li>
+                    <a href="<?php echo url('pembelajaran') ?>">
+                        <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
+                        Daftar Kelas
+                    </a>
+                </li>
+                <li>
+                    <a href="<?php echo url('pembelajaran/nonaktif') ?>">
+                        <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
+                        Kelas Tidak Aktif
+                    </a>
+                </li>
+            </ul>
+        </li>
+    <?php endif; ?>
 
     <?php if (hasPermissions('menu_tugas_tambahan_ptk')): ?>
         <li>
