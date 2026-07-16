@@ -95,6 +95,7 @@ class Perangkat_pembelajaran extends MY_Controller
         $this->page_data['salin_perangkat_url'] = url('perangkat_pembelajaran/salin_perangkat/' . $id_pembelajaran_mapel);
         $this->page_data['salin_agenda_url'] = url('perangkat_pembelajaran/salin_agenda/' . $id_pembelajaran_mapel);
         $this->page_data['generate_agenda_ai_url'] = url('perangkat_pembelajaran/generate_agenda_ai/' . $id_pembelajaran_mapel);
+        $this->page_data['generate_berkas_ai_url'] = url('perangkat_pembelajaran/generate_berkas_ai/' . $id_pembelajaran_mapel);
         
         // Modul ajar URLs
         $this->page_data['upload_modul_url'] = url('perangkat_pembelajaran/upload_modul_ajar/' . $id_pembelajaran_mapel);

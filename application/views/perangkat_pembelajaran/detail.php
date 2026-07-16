@@ -239,7 +239,7 @@
                                                                       Generate via AI
                                                                   </button>
                                                               <?php else: ?>
-                                                                  <?php echo form_open(url('perangkat_pembelajaran/generate_berkas_ai/' . $item->id_pembelajaran_mapel)); ?>
+                                                                  <?php echo form_open($generate_berkas_ai_url); ?>
                                                                   <input type="hidden" name="field" value="<?php echo html_escape($field) ?>">
                                                                   <button type="submit" 
                                                                       data-label="<?php echo html_escape($cfg['label']) ?>"
@@ -1058,7 +1058,7 @@
                 <h6 class="modal-title fw-semibold text-primary-light" id="kisiConfigTitle">Konfigurasi AI Kisi-kisi</h6>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <?php echo form_open(url('perangkat_pembelajaran/generate_berkas_ai/' . $item->id_pembelajaran_mapel), ['id' => 'kisiForm']); ?>
+            <?php echo form_open($generate_berkas_ai_url, ['id' => 'kisiForm']); ?>
             <input type="hidden" name="field" id="kisi-field-input" value="">
             <div class="modal-body p-24">
                 
