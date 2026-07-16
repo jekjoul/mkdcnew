@@ -57,11 +57,6 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                                             <iconify-icon icon="lucide:eye"></iconify-icon>
                                                         </a>
                                                     <?php endif; ?>
-                                                    <?php if (hasPermissions('siswa_edit')): ?>
-                                                        <a href="<?php echo url('siswa/edit/' . $s->id_siswa); ?>" class="w-32-px h-32-px bg-success-focus text-success-main rounded-circle d-inline-flex align-items-center justify-content-center" data-bs-toggle="tooltip" title="Sunting">
-                                                            <iconify-icon icon="lucide:edit"></iconify-icon>
-                                                        </a>
-                                                    <?php endif; ?>
                                                     <?php if (hasPermissions('siswa_delete')): ?>
                                                         <a href="<?php echo url('siswa/hapus/' . $s->id_siswa); ?>" class="w-32-px h-32-px bg-danger-focus text-danger-main rounded-circle d-inline-flex align-items-center justify-content-center" data-bs-toggle="tooltip" title="Hapus" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
                                                             <iconify-icon icon="lucide:trash-2"></iconify-icon>
