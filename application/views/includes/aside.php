@@ -86,7 +86,7 @@
                 <?php endif; ?>
             <?php endif; ?>
 
-<?php if (hasPermissions('menu_dashboard_admin')): ?>
+<?php if (hasPermissions('menu_dashboard')): ?>
     <li>
         <a href="<?php echo url('') ?>">
             <iconify-icon icon="solar:home-angle-2-linear" class="menu-icon"></iconify-icon>

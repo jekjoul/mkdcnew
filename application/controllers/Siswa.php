@@ -112,24 +112,22 @@ class Siswa extends MY_Controller
         if ($is_nonaktif) {
             $this->db->select('s.*');
             $this->db->from('siswa s');
-            $this->db->where("s.id_siswa NOT IN (
-                SELECT ps.peserta_didik_id 
-                FROM pembelajaran_siswa ps 
-                JOIN pembelajaran p ON p.id_pembelajaran = ps.id_pembelajaran
-                JOIN pembelajaran_tahun_pelajaran tp ON tp.id_tahun_pelajaran = p.id_tahun_pelajaran
-                WHERE tp.status = 'Aktif' AND p.status = 'Aktif' AND ps.peserta_didik_id IS NOT NULL
-            )", NULL, FALSE);
+            $this->db->where('s.status_keaktifan !=', 'Aktif');
             $this->db->order_by('s.nama_siswa', 'ASC');
             $this->page_data['siswa'] = $this->db->get()->result();
         } else {
             $this->db->select('s.*, t.nama_tingkat');
-            $this->db->from('pembelajaran_siswa ps');
-            $this->db->join('siswa s', 's.id_siswa = ps.peserta_didik_id');
-            $this->db->join('pembelajaran p', 'p.id_pembelajaran = ps.id_pembelajaran');
+            $this->db->from('siswa s');
+            $this->db->join('pembelajaran_siswa ps', 's.id_siswa = ps.peserta_didik_id AND ps.id_pembelajaran IN (
+                SELECT p_active.id_pembelajaran 
+                FROM pembelajaran p_active 
+                JOIN pembelajaran_tahun_pelajaran tp_active ON tp_active.id_tahun_pelajaran = p_active.id_tahun_pelajaran
+                WHERE tp_active.status = "Aktif"
+            )', 'left', FALSE);
+            $this->db->join('pembelajaran p', 'p.id_pembelajaran = ps.id_pembelajaran', 'left');
             $this->db->join('master_tingkat_sekolah t', 't.id_tingkat_sekolah = p.id_tingkat_sekolah', 'left');
-            $this->db->join('pembelajaran_tahun_pelajaran tp', 'tp.id_tahun_pelajaran = p.id_tahun_pelajaran');
-            $this->db->where('tp.status', 'Aktif');
-            $this->db->group_by('s.id_siswa, t.nama_tingkat');
+            $this->db->where('s.status_keaktifan', 'Aktif');
+            $this->db->group_by('s.id_siswa');
             $this->db->order_by('s.nama_siswa', 'ASC');
             $this->page_data['siswa'] = $this->db->get()->result();
         }
