@@ -137,17 +137,68 @@ class Guru extends MY_Controller
             'file_kisi_sts', 'file_soal_sts', 'file_kisi_sas', 'file_soal_sas'
         ];
 
-        $uploaded = [];
-        foreach ($fields as $field) {
-            $file_name = $this->uploadFile($field, $id_pembelajaran_mapel);
-            $uploaded[$field] = $file_name;
+        // Support single field upload from item-level forms
+        $single_field = post('single_field');
+        if ($single_field && in_array($single_field, $fields, true)) {
+            $fields = [$single_field];
         }
 
-        $this->perangkat_model->saveBerkas($id_pembelajaran_mapel, $uploaded);
+        $uploaded = [];
+        $drive_ids = [];
+        $this->load->library('GoogleDrive_Helper');
+
+        $drive_error = null;
+        $upload_error = null;
+
+        foreach ($fields as $field) {
+            if (empty($_FILES[$field]['name'])) {
+                continue;
+            }
+
+            $file_name = $this->uploadFile($field, $id_pembelajaran_mapel);
+            if ($file_name) {
+                $uploaded[$field] = $file_name;
+                
+                // Try uploading to Google Drive
+                $filepath = './uploads/perangkat_pembelajaran/' . $file_name;
+                $mime = mime_content_type($filepath);
+                
+                $drive_res = $this->googledrive_helper->uploadFile($filepath, $file_name, $mime, true);
+                if (isset($drive_res['id'])) {
+                    $key_drive = str_replace('file_', '', $field) . '_drive_file_id';
+                    $drive_ids[$key_drive] = $drive_res['id'];
+                } elseif (isset($drive_res['error'])) {
+                    $drive_error = $drive_res['error'];
+                }
+            } else {
+                $upload_error = $this->upload->display_errors('', '');
+            }
+        }
+
+        if ($upload_error) {
+            $this->session->set_flashdata('alert-type', 'danger');
+            $this->session->set_flashdata('alert', 'Gagal mengunggah berkas: ' . $upload_error);
+            redirect('guru/perangkat_detail/' . $id_pembelajaran_mapel);
+            return;
+        }
+
+        if (!empty($uploaded)) {
+            $this->perangkat_model->saveBerkas($id_pembelajaran_mapel, $uploaded);
+        }
+        if (!empty($drive_ids)) {
+            $this->perangkat_model->saveDriveIds($id_pembelajaran_mapel, $drive_ids);
+        }
 
         $this->activity_model->add(logged('name') . ' (Guru) Menyimpan Berkas Perangkat Pembelajaran untuk #' . $id_pembelajaran_mapel);
-        $this->session->set_flashdata('alert-type', 'success');
-        $this->session->set_flashdata('alert', 'Berkas perangkat pembelajaran berhasil disimpan.');
+        
+        if ($drive_error) {
+            $this->session->set_flashdata('alert-type', 'warning');
+            $this->session->set_flashdata('alert', 'Berkas berhasil disimpan di server lokal, tetapi gagal sinkron ke Google Drive. Error: ' . $drive_error);
+        } else {
+            $this->session->set_flashdata('alert-type', 'success');
+            $this->session->set_flashdata('alert', 'Berkas berhasil disimpan dan disinkronkan ke Google Drive.');
+        }
+        
         redirect('guru/perangkat_detail/' . $id_pembelajaran_mapel);
     }
 
@@ -374,7 +425,7 @@ class Guru extends MY_Controller
         if (empty($_FILES[$fieldName]['name'])) return null;
 
         $config['upload_path'] = './uploads/perangkat_pembelajaran/';
-        $config['allowed_types'] = ($fieldName === 'file_cp') ? 'pdf' : 'pdf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|jpg|jpeg|png';
+        $config['allowed_types'] = 'docx|xlsx|pdf|doc|xls|ppt|pptx|zip|rar|jpg|jpeg|png';
         $config['max_size'] = 10240; // 10MB
         $config['file_name'] = $fieldName . '_' . $id_pembelajaran_mapel . '_' . time();
 
