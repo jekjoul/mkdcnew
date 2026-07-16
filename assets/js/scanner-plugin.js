@@ -12,7 +12,7 @@ $(document).ready(function() {
 
     // Attach "Scan Direct" button to input[type="file"]
     function attachScanButtons() {
-        $('input[type="file"]').each(function() {
+        $('input[type="file"].scan-enabled').each(function() {
             const input = $(this);
             // Don't add twice
             if (input.parent().find('.btn-direct-scan').length > 0) return;

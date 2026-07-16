@@ -222,7 +222,7 @@
                                                  <div class="d-flex flex-column gap-2">
                                                      <?php echo form_open_multipart($save_berkas_url, ['class' => 'd-flex align-items-center gap-8']); ?>
                                                      <input type="hidden" name="single_field" value="<?php echo $field ?>">
-                                                     <input type="file" name="<?php echo $field ?>" required class="form-control radius-8 form-control-sm w-auto" accept="<?php echo $cfg['accept'] ?>">
+                                                     <input type="file" name="<?php echo $field ?>" required class="form-control radius-8 form-control-sm w-auto scan-enabled" accept="<?php echo $cfg['accept'] ?>">
                                                      <button type="submit" class="btn btn-sm btn-primary-600 radius-8 px-12 py-8 d-inline-flex align-items-center gap-1">
                                                          <iconify-icon icon="lucide:upload-cloud"></iconify-icon> Upload
                                                      </button>
