@@ -8,6 +8,9 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
 <?php
 $foto_ptk = (!empty($row->foto) && $row->foto !== 'default.png') ? url('uploads/ptk_foto/' . $row->foto) : $url->assets . 'images/user-grid/guru.png';
+if (empty($row->id_ptk)) {
+    $foto_ptk = userProfile($user->id);
+}
 ?>
 
 <div class="dashboard-main-body">
@@ -112,6 +115,20 @@ $foto_ptk = (!empty($row->foto) && $row->foto !== 'default.png') ? url('uploads/
                                 data-bs-toggle="pill" data-bs-target="#pills-setting" type="button" role="tab"
                                 aria-controls="pills-setting" aria-selected="false" tabindex="-1">
                                 Setting
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link d-flex align-items-center px-24" id="pills-password-tab"
+                                data-bs-toggle="pill" data-bs-target="#pills-password" type="button" role="tab"
+                                aria-controls="pills-password" aria-selected="false" tabindex="-1">
+                                Keamanan
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link d-flex align-items-center px-24" id="pills-google-tab"
+                                data-bs-toggle="pill" data-bs-target="#pills-google" type="button" role="tab"
+                                aria-controls="pills-google" aria-selected="false" tabindex="-1">
+                                Integrasi
                             </button>
                         </li>
                     </ul>
@@ -1201,6 +1218,97 @@ $foto_ptk = (!empty($row->foto) && $row->foto !== 'default.png') ? url('uploads/
                             <?php include viewPath('ptk/partials/v_ptk_setting_form'); ?>
                         </div>
                         <!-- End of Setting -->
+
+                        <!-- Keamanan (Ganti Password) -->
+                        <div class="tab-pane fade" id="pills-password" role="tabpanel" aria-labelledby="pills-password-tab" tabindex="0">
+                            <div class="card radius-12 h-100 shadow">
+                                <div class="card-header py-16 px-24 bg-base border border-end-0 border-start-0 border-top-0">
+                                    <h6 class="text-lg mb-0">Keamanan Akun</h6>
+                                </div>
+                                <div class="card-body p-24">
+                                    <?php echo form_open('/profile/updatePassword', ['method' => 'POST', 'autocomplete' => 'off', 'class' => 'form-validate']); ?>
+                                        <div class="alert bg-warning-focus text-warning-main border border-warning-200 px-16 py-12 radius-8 mb-16 d-flex align-items-start gap-2">
+                                            <iconify-icon icon="lucide:alert-triangle" class="icon text-xl flex-shrink-0 mt-1"></iconify-icon>
+                                            <div>
+                                                <div class="fw-semibold">Perhatian!</div>
+                                                <div class="text-sm"><?php echo lang('message_login_again_after_password') ?></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="alert bg-info-focus text-info-main border border-info-200 px-16 py-12 radius-8 mb-24 d-flex align-items-start gap-2">
+                                            <iconify-icon icon="lucide:info" class="icon text-xl flex-shrink-0 mt-1"></iconify-icon>
+                                            <div>
+                                                <div class="fw-semibold">Aturan Password</div>
+                                                <div class="text-sm"><?php echo lang('message_password_atleast_long') ?></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row gy-3">
+                                            <div class="col-12">
+                                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">Password Lama</label>
+                                                <input type="password" class="form-control radius-8" placeholder="Password Lama" minlength="6" name="old_password" required id="old_password" />
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">Password Baru</label>
+                                                <input type="password" class="form-control radius-8" placeholder="Password Baru" minlength="6" name="password" required id="password" />
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">Ulangi Password Baru</label>
+                                                <input type="password" class="form-control radius-8" equalTo="#password" placeholder="Konfirmasi Password Baru" required name="password_confirm" />
+                                            </div>
+                                            <div class="col-12 mt-24">
+                                                <button type="submit" class="btn btn-primary-600 radius-8 px-20 py-11">Ganti Password</button>
+                                            </div>
+                                        </div>
+                                    <?php echo form_close(); ?>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End Keamanan -->
+
+                        <!-- Integrasi -->
+                        <div class="tab-pane fade" id="pills-google" role="tabpanel" aria-labelledby="pills-google-tab" tabindex="0">
+                            <div class="card radius-12 h-100 shadow">
+                                <div class="card-header py-16 px-24 bg-base border border-end-0 border-start-0 border-top-0">
+                                    <h6 class="text-lg mb-0">Integrasi Pihak Ketiga</h6>
+                                </div>
+                                <div class="card-body p-24">
+                                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-16">
+                                        <div>
+                                            <h6 class="text-primary-light mb-4">Hubungkan Akun Google</h6>
+                                            <p class="text-secondary-light text-xs mb-0">Menghubungkan akun Google memungkinkan Anda masuk dengan sekali klik dan sinkronisasi file pembelajaran langsung ke Google Drive.</p>
+                                        </div>
+                                        <?php if (!empty($user->google_id)): ?>
+                                            <span class="badge bg-success-focus text-success-main px-12 py-6 radius-4">Terhubung</span>
+                                        <?php else: ?>
+                                            <span class="badge bg-neutral-200 text-neutral-600 px-12 py-6 radius-4">Belum Terhubung</span>
+                                        <?php endif; ?>
+                                    </div>
+
+                                    <?php if (!empty($user->google_id)): ?>
+                                        <div class="bg-success-50 border border-success-100 p-16 radius-8 mb-24 d-flex align-items-center gap-12">
+                                            <iconify-icon icon="logos:google-icon" style="font-size: 24px;"></iconify-icon>
+                                            <div>
+                                                <span class="d-block text-success-800 fw-semibold text-sm">Akun Google Anda Berhasil Terintegrasi</span>
+                                                <span class="text-secondary-light text-xs">Anda saat ini terdaftar sebagai Audience di Google Console. Login cepat dan sinkronisasi Google Docs/Sheets siap digunakan.</span>
+                                            </div>
+                                        </div>
+
+                                        <a href="<?php echo url('profile/disconnectGoogle') ?>" 
+                                            onclick="return confirm('Apakah Anda yakin ingin mematikan sinkronisasi & memutuskan integrasi Google?')" 
+                                            class="btn btn-outline-danger radius-8 px-20 py-10 d-inline-flex align-items-center gap-2">
+                                            <iconify-icon icon="lucide:link-2-off"></iconify-icon> Putuskan Akun Google
+                                        </a>
+                                    <?php else: ?>
+                                        <a href="<?php echo $this->google_client->createAuthUrl(); ?>" class="btn btn-outline-primary radius-8 px-20 py-10 d-inline-flex align-items-center gap-2">
+                                            <iconify-icon icon="logos:google-icon"></iconify-icon> Hubungkan dengan Google
+                                        </a>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End Integrasi -->
+
 
                     </div>
                 </div>

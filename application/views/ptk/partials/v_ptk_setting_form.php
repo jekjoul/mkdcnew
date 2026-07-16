@@ -1,6 +1,9 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
-<form action="<?php echo url('ptk/ptkUpdate/' . $row->id_ptk) ?>" method="post" enctype="multipart/form-data">
+<?php 
+$action_url = !empty($row->id_ptk) ? url('ptk/ptkUpdate/' . $row->id_ptk) : url('profile/updateProfileFallback'); 
+?>
+<form action="<?php echo $action_url ?>" method="post" enctype="multipart/form-data">
     <div class="mb-24 mt-16">
         <div class="avatar-upload">
             <div class="avatar-edit position-absolute bottom-0 end-0 me-24 mt-16 z-1 cursor-pointer">
