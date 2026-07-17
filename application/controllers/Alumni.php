@@ -336,7 +336,9 @@ class Alumni extends MY_Controller
         $tanggal_kembali = post('tanggal_kembali') ?: date('Y-m-d');
         $siswa_data['status_keaktifan'] = 'Aktif';
         $siswa_data['status_pendaftaran'] = post('status_pendaftaran') ?: 'Kembali';
-        $siswa_data['tanggal_pendaftaran'] = $tanggal_kembali;
+        if (empty($siswa_data['tanggal_pendaftaran']) || $siswa_data['tanggal_pendaftaran'] === '0000-00-00') {
+            $siswa_data['tanggal_pendaftaran'] = $tanggal_kembali;
+        }
         $siswa_data['rombel'] = null;
         $siswa_data['nipd'] = post('nipd') !== false ? post('nipd') : (isset($alumni['nipd']) ? $alumni['nipd'] : null);
         if (in_array('id_alumni_asal', $siswa_fields, true)) {
