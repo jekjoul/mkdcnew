@@ -140,14 +140,6 @@ function siswa_value($row, $field, $default = '')
             <div class="col-sm-6 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Kelurahan <?php echo $label ?></label><select class="form-control radius-8 form-select" name="id_kelurahan<?php echo $suffix ?>" id="id_kelurahan<?php echo $suffix ?>"><option value="<?php echo siswa_value($row, 'id_kelurahan' . $suffix) ?>"><?php echo siswa_value($row, 'id_kelurahan' . $suffix, 'Pilih Kelurahan') ?></option></select></div>
         <?php endforeach; ?>
         <div class="col-sm-12"><hr><h6>Foto Siswa</h6></div>
-        <div class="col-sm-6 mb-20">
-            <label class="form-label fw-semibold text-primary-light text-sm mb-8">Riwayat Penyakit</label>
-            <textarea class="form-control radius-8" name="riwayat_penyakit" rows="3" placeholder="Satu penyakit per baris"><?php echo siswa_value($row, 'riwayat_penyakit') ?></textarea>
-        </div>
-        <div class="col-sm-6 mb-20">
-            <label class="form-label fw-semibold text-primary-light text-sm mb-8">Prestasi Siswa</label>
-            <textarea class="form-control radius-8" name="prestasi_siswa" rows="3" placeholder="Format: Nama prestasi | Tingkat"><?php echo siswa_value($row, 'prestasi_siswa') ?></textarea>
-        </div>
         <div class="col-sm-6 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Label Foto</label><input type="text" class="form-control radius-8" name="label_foto" placeholder="Contoh: Foto 2026"></div>
         <div class="col-sm-6 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Upload Foto</label><input type="file" class="form-control radius-8" name="foto[]" accept=".jpg,.jpeg,.png" multiple><small class="text-secondary-light">Bisa pilih lebih dari satu foto.</small></div>
     </div>

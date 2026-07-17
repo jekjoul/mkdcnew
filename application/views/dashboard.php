@@ -1,6 +1,17 @@
 <?php
+defined('BASEPATH') or exit('No direct script access allowed');
 
-defined('BASEPATH') or exit('No direct script access allowed'); ?>
+$years = [];
+$smp_data = [];
+$sma_data = [];
+if (!empty($tren_pendaftaran)) {
+    foreach ($tren_pendaftaran as $row) {
+        $years[] = (string)$row->tahun;
+        $smp_data[] = (int)$row->total_smp;
+        $sma_data[] = (int)$row->total_sma;
+    }
+}
+?>
 
 <?php include viewPath('includes/header'); ?>
 
@@ -143,13 +154,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
             <div class="card h-100 radius-8 border-0">
                 <div class="card-body p-24 d-flex flex-column justify-content-between gap-8">
                     <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between mb-20">
-                        <h6 class="mb-2 fw-bold text-lg mb-0">Traffic Sources</h6>
-                        <select class="form-select form-select-sm w-auto bg-base border text-secondary-light">
-                            <option>Yearly</option>
-                            <option>Monthly</option>
-                            <option>Weekly</option>
-                            <option>Today</option>
-                        </select>
+                        <h6 class="mb-2 fw-bold text-lg mb-0">Distribusi Siswa per Lembaga</h6>
                     </div>
                     <div id="userOverviewDonutChart" class="margin-16-minus y-value-left apexcharts-tooltip-z-none">
                     </div>
@@ -157,24 +162,24 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                     <ul class="d-flex flex-wrap align-items-center justify-content-between mt-3 gap-3">
                         <li class="d-flex flex-column gap-8">
                             <div class="d-flex align-items-center gap-2">
-                                <span class="w-12-px h-12-px rounded-circle bg-warning-600"></span>
-                                <span class="text-secondary-light text-sm fw-semibold">Organic Search</span>
+                                <span class="w-12-px h-12-px rounded-circle bg-success-600"></span>
+                                <span class="text-secondary-light text-sm fw-semibold">Siswa SMP</span>
                             </div>
-                            <span class="text-primary-light fw-bold">875</span>
+                            <span class="text-primary-light fw-bold"><?php echo number_format($total_smp) ?></span>
                         </li>
                         <li class="d-flex flex-column gap-8">
                             <div class="d-flex align-items-center gap-2">
-                                <span class="w-12-px h-12-px rounded-circle bg-success-600"></span>
-                                <span class="text-secondary-light text-sm fw-semibold">Referrals</span>
+                                <span class="w-12-px h-12-px rounded-circle bg-warning-600"></span>
+                                <span class="text-secondary-light text-sm fw-semibold">Siswa SMA</span>
                             </div>
-                            <span class="text-primary-light fw-bold">450</span>
+                            <span class="text-primary-light fw-bold"><?php echo number_format($total_sma) ?></span>
                         </li>
                         <li class="d-flex flex-column gap-8">
                             <div class="d-flex align-items-center gap-2">
                                 <span class="w-12-px h-12-px rounded-circle bg-primary-600"></span>
-                                <span class="text-secondary-light text-sm fw-semibold">Social Media</span>
+                                <span class="text-secondary-light text-sm fw-semibold">Santri Ponpes</span>
                             </div>
-                            <span class="text-primary-light fw-bold">4,305</span>
+                            <span class="text-primary-light fw-bold"><?php echo number_format($total_ponpes) ?></span>
                         </li>
                     </ul>
                 </div>
@@ -183,29 +188,20 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
         <div class="col-xxl-6 col-md-6">
             <div class="card h-100">
-                <div class="card-header">
+                <div class="card-header border-0 pb-0 bg-transparent">
                     <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between">
-                        <h6 class="mb-2 fw-bold text-lg mb-0">Course Activity</h6>
-                        <a href="javascript:void(0)"
-                            class="text-primary-600 hover-text-primary d-flex align-items-center gap-1">
-                            View All
-                            <iconify-icon icon="solar:alt-arrow-right-linear" class="icon"></iconify-icon>
-                        </a>
+                        <h6 class="mb-2 fw-bold text-lg mb-0">Tren Pendaftaran Siswa Baru (SMP vs SMA)</h6>
                     </div>
                 </div>
                 <div class="card-body p-24">
                     <ul class="d-flex flex-wrap align-items-center justify-content-center my-3 gap-3">
                         <li class="d-flex align-items-center gap-2">
-                            <span class="w-12-px h-12-px rounded-circle bg-warning-600"></span>
-                            <span class="text-secondary-light text-sm fw-semibold">Paid Course:
-                                <span class="text-primary-light fw-bold">500</span>
-                            </span>
+                            <span class="w-12-px h-12-px rounded-circle bg-success-main"></span>
+                            <span class="text-secondary-light text-sm fw-semibold">Siswa SMP</span>
                         </li>
                         <li class="d-flex align-items-center gap-2">
-                            <span class="w-12-px h-12-px rounded-circle bg-success-main"></span>
-                            <span class="text-secondary-light text-sm fw-semibold">Free Course:
-                                <span class="text-primary-light fw-bold">300</span>
-                            </span>
+                            <span class="w-12-px h-12-px rounded-circle bg-warning-600"></span>
+                            <span class="text-secondary-light text-sm fw-semibold">Siswa SMA</span>
                         </li>
                     </ul>
                     <div id="paymentStatusChart" class="margin-16-minus y-value-left"></div>
@@ -213,140 +209,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
             </div>
         </div>
 
-        <div class="col-xxl-12">
-            <div class="card h-100">
-                <div class="card-header">
-                    <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between">
-                        <h6 class="mb-2 fw-bold text-lg mb-0">Courses</h6>
-                        <a href="javascript:void(0)"
-                            class="text-primary-600 hover-text-primary d-flex align-items-center gap-1">
-                            View All
-                            <iconify-icon icon="solar:alt-arrow-right-linear" class="icon"></iconify-icon>
-                        </a>
-                    </div>
-                </div>
-                <div class="card-body p-24">
-                    <div class="table-responsive scroll-sm">
-                        <table class="table bordered-table mb-0">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Registered On</th>
-                                    <th scope="col">Instructors </th>
-                                    <th scope="col">Users</th>
-                                    <th scope="col">Enrolled</th>
-                                    <th scope="col">Price </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <span class="text-secondary-light">24 Jun 2024</span>
-                                    </td>
-                                    <td>
-                                        <span class="text-secondary-light">Ronald Richards</span>
-                                    </td>
-                                    <td>
-                                        <div class="text-secondary-light">
-                                            <h6 class="text-md mb-0 fw-normal">3d Illustration &amp; Art
-                                                Design</h6>
-                                            <span class="text-sm fw-normal">34 Lessons</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="text-secondary-light">257</span>
-                                    </td>
-                                    <td>
-                                        <span class="text-secondary-light">$29.00</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <span class="text-secondary-light">24 Jun 2024</span>
-                                    </td>
-                                    <td>
-                                        <span class="text-secondary-light">Jerome Bell</span>
-                                    </td>
-                                    <td>
-                                        <div class="text-secondary-light">
-                                            <h6 class="text-md mb-0 fw-normal">Advanced JavaScript
-                                                Development</h6>
-                                            <span class="text-sm fw-normal">20 Lessons</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="text-secondary-light">375</span>
-                                    </td>
-                                    <td>
-                                        <span class="text-secondary-light">$29.00</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <span class="text-secondary-light">24 Jun 2024</span>
-                                    </td>
-                                    <td>
-                                        <span class="text-secondary-light">Cody Fisher</span>
-                                    </td>
-                                    <td>
-                                        <div class="text-secondary-light">
-                                            <h6 class="text-md mb-0 fw-normal">Portrait Drawing Fundamentals
-                                            </h6>
-                                            <span class="text-sm fw-normal">16 Lessons</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="text-secondary-light">220</span>
-                                    </td>
-                                    <td>
-                                        <span class="text-secondary-light">$29.00</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <span class="text-secondary-light">24 Jun 2024</span>
-                                    </td>
-                                    <td>
-                                        <span class="text-secondary-light">Floyd Miles</span>
-                                    </td>
-                                    <td>
-                                        <div class="text-secondary-light">
-                                            <h6 class="text-md mb-0 fw-normal">Advanced App Development</h6>
-                                            <span class="text-sm fw-normal">25 Lessons</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="text-secondary-light">57</span>
-                                    </td>
-                                    <td>
-                                        <span class="text-secondary-light">$29.00</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <span class="text-secondary-light">24 Jun 2024</span>
-                                    </td>
-                                    <td>
-                                        <span class="text-secondary-light">Ralph Edwards</span>
-                                    </td>
-                                    <td>
-                                        <div class="text-secondary-light">
-                                            <h6 class="text-md mb-0 fw-normal">HTML Fundamental Course</h6>
-                                            <span class="text-sm fw-normal">17 Lessons </span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="text-secondary-light">27</span>
-                                    </td>
-                                    <td>
-                                        <span class="text-secondary-light">$29.00</span>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+
 
 
         <!-- ======================= First Row Cards End =================== -->
@@ -778,9 +641,9 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
     // ================================ Users Overview Donut chart Start ================================ 
     var options = {
-        series: [500, 500, 500],
-        colors: ['#FF9F29', '#487FFF', '#E4F1FF'],
-        labels: ['Active', 'New', 'Total'],
+        series: [<?php echo $total_smp; ?>, <?php echo $total_sma; ?>, <?php echo $total_ponpes; ?>],
+        colors: ['#45B369', '#FF9F29', '#487FFF'],
+        labels: ['Siswa SMP', 'Siswa SMA', 'Santri Ponpes'],
         legend: {
             show: false
         },
@@ -829,21 +692,20 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
     // ================================ Client Payment Status chart End ================================ 
     var options = {
         series: [{
-            name: 'Net Profit',
-            data: [44, 100, 40, 56, 30, 58, 50]
+            name: 'Siswa SMP',
+            data: <?php echo json_encode($smp_data); ?>
         }, {
-            name: 'Free Cash',
-            data: [60, 120, 60, 90, 50, 95, 90]
+            name: 'Siswa SMA',
+            data: <?php echo json_encode($sma_data); ?>
         }],
         colors: ['#45B369', '#FF9F29'],
-        labels: ['Active', 'New', 'Total'],
 
         legend: {
             show: false
         },
         chart: {
             type: 'bar',
-            height: 420,
+            height: 270,
             toolbar: {
                 show: false
             },
@@ -857,7 +719,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
         plotOptions: {
             bar: {
                 borderRadius: 4,
-                columnWidth: 8,
+                columnWidth: 15,
             },
         },
         dataLabels: {
@@ -876,11 +738,10 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
             colors: ['transparent']
         },
         xaxis: {
-            categories: ['Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat', 'Sun'],
+            categories: <?php echo json_encode($years); ?>,
         },
         fill: {
             opacity: 1,
-            width: 18,
         },
     };
 
