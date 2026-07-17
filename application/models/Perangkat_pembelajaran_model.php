@@ -67,7 +67,7 @@ class Perangkat_pembelajaran_model extends MY_Model
 
     public function getPembelajaranMapel($id_pembelajaran_mapel)
     {
-        $this->db->select('pm.*, p.id_tahun_pelajaran, p.id_tingkat_sekolah, p.id_rombel, l.nama_lembaga, t.nama_tingkat, t.tingkat_angka, r.nama_rombel, tp.tahun_pelajaran, tp.semester, tp.kurikulum, m.nama_mapel, m.mapel_singkat, ptk.nama_ptk');
+        $this->db->select('pm.*, p.id_tahun_pelajaran, p.id_tingkat_sekolah, p.id_rombel, l.nama_lembaga, l.nama_lembaga_singkat, t.nama_tingkat, t.tingkat_angka, r.nama_rombel, tp.tahun_pelajaran, tp.semester, tp.kurikulum, m.nama_mapel, m.mapel_singkat, ptk.nama_ptk');
         $this->db->from('pembelajaran_mapel pm');
         $this->db->join('pembelajaran p', 'p.id_pembelajaran = pm.id_pembelajaran');
         $this->db->join('lembaga l', 'l.id_lembaga = p.id_lembaga');
@@ -104,7 +104,7 @@ class Perangkat_pembelajaran_model extends MY_Model
 
     public function getAdminItems($status_tahun = 'Aktif')
     {
-        $this->db->select('pm.id_pembelajaran_mapel, pp.id_perangkat, l.nama_lembaga, t.nama_tingkat, r.nama_rombel, tp.tahun_pelajaran, tp.semester, m.nama_mapel, ptk.nama_ptk, COUNT(ap.id_agenda) AS total_materi, SUM(CASE WHEN ap.status = "Terlaksana" THEN 1 ELSE 0 END) AS diajarkan');
+        $this->db->select('pm.id_pembelajaran_mapel, pp.id_perangkat, l.nama_lembaga,l.nama_lembaga_singkat, t.nama_tingkat, r.nama_rombel, tp.tahun_pelajaran, tp.semester, m.nama_mapel, ptk.nama_ptk, COUNT(ap.id_agenda) AS total_materi, SUM(CASE WHEN ap.status = "Terlaksana" THEN 1 ELSE 0 END) AS diajarkan');
         $this->db->from('pembelajaran_mapel pm');
         $this->db->join('pembelajaran p', 'p.id_pembelajaran = pm.id_pembelajaran');
         $this->db->join('lembaga l', 'l.id_lembaga = p.id_lembaga');

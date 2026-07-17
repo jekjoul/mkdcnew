@@ -390,6 +390,14 @@
             </a>
         </li>
     <?php endif; ?>
+    <?php if (hasPermissions('menu_kelas_jauh')): ?>
+        <li>
+            <a href="<?php echo url('kelas_jauh') ?>">
+                <iconify-icon icon="solar:globus-linear" class="menu-icon"></iconify-icon>
+                <span>Kelas Jauh (Menginduk)</span>
+            </a>
+        </li>
+    <?php endif; ?>
 <?php endif; ?>
 
 <?php if (hasPermissions('menu_surat_menyurat')): ?>

@@ -230,13 +230,13 @@
                     <form id="formUpdateStatusValidasi" method="post" action="" class="d-inline">
                         <input type="hidden" name="status_daftar_ulang" id="val_status_input" value="">
                         
-                        <?php if (hasPermissions('calon_siswa_perbaiki')): ?>
+                        <?php if (hasPermissions('calon_siswa_validasi')): ?>
                         <button type="submit" id="btnValPerbaiki" class="btn btn-warning-600 text-light radius-8 px-20 d-inline-flex align-items-center gap-1">
                             <iconify-icon icon="lucide:edit-3"></iconify-icon> Perbaiki Kembali
                         </button>
                         <?php endif; ?>
                         
-                        <?php if (hasPermissions('calon_siswa_verifikasi')): ?>
+                        <?php if (hasPermissions('calon_siswa_validasi')): ?>
                         <button type="submit" id="btnValVerifikasi" class="btn btn-success-600 text-light radius-8 px-20 d-inline-flex align-items-center gap-1">
                             <iconify-icon icon="lucide:check-circle"></iconify-icon> Verifikasi
                         </button>

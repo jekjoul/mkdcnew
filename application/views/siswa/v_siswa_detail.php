@@ -30,7 +30,20 @@ $is_admin_or_staff = (hasPermissions('siswa_edit') || hasPermissions('menu_buku_
                         </div>
                         <h6 class="mb-0 mt-16"><?php echo $row->nama_siswa ?></h6>
                         <span class="text-secondary-light mb-16"><?php echo ($row->nisn ?: '-') . ' / ' . ($row->nipd ?: '-') ?></span><br>
-                        <span class="badge text-sm fw-semibold bg-dark-info-gradient px-20 py-9 radius-4 text-white mb-20"><?php echo $row->rombel ?: '-' ?></span>
+                        <div class="d-flex align-items-center justify-content-center gap-2 mb-20">
+                            <span class="badge text-sm fw-semibold bg-dark-info-gradient px-20 py-9 radius-4 text-white"><?php echo $row->rombel ?: '-' ?></span>
+                            <?php
+                            $CI = &get_instance();
+                            $menginduk = $CI->db->select('kj.nama_kelas_jauh')
+                                ->from('kelas_jauh_siswa kjs')
+                                ->join('kelas_jauh kj', 'kj.id_kelas_jauh = kjs.id_kelas_jauh')
+                                ->where('kjs.id_siswa', $row->id_siswa)
+                                ->get()->row();
+                            if ($menginduk):
+                            ?>
+                                <span class="badge text-sm fw-semibold bg-warning-focus text-warning-main px-20 py-9 radius-4" data-bs-toggle="tooltip" title="Menginduk di: <?php echo html_escape($menginduk->nama_kelas_jauh) ?>">Menginduk</span>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </div>
                 <div class="ms-24 mb-24 me-24">

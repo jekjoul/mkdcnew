@@ -132,17 +132,15 @@ if (!empty($kop)) {
             .container {
                 width: 100% !important;
                 max-width: 100% !important;
-                height: 100%;
-                max-height: 100vh;
+                height: auto !important;
+                max-height: none !important;
                 padding: 0 !important;
                 margin: 0 !important;
                 border: none !important;
                 box-shadow: none !important;
                 border-radius: 0 !important;
                 box-sizing: border-box;
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
+                display: block !important;
                 page-break-inside: avoid;
                 page-break-after: avoid;
                 page-break-before: avoid;

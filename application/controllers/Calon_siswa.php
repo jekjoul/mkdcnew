@@ -224,6 +224,8 @@ class Calon_siswa extends MY_Controller
             redirect('calon_siswa/validasi');
         }
 
+
+
         $this->db->where('id_calon_siswa', $row->id_calon_siswa);
         $this->db->update($this->table, ['status_daftar_ulang' => $status]);
         $this->session->set_flashdata('alert-type', 'success');
@@ -324,6 +326,7 @@ class Calon_siswa extends MY_Controller
             'calon' => $row,
             'lembaga_tujuan' => $lembaga_name,
             'berkas' => $berkas_list,
+            'berkas_lengkap' => $this->hasAllRequiredBerkas($row->id_calon_siswa),
         ];
         
         $this->output->set_content_type('application/json')->set_output(json_encode($data));

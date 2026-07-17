@@ -34,7 +34,7 @@
                             ?>
                             <tr>
                                 <td><?php echo html_escape($row->tahun_pelajaran . ' (' . $row->semester . ')') ?></td>
-                                <td><?php echo html_escape(trim($row->nama_lembaga . ' ' . $row->nama_tingkat . ' ' . $row->nama_rombel)) ?></td>
+                                <td><?php echo html_escape(trim( $row->nama_tingkat . ' - ' . $row->nama_rombel)) ?></td>
                                 <td><?php echo html_escape($row->nama_mapel) ?></td>
                                 <td><?php echo html_escape($row->nama_ptk ?: '-') ?></td>
                                 <td>
