@@ -207,15 +207,7 @@ $action_url = !empty($row->id_ptk) ? url('ptk/ptkUpdate/' . $row->id_ptk) : url(
                 </select>
             </div>
         </div>
-        <div class="col-sm-6">
-            <div class="mb-20">
-                <label for="setting_password" class="form-label fw-semibold text-primary-light text-sm mb-8">Password Baru</label>
-                <div class="position-relative">
-                    <input type="password" class="form-control radius-8" id="setting_password" name="password" placeholder="Kosongkan jika tidak diganti">
-                    <span class="toggle-password ri-eye-line cursor-pointer position-absolute end-0 top-50 translate-middle-y me-16 text-secondary-light" data-toggle="#setting_password"></span>
-                </div>
-            </div>
-        </div>
+        
     </div>
 
     <div class="d-flex align-items-center justify-content-center gap-3">

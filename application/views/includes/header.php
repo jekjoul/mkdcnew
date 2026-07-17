@@ -42,6 +42,12 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
     <link href=" https://cdn.jsdelivr.net/npm/sweetalert2@11.26.2/dist/sweetalert2.min.css " rel="stylesheet">
 
     <style>
+        @media screen {
+            html {
+                font-size: 14px !important;
+            }
+        }
+
         @media only screen and (max-width: 600px) {
             .mobile-hide {
                 display: none !important;

@@ -84,10 +84,30 @@ class MY_Controller extends CI_Controller {
 		}
 
 		// Redirect paksa hanya jika SATU-SATUNYA role yang dimiliki adalah Guru, 
-		// kecualikan segment menu guru, profile, ekstrakurikuler, dan kedisiplinan
+		// kecualikan segment menu guru, profile, ekstrakurikuler, kedisiplinan, dan aksi penyimpanan profil PTK mandiri.
 		$is_only_guru = (count($user_roles) === 1 && in_array('guru', $user_roles, true));
-		if ($is_only_guru && !in_array($this->uri->segment(1), ['guru', 'profile', 'ekstrakurikuler', 'kedisiplinan'], true)) {
-			redirect('guru', 'refresh');
+		if ($is_only_guru) {
+			$segment1 = $this->uri->segment(1);
+			$segment2 = $this->uri->segment(2);
+			$allowed_segments = ['guru', 'profile', 'ekstrakurikuler', 'kedisiplinan'];
+			$allowed_ptk_methods = [
+				'ptkUpdate',
+				'ptkPendidikanSimpan',
+				'ptkPendidikanUpdate',
+				'ptkPendidikanHapus',
+				'ptkPendidikanUpload',
+				'ptkDokumenSimpan',
+				'ptkDokumenUpdate',
+				'ptkDokumenHapus',
+				'getKabupaten',
+				'getKecamatan',
+				'getKelurahan',
+				'ptkJenisDokumenSimpan'
+			];
+			$is_allowed = in_array($segment1, $allowed_segments, true) || ($segment1 === 'ptk' && in_array($segment2, $allowed_ptk_methods, true));
+			if (!$is_allowed) {
+				redirect('guru', 'refresh');
+			}
 		}
 
 

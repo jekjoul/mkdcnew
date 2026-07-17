@@ -120,6 +120,14 @@ class Ptk extends MY_Controller
 	{
 		postAllowed();
 
+		// Pengamanan IDOR: jika user adalah Guru biasa, pastikan hanya menambah data pendidikannya sendiri
+		if (!hasPermissions('ptk_edit')) {
+			$logged_user = $this->db->get_where('users', ['id' => logged('id')])->row();
+			if (!$logged_user || $logged_user->id_ptk != $id_ptk) {
+				show_error('Anda tidak memiliki izin untuk menambah data riwayat pendidikan ini.', 403);
+			}
+		}
+
 		$ptk = $this->db->get_where($this->table, ['id_ptk' => $id_ptk])->row();
 		if (!$ptk) {
 			show_404();
@@ -152,6 +160,14 @@ class Ptk extends MY_Controller
 			show_404();
 		}
 
+		// Pengamanan IDOR: jika user adalah Guru biasa, pastikan hanya mengubah data pendidikannya sendiri
+		if (!hasPermissions('ptk_edit')) {
+			$logged_user = $this->db->get_where('users', ['id' => logged('id')])->row();
+			if (!$logged_user || $logged_user->id_ptk != $pendidikan->id_ptk) {
+				show_error('Anda tidak memiliki izin untuk mengubah data riwayat pendidikan ini.', 403);
+			}
+		}
+
 		$data = $this->pendidikanData($pendidikan->id_ptk);
 		$this->db->where('id_pendidikan', $id_pendidikan);
 
@@ -177,6 +193,14 @@ class Ptk extends MY_Controller
 		$pendidikan = $this->db->get_where('ptk_riwayat_pendidikan', ['id_pendidikan' => $id_pendidikan])->row();
 		if (!$pendidikan) {
 			show_404();
+		}
+
+		// Pengamanan IDOR: jika user adalah Guru biasa, pastikan hanya menghapus data pendidikannya sendiri
+		if (!hasPermissions('ptk_edit')) {
+			$logged_user = $this->db->get_where('users', ['id' => logged('id')])->row();
+			if (!$logged_user || $logged_user->id_ptk != $pendidikan->id_ptk) {
+				show_error('Anda tidak memiliki izin untuk menghapus data riwayat pendidikan ini.', 403);
+			}
 		}
 
 		$this->db->where('id_pendidikan', $id_pendidikan);
@@ -206,6 +230,14 @@ class Ptk extends MY_Controller
 		$pendidikan = $this->db->get_where('ptk_riwayat_pendidikan', ['id_pendidikan' => $id_pendidikan])->row();
 		if (!$pendidikan) {
 			show_404();
+		}
+
+		// Pengamanan IDOR: jika user adalah Guru biasa, pastikan hanya mengunggah berkas pendidikannya sendiri
+		if (!hasPermissions('ptk_edit')) {
+			$logged_user = $this->db->get_where('users', ['id' => logged('id')])->row();
+			if (!$logged_user || $logged_user->id_ptk != $pendidikan->id_ptk) {
+				show_error('Anda tidak memiliki izin untuk mengunggah berkas riwayat pendidikan ini.', 403);
+			}
 		}
 
 		$upload = $this->uploadDokumenPribadi($pendidikan->id_ptk);
@@ -251,6 +283,14 @@ class Ptk extends MY_Controller
 	{
 		postAllowed();
 
+		// Pengamanan IDOR: jika user adalah Guru biasa, pastikan hanya menambah data dokumen pribadinya sendiri
+		if (!hasPermissions('ptk_edit')) {
+			$logged_user = $this->db->get_where('users', ['id' => logged('id')])->row();
+			if (!$logged_user || $logged_user->id_ptk != $id_ptk) {
+				show_error('Anda tidak memiliki izin untuk menambah dokumen pribadi PTK ini.', 403);
+			}
+		}
+
 		$ptk = $this->db->get_where($this->table, ['id_ptk' => $id_ptk])->row();
 		if (!$ptk) {
 			show_404();
@@ -286,6 +326,14 @@ class Ptk extends MY_Controller
 		$dokumen = $this->db->get_where('ptk_dokumen_pribadi', ['id_dokumen' => $id_dokumen])->row();
 		if (!$dokumen) {
 			show_404();
+		}
+
+		// Pengamanan IDOR: jika user adalah Guru biasa, pastikan hanya mengubah data dokumen pribadinya sendiri
+		if (!hasPermissions('ptk_edit')) {
+			$logged_user = $this->db->get_where('users', ['id' => logged('id')])->row();
+			if (!$logged_user || $logged_user->id_ptk != $dokumen->id_ptk) {
+				show_error('Anda tidak memiliki izin untuk mengubah dokumen pribadi ini.', 403);
+			}
 		}
 
 		$data = $this->dokumenPribadiData($dokumen->id_ptk);
@@ -324,6 +372,14 @@ class Ptk extends MY_Controller
 		$dokumen = $this->db->get_where('ptk_dokumen_pribadi', ['id_dokumen' => $id_dokumen])->row();
 		if (!$dokumen) {
 			show_404();
+		}
+
+		// Pengamanan IDOR: jika user adalah Guru biasa, pastikan hanya menghapus data dokumen pribadinya sendiri
+		if (!hasPermissions('ptk_edit')) {
+			$logged_user = $this->db->get_where('users', ['id' => logged('id')])->row();
+			if (!$logged_user || $logged_user->id_ptk != $dokumen->id_ptk) {
+				show_error('Anda tidak memiliki izin untuk menghapus dokumen pribadi ini.', 403);
+			}
 		}
 
 		$this->db->where('id_dokumen', $id_dokumen);
@@ -588,6 +644,15 @@ class Ptk extends MY_Controller
 	public function ptkUpdate($id)
 	{
 		postAllowed();
+
+		// Pengamanan IDOR: jika user adalah Guru biasa, pastikan hanya mengupdate datanya sendiri
+		if (!hasPermissions('ptk_edit')) {
+			$logged_user = $this->db->get_where('users', ['id' => logged('id')])->row();
+			if (!$logged_user || $logged_user->id_ptk != $id) {
+				show_error('Anda tidak memiliki izin untuk mengubah data PTK ini.', 403);
+			}
+		}
+
 		$data = [
 			'nama_ptk' => post('nama_ptk'),
 			'gelar_depan' => post('gelar_depan'),
