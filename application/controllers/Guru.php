@@ -763,24 +763,82 @@ class Guru extends MY_Controller
         return $this->db->get()->result();
     }
 
+    private function getJadwalSettings($id_pembelajaran)
+    {
+        $rows = $this->db->get_where('jadwal_pelajaran_pengaturan', ['id_pembelajaran' => $id_pembelajaran])->result();
+        $settings = [];
+        $hari_list = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+        foreach ($hari_list as $hari) {
+            $settings[$hari] = [
+                'aktif' => false,
+                'jumlah_jp' => $hari === 'Jumat' ? 6 : 8,
+            ];
+        }
+
+        foreach ($rows as $row) {
+            $settings[$row->hari] = [
+                'aktif' => true,
+                'jumlah_jp' => (int) $row->jumlah_jp,
+            ];
+        }
+
+        if (empty($rows)) {
+            foreach (['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'] as $hari) {
+                $settings[$hari]['aktif'] = true;
+            }
+        }
+
+        return $settings;
+    }
+
     private function getJadwalGuru($id_ptk)
     {
         if (!$this->db->table_exists('jadwal_pelajaran_item')) {
             return [];
         }
 
-        $this->db->select('j.hari, j.slot_ke, l.nama_lembaga, t.nama_tingkat, r.nama_rombel, m.nama_mapel, m.mapel_singkat');
+        $this->db->select('j.id_pembelajaran, j.hari, j.slot_ke, l.nama_lembaga, t.nama_tingkat, r.nama_rombel, m.nama_mapel, m.mapel_singkat');
         $this->db->from('jadwal_pelajaran_item j');
         $this->db->join('pembelajaran_mapel pm', 'pm.id_pembelajaran = j.id_pembelajaran AND pm.id_mapel = j.id_mapel');
         $this->db->join('pembelajaran p', 'p.id_pembelajaran = j.id_pembelajaran');
+        $this->db->join('pembelajaran_tahun_pelajaran tp', 'tp.id_tahun_pelajaran = p.id_tahun_pelajaran');
         $this->db->join('lembaga l', 'l.id_lembaga = p.id_lembaga');
         $this->db->join('master_tingkat_sekolah t', 't.id_tingkat_sekolah = p.id_tingkat_sekolah');
         $this->db->join('rombel r', 'r.id_rombel = p.id_rombel');
         $this->db->join('mapel m', 'm.id_mapel = j.id_mapel');
         $this->db->where('pm.id_ptk', (int) $id_ptk);
+        $this->db->where('tp.status', 'Aktif');
         $this->db->order_by('FIELD(j.hari, "Senin","Selasa","Rabu","Kamis","Jumat","Sabtu","Minggu")', '', false);
         $this->db->order_by('j.slot_ke', 'ASC');
-        return $this->db->get()->result();
+        $rows = $this->db->get()->result();
+
+        if (empty($rows)) {
+            return [];
+        }
+
+        // Cache settings for each unique id_pembelajaran
+        $pembelajaran_ids = array_unique(array_column($rows, 'id_pembelajaran'));
+        $settings_cache = [];
+        foreach ($pembelajaran_ids as $id_pem) {
+            $settings_cache[$id_pem] = $this->getJadwalSettings($id_pem);
+        }
+
+        // Filter out items that are on disabled days or exceed JP slots
+        $filtered = [];
+        foreach ($rows as $row) {
+            $pem_id = $row->id_pembelajaran;
+            $hari = $row->hari;
+            $slot = (int)$row->slot_ke;
+
+            if (isset($settings_cache[$pem_id][$hari])) {
+                $set = $settings_cache[$pem_id][$hari];
+                if ($set['aktif'] && $slot <= $set['jumlah_jp']) {
+                    $filtered[] = $row;
+                }
+            }
+        }
+
+        return $filtered;
     }
 
     private function getNilaiMapel($id_ptk)
@@ -796,6 +854,7 @@ class Guru extends MY_Controller
         $this->db->join('pembelajaran_siswa ps', 'ps.id_pembelajaran = p.id_pembelajaran', 'left');
         $this->db->join('nilai_siswa ns', 'ns.id_pembelajaran_mapel = pm.id_pembelajaran_mapel', 'left');
         $this->db->where('pm.id_ptk', (int) $id_ptk);
+        $this->db->where('tp.status', 'Aktif');
         $this->db->group_by('pm.id_pembelajaran_mapel');
         $this->db->order_by('m.nama_mapel', 'ASC');
         return $this->db->get()->result();

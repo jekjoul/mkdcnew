@@ -117,7 +117,7 @@ $is_admin_or_staff = (hasPermissions('siswa_edit') || hasPermissions('menu_buku_
                                         <div class="col-md-12">
                                             <div class="form-switch switch-primary py-12 px-16 border radius-8 mb-16">
                                                 <span class="fw-medium text-secondary-light fst-italic">Alamat :</span><br>
-                                                <span class="fw-semibold text-primary-light"><?php echo ($row->alamat ?: '') . ' RT ' . ($row->rt ?: '0') . ' RW ' . ($row->rw ?: '0') . ' Desa ' . ($row->id_kelurahan ?: '-') . ' Kec. ' . ($row->id_kecamatan ?: '-') . ' Kab. ' . ($row->id_kabupaten ?: '-') . ' Prov. ' . ($row->id_provinsi ?: '-') ?></span>
+                                                <span class="fw-semibold text-primary-light"><?php echo html_escape(($row->alamat ?: '') . ' RT ' . ($row->rt ?: '0') . ' RW ' . ($row->rw ?: '0') . ' Desa ' . ($row->id_kelurahan ?: '-') . ' Kec. ' . ($row->id_kecamatan ?: '-') . ' Kab. ' . ($row->id_kabupaten ?: '-') . ' Prov. ' . ($row->id_provinsi ?: '-')) ?></span>
                                             </div>
                                         </div>
                                     </div>
