@@ -67,9 +67,38 @@ function ptk_color_style($id_ptk)
         return '--ptk-bg:#f8fafc;--ptk-border:#64748b;--ptk-text:#334155;';
     }
 
-    $hash = (int) sprintf('%u', crc32((string) $id_ptk));
-    $hue = $hash % 360;
-    return '--ptk-bg:hsl(' . $hue . ', 86%, 92%);--ptk-border:hsl(' . $hue . ', 70%, 36%);--ptk-text:hsl(' . $hue . ', 72%, 22%);';
+    $colors = [
+        ['bg' => '#dc2626', 'border' => '#991b1b', 'text' => '#ffffff'], // Red
+        ['bg' => '#2563eb', 'border' => '#1e40af', 'text' => '#ffffff'], // Blue
+        ['bg' => '#16a34a', 'border' => '#166534', 'text' => '#ffffff'], // Green
+        ['bg' => '#ea580c', 'border' => '#9a3412', 'text' => '#ffffff'], // Orange
+        ['bg' => '#9333ea', 'border' => '#6b21a8', 'text' => '#ffffff'], // Purple
+        ['bg' => '#db2777', 'border' => '#9d174d', 'text' => '#ffffff'], // Pink
+        ['bg' => '#0d9488', 'border' => '#115e59', 'text' => '#ffffff'], // Teal
+        ['bg' => '#4f46e5', 'border' => '#3730a3', 'text' => '#ffffff'], // Indigo
+        ['bg' => '#f59e0b', 'border' => '#b45309', 'text' => '#000000'], // Yellow
+        ['bg' => '#84cc16', 'border' => '#3f6212', 'text' => '#000000'], // Lime
+        ['bg' => '#06b6d4', 'border' => '#155e75', 'text' => '#ffffff'], // Cyan
+        ['bg' => '#d97706', 'border' => '#78350f', 'text' => '#ffffff'], // Amber
+        ['bg' => '#10b981', 'border' => '#065f46', 'text' => '#ffffff'], // Emerald
+        ['bg' => '#7c3aed', 'border' => '#5b21b6', 'text' => '#ffffff'], // Violet
+        ['bg' => '#d946ef', 'border' => '#86198f', 'text' => '#ffffff'], // Fuchsia
+        ['bg' => '#f43f5e', 'border' => '#9f1239', 'text' => '#ffffff'], // Rose
+        ['bg' => '#0ea5e9', 'border' => '#0369a1', 'text' => '#ffffff'], // Sky
+        ['bg' => '#475569', 'border' => '#1e293b', 'text' => '#ffffff'], // Slate
+        ['bg' => '#78350f', 'border' => '#451a03', 'text' => '#ffffff'], // Brown
+        ['bg' => '#9f1239', 'border' => '#4c0519', 'text' => '#ffffff'], // Crimson
+        ['bg' => '#1e3a8a', 'border' => '#172554', 'text' => '#ffffff'], // Navy
+        ['bg' => '#064e3b', 'border' => '#022c22', 'text' => '#ffffff'], // Forest
+        ['bg' => '#7f1d1d', 'border' => '#450a0a', 'text' => '#ffffff'], // Maroon
+        ['bg' => '#374151', 'border' => '#111827', 'text' => '#ffffff'], // Dark Grey
+        ['bg' => '#65a30d', 'border' => '#3f6212', 'text' => '#ffffff'], // Olive
+    ];
+
+    $index = $id_ptk % count($colors);
+    $color = $colors[$index];
+
+    return '--ptk-bg:' . $color['bg'] . ';--ptk-border:' . $color['border'] . ';--ptk-text:' . $color['text'] . ';';
 }
 
 $rows_by_hari = [];
@@ -85,6 +114,20 @@ foreach ($hari as $h) {
         grid-template-columns: minmax(300px, 360px) minmax(0, 1fr);
         gap: 20px;
         align-items: start;
+    }
+    
+    .teacher-list-card {
+        margin-top: 24px;
+    }
+
+    .teacher-list-card table th,
+    .teacher-list-card table td {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .print-only-text {
+        display: none !important;
     }
 
     .subject-bank {
@@ -209,12 +252,157 @@ foreach ($hari as $h) {
             max-height: none;
         }
     }
+
+    @media print {
+        /* Sembunyikan navigasi, menu samping, footer, dan tombol-tombol */
+        .sidebar,
+        .navbar-header,
+        .subject-bank,
+        .card-header,
+        footer,
+        .btn,
+        a,
+        #saveStatus {
+            display: none !important;
+        }
+
+        /* Bersihkan padding, margin, dan background layout utama */
+        body, 
+        .dashboard-main, 
+        .dashboard-main-body, 
+        .main-content {
+            margin: 0 !important;
+            padding: 0 !important;
+            margin-left: 0 !important;
+            background: #fff !important;
+        }
+
+        /* Ubah tata letak grid menjadi 100% lebar */
+        .all-schedule-layout {
+            display: block !important;
+            grid-template-columns: 1fr !important;
+        }
+
+        .schedule-wrap {
+            overflow: visible !important;
+        }
+
+        /* Sesuaikan ukuran tabel agar rapi saat dicetak */
+        .weekly-table {
+            min-width: 100% !important;
+            width: 100% !important;
+            font-size: 10px !important;
+            border-collapse: collapse !important;
+        }
+
+        .weekly-table th, 
+        .weekly-table td {
+            border: 1px solid #000 !important;
+            padding: 4px 2px !important;
+        }
+
+        /* Percantik token jadwal ketika dicetak */
+        .scheduled-token {
+            border: 1px solid var(--ptk-border, #000) !important;
+            padding: 2px !important;
+            min-height: auto !important;
+            font-size: 9px !important;
+            background: var(--ptk-bg, #fff) !important;
+            color: var(--ptk-text, #000) !important;
+            box-shadow: none !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        
+        .scheduled-token .teacher-conflict {
+            display: none !important; /* Jangan cetak bentrok */
+        }
+
+        @page {
+            size: portrait;
+            margin: 0.4cm;
+        }
+
+        .print-only-title {
+            display: block !important;
+            text-align: center !important;
+            margin-bottom: 12px !important;
+            font-weight: bold !important;
+            font-size: 14px !important;
+            color: #000 !important;
+        }
+
+        .screen-only-text {
+            display: none !important;
+        }
+
+        .print-only-text {
+            display: inline !important;
+        }
+
+        .weekly-table th, 
+        .weekly-table td {
+            border: 1px solid #000 !important;
+            padding: 2px 1px !important; /* minimized cell padding */
+            margin: 0 !important;
+        }
+
+        .scheduled-token {
+            border: 1px solid var(--ptk-border, #000) !important;
+            padding: 1px !important; /* minimized token padding */
+            margin: 0 !important;
+            min-height: auto !important;
+            font-size: 9px !important;
+            background: var(--ptk-bg, #fff) !important;
+            color: var(--ptk-text, #000) !important;
+            box-shadow: none !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            line-height: 1.1 !important;
+        }
+        
+        .scheduled-token .fw-semibold {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .teacher-list-card {
+            max-width: 100% !important;
+            border: 1px solid #000 !important;
+            box-shadow: none !important;
+            margin-top: 15px !important;
+            page-break-inside: avoid;
+        }
+        .teacher-list-card .card-header {
+            display: block !important;
+            padding: 4px 8px !important;
+            font-size: 10px !important;
+            border-bottom: 1px solid #000 !important;
+        }
+        .teacher-list-card .card-body {
+            max-height: none !important;
+            overflow: visible !important;
+            padding: 2px !important;
+        }
+        .teacher-list-card table {
+            font-size: 8px !important;
+            width: 100% !important;
+        }
+        .teacher-list-card th, .teacher-list-card td {
+            border: 1px solid #000 !important;
+            padding: 0 !important; /* minimized padding */
+            margin: 0 !important;
+        }
+    }
 </style>
 <div class="dashboard-main-body">
     <div class="card mb-4">
         <div class="card-header bg-warning-900 d-flex flex-wrap justify-content-between align-items-center gap-2">
             <h6 class="mb-0 text-light">Susun Jadwal Mingguan Semua Kelas</h6>
             <div class="d-flex gap-2">
+                <a href="<?php echo url('jadwal_pelajaran/print_semua') ?>" target="_blank" class="btn btn-info btn-sm d-inline-flex align-items-center gap-2 text-light border-0" style="background-color: rgba(255,255,255,0.15);">
+                    <iconify-icon icon="lucide:printer"></iconify-icon> Cetak Jadwal
+                </a>
                 <button type="button" id="generateScheduleBtn" class="btn btn-warning-600 btn-sm d-inline-flex align-items-center gap-2">
                     <iconify-icon icon="solar:magic-stick-3-linear"></iconify-icon> Generate Jadwal Otomatis
                 </button>
@@ -222,12 +410,6 @@ foreach ($hari as $h) {
                     <iconify-icon icon="lucide:settings"></iconify-icon> Atur Waktu
                 </a>
             </div>
-        </div>
-        <div class="card-body d-flex flex-wrap gap-2">
-            <span class="badge bg-primary-100 text-primary-600"><?php echo (int) $menit_jp ?> menit / JP</span>
-            <?php foreach ($rows_by_hari as $h => $rows): ?>
-                <span class="badge bg-info-100 text-info-600"><?php echo $h ?></span>
-            <?php endforeach; ?>
         </div>
     </div>
 
@@ -264,8 +446,11 @@ foreach ($hari as $h) {
                                             <?php for ($i = 1; $i <= $remaining; $i++): ?>
                                                 <?php $color_style = ptk_color_style($m->id_ptk); ?>
                                                 <div class="subject-token" draggable="true" style="<?php echo $color_style ?>" data-color-style="<?php echo htmlspecialchars($color_style, ENT_QUOTES, 'UTF-8') ?>" data-class-id="<?php echo $kelas->id_pembelajaran ?>" data-mapel-id="<?php echo $m->id_mapel ?>" data-ptk-id="<?php echo (int) $m->id_ptk ?>" data-nama="<?php echo htmlspecialchars($m->nama_mapel, ENT_QUOTES, 'UTF-8') ?>" data-ptk="<?php echo htmlspecialchars($m->nama_ptk ?: '-', ENT_QUOTES, 'UTF-8') ?>" data-class-label="<?php echo htmlspecialchars($kelas->nama_lembaga . ' ' . $kelas->nama_tingkat . ' - ' . $kelas->nama_rombel, ENT_QUOTES, 'UTF-8') ?>">
-                                                    <div class="fw-semibold"><?php echo $m->mapel_singkat ?: $m->nama_mapel ?></div>
-                                                    <div class="text-secondary-light text-sm"><?php echo $m->nama_ptk ?: '-' ?></div>
+                                                    <div class="fw-semibold">
+                                                        <span class="screen-only-text"><?php echo $m->mapel_singkat ?: $m->nama_mapel ?></span>
+                                                        <span class="print-only-text"><?php echo ($m->mapel_singkat ?: $m->nama_mapel) . ' (' . (int) $m->id_ptk . ')' ?></span>
+                                                    </div>
+                                                    <div class="text-secondary-light text-sm screen-only-text"><?php echo $m->nama_ptk ?: '-' ?></div>
                                                 </div>
                                             <?php endfor; ?>
                                         </div>
@@ -281,6 +466,11 @@ foreach ($hari as $h) {
             </div>
 
             <div>
+                <?php
+                $active_tp = isset($pembelajaran[0]) ? $pembelajaran[0]->tahun_pelajaran : '2026/2027';
+                $active_smt = isset($pembelajaran[0]) ? $pembelajaran[0]->semester : 'Ganjil';
+                ?>
+                <h5 class="print-only-title" style="display: none;">Jadwal Pelajaran Tahun Pelajaran <?php echo $active_tp ?> (Semester <?php echo $active_smt ?>)</h5>
                 <div class="schedule-wrap">
                     <table class="weekly-table">
                         <thead>
@@ -340,8 +530,11 @@ foreach ($hari as $h) {
                                                     <?php if ($selected): ?>
                                                         <?php $color_style = ptk_color_style($selected->id_ptk); ?>
                                                         <div class="scheduled-token" draggable="true" style="<?php echo $color_style ?>" data-color-style="<?php echo htmlspecialchars($color_style, ENT_QUOTES, 'UTF-8') ?>" data-class-id="<?php echo $kelas->id_pembelajaran ?>" data-mapel-id="<?php echo $selected->id_mapel ?>" data-ptk-id="<?php echo (int) $selected->id_ptk ?>" data-nama="<?php echo htmlspecialchars($selected->mapel_singkat ?: $selected->nama_mapel, ENT_QUOTES, 'UTF-8') ?>" data-ptk="<?php echo htmlspecialchars($selected->nama_ptk ?: '-', ENT_QUOTES, 'UTF-8') ?>" data-class-label="<?php echo htmlspecialchars($class_label, ENT_QUOTES, 'UTF-8') ?>">
-                                                            <div class="fw-semibold"><?php echo $selected->mapel_singkat ?: $selected->nama_mapel ?></div>
-                                                            <div class="text-secondary-light text-sm" style="font-size: 11px; opacity: 0.85;"><?php echo $selected->nama_ptk ?: '-' ?></div>
+                                                            <div class="fw-semibold">
+                                                                <span class="screen-only-text"><?php echo $selected->mapel_singkat ?: $selected->nama_mapel ?></span>
+                                                                <span class="print-only-text"><?php echo ($selected->mapel_singkat ?: $selected->nama_mapel) . ' (' . (int) $selected->id_ptk . ')' ?></span>
+                                                            </div>
+                                                            <div class="text-secondary-light text-sm screen-only-text" style="font-size: 11px; opacity: 0.85;"><?php echo $selected->nama_ptk ?: '-' ?></div>
                                                             <div class="teacher-conflict d-none"></div>
                                                         </div>
                                                     <?php endif; ?>
@@ -365,6 +558,59 @@ foreach ($hari as $h) {
                         <iconify-icon icon="lucide:trash-2"></iconify-icon> Kosongkan
                     </button>
                 </div>
+
+                <div class="card teacher-list-card">
+                    <div class="card-header bg-neutral-100 py-12 px-16">
+                        <h6 class="text-md mb-0">Daftar Kode Guru</h6>
+                    </div>
+                    <div class="card-body p-8">
+                        <?php
+                        usort($teachers, function($a, $b) {
+                            return (int)$a->id_ptk - (int)$b->id_ptk;
+                        });
+                        $N = count($teachers);
+                        $cols = 3;
+                        $rows_per_table = ceil($N / $cols);
+                        ?>
+                        <div class="d-flex flex-wrap gap-3">
+                            <?php for ($c = 0; $c < $cols; $c++): ?>
+                                <div style="flex: 1; min-width: 200px;">
+                                    <table class="table bordered-table mb-0" style="font-size: 12px; table-layout: fixed; width: 100%;">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center" style="width: 80px; padding: 0;">KD</th>
+                                                <th style="padding: 0;">Nama Guru</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php 
+                                            $start = $c * $rows_per_table;
+                                            $end = min($start + $rows_per_table, $N);
+                                            for ($i = $start; $i < $end; $i++): 
+                                                $t = $teachers[$i];
+                                                $color_style = ptk_color_style($t->id_ptk);
+                                            ?>
+                                                <tr>
+                                                    <td class="text-center fw-semibold" style="padding: 0;  <?php echo $color_style ?> background: var(--ptk-bg); color: var(--ptk-text); border: 1px solid var(--ptk-border);"><?php echo $t->id_ptk ?></td>
+                                                    <td class="text-truncate" style="padding: 0;" title="<?php echo htmlspecialchars($t->nama_ptk) ?>"><?php echo $t->nama_ptk ?></td>
+                                                </tr>
+                                            <?php endfor; ?>
+                                            <?php
+                                            $this_rows = $end - $start;
+                                            for ($filler = $this_rows; $filler < $rows_per_table; $filler++):
+                                            ?>
+                                                <tr>
+                                                    <td style="padding: 0;">&nbsp;</td>
+                                                    <td style="padding: 0;">&nbsp;</td>
+                                                </tr>
+                                            <?php endfor; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            <?php endfor; ?>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </form>
@@ -380,17 +626,25 @@ foreach ($hari as $h) {
 
         function makeBankToken(card) {
             const colorStyle = card.attr('data-color-style') || '';
+            const ptkId = card.data('ptk-id') || 0;
             return $('<div class="subject-token" draggable="true" style="' + escapeAttr(colorStyle) + '" data-color-style="' + escapeAttr(colorStyle) + '" data-class-id="' + card.data('class-id') + '" data-mapel-id="' + card.data('mapel-id') + '" data-ptk-id="' + card.data('ptk-id') + '" data-nama="' + escapeAttr(card.data('nama')) + '" data-ptk="' + escapeAttr(card.data('ptk')) + '" data-class-label="' + escapeAttr(card.data('class-label')) + '">' +
-                '<div class="fw-semibold">' + escapeHtml(card.data('nama')) + '</div>' +
-                '<div class="text-secondary-light text-sm">' + escapeHtml(card.data('ptk')) + '</div>' +
+                '<div class="fw-semibold">' +
+                    '<span class="screen-only-text">' + escapeHtml(card.data('nama')) + '</span>' +
+                    '<span class="print-only-text">' + escapeHtml(card.data('nama')) + ' (' + ptkId + ')</span>' +
+                '</div>' +
+                '<div class="text-secondary-light text-sm screen-only-text">' + escapeHtml(card.data('ptk')) + '</div>' +
                 '</div>');
         }
 
         function makeScheduledToken(token) {
             const colorStyle = token.attr('data-color-style') || '';
+            const ptkId = token.data('ptk-id') || 0;
             return $('<div class="scheduled-token" draggable="true" style="' + escapeAttr(colorStyle) + '" data-color-style="' + escapeAttr(colorStyle) + '" data-class-id="' + token.data('class-id') + '" data-mapel-id="' + token.data('mapel-id') + '" data-ptk-id="' + token.data('ptk-id') + '" data-nama="' + escapeAttr(token.data('nama')) + '" data-ptk="' + escapeAttr(token.data('ptk')) + '" data-class-label="' + escapeAttr(token.data('class-label')) + '">' +
-                '<div class="fw-semibold">' + escapeHtml(token.data('nama')) + '</div>' +
-                '<div class="text-secondary-light text-sm" style="font-size: 11px; opacity: 0.85;">' + escapeHtml(token.data('ptk')) + '</div>' +
+                '<div class="fw-semibold">' +
+                    '<span class="screen-only-text">' + escapeHtml(token.data('nama')) + '</span>' +
+                    '<span class="print-only-text">' + escapeHtml(token.data('nama')) + ' (' + ptkId + ')</span>' +
+                '</div>' +
+                '<div class="text-secondary-light text-sm screen-only-text" style="font-size: 11px; opacity: 0.85;">' + escapeHtml(token.data('ptk')) + '</div>' +
                 '<div class="teacher-conflict d-none"></div>' +
                 '</div>');
         }
