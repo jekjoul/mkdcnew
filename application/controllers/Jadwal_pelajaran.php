@@ -89,8 +89,36 @@ class Jadwal_pelajaran extends MY_Controller
         $this->page_data['pembelajaran'] = $pembelajaran;
         $this->page_data['mapel_by_pembelajaran'] = $mapel_by_pembelajaran;
         $this->page_data['items'] = $items;
+        $this->page_data['teachers'] = $this->db->order_by('nama_ptk', 'ASC')->get('ptk')->result();
 
         $this->load->view('jadwal_pelajaran/semua', $this->page_data);
+    }
+
+    public function print_semua()
+    {
+        if (!logged('id')) {
+            redirect('login');
+        }
+
+        $settings = $this->getSettings(0);
+        $pembelajaran = $this->getAllPembelajaran('Aktif');
+        $mapel_by_pembelajaran = [];
+        $items = [];
+
+        foreach ($pembelajaran as $row) {
+            $mapel_by_pembelajaran[$row->id_pembelajaran] = $this->getMapelPembelajaran($row->id_pembelajaran);
+            $items[$row->id_pembelajaran] = $this->getItems($row->id_pembelajaran, $settings);
+        }
+
+        $this->page_data['hari'] = $this->hari;
+        $this->page_data['settings'] = $settings;
+        $this->page_data['menit_jp'] = $this->getMenitJp($settings);
+        $this->page_data['pembelajaran'] = $pembelajaran;
+        $this->page_data['mapel_by_pembelajaran'] = $mapel_by_pembelajaran;
+        $this->page_data['items'] = $items;
+        $this->page_data['teachers'] = $this->db->order_by('nama_ptk', 'ASC')->get('ptk')->result();
+
+        $this->load->view('jadwal_pelajaran/print_semua', $this->page_data);
     }
 
     public function simpan_semua()
