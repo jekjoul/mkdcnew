@@ -47,7 +47,20 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                     <?php foreach ($siswa as $s): ?>
                                         <tr class="<?php echo ($s->pekerjaan_ayah === 'Sudah Meninggal' || $s->pekerjaan_ibu === 'Sudah Meninggal') ? 'bg-warning-50' : ''; ?>">
                                             <td class="text-center"><?php echo $no++; ?></td>
-                                            <td><?php echo $s->nama_siswa; ?></td>
+                                            <td>
+                                                <?php echo html_escape($s->nama_siswa); ?>
+                                                <?php
+                                                $CI = &get_instance();
+                                                $menginduk = $CI->db->select('kj.nama_kelas_jauh')
+                                                    ->from('kelas_jauh_siswa kjs')
+                                                    ->join('kelas_jauh kj', 'kj.id_kelas_jauh = kjs.id_kelas_jauh')
+                                                    ->where('kjs.id_siswa', $s->id_siswa)
+                                                    ->get()->row();
+                                                if ($menginduk):
+                                                ?>
+                                                    <span class="badge bg-warning-focus text-warning-main px-8 py-2 radius-4 text-xs ms-1" data-bs-toggle="tooltip" title="Menginduk di: <?php echo html_escape($menginduk->nama_kelas_jauh) ?>">Menginduk</span>
+                                                <?php endif; ?>
+                                            </td>
                                             <td class="text-center"><?php echo ($s->nisn ?: '-') . ' / ' . ($s->nipd ?: '-'); ?></td>
                                             <td><?php echo $s->rombel; ?></td>
                                             <td>

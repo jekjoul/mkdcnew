@@ -477,7 +477,7 @@ if (empty($row->id_ptk)) {
                                                 </table>
                                             </div>
                                             <div class="card-footer text-center bg-transparent border border-end-0 border-start-0 border-bottom-0 py-16 px-24 ">
-                                                <a href="javascript:void(0)" class="btn btn-success text-light  ">
+                                                <!-- <a href="javascript:void(0)" class="btn btn-success text-light  ">
                                                     <span class="d-flex">
                                                         <iconify-icon icon="material-symbols:print-rounded" class="text-xl d-flex"> </iconify-icon>
                                                         &nbsp Cetak Profil
@@ -488,7 +488,7 @@ if (empty($row->id_ptk)) {
                                                         <iconify-icon icon="material-symbols:print-rounded" class="text-xl d-flex"> </iconify-icon>
                                                         &nbsp Cetak Surat Keterangan Aktif
                                                     </span>
-                                                </a>
+                                                </a> -->
                                             </div>
                                         </div>
                                     </div>
@@ -589,37 +589,7 @@ if (empty($row->id_ptk)) {
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <tr>
-                                                            <td>1</td>
-                                                            <td>SK Pengangkatan Yulianni 2025</td>
-                                                            <td>30 Juni 2025</td>
-                                                            <td>Dr. Siti Julaeha, M.Pd.</td>
-                                                            <td>Tanda Tangan Digital</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#detailIjazah">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </button>
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-
-                                                        <tr>
-                                                            <td>2</td>
-                                                            <td>SK Pengangkatan Yulianni 2021</td>
-                                                            <td>30 Juni 2021</td>
-                                                            <td>Dr. Siti Julaeha, M.Pd.</td>
-                                                            <td>Tanda Tangan Basah</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#detailIjazah">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </button>
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
+                                                        
 
 
                                                     </tbody>
@@ -654,38 +624,7 @@ if (empty($row->id_ptk)) {
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <tr>
-                                                            <td>1</td>
-                                                            <td>SK Tugas Mengajar 2025</td>
-                                                            <td>30 Juni 2025</td>
-                                                            <td>Dr. Siti Julaeha, M.Pd.</td>
-                                                            <td>Tanda Tangan Digital</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#detailIjazah">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </button>
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-
-                                                        <tr>
-                                                            <td>2</td>
-                                                            <td>SK Tugas Mengajar 2021</td>
-                                                            <td>30 Juni 2021</td>
-                                                            <td>Dr. Siti Julaeha, M.Pd.</td>
-                                                            <td>Tanda Tangan Basah</td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                                    <button type="button" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="modal" data-bs-target="#detailIjazah">
-                                                                        <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
-                                                                    </button>
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-
+                                                       
 
                                                     </tbody>
                                                 </table>
