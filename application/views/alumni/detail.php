@@ -106,7 +106,7 @@
                                 <button class="btn btn-sm btn-success-100 text-success" data-bs-toggle="modal" data-bs-target="#modalTambahDokumenAlumni"><i class="ri-add-line"></i> Tambah</button>
                             </div>
                             <div class="table-responsive">
-                                <table class="table bordered-table" id="dokumenTable">
+                                <table class="table bordered-table w-100" id="dokumenTable" style="width: 100% !important;">
                                     <thead>
                                         <tr>
                                             <th>No</th>
@@ -142,7 +142,7 @@
                         </div>
                         <div class="tab-pane fade" id="pills-nilai">
                             <div class="table-responsive">
-                                <table class="table bordered-table" id="nilaiTable">
+                                <table class="table bordered-table w-100" id="nilaiTable" style="width: 100% !important;">
                                     <thead>
                                         <tr>
                                             <th>No</th>

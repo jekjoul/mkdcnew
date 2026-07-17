@@ -27,6 +27,7 @@ class Siswa extends MY_Controller
     {
         parent::__construct();
         $this->ensureSiswaBukuIndukColumns();
+        $this->ensureMedicalAndAchievementTables();
         $this->load->model('Alumni_model');
         $this->Alumni_model->ensureAlumniTables();
     }
@@ -199,6 +200,12 @@ class Siswa extends MY_Controller
         $this->db->where('siswa_dokumen.id_siswa', $id);
         $this->db->order_by('master_jenis_dokumen_siswa.nama_jenis_dokumen', 'ASC');
         $this->page_data['dokumen'] = $this->db->get()->result();
+
+        $this->db->order_by('tanggal', 'DESC');
+        $this->page_data['rekam_medis'] = $this->db->get_where('siswa_rekam_medis', ['id_siswa' => $id])->result();
+
+        $this->db->order_by('tanggal', 'DESC');
+        $this->page_data['prestasi'] = $this->db->get_where('siswa_prestasi', ['id_siswa' => $id])->result();
         
         $this->db->select('r.nama_rombel, t.nama_tingkat');
         $this->db->from('pembelajaran p');
@@ -681,5 +688,154 @@ class Siswa extends MY_Controller
         $rombel = trim((string) $pembelajaran->nama_rombel);
 
         return $tingkat !== '' ? $tingkat . ' - ' . $rombel : $rombel;
+    }
+
+    public function rekamMedisSimpan($id_siswa)
+    {
+        postAllowed();
+        ifPermissions('siswa_edit');
+        
+        $data = [
+            'id_siswa' => $id_siswa,
+            'tinggi_badan' => post('tinggi_badan') ?: null,
+            'berat_badan' => post('berat_badan') ?: null,
+            'lingkar_kepala' => post('lingkar_kepala') ?: null,
+            'lingkar_perut' => post('lingkar_perut') ?: null,
+            'tanggal' => post('tanggal') ?: date('Y-m-d'),
+            'created_at' => date('Y-m-d H:i:s'),
+        ];
+        
+        $this->db->insert('siswa_rekam_medis', $data);
+        $this->session->set_flashdata('alert-type', 'success');
+        $this->session->set_flashdata('alert', 'Rekam Medis Siswa Berhasil Ditambahkan');
+        redirect('siswa/detail/' . $id_siswa . '#pills-medis');
+    }
+
+    public function rekamMedisHapus($id_rekam_medis)
+    {
+        ifPermissions('siswa_edit');
+        $row = $this->db->get_where('siswa_rekam_medis', ['id_rekam_medis' => $id_rekam_medis])->row();
+        if (!$row) {
+            show_404();
+        }
+        $this->db->delete('siswa_rekam_medis', ['id_rekam_medis' => $id_rekam_medis]);
+        $this->session->set_flashdata('alert-type', 'success');
+        $this->session->set_flashdata('alert', 'Rekam Medis Siswa Berhasil Dihapus');
+        redirect('siswa/detail/' . $row->id_siswa . '#pills-medis');
+    }
+
+    public function prestasiSimpan($id_siswa)
+    {
+        postAllowed();
+        ifPermissions('siswa_edit');
+        
+        $upload = $this->uploadPrestasiBerkas($id_siswa);
+        if (!$upload['status']) {
+            $this->session->set_flashdata('alert-type', 'warning');
+            $this->session->set_flashdata('alert', $upload['message']);
+            redirect('siswa/detail/' . $id_siswa . '#pills-prestasi');
+        }
+        
+        $data = [
+            'id_siswa' => $id_siswa,
+            'nama_prestasi' => post('nama_prestasi') ?: null,
+            'tanggal' => post('tanggal') ?: date('Y-m-d'),
+            'tingkat_prestasi' => post('tingkat_prestasi') ?: null,
+            'berkas' => $upload['file_name'],
+            'created_at' => date('Y-m-d H:i:s'),
+        ];
+        
+        $this->db->insert('siswa_prestasi', $data);
+        $this->session->set_flashdata('alert-type', 'success');
+        $this->session->set_flashdata('alert', 'Prestasi Siswa Berhasil Ditambahkan');
+        redirect('siswa/detail/' . $id_siswa . '#pills-prestasi');
+    }
+
+    public function prestasiHapus($id_prestasi)
+    {
+        ifPermissions('siswa_edit');
+        $row = $this->db->get_where('siswa_prestasi', ['id_prestasi' => $id_prestasi])->row();
+        if (!$row) {
+            show_404();
+        }
+        if (!empty($row->berkas)) {
+            $this->hapusFile('uploads/siswa_prestasi/' . $row->berkas);
+        }
+        $this->db->delete('siswa_prestasi', ['id_prestasi' => $id_prestasi]);
+        $this->session->set_flashdata('alert-type', 'success');
+        $this->session->set_flashdata('alert', 'Prestasi Siswa Berhasil Dihapus');
+        redirect('siswa/detail/' . $row->id_siswa . '#pills-prestasi');
+    }
+
+    private function uploadPrestasiBerkas($id_siswa)
+    {
+        if (empty($_FILES['berkas']['name'])) {
+            return ['status' => true, 'file_name' => null];
+        }
+        $path = './uploads/siswa_prestasi/';
+        if (!is_dir($path)) {
+            mkdir($path, 0777, true);
+        }
+        $this->load->library('upload');
+        $this->upload->initialize([
+            'upload_path' => $path,
+            'allowed_types' => 'pdf|jpg|jpeg|png|docx|doc|zip|rar',
+            'max_size' => 5120,
+            'file_name' => 'siswa-' . $id_siswa . '-prestasi-' . time(),
+            'overwrite' => false,
+        ]);
+        if (!$this->upload->do_upload('berkas')) {
+            return ['status' => false, 'message' => strip_tags($this->upload->display_errors())];
+        }
+        $data = $this->upload->data();
+        return ['status' => true, 'file_name' => $data['file_name']];
+    }
+
+    private function ensureMedicalAndAchievementTables()
+    {
+        $this->load->dbforge();
+        if (!$this->db->table_exists('siswa_rekam_medis')) {
+            $this->dbforge->add_field([
+                'id_rekam_medis' => ['type' => 'INT', 'constraint' => 11, 'auto_increment' => true],
+                'id_siswa' => ['type' => 'INT', 'constraint' => 11],
+                'tinggi_badan' => ['type' => 'VARCHAR', 'constraint' => 50, 'null' => true],
+                'berat_badan' => ['type' => 'VARCHAR', 'constraint' => 50, 'null' => true],
+                'lingkar_kepala' => ['type' => 'VARCHAR', 'constraint' => 50, 'null' => true],
+                'lingkar_perut' => ['type' => 'VARCHAR', 'constraint' => 50, 'null' => true],
+                'tanggal' => ['type' => 'DATE', 'null' => true],
+                'created_at' => ['type' => 'DATETIME', 'null' => true],
+                'updated_at' => ['type' => 'DATETIME', 'null' => true],
+            ]);
+            $this->dbforge->add_key('id_rekam_medis', true);
+            $this->dbforge->add_key('id_siswa');
+            $this->dbforge->create_table('siswa_rekam_medis', true);
+        } else {
+            if (!$this->db->field_exists('updated_at', 'siswa_rekam_medis')) {
+                $this->dbforge->add_column('siswa_rekam_medis', [
+                    'updated_at' => ['type' => 'DATETIME', 'null' => true]
+                ]);
+            }
+        }
+
+        if (!$this->db->table_exists('siswa_prestasi')) {
+            $this->dbforge->add_field([
+                'id_prestasi' => ['type' => 'INT', 'constraint' => 11, 'auto_increment' => true],
+                'id_siswa' => ['type' => 'INT', 'constraint' => 11],
+                'nama_prestasi' => ['type' => 'VARCHAR', 'constraint' => 255],
+                'tanggal' => ['type' => 'DATE', 'null' => true],
+                'tingkat_prestasi' => ['type' => 'VARCHAR', 'constraint' => 100, 'null' => true],
+                'berkas' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
+                'created_at' => ['type' => 'DATETIME', 'null' => true],
+            ]);
+            $this->dbforge->add_key('id_prestasi', true);
+            $this->dbforge->add_key('id_siswa');
+            $this->dbforge->create_table('siswa_prestasi', true);
+        } else {
+            if (!$this->db->field_exists('berkas', 'siswa_prestasi')) {
+                $this->dbforge->add_column('siswa_prestasi', [
+                    'berkas' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true]
+                ]);
+            }
+        }
     }
 }

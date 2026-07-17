@@ -124,7 +124,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                         <button type="button" data-theme-toggle
                             class="w-40-px h-40-px bg-neutral-200 rounded-circle d-flex justify-content-center align-items-center"></button>
 
-                        <div class="dropdown">
+                        <!-- <div class="dropdown">
                             <button
                                 class="has-indicator w-40-px h-40-px bg-neutral-200 rounded-circle d-flex justify-content-center align-items-center"
                                 type="button" data-bs-toggle="dropdown">
@@ -263,9 +263,10 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                         All Message</a>
                                 </div>
                             </div>
-                        </div><!-- Message dropdown end -->
+                        </div> -->
+                        <!-- Message dropdown end -->
 
-                        <div class="dropdown">
+                        <!-- <div class="dropdown">
                             <button
                                 class="has-indicator w-40-px h-40-px bg-neutral-200 rounded-circle d-flex justify-content-center align-items-center"
                                 type="button" data-bs-toggle="dropdown">
@@ -375,7 +376,8 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                 </div>
 
                             </div>
-                        </div><!-- Notification dropdown end -->
+                        </div> -->
+                        <!-- Notification dropdown end -->
 
 
 
@@ -405,7 +407,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                         </a>
                                     </li>
                                     <?php if (logged('role') == 1): ?>
-                                        <li>
+                                        <!-- <li>
                                             <a class="dropdown-item text-black px-0 py-8 hover-bg-transparent hover-text-primary d-flex align-items-center gap-3"
                                                 href="email.html">
                                                 <iconify-icon icon="tabler:message-check" class="icon text-xl">
@@ -418,7 +420,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                                 <iconify-icon icon="icon-park-outline:setting-two" class="icon text-xl">
                                                 </iconify-icon> Setting
                                             </a>
-                                        </li>
+                                        </li> -->
                                     <?php endif; ?>
                                     <li>
                                         <a class="dropdown-item text-black px-0 py-8 hover-bg-transparent hover-text-danger d-flex align-items-center gap-3"

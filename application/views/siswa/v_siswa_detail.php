@@ -69,6 +69,8 @@ $is_admin_or_staff = (hasPermissions('siswa_edit') || hasPermissions('menu_buku_
                             <li class="nav-item"><button class="nav-link px-24 active" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button">Profil</button></li>
                             <?php if ($is_admin_or_staff): ?>
                                 <li class="nav-item"><button class="nav-link px-24" data-bs-toggle="pill" data-bs-target="#pills-arsip" type="button">Arsip</button></li>
+                                <li class="nav-item"><button class="nav-link px-24" data-bs-toggle="pill" data-bs-target="#pills-medis" type="button">Rekam Medis</button></li>
+                                <li class="nav-item"><button class="nav-link px-24" data-bs-toggle="pill" data-bs-target="#pills-prestasi" type="button">Prestasi Siswa</button></li>
                                 <li class="nav-item"><button class="nav-link px-24" data-bs-toggle="pill" data-bs-target="#pills-setting" type="button">Setting</button></li>
                             <?php endif; ?>
                         </ul>
@@ -181,7 +183,7 @@ $is_admin_or_staff = (hasPermissions('siswa_edit') || hasPermissions('menu_buku_
                                     <button class="btn btn-sm btn-success-100 text-success" data-bs-toggle="modal" data-bs-target="#modalTambahDokumen"><i class="ri-add-line"></i> Tambah</button>
                                 </div>
                                 <div class="card-body">
-                                    <table class="table bordered-table" id="dataPribadi">
+                                    <table class="table bordered-table w-100" id="dataPribadi" style="width: 100% !important;">
                                         <thead>
                                             <tr>
                                                 <th>No</th>
@@ -206,6 +208,88 @@ $is_admin_or_staff = (hasPermissions('siswa_edit') || hasPermissions('menu_buku_
                                                             <button class="btn btn-success-100 text-success-600 btn-edit-dokumen" data-bs-toggle="modal" data-bs-target="#modalEditDokumen" data-action="<?php echo url('siswa/dokumenUpdate/' . $d->id_dokumen) ?>" data-jenis="<?php echo $d->id_jenis_dokumen ?>" data-nomor="<?php echo htmlspecialchars($d->nomor_dokumen, ENT_QUOTES, 'UTF-8') ?>" data-tanggal="<?php echo $d->tanggal_dokumen ?>" data-keterangan="<?php echo htmlspecialchars($d->keterangan, ENT_QUOTES, 'UTF-8') ?>"><iconify-icon icon="lucide:edit"></iconify-icon></button>
                                                             <a class="btn btn-danger-100 text-danger-600" href="<?php echo url('siswa/dokumenHapus/' . $d->id_dokumen) ?>" onclick="return confirm('Hapus dokumen ini?')"><iconify-icon icon="lucide:trash-2"></iconify-icon></a>
                                                         </div>
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="pills-medis">
+                            <div class="card basic-data-table shadow">
+                                <div class="card-header py-16 px-24 bg-base d-flex justify-content-between">
+                                    <h6 class="text-lg mb-0">Data Rekam Medis</h6>
+                                    <button class="btn btn-sm btn-success-100 text-success" data-bs-toggle="modal" data-bs-target="#modalTambahMedis"><i class="ri-add-line"></i> Tambah</button>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table bordered-table w-100" id="tableMedis" style="width: 100% !important;">
+                                        <thead>
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Tanggal</th>
+                                                <th>Tinggi Badan (cm)</th>
+                                                <th>Berat Badan (kg)</th>
+                                                <th>Lingkar Kepala (cm)</th>
+                                                <th>Lingkar Perut (cm)</th>
+                                                <th class="text-center">Aksi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php $no = 1; foreach ($rekam_medis as $m): ?>
+                                                <tr>
+                                                    <td><?php echo $no++ ?></td>
+                                                    <td><?php echo $m->tanggal ? tanggal_indo($m->tanggal) : '-' ?></td>
+                                                    <td><?php echo html_escape($m->tinggi_badan ?: '-') ?></td>
+                                                    <td><?php echo html_escape($m->berat_badan ?: '-') ?></td>
+                                                    <td><?php echo html_escape($m->lingkar_kepala ?: '-') ?></td>
+                                                    <td><?php echo html_escape($m->lingkar_perut ?: '-') ?></td>
+                                                    <td class="text-center">
+                                                        <a class="btn btn-danger-100 text-danger-600 btn-sm" href="<?php echo url('siswa/rekamMedisHapus/' . $m->id_rekam_medis) ?>" onclick="return confirm('Hapus rekam medis ini?')"><iconify-icon icon="lucide:trash-2"></iconify-icon></a>
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="pills-prestasi">
+                            <div class="card basic-data-table shadow">
+                                <div class="card-header py-16 px-24 bg-base d-flex justify-content-between">
+                                    <h6 class="text-lg mb-0">Arsip Prestasi Siswa</h6>
+                                    <button class="btn btn-sm btn-success-100 text-success" data-bs-toggle="modal" data-bs-target="#modalTambahPrestasi"><i class="ri-add-line"></i> Tambah</button>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table bordered-table w-100" id="tablePrestasi" style="width: 100% !important;">
+                                        <thead>
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Nama Prestasi</th>
+                                                <th>Tanggal</th>
+                                                <th>Tingkat Prestasi</th>
+                                                <th>Berkas</th>
+                                                <th class="text-center">Aksi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php $no = 1; foreach ($prestasi as $p): ?>
+                                                <tr>
+                                                    <td><?php echo $no++ ?></td>
+                                                    <td><?php echo html_escape($p->nama_prestasi) ?></td>
+                                                    <td><?php echo $p->tanggal ? tanggal_indo($p->tanggal) : '-' ?></td>
+                                                    <td><?php echo html_escape($p->tingkat_prestasi ?: '-') ?></td>
+                                                    <td>
+                                                        <?php if (!empty($p->berkas)): ?>
+                                                            <a href="<?php echo url('uploads/siswa_prestasi/' . $p->berkas) ?>" target="_blank" class="btn btn-sm btn-primary-100 text-primary-600 d-inline-flex align-items-center gap-1">
+                                                                <iconify-icon icon="solar:download-linear"></iconify-icon> Unduh Berkas
+                                                            </a>
+                                                        <?php else: ?>
+                                                            -
+                                                        <?php endif; ?>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <a class="btn btn-danger-100 text-danger-600 btn-sm" href="<?php echo url('siswa/prestasiHapus/' . $p->id_prestasi) ?>" onclick="return confirm('Hapus prestasi ini?')"><iconify-icon icon="lucide:trash-2"></iconify-icon></a>
                                                     </td>
                                                 </tr>
                                             <?php endforeach; ?>
@@ -258,6 +342,82 @@ $is_admin_or_staff = (hasPermissions('siswa_edit') || hasPermissions('menu_buku_
     </div>
 </div>
 
+<!-- Modal Tambah Rekam Medis -->
+<div class="modal fade" id="modalTambahMedis" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content radius-16 bg-base">
+            <div class="modal-header py-16 px-24">
+                <h1 class="modal-title fs-5">Tambah Rekam Medis</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="<?php echo url('siswa/rekamMedisSimpan/' . $row->id_siswa) ?>" method="post">
+                <div class="modal-body p-24">
+                    <div class="mb-16">
+                        <label class="form-label fw-semibold text-primary-light text-sm mb-8">Tanggal Pemeriksaan</label>
+                        <input type="date" class="form-control radius-8" name="tanggal" value="<?php echo date('Y-m-d'); ?>" required>
+                    </div>
+                    <div class="mb-16">
+                        <label class="form-label fw-semibold text-primary-light text-sm mb-8">Tinggi Badan (cm)</label>
+                        <input type="number" class="form-control radius-8" name="tinggi_badan" placeholder="Contoh: 150">
+                    </div>
+                    <div class="mb-16">
+                        <label class="form-label fw-semibold text-primary-light text-sm mb-8">Berat Badan (kg)</label>
+                        <input type="number" class="form-control radius-8" name="berat_badan" placeholder="Contoh: 45">
+                    </div>
+                    <div class="mb-16">
+                        <label class="form-label fw-semibold text-primary-light text-sm mb-8">Lingkar Kepala (cm)</label>
+                        <input type="number" class="form-control radius-8" name="lingkar_kepala" placeholder="Contoh: 54">
+                    </div>
+                    <div class="mb-16">
+                        <label class="form-label fw-semibold text-primary-light text-sm mb-8">Lingkar Perut (cm)</label>
+                        <input type="number" class="form-control radius-8" name="lingkar_perut" placeholder="Contoh: 60">
+                    </div>
+                </div>
+                <div class="modal-footer py-16 px-24">
+                    <button type="button" class="btn btn-outline-secondary radius-8" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-success-600 radius-8">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Tambah Prestasi -->
+<div class="modal fade" id="modalTambahPrestasi" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content radius-16 bg-base">
+            <div class="modal-header py-16 px-24">
+                <h1 class="modal-title fs-5">Tambah Prestasi Siswa</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="<?php echo url('siswa/prestasiSimpan/' . $row->id_siswa) ?>" method="post" enctype="multipart/form-data">
+                <div class="modal-body p-24">
+                    <div class="mb-16">
+                        <label class="form-label fw-semibold text-primary-light text-sm mb-8">Nama Prestasi</label>
+                        <input type="text" class="form-control radius-8" name="nama_prestasi" placeholder="Contoh: Juara 1 Lomba Pidato" required>
+                    </div>
+                    <div class="mb-16">
+                        <label class="form-label fw-semibold text-primary-light text-sm mb-8">Tanggal Perolehan</label>
+                        <input type="date" class="form-control radius-8" name="tanggal" value="<?php echo date('Y-m-d'); ?>" required>
+                    </div>
+                    <div class="mb-16">
+                        <label class="form-label fw-semibold text-primary-light text-sm mb-8">Tingkat Prestasi</label>
+                        <input type="text" class="form-control radius-8" name="tingkat_prestasi" placeholder="Contoh: Kabupaten, Provinsi, Nasional">
+                    </div>
+                    <div class="mb-16">
+                        <label class="form-label fw-semibold text-primary-light text-sm mb-8">Pilih Berkas / File Pendukung</label>
+                        <input type="file" class="form-control radius-8" name="berkas" accept=".pdf,.jpg,.jpeg,.png,.docx,.doc,.zip,.rar">
+                    </div>
+                </div>
+                <div class="modal-footer py-16 px-24">
+                    <button type="button" class="btn btn-outline-secondary radius-8" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-success-600 radius-8">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <?php include viewPath('siswa/partials/v_siswa_dokumen_modals'); ?>
 
 <?php include viewPath('includes/footer'); ?>
@@ -265,6 +425,14 @@ $is_admin_or_staff = (hasPermissions('siswa_edit') || hasPermissions('menu_buku_
 <?php include viewPath('siswa/partials/v_siswa_form_script'); ?>
 <script>
     let table = new DataTable('#dataPribadi');
+    let tableMedis = new DataTable('#tableMedis');
+    let tablePrestasi = new DataTable('#tablePrestasi');
+    
+    // Auto active tab from window hash URL
+    var hash = window.location.hash;
+    if (hash) {
+        $('.nav-pills button[data-bs-target="' + hash + '"]').tab('show');
+    }
     $('.arrow-carousel').slick({
         infinite: true,
         slidesToShow: 1,

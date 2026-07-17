@@ -636,6 +636,12 @@
                 <span>Edit Inline Siswa</span>
             </a>
         </li>
+        <li>
+            <a href="<?php echo url('input_rekam_medis') ?>">
+                <iconify-icon icon="solar:heart-pulse-linear" class="menu-icon"></iconify-icon>
+                <span>Input Rekam Medis</span>
+            </a>
+        </li>
     <?php endif; ?>
 <?php endif; ?>
 

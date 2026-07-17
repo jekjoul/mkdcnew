@@ -38,6 +38,20 @@ class Dashboard extends MY_Controller
 		$this->page_data['total_sma'] = $this->db->query("$base_query AND l.nama_lembaga LIKE '%SMA%'")->row()->total;
 		$this->page_data['total_ponpes'] = $this->db->query("$base_query AND (l.nama_lembaga LIKE '%Ponpes%' OR l.nama_lembaga LIKE '%Pondok%')")->row()->total;
 
+		// Query Tren Pendaftaran SMP vs SMA per Tahun
+		$this->page_data['tren_pendaftaran'] = $this->db->query("
+			SELECT YEAR(s.tanggal_pendaftaran) as tahun,
+				   COUNT(DISTINCT CASE WHEN l.nama_lembaga LIKE '%SMP%' THEN s.id_siswa END) as total_smp,
+				   COUNT(DISTINCT CASE WHEN l.nama_lembaga LIKE '%SMA%' THEN s.id_siswa END) as total_sma
+			FROM siswa s
+			LEFT JOIN pembelajaran_siswa ps ON ps.peserta_didik_id = s.id_siswa
+			LEFT JOIN pembelajaran p ON p.id_pembelajaran = ps.id_pembelajaran
+			LEFT JOIN lembaga l ON l.id_lembaga = p.id_lembaga
+			WHERE s.tanggal_pendaftaran IS NOT NULL AND YEAR(s.tanggal_pendaftaran) > 2000
+			GROUP BY YEAR(s.tanggal_pendaftaran)
+			ORDER BY tahun ASC
+		")->result();
+
 		$this->load->view('dashboard', $this->page_data);
 	}
 }
