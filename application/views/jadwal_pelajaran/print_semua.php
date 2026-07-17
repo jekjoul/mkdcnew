@@ -1,4 +1,20 @@
 <?php
+function get_ptk_code($t)
+{
+    if (is_array($t)) {
+        $niy = trim($t['niy'] ?? '');
+        $id = $t['id_ptk'] ?? 0;
+    } else {
+        $niy = trim($t->niy ?? '');
+        $id = $t->id_ptk ?? 0;
+    }
+    
+    if ($niy !== '') {
+        $last2 = substr($niy, -2);
+        return str_pad($last2, 2, '0', STR_PAD_LEFT);
+    }
+    return str_pad($id % 100, 2, '0', STR_PAD_LEFT);
+}
 function jadwal_rows_for_day($setting)
 {
     $breaks = [];
@@ -284,7 +300,7 @@ foreach ($hari as $h) {
                                         <?php if ($selected): ?>
                                             <?php $color_style = ptk_color_style($selected->id_ptk); ?>
                                             <div class="scheduled-token" style="<?php echo $color_style ?>">
-                                                <?php echo ($selected->mapel_singkat ?: $selected->nama_mapel) . ' (' . (int) $selected->id_ptk . ')' ?>
+                                                <?php echo ($selected->mapel_singkat ?: $selected->nama_mapel) . ' (' . get_ptk_code($selected) . ')' ?>
                                             </div>
                                         <?php endif; ?>
                                     </td>
@@ -304,7 +320,7 @@ foreach ($hari as $h) {
             <div class="card-body">
                 <?php
                 usort($teachers, function($a, $b) {
-                    return (int)$a->id_ptk - (int)$b->id_ptk;
+                    return strcmp(get_ptk_code($a), get_ptk_code($b));
                 });
                 $N = count($teachers);
                 $cols = 3;
@@ -329,7 +345,7 @@ foreach ($hari as $h) {
                                         $color_style = ptk_color_style($t->id_ptk);
                                     ?>
                                         <tr>
-                                            <td class="text-center fw-semibold" style="padding: 0; <?php echo $color_style ?> background: var(--ptk-bg); color: var(--ptk-text); border: 1px solid var(--ptk-border);"><?php echo $t->id_ptk ?></td>
+                                            <td class="text-center fw-semibold" style="padding: 0; <?php echo $color_style ?> background: var(--ptk-bg); color: var(--ptk-text); border: 1px solid var(--ptk-border);"><?php echo get_ptk_code($t) ?></td>
                                             <td style="padding: 0; padding-left: 4px;" title="<?php echo htmlspecialchars($t->nama_ptk) ?>"><?php echo $t->nama_ptk ?></td>
                                         </tr>
                                     <?php endfor; ?>

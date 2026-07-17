@@ -101,6 +101,23 @@ function ptk_color_style($id_ptk)
     return '--ptk-bg:' . $color['bg'] . ';--ptk-border:' . $color['border'] . ';--ptk-text:' . $color['text'] . ';';
 }
 
+function get_ptk_code($t)
+{
+    if (is_array($t)) {
+        $niy = trim($t['niy'] ?? '');
+        $id = $t['id_ptk'] ?? 0;
+    } else {
+        $niy = trim($t->niy ?? '');
+        $id = $t->id_ptk ?? 0;
+    }
+    
+    if ($niy !== '') {
+        $last2 = substr($niy, -2);
+        return str_pad($last2, 2, '0', STR_PAD_LEFT);
+    }
+    return str_pad($id % 100, 2, '0', STR_PAD_LEFT);
+}
+
 $rows_by_hari = [];
 foreach ($hari as $h) {
     if (!empty($settings[$h]['aktif'])) {
@@ -445,10 +462,10 @@ foreach ($hari as $h) {
                                         <div class="d-flex flex-column gap-2 token-list" data-class-id="<?php echo $kelas->id_pembelajaran ?>" data-mapel-id="<?php echo $m->id_mapel ?>">
                                             <?php for ($i = 1; $i <= $remaining; $i++): ?>
                                                 <?php $color_style = ptk_color_style($m->id_ptk); ?>
-                                                <div class="subject-token" draggable="true" style="<?php echo $color_style ?>" data-color-style="<?php echo htmlspecialchars($color_style, ENT_QUOTES, 'UTF-8') ?>" data-class-id="<?php echo $kelas->id_pembelajaran ?>" data-mapel-id="<?php echo $m->id_mapel ?>" data-ptk-id="<?php echo (int) $m->id_ptk ?>" data-nama="<?php echo htmlspecialchars($m->nama_mapel, ENT_QUOTES, 'UTF-8') ?>" data-ptk="<?php echo htmlspecialchars($m->nama_ptk ?: '-', ENT_QUOTES, 'UTF-8') ?>" data-class-label="<?php echo htmlspecialchars($kelas->nama_lembaga . ' ' . $kelas->nama_tingkat . ' - ' . $kelas->nama_rombel, ENT_QUOTES, 'UTF-8') ?>">
+                                                <div class="subject-token" draggable="true" style="<?php echo $color_style ?>" data-color-style="<?php echo htmlspecialchars($color_style, ENT_QUOTES, 'UTF-8') ?>" data-class-id="<?php echo $kelas->id_pembelajaran ?>" data-mapel-id="<?php echo $m->id_mapel ?>" data-ptk-id="<?php echo (int) $m->id_ptk ?>" data-ptk-code="<?php echo get_ptk_code($m) ?>" data-nama="<?php echo htmlspecialchars($m->nama_mapel, ENT_QUOTES, 'UTF-8') ?>" data-ptk="<?php echo htmlspecialchars($m->nama_ptk ?: '-', ENT_QUOTES, 'UTF-8') ?>" data-class-label="<?php echo htmlspecialchars($kelas->nama_lembaga . ' ' . $kelas->nama_tingkat . ' - ' . $kelas->nama_rombel, ENT_QUOTES, 'UTF-8') ?>">
                                                     <div class="fw-semibold">
                                                         <span class="screen-only-text"><?php echo $m->mapel_singkat ?: $m->nama_mapel ?></span>
-                                                        <span class="print-only-text"><?php echo ($m->mapel_singkat ?: $m->nama_mapel) . ' (' . (int) $m->id_ptk . ')' ?></span>
+                                                        <span class="print-only-text"><?php echo ($m->mapel_singkat ?: $m->nama_mapel) . ' (' . get_ptk_code($m) . ')' ?></span>
                                                     </div>
                                                     <div class="text-secondary-light text-sm screen-only-text"><?php echo $m->nama_ptk ?: '-' ?></div>
                                                 </div>
@@ -529,10 +546,10 @@ foreach ($hari as $h) {
                                                     <input type="hidden" name="jadwal[<?php echo $kelas->id_pembelajaran ?>][<?php echo $h ?>][<?php echo $row['slot'] ?>]" value="<?php echo $selected_id ?>">
                                                     <?php if ($selected): ?>
                                                         <?php $color_style = ptk_color_style($selected->id_ptk); ?>
-                                                        <div class="scheduled-token" draggable="true" style="<?php echo $color_style ?>" data-color-style="<?php echo htmlspecialchars($color_style, ENT_QUOTES, 'UTF-8') ?>" data-class-id="<?php echo $kelas->id_pembelajaran ?>" data-mapel-id="<?php echo $selected->id_mapel ?>" data-ptk-id="<?php echo (int) $selected->id_ptk ?>" data-nama="<?php echo htmlspecialchars($selected->mapel_singkat ?: $selected->nama_mapel, ENT_QUOTES, 'UTF-8') ?>" data-ptk="<?php echo htmlspecialchars($selected->nama_ptk ?: '-', ENT_QUOTES, 'UTF-8') ?>" data-class-label="<?php echo htmlspecialchars($class_label, ENT_QUOTES, 'UTF-8') ?>">
+                                                        <div class="scheduled-token" draggable="true" style="<?php echo $color_style ?>" data-color-style="<?php echo htmlspecialchars($color_style, ENT_QUOTES, 'UTF-8') ?>" data-class-id="<?php echo $kelas->id_pembelajaran ?>" data-mapel-id="<?php echo $selected->id_mapel ?>" data-ptk-id="<?php echo (int) $selected->id_ptk ?>" data-ptk-code="<?php echo get_ptk_code($selected) ?>" data-nama="<?php echo htmlspecialchars($selected->mapel_singkat ?: $selected->nama_mapel, ENT_QUOTES, 'UTF-8') ?>" data-ptk="<?php echo htmlspecialchars($selected->nama_ptk ?: '-', ENT_QUOTES, 'UTF-8') ?>" data-class-label="<?php echo htmlspecialchars($class_label, ENT_QUOTES, 'UTF-8') ?>">
                                                             <div class="fw-semibold">
                                                                 <span class="screen-only-text"><?php echo $selected->mapel_singkat ?: $selected->nama_mapel ?></span>
-                                                                <span class="print-only-text"><?php echo ($selected->mapel_singkat ?: $selected->nama_mapel) . ' (' . (int) $selected->id_ptk . ')' ?></span>
+                                                                <span class="print-only-text"><?php echo ($selected->mapel_singkat ?: $selected->nama_mapel) . ' (' . get_ptk_code($selected) . ')' ?></span>
                                                             </div>
                                                             <div class="text-secondary-light text-sm screen-only-text" style="font-size: 11px; opacity: 0.85;"><?php echo $selected->nama_ptk ?: '-' ?></div>
                                                             <div class="teacher-conflict d-none"></div>
@@ -566,7 +583,7 @@ foreach ($hari as $h) {
                     <div class="card-body p-8">
                         <?php
                         usort($teachers, function($a, $b) {
-                            return (int)$a->id_ptk - (int)$b->id_ptk;
+                            return strcmp(get_ptk_code($a), get_ptk_code($b));
                         });
                         $N = count($teachers);
                         $cols = 3;
@@ -591,7 +608,7 @@ foreach ($hari as $h) {
                                                 $color_style = ptk_color_style($t->id_ptk);
                                             ?>
                                                 <tr>
-                                                    <td class="text-center fw-semibold" style="padding: 0;  <?php echo $color_style ?> background: var(--ptk-bg); color: var(--ptk-text); border: 1px solid var(--ptk-border);"><?php echo $t->id_ptk ?></td>
+                                                    <td class="text-center fw-semibold" style="padding: 0;  <?php echo $color_style ?> background: var(--ptk-bg); color: var(--ptk-text); border: 1px solid var(--ptk-border);"><?php echo get_ptk_code($t) ?></td>
                                                     <td class="text-truncate" style="padding: 0;" title="<?php echo htmlspecialchars($t->nama_ptk) ?>"><?php echo $t->nama_ptk ?></td>
                                                 </tr>
                                             <?php endfor; ?>
@@ -627,10 +644,11 @@ foreach ($hari as $h) {
         function makeBankToken(card) {
             const colorStyle = card.attr('data-color-style') || '';
             const ptkId = card.data('ptk-id') || 0;
-            return $('<div class="subject-token" draggable="true" style="' + escapeAttr(colorStyle) + '" data-color-style="' + escapeAttr(colorStyle) + '" data-class-id="' + card.data('class-id') + '" data-mapel-id="' + card.data('mapel-id') + '" data-ptk-id="' + card.data('ptk-id') + '" data-nama="' + escapeAttr(card.data('nama')) + '" data-ptk="' + escapeAttr(card.data('ptk')) + '" data-class-label="' + escapeAttr(card.data('class-label')) + '">' +
+            const ptkCode = card.data('ptk-code') || '00';
+            return $('<div class="subject-token" draggable="true" style="' + escapeAttr(colorStyle) + '" data-color-style="' + escapeAttr(colorStyle) + '" data-class-id="' + card.data('class-id') + '" data-mapel-id="' + card.data('mapel-id') + '" data-ptk-id="' + ptkId + '" data-ptk-code="' + ptkCode + '" data-nama="' + escapeAttr(card.data('nama')) + '" data-ptk="' + escapeAttr(card.data('ptk')) + '" data-class-label="' + escapeAttr(card.data('class-label')) + '">' +
                 '<div class="fw-semibold">' +
                     '<span class="screen-only-text">' + escapeHtml(card.data('nama')) + '</span>' +
-                    '<span class="print-only-text">' + escapeHtml(card.data('nama')) + ' (' + ptkId + ')</span>' +
+                    '<span class="print-only-text">' + escapeHtml(card.data('nama')) + ' (' + ptkCode + ')</span>' +
                 '</div>' +
                 '<div class="text-secondary-light text-sm screen-only-text">' + escapeHtml(card.data('ptk')) + '</div>' +
                 '</div>');
@@ -639,10 +657,11 @@ foreach ($hari as $h) {
         function makeScheduledToken(token) {
             const colorStyle = token.attr('data-color-style') || '';
             const ptkId = token.data('ptk-id') || 0;
-            return $('<div class="scheduled-token" draggable="true" style="' + escapeAttr(colorStyle) + '" data-color-style="' + escapeAttr(colorStyle) + '" data-class-id="' + token.data('class-id') + '" data-mapel-id="' + token.data('mapel-id') + '" data-ptk-id="' + token.data('ptk-id') + '" data-nama="' + escapeAttr(token.data('nama')) + '" data-ptk="' + escapeAttr(token.data('ptk')) + '" data-class-label="' + escapeAttr(token.data('class-label')) + '">' +
+            const ptkCode = token.data('ptk-code') || '00';
+            return $('<div class="scheduled-token" draggable="true" style="' + escapeAttr(colorStyle) + '" data-color-style="' + escapeAttr(colorStyle) + '" data-class-id="' + token.data('class-id') + '" data-mapel-id="' + token.data('mapel-id') + '" data-ptk-id="' + ptkId + '" data-ptk-code="' + ptkCode + '" data-nama="' + escapeAttr(token.data('nama')) + '" data-ptk="' + escapeAttr(token.data('ptk')) + '" data-class-label="' + escapeAttr(token.data('class-label')) + '">' +
                 '<div class="fw-semibold">' +
                     '<span class="screen-only-text">' + escapeHtml(token.data('nama')) + '</span>' +
-                    '<span class="print-only-text">' + escapeHtml(token.data('nama')) + ' (' + ptkId + ')</span>' +
+                    '<span class="print-only-text">' + escapeHtml(token.data('nama')) + ' (' + ptkCode + ')</span>' +
                 '</div>' +
                 '<div class="text-secondary-light text-sm screen-only-text" style="font-size: 11px; opacity: 0.85;">' + escapeHtml(token.data('ptk')) + '</div>' +
                 '<div class="teacher-conflict d-none"></div>' +
