@@ -259,7 +259,7 @@ class Siswa extends MY_Controller
             $this->activity_model->add(logged('name') . ' Menambah data siswa: ' . $data['nama_siswa'], logged('id'));
             $this->session->set_flashdata('alert-type', 'success');
             if ($this->isAlumniStatus($data['status_keaktifan'])) {
-                $id_alumni = $this->moveSiswaToAlumni($id, $data['status_keaktifan']);
+                $id_alumni = $this->Alumni_model->moveSiswaToAlumni($id, $data['status_keaktifan']);
                 $this->session->set_flashdata('alert', 'Data Siswa Berhasil Ditambahkan dan Dipindahkan ke Alumni');
                 redirect($id_alumni ? 'alumni/detail/' . $id_alumni : 'alumni');
             }
@@ -288,7 +288,7 @@ class Siswa extends MY_Controller
             $this->activity_model->add(logged('name') . ' Mengubah data siswa: ' . $data['nama_siswa'], logged('id'));
             $this->session->set_flashdata('alert-type', 'success');
             if ($this->isAlumniStatus($data['status_keaktifan'])) {
-                $id_alumni = $this->moveSiswaToAlumni($id, $data['status_keaktifan']);
+                $id_alumni = $this->Alumni_model->moveSiswaToAlumni($id, $data['status_keaktifan']);
                 $this->session->set_flashdata('alert', 'Data Siswa Berhasil Diperbarui dan Dipindahkan ke Alumni');
                 redirect($id_alumni ? 'alumni/detail/' . $id_alumni : 'alumni');
             }
@@ -310,6 +310,7 @@ class Siswa extends MY_Controller
         }
 
         $status = post('status_alumni') ?: 'Keluar';
+        $tanggal_alumni = post('tanggal_alumni') ?: date('Y-m-d');
         if (!$this->isAlumniStatus($status)) {
             $this->session->set_flashdata('alert-type', 'warning');
             $this->session->set_flashdata('alert', 'Status mutasi tidak valid');
@@ -318,7 +319,7 @@ class Siswa extends MY_Controller
 
         $this->db->where('id_siswa', $id);
         $this->db->update($this->table, ['status_keaktifan' => $status]);
-        $id_alumni = $this->moveSiswaToAlumni($id, $status);
+        $id_alumni = $this->Alumni_model->moveSiswaToAlumni($id, $status, $tanggal_alumni);
 
         if ($id_alumni) {
             $this->activity_model->add(logged('name') . ' Memutasi siswa ke alumni: ' . $siswa->nama_siswa . ' (' . $status . ')', logged('id'));

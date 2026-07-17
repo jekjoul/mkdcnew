@@ -28,9 +28,17 @@
                     <tbody>
                         <?php foreach ($items as $row): ?>
                             <?php
-                            $total = (int) $row->total_materi;
-                            $done = (int) $row->diajarkan;
-                            $percent = $total > 0 ? round(($done / $total) * 100) : 0;
+                            $percent = 0;
+                            if (!empty($row->file_cp)) $percent += 10;
+                            if (!empty($row->file_tp)) $percent += 10;
+                            if (!empty($row->file_atp)) $percent += 10;
+                            if (!empty($row->file_kktp)) $percent += 10;
+                            if (!empty($row->file_kisi_sts)) $percent += 10;
+                            if (!empty($row->file_soal_sts)) $percent += 10;
+                            if (!empty($row->file_kisi_sas)) $percent += 10;
+                            if (!empty($row->file_soal_sas)) $percent += 10;
+                            if (!empty($row->total_modul_ajar) && $row->total_modul_ajar > 0) $percent += 10;
+                            if (!empty($row->total_materi) && $row->total_materi > 0) $percent += 10;
                             ?>
                             <tr>
                                 <td><?php echo html_escape($row->tahun_pelajaran . ' (' . $row->semester . ')') ?></td>
@@ -38,16 +46,12 @@
                                 <td><?php echo html_escape($row->nama_mapel) ?></td>
                                 <td><?php echo html_escape($row->nama_ptk ?: '-') ?></td>
                                 <td>
-                                    <?php if ($row->id_perangkat): ?>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <div class="progress flex-grow-1" style="height: 8px;">
-                                                <div class="progress-bar bg-success-main" style="width: <?php echo $percent ?>%"></div>
-                                            </div>
-                                            <span class="text-sm"><?php echo $done ?>/<?php echo $total ?></span>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="progress flex-grow-1" style="height: 8px;">
+                                            <div class="progress-bar bg-success-main" style="width: <?php echo $percent ?>%"></div>
                                         </div>
-                                    <?php else: ?>
-                                        <span class="badge bg-warning-100 text-warning-600">Belum Generate</span>
-                                    <?php endif; ?>
+                                        <span class="text-sm"><?php echo $percent ?>%</span>
+                                    </div>
                                 </td>
                                 <td class="text-center">
                                     <a href="<?php echo url('perangkat_pembelajaran/detail/' . $row->id_pembelajaran_mapel) ?>" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1">

@@ -233,12 +233,18 @@ $is_admin_or_staff = (hasPermissions('siswa_edit') || hasPermissions('menu_buku_
             </div>
             <form action="<?php echo url('siswa/mutasi/' . $row->id_siswa) ?>" method="post">
                 <div class="modal-body p-24">
-                    <label class="form-label fw-semibold text-primary-light text-sm mb-8">Status Alumni</label>
-                    <select class="form-control radius-8 form-select" name="status_alumni" required>
-                        <option value="Keluar">Keluar</option>
-                        <option value="Pindah">Pindah / Mutasi</option>
-                        <option value="Lulus">Lulus</option>
-                    </select>
+                    <div class="mb-16">
+                        <label class="form-label fw-semibold text-primary-light text-sm mb-8">Status Alumni</label>
+                        <select class="form-control radius-8 form-select" name="status_alumni" required>
+                            <option value="Keluar">Keluar</option>
+                            <option value="Pindah">Pindah / Mutasi</option>
+                            <option value="Lulus">Lulus</option>
+                        </select>
+                    </div>
+                    <div class="mb-16">
+                        <label class="form-label fw-semibold text-primary-light text-sm mb-8">Tanggal Keluar / Mutasi / Kelulusan</label>
+                        <input type="date" class="form-control radius-8" name="tanggal_alumni" value="<?php echo date('Y-m-d'); ?>" required>
+                    </div>
                     <div class="alert alert-warning mt-16 mb-0">
                         Data siswa, foto, dokumen, nilai, dan riwayat pembelajaran akan dipindahkan ke data alumni.
                     </div>
