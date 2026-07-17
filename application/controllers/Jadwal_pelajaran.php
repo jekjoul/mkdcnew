@@ -89,7 +89,7 @@ class Jadwal_pelajaran extends MY_Controller
         $this->page_data['pembelajaran'] = $pembelajaran;
         $this->page_data['mapel_by_pembelajaran'] = $mapel_by_pembelajaran;
         $this->page_data['items'] = $items;
-        $this->page_data['teachers'] = $this->db->order_by('nama_ptk', 'ASC')->get('ptk')->result();
+        $this->page_data['teachers'] = $this->db->where('status_keaktifan', 'Aktif')->order_by('nama_ptk', 'ASC')->get('ptk')->result();
 
         $this->load->view('jadwal_pelajaran/semua', $this->page_data);
     }
@@ -116,7 +116,7 @@ class Jadwal_pelajaran extends MY_Controller
         $this->page_data['pembelajaran'] = $pembelajaran;
         $this->page_data['mapel_by_pembelajaran'] = $mapel_by_pembelajaran;
         $this->page_data['items'] = $items;
-        $this->page_data['teachers'] = $this->db->order_by('nama_ptk', 'ASC')->get('ptk')->result();
+        $this->page_data['teachers'] = $this->db->where('status_keaktifan', 'Aktif')->order_by('nama_ptk', 'ASC')->get('ptk')->result();
 
         $this->load->view('jadwal_pelajaran/print_semua', $this->page_data);
     }
@@ -419,7 +419,7 @@ class Jadwal_pelajaran extends MY_Controller
 
     private function getMapelPembelajaran($id_pembelajaran)
     {
-        $this->db->select('pm.id_mapel, pm.jumlah_jam, pm.id_ptk, m.nama_mapel, m.mapel_singkat, ptk.nama_ptk');
+        $this->db->select('pm.id_mapel, pm.jumlah_jam, pm.id_ptk, m.nama_mapel, m.mapel_singkat, ptk.nama_ptk, ptk.niy');
         $this->db->from('pembelajaran_mapel pm');
         $this->db->join('mapel m', 'm.id_mapel = pm.id_mapel');
         $this->db->join('ptk', 'ptk.id_ptk = pm.id_ptk', 'left');
