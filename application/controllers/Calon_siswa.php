@@ -932,15 +932,13 @@ class Calon_siswa extends MY_Controller
         foreach ($this->db->get_where($this->berkas_table, ['id_calon_siswa' => $id_calon_siswa])->result() as $berkas) {
             $source = FCPATH . 'uploads/calon_siswa_berkas/' . $berkas->berkas;
             if (!is_file($source)) {
-                $this->hapusCopiedFiles($copied_files);
-                return false;
+                continue;
             }
             $ext = pathinfo($berkas->berkas, PATHINFO_EXTENSION);
             $target_name = 'siswa-' . $id_siswa . '-' . time() . '-' . $berkas->id_berkas . ($ext ? '.' . $ext : '');
             $target_file = FCPATH . 'uploads/siswa_dokumen/' . $target_name;
             if (!copy($source, $target_file)) {
-                $this->hapusCopiedFiles($copied_files);
-                return false;
+                continue;
             }
             $copied_files[] = $target_file;
             $inserted = $this->db->insert('siswa_dokumen', [

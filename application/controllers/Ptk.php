@@ -634,11 +634,7 @@ class Ptk extends MY_Controller
 
 	public function ptkEdit($id)
 	{
-		$this->page_data['page']->title = 'PTK';
-		$this->page_data['page']->subtitle = 'Edit PTK';
-		$this->page_data['page']->icon = 'icon-park-outline:user-business';
-		$this->page_data['row'] = $this->db->get_where($this->table, ['id_ptk' => $id])->row();
-		$this->load->view('ptk/v_ptk_edit', $this->page_data);
+		redirect('ptk/ptkDetail/' . $id . '#pills-setting');
 	}
 
 	public function ptkUpdate($id)
@@ -749,8 +745,47 @@ class Ptk extends MY_Controller
 		if (isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], 'profile') !== false) {
 			redirect('profile');
 		} else {
-			redirect('ptk/ptk');
+			redirect('ptk/ptkDetail/' . $id);
 		}
+	}
+
+	public function ptkUpdatePassword($id)
+	{
+		postAllowed();
+		ifPermissions('ptk_edit');
+
+		$password = post('password');
+		$password_confirm = post('password_confirm');
+
+		if (empty($password) || strlen($password) < 6) {
+			$this->session->set_flashdata('alert-type', 'danger');
+			$this->session->set_flashdata('alert', 'Password harus minimal 6 karakter.');
+			redirect('ptk/ptkDetail/' . $id . '#pills-password');
+		}
+
+		if ($password !== $password_confirm) {
+			$this->session->set_flashdata('alert-type', 'danger');
+			$this->session->set_flashdata('alert', 'Konfirmasi password tidak cocok.');
+			redirect('ptk/ptkDetail/' . $id . '#pills-password');
+		}
+
+		$user = $this->db->get_where('users', ['id_ptk' => $id])->row();
+		if (!$user) {
+			$this->session->set_flashdata('alert-type', 'danger');
+			$this->session->set_flashdata('alert', 'PTK ini belum memiliki akun login MKDC.');
+			redirect('ptk/ptkDetail/' . $id . '#pills-password');
+		}
+
+		$this->db->where('id', $user->id);
+		$this->db->update('users', [
+			'password' => hash('sha256', $password)
+		]);
+
+		$this->activity_model->add(logged('name') . ' Mengubah password PTK: ' . $user->name, logged('id'));
+
+		$this->session->set_flashdata('alert-type', 'success');
+		$this->session->set_flashdata('alert', 'Password berhasil diubah.');
+		redirect('ptk/ptkDetail/' . $id . '#pills-password');
 	}
 
 	public function ptkHapus($id)
