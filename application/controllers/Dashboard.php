@@ -52,6 +52,30 @@ class Dashboard extends MY_Controller
 			ORDER BY tahun ASC
 		")->result();
 
+		// Query Detail Siswa per Rombel per Lembaga
+		$siswa_rombel_raw = $this->db->query("
+			SELECT l.id_lembaga, l.nama_lembaga, CONCAT(t.nama_tingkat, ' - ', r.nama_rombel) as nama_rombel,
+				   COUNT(DISTINCT CASE WHEN s.jenis_kelamin IN ('L', 'Laki-laki') THEN s.id_siswa END) as laki_laki,
+				   COUNT(DISTINCT CASE WHEN s.jenis_kelamin IN ('P', 'Perempuan') THEN s.id_siswa END) as perempuan,
+				   COUNT(DISTINCT s.id_siswa) as jumlah
+			FROM pembelajaran p
+			JOIN lembaga l ON l.id_lembaga = p.id_lembaga
+			JOIN rombel r ON r.id_rombel = p.id_rombel
+			JOIN master_tingkat_sekolah t ON t.id_tingkat_sekolah = p.id_tingkat_sekolah
+			JOIN pembelajaran_tahun_pelajaran tp ON tp.id_tahun_pelajaran = p.id_tahun_pelajaran
+			JOIN pembelajaran_siswa ps ON ps.id_pembelajaran = p.id_pembelajaran
+			JOIN siswa s ON s.id_siswa = ps.peserta_didik_id
+			WHERE tp.status = 'Aktif' AND s.status_keaktifan = 'Aktif'
+			GROUP BY l.id_lembaga, r.id_rombel
+			ORDER BY l.nama_lembaga ASC, t.tingkat_angka ASC, r.nama_rombel ASC
+		")->result();
+
+		$siswa_rombel = [];
+		foreach ($siswa_rombel_raw as $row) {
+			$siswa_rombel[$row->nama_lembaga][] = $row;
+		}
+		$this->page_data['siswa_rombel'] = $siswa_rombel;
+
 		$this->load->view('dashboard', $this->page_data);
 	}
 }

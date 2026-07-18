@@ -17,44 +17,68 @@ class Update_log extends MY_Controller
         $this->page_data['page']->icon = 'solar:history-linear';
 
         $logs = [];
-        $transcript_path = 'C:/Users/jekjo/.gemini/antigravity/brain/470a4447-3509-4101-b3b2-c4139c8795dd/.system_generated/logs/transcript.jsonl';
-        
-        if (file_exists($transcript_path)) {
-            $handle = fopen($transcript_path, 'r');
-            if ($handle) {
-                while (($line = fgets($handle)) !== false) {
-                    $data = json_decode($line, true);
-                    if ($data && isset($data['source']) && $data['source'] === 'MODEL' && isset($data['tool_calls'])) {
-                        foreach ($data['tool_calls'] as $tc) {
-                            if (in_array($tc['name'], ['write_to_file', 'replace_file_content', 'multi_replace_file_content'], true)) {
-                                if (isset($tc['args']['Description'])) {
-                                    $desc = $tc['args']['Description'];
-                                    
-                                    // Skip placeholder descriptions or internal checks
-                                    if (empty($desc) || stripos($desc, 'check') !== false && strlen($desc) < 25) {
-                                        continue;
-                                    }
-                                    
-                                    $logs[] = [
-                                        'step' => $data['step_index'],
-                                        'date' => date('Y-m-d H:i', strtotime($data['created_at'])),
-                                        'timestamp' => strtotime($data['created_at']),
-                                        'message' => $this->formatMessage($desc),
-                                        'author' => 'Antigravity AI'
-                                    ];
-                                }
-                            }
-                        }
-                    }
+        $cache_file = APPPATH . 'config/git_log_cache.json';
+
+        // 1. Coba baca secara live dari Git jika tersedia
+        $git_output = [];
+        $return_var = -1;
+        @exec('git log --pretty=format:"%h|%ad|%an|%s" --date=short 2>&1', $git_output, $return_var);
+
+        if ($return_var === 0 && !empty($git_output)) {
+            $step_count = count($git_output);
+            foreach ($git_output as $line) {
+                $parts = explode('|', $line, 4);
+                if (count($parts) === 4) {
+                    $logs[] = [
+                        'step' => $parts[0],
+                        'date' => $parts[1],
+                        'author' => $parts[2],
+                        'message' => $parts[3],
+                    ];
                 }
-                fclose($handle);
+            }
+
+            // Simpan ke cache agar bisa dibaca di server production tanpa folder .git
+            @file_put_contents($cache_file, json_encode($logs, JSON_PRETTY_PRINT));
+        } 
+        // 2. Fallback: baca dari file cache jika perintah Git gagal/tidak terpasang
+        elseif (file_exists($cache_file)) {
+            $cache_data = @file_get_contents($cache_file);
+            if ($cache_data) {
+                $logs = json_decode($cache_data, true) ?: [];
             }
         }
-
-        // Sort logs by timestamp desc
-        usort($logs, function($a, $b) {
-            return $b['timestamp'] - $a['timestamp'];
-        });
+        // 3. Fallback kedua: baca dari transkrip local
+        else {
+            $transcript_path = 'C:/Users/jekjo/.gemini/antigravity/brain/470a4447-3509-4101-b3b2-c4139c8795dd/.system_generated/logs/transcript.jsonl';
+            if (file_exists($transcript_path)) {
+                $handle = fopen($transcript_path, 'r');
+                if ($handle) {
+                    while (($line = fgets($handle)) !== false) {
+                        $data = json_decode($line, true);
+                        if ($data && isset($data['source']) && $data['source'] === 'MODEL' && isset($data['tool_calls'])) {
+                            foreach ($data['tool_calls'] as $tc) {
+                                if (in_array($tc['name'], ['write_to_file', 'replace_file_content', 'multi_replace_file_content'], true)) {
+                                    if (isset($tc['args']['Description'])) {
+                                        $desc = $tc['args']['Description'];
+                                        if (empty($desc) || stripos($desc, 'check') !== false && strlen($desc) < 25) {
+                                            continue;
+                                        }
+                                        $logs[] = [
+                                            'step' => $data['step_index'],
+                                            'date' => date('Y-m-d H:i', strtotime($data['created_at'])),
+                                            'author' => 'Antigravity AI',
+                                            'message' => $this->formatMessage($desc),
+                                        ];
+                                    }
+                                }
+							}
+						}
+					}
+					fclose($handle);
+				}
+			}
+		}
 
         // De-duplicate identical messages
         $unique_logs = [];

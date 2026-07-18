@@ -59,7 +59,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                                 <a href="<?php echo url('ptk/ptkDetail/' . $row->id_ptk) ?>" class="bg-info-100 text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-bs-title="Lihat Data PTK">
                                                     <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
                                                 </a>
-                                                <a href="<?php echo url('ptk/ptkEdit/' . $row->id_ptk) ?>" class="bg-success-100 text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sunting Data PTK">
+                                                <a href="<?php echo url('ptk/ptkDetail/' . $row->id_ptk . '#pills-setting') ?>" class="bg-success-100 text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sunting Data PTK">
                                                     <iconify-icon icon="lucide:edit" class="menu-icon"></iconify-icon></a>
                                             </div>
                                         </td>

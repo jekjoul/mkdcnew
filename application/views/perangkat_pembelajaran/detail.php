@@ -1,4 +1,6 @@
-<?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
+<?php
+$this->load->helper('text');
+defined('BASEPATH') or exit('No direct script access allowed'); ?>
 <?php include viewPath('includes/header'); ?>
 
 <div class="dashboard-main-body">

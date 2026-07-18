@@ -168,7 +168,7 @@ $foto_ptk = (!empty($row->foto) && $row->foto !== 'default.png') ? url('uploads/
                                 </div>
                                 <div class="card-body p-0">
                                     <div class="table-responsive">
-                                        <table class="table bordered-table">
+                                        <table class="table bordered-table w-100" width="100%">
                                             <thead>
                                                 <tr>
                                                     <th>No</th>

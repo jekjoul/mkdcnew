@@ -395,7 +395,7 @@ if (empty($row->id_ptk)) {
                                         </div>
                                         <div class="card-body">
                                             <div class="table-responsive">
-                                                <table class="table bordered-table" id="riwayatPendidikanTable" data-page-length='10'>
+                                                <table class="table bordered-table w-100" id="riwayatPendidikanTable" data-page-length='10' width="100%">
                                                     <thead>
                                                         <tr>
                                                             <th scope="col">No</th>
