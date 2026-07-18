@@ -236,17 +236,25 @@ class Perangkat_pembelajaran extends MY_Controller
         }
 
         $filename = $perangkat->$field_name;
-        $local_path = './uploads/perangkat_pembelajaran/' . $filename;
-
-        // Try downloading/exporting from Google Drive first to get latest online changes
         $key_drive = $jenis . '_drive_file_id';
-        if (!empty($perangkat->$key_drive)) {
-            $this->load->library('GoogleDrive_Helper');
-            $is_xlsx = (strpos($filename, '.xlsx') !== false);
-            $this->googledrive_helper->downloadGoogleFile($perangkat->$key_drive, $local_path, $is_xlsx);
+        $drive_file_id = !empty($perangkat->$key_drive) ? $perangkat->$key_drive : null;
+
+        if (!empty($drive_file_id)) {
+            $is_xlsx = (strpos($filename, '.xlsx') !== false || strpos($filename, '.xls') !== false);
+            $is_docx = (strpos($filename, '.docx') !== false || strpos($filename, '.doc') !== false);
+            if ($is_xlsx) {
+                $download_url = "https://docs.google.com/spreadsheets/d/{$drive_file_id}/export?format=xlsx";
+            } elseif ($is_docx) {
+                $download_url = "https://docs.google.com/document/d/{$drive_file_id}/export?format=docx";
+            } else {
+                $download_url = "https://drive.google.com/uc?export=download&id={$drive_file_id}";
+            }
+            redirect($download_url);
+            return;
         }
 
-        // Force download to browser
+        // Fallback to local
+        $local_path = './uploads/perangkat_pembelajaran/' . $filename;
         $this->load->helper('download');
         if (is_file($local_path)) {
             force_download($local_path, NULL);
@@ -593,12 +601,25 @@ class Perangkat_pembelajaran extends MY_Controller
             show_404();
         }
 
-        $local_path = './uploads/perangkat_pembelajaran/' . $row->nama_file;
-        if (!empty($row->drive_file_id)) {
-            $this->load->library('GoogleDrive_Helper');
-            $this->googledrive_helper->downloadGoogleFile($row->drive_file_id, $local_path, false);
+        $filename = $row->nama_file;
+        $drive_file_id = $row->drive_file_id;
+
+        if (!empty($drive_file_id)) {
+            $is_xlsx = (strpos($filename, '.xlsx') !== false || strpos($filename, '.xls') !== false);
+            $is_docx = (strpos($filename, '.docx') !== false || strpos($filename, '.doc') !== false);
+            if ($is_xlsx) {
+                $download_url = "https://docs.google.com/spreadsheets/d/{$drive_file_id}/export?format=xlsx";
+            } elseif ($is_docx) {
+                $download_url = "https://docs.google.com/document/d/{$drive_file_id}/export?format=docx";
+            } else {
+                $download_url = "https://drive.google.com/uc?export=download&id={$drive_file_id}";
+            }
+            redirect($download_url);
+            return;
         }
 
+        // Fallback to local
+        $local_path = './uploads/perangkat_pembelajaran/' . $filename;
         $this->load->helper('download');
         if (is_file($local_path)) {
             force_download($local_path, NULL);
