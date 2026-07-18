@@ -597,11 +597,8 @@ class Master extends MY_Controller
         $this->page_data['page']->subtitle = $is_nonaktif ? 'Rombongan Belajar Nonaktif' : 'Rombongan Belajar';
         $this->page_data['page']->subtitleUrl = $is_nonaktif ? 'master/rombelNonaktif' : 'master/rombel';
         $this->page_data['page']->icon = 'solar:users-group-two-rounded-linear';
-        $this->db->select('r.*, t.nama_tingkat');
         $this->db->from('rombel r');
-        $this->db->join('master_tingkat_sekolah t', 'r.id_tingkat_sekolah = t.id_tingkat_sekolah', 'left');
         $this->db->where('r.status', $status);
-        $this->db->order_by('t.tingkat_angka', 'ASC');
         $this->db->order_by('r.nama_rombel', 'ASC');
         $this->page_data['rombel'] = $this->db->get()->result();
         $this->page_data['is_nonaktif'] = $is_nonaktif;
@@ -710,6 +707,26 @@ class Master extends MY_Controller
         $this->page_data['page']->icon = 'solar:notebook-linear';
         $this->page_data['mapel'] = $this->master_model->getMapel();
         $this->load->view('mapel/v_mapel_list', $this->page_data);
+    }
+
+    public function mapelUrutanUpdate()
+    {
+        ifPermissions('master_edit');
+        header('Content-Type: application/json');
+
+        $raw = file_get_contents('php://input');
+        $data = json_decode($raw, true);
+
+        if (isset($data['order']) && is_array($data['order'])) {
+            foreach ($data['order'] as $index => $id) {
+                $this->db->where('id_mapel', (int)$id);
+                $this->db->update('mapel', ['urutan' => $index + 1]);
+            }
+            echo json_encode(['status' => 'success', 'message' => 'Urutan mapel berhasil diperbarui.']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Data tidak valid.']);
+        }
+        return;
     }
 
     public function tahunPelajaran()
