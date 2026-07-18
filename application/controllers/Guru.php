@@ -133,7 +133,7 @@ class Guru extends MY_Controller
         }
 
         $fields = [
-            'file_cp', 'file_tp', 'file_atp', 'file_modul_ajar',
+            'file_cp', 'file_tp', 'file_atp', 'file_kktp', 'file_modul_ajar',
             'file_kisi_sts', 'file_soal_sts', 'file_kisi_sas', 'file_soal_sas'
         ];
 
@@ -215,7 +215,7 @@ class Guru extends MY_Controller
         }
         
         $fields = [
-            'cp' => 'file_cp', 'tp' => 'file_tp', 'atp' => 'file_atp', 'modul_ajar' => 'file_modul_ajar',
+            'cp' => 'file_cp', 'tp' => 'file_tp', 'atp' => 'file_atp', 'kktp' => 'file_kktp', 'modul_ajar' => 'file_modul_ajar',
             'kisi_sts' => 'file_kisi_sts', 'soal_sts' => 'file_soal_sts', 'kisi_sas' => 'file_kisi_sas', 'soal_sas' => 'file_soal_sas'
         ];
 
@@ -1093,6 +1093,7 @@ class Guru extends MY_Controller
             'file_cp' => ['name' => 'Capaian Pembelajaran (CP)', 'ext' => 'docx', 'type' => 'word'],
             'file_tp' => ['name' => 'Tujuan Pembelajaran (TP)', 'ext' => 'docx', 'type' => 'word'],
             'file_atp' => ['name' => 'Alur Tujuan Pembelajaran (ATP)', 'ext' => 'docx', 'type' => 'word'],
+            'file_kktp' => ['name' => 'Kriteria Ketercapaian Tujuan Pembelajaran (KKTP)', 'ext' => 'docx', 'type' => 'word'],
             'file_kisi_sts' => ['name' => 'Kisi-kisi STS', 'ext' => 'docx', 'type' => 'word'],
             'file_soal_sts' => ['name' => 'Soal STS', 'ext' => 'docx', 'type' => 'word'],
             'file_kisi_sas' => ['name' => 'Kisi-kisi SAS', 'ext' => 'docx', 'type' => 'word'],
@@ -1103,7 +1104,7 @@ class Guru extends MY_Controller
             show_404();
         }
 
-        $seq_order = ['file_cp', 'file_tp', 'file_atp', 'file_kisi_sts', 'file_soal_sts', 'file_kisi_sas', 'file_soal_sas'];
+        $seq_order = ['file_cp', 'file_tp', 'file_atp', 'file_kktp', 'file_kisi_sts', 'file_soal_sts', 'file_kisi_sas', 'file_soal_sas'];
         $current_idx = array_search($field, $seq_order);
         $perangkat = $this->perangkat_model->getPerangkatByMapel($id_pembelajaran_mapel);
 
