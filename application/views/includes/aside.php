@@ -400,12 +400,13 @@
     <?php endif; ?>
 <?php endif; ?>
 
-<?php if (hasPermissions('menu_surat_menyurat')): ?>
+<?php if (hasPermissions('menu_surat_menyurat') || hasPermissions('menu_pencetakan')): ?>
     <li class="sidebar-menu-group-title"
         style="background: #bdd3b1;
         background: linear-gradient(90deg, rgb(232, 191, 255) 0%, rgba(255, 255, 255, 0) 100%);">Pencetakan & Surat
     </li>
 
+    <?php if (hasPermissions('menu_surat_menyurat')): ?>
     <li class="dropdown">
         <a href="javascript:void(0)">
             <iconify-icon icon="solar:letter-linear" class="menu-icon"></iconify-icon>
@@ -444,21 +445,26 @@
             </li>
         </ul>
     </li>
+    <?php endif; ?>
 
+    <?php if (hasPermissions('menu_pencetakan')): ?>
     <li class="dropdown">
         <a href="javascript:void(0)">
             <iconify-icon icon="solar:printer-linear" class="menu-icon"></iconify-icon>
             <span>Pencetakan</span>
         </a>
         <ul class="sidebar-submenu">
+            <?php if (hasPermissions('pencetakan_absensi')): ?>
             <li>
                 <a href="<?php echo url('pencetakan/absensi') ?>">
                     <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
                     Cetak Absensi
                 </a>
             </li>
+            <?php endif; ?>
         </ul>
     </li>
+    <?php endif; ?>
 <?php endif; ?>
 
 

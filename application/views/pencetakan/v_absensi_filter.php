@@ -25,27 +25,31 @@
                             <div class="col-md-12 mb-20">
                                 <div class="d-flex flex-wrap gap-24">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="pakai_kop" value="1" id="checkKop" checked>
+                                        <input class="form-check-input" type="checkbox" name="pakai_kop" value="1" id="checkKop">
                                         <label class="form-check-label fw-semibold text-sm" for="checkKop">
                                             Gunakan Kop Surat
                                         </label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="pakai_ttd" value="1" id="checkTtd" checked>
+                                        <input class="form-check-input" type="checkbox" name="pakai_ttd" value="1" id="checkTtd">
                                         <label class="form-check-label fw-semibold text-sm" for="checkTtd">
-                                            Tampilkan Tanda Tangan (Kepala Sekolah & Guru)
+                                            Tampilkan Tanda Tangan (Wali Kelas)
                                         </label>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6 mb-20 d-flex gap-12">
+                            <div class="col-md-9 mb-20 d-flex gap-12">
                                 <button type="submit" onclick="submitType = 'print';" class="btn btn-primary w-100 text-md py-12 radius-8 d-flex align-items-center justify-content-center gap-2">
                                     <iconify-icon icon="solar:printer-linear" class="text-xl"></iconify-icon>
                                     Cetak Absensi
                                 </button>
                                 <button type="submit" onclick="submitType = 'pdf';" class="btn btn-success w-100 text-md py-12 radius-8 d-flex align-items-center justify-content-center gap-2">
                                     <iconify-icon icon="solar:file-text-linear" class="text-xl"></iconify-icon>
-                                    Unduh format PDF (A4)
+                                    Unduh PDF (A4)
+                                </button>
+                                <button type="submit" onclick="submitType = 'excel';" class="btn btn-warning w-100 text-md py-12 radius-8 d-flex align-items-center justify-content-center gap-2 text-white">
+                                    <iconify-icon icon="solar:file-spreadsheet-linear" class="text-xl"></iconify-icon>
+                                    Ekspor Excel
                                 </button>
                             </div>
                         </div>
@@ -65,7 +69,7 @@
         var pakai_kop = this.querySelector('[name="pakai_kop"]').checked ? '1' : '0';
         var pakai_ttd = this.querySelector('[name="pakai_ttd"]').checked ? '1' : '0';
         
-        var format = (submitType === 'pdf') ? 'pdf' : '';
+        var format = (submitType === 'print') ? '' : submitType;
         var url = this.action + '?id_pembelajaran=' + id_pembelajaran + '&pakai_kop=' + pakai_kop + '&pakai_ttd=' + pakai_ttd + '&format=' + format;
         
         window.open(url, '_blank');

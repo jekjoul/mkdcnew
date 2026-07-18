@@ -89,7 +89,7 @@ class MY_Controller extends CI_Controller {
 		if ($is_only_guru) {
 			$segment1 = $this->uri->segment(1);
 			$segment2 = $this->uri->segment(2);
-			$allowed_segments = ['guru', 'profile', 'ekstrakurikuler', 'kedisiplinan'];
+			$allowed_segments = ['guru', 'profile', 'ekstrakurikuler', 'kedisiplinan', 'pencetakan'];
 			$allowed_ptk_methods = [
 				'ptkUpdate',
 				'ptkPendidikanSimpan',

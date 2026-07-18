@@ -526,21 +526,21 @@ if (!empty($kop)) {
         <table border="0" style="width: 100%; margin-top: 15px; font-size: 10pt; border-collapse: collapse; border: 0;">
             <tr>
                 <td style="width: 50%; vertical-align: top; text-align: left; border: 0; padding: 0;">
-                    <table style="border: 0; font-size: 10pt; line-height: 1.5; border-collapse: collapse; width: auto;">
+                    <table style="border: 0; font-size: 10pt; line-height: 1.1; border-collapse: collapse; width: auto;">
                         <tr>
-                            <td style="padding-right: 15px; border: 0; padding-top: 2px; padding-bottom: 2px;">Laki-laki</td>
-                            <td style="padding-right: 10px; border: 0; padding-top: 2px; padding-bottom: 2px;">:</td>
-                            <td style="font-weight: bold; border: 0; padding-top: 2px; padding-bottom: 2px;"><?php echo $count_l ?> Siswa</td>
+                            <td style="padding-right: 15px; border: 0; padding-top: 1px; padding-bottom: 1px;">Laki-laki</td>
+                            <td style="padding-right: 10px; border: 0; padding-top: 1px; padding-bottom: 1px;">:</td>
+                            <td style="font-weight: bold; border: 0; padding-top: 1px; padding-bottom: 1px;"><?php echo $count_l ?> Siswa</td>
                         </tr>
                         <tr>
-                            <td style="border: 0; padding-top: 2px; padding-bottom: 2px;">Perempuan</td>
-                            <td style="border: 0; padding-top: 2px; padding-bottom: 2px;">:</td>
-                            <td style="font-weight: bold; border: 0; padding-top: 2px; padding-bottom: 2px;"><?php echo $count_p ?> Siswa</td>
+                            <td style="border: 0; padding-top: 1px; padding-bottom: 1px;">Perempuan</td>
+                            <td style="border: 0; padding-top: 1px; padding-bottom: 1px;">:</td>
+                            <td style="font-weight: bold; border: 0; padding-top: 1px; padding-bottom: 1px;"><?php echo $count_p ?> Siswa</td>
                         </tr>
                         <tr>
-                            <td style="border: 0; border-top: 1px solid #000; padding-top: 4px; padding-bottom: 2px;">Jumlah</td>
-                            <td style="border: 0; border-top: 1px solid #000; padding-top: 4px; padding-bottom: 2px;">:</td>
-                            <td style="font-weight: bold; border: 0; border-top: 1px solid #000; padding-top: 4px; padding-bottom: 2px;"><?php echo $total_siswa ?> Siswa</td>
+                            <td style="border: 0; border-top: 1px solid #000; padding-top: 2px; padding-bottom: 1px;">Jumlah</td>
+                            <td style="border: 0; border-top: 1px solid #000; padding-top: 2px; padding-bottom: 1px;">:</td>
+                            <td style="font-weight: bold; border: 0; border-top: 1px solid #000; padding-top: 2px; padding-bottom: 1px;"><?php echo $total_siswa ?> Siswa</td>
                         </tr>
                     </table>
                     <div style="font-size: 9pt; margin-top: 15px; color: #555;">

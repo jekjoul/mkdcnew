@@ -6,11 +6,12 @@ class Pencetakan extends MY_Controller
     public function __construct()
     {
         parent::__construct();
-        ifPermissions('menu_surat_menyurat');
+        ifPermissions('menu_pencetakan');
     }
 
     public function absensi()
     {
+        ifPermissions('pencetakan_absensi');
         $id_pembelajaran = $this->input->get('id_pembelajaran');
 
         if ($id_pembelajaran) {
@@ -86,6 +87,15 @@ class Pencetakan extends MY_Controller
                 $filename = 'Daftar_Hadir_Siswa_' . str_replace(' ', '_', $pembelajaran->nama_tingkat . '_' . $pembelajaran->nama_rombel) . '.pdf';
                 $dompdf->stream($filename, array("Attachment" => 1));
                 return;
+            } elseif ($format === 'excel') {
+                $filename = 'Daftar_Hadir_Siswa_' . str_replace(' ', '_', $pembelajaran->nama_tingkat . '_' . $pembelajaran->nama_rombel) . '.xls';
+                header("Content-Type: application/vnd.ms-excel; charset=utf-8");
+                header("Content-Disposition: attachment; filename=\"$filename\"");
+                header("Cache-Control: max-age=0");
+                
+                $this->page_data['is_excel'] = true;
+                $this->load->view('pencetakan/v_absensi_excel', $this->page_data);
+                return;
             } else {
                 $this->page_data['is_pdf'] = false;
                 $this->load->view('pencetakan/v_absensi_print', $this->page_data);
@@ -107,8 +117,8 @@ class Pencetakan extends MY_Controller
             $this->db->join('pembelajaran_tahun_pelajaran tp', 'p.id_tahun_pelajaran = tp.id_tahun_pelajaran');
             $this->db->where('tp.status', 'Aktif');
             $this->db->where('p.status', 'Aktif');
-            $this->db->order_by('l.nama_lembaga', 'ASC');
             $this->db->order_by('t.tingkat_angka', 'ASC');
+            $this->db->order_by('l.nama_lembaga', 'ASC');
             $this->db->order_by('r.nama_rombel', 'ASC');
             $this->page_data['pembelajaran_list'] = $this->db->get()->result();
 
