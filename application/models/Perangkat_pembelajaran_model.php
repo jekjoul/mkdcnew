@@ -104,7 +104,7 @@ class Perangkat_pembelajaran_model extends MY_Model
 
     public function getAdminItems($status_tahun = 'Aktif')
     {
-        $this->db->select('pm.id_pembelajaran_mapel, pp.id_perangkat, l.nama_lembaga,l.nama_lembaga_singkat, t.nama_tingkat, r.nama_rombel, tp.tahun_pelajaran, tp.semester, m.nama_mapel, ptk.nama_ptk, COUNT(ap.id_agenda) AS total_materi, SUM(CASE WHEN ap.status = "Terlaksana" THEN 1 ELSE 0 END) AS diajarkan, pp.file_cp, pp.file_tp, pp.file_atp, pp.file_kktp, pp.file_kisi_sts, pp.file_soal_sts, pp.file_kisi_sas, pp.file_soal_sas, (SELECT COUNT(*) FROM perangkat_pembelajaran_modul_ajar ma WHERE ma.id_tahun_pelajaran = p.id_tahun_pelajaran AND ma.id_tingkat_sekolah = p.id_tingkat_sekolah AND ma.id_mapel = pm.id_mapel) AS total_modul_ajar');
+        $this->db->select('MIN(pm.id_pembelajaran_mapel) AS id_pembelajaran_mapel, pp.id_perangkat, l.nama_lembaga, l.nama_lembaga_singkat, t.nama_tingkat, GROUP_CONCAT(DISTINCT r.nama_rombel ORDER BY r.nama_rombel SEPARATOR ", ") AS nama_rombel, tp.tahun_pelajaran, tp.semester, m.nama_mapel, GROUP_CONCAT(DISTINCT ptk.nama_ptk ORDER BY ptk.nama_ptk SEPARATOR ", ") AS nama_ptk, COUNT(ap.id_agenda) AS total_materi, SUM(CASE WHEN ap.status = "Terlaksana" THEN 1 ELSE 0 END) AS diajarkan, pp.file_cp, pp.file_tp, pp.file_atp, pp.file_kktp, pp.file_kisi_sts, pp.file_soal_sts, pp.file_kisi_sas, pp.file_soal_sas, (SELECT COUNT(*) FROM perangkat_pembelajaran_modul_ajar ma WHERE ma.id_tahun_pelajaran = p.id_tahun_pelajaran AND ma.id_tingkat_sekolah = p.id_tingkat_sekolah AND ma.id_mapel = pm.id_mapel) AS total_modul_ajar');
         $this->db->from('pembelajaran_mapel pm');
         $this->db->join('pembelajaran p', 'p.id_pembelajaran = pm.id_pembelajaran');
         $this->db->join('lembaga l', 'l.id_lembaga = p.id_lembaga');
@@ -126,15 +126,20 @@ class Perangkat_pembelajaran_model extends MY_Model
             $this->db->group_end();
         }
 
-        $this->db->group_by('pm.id_pembelajaran_mapel');
+        $this->db->group_by('p.id_tahun_pelajaran');
+        $this->db->group_by('p.id_lembaga');
+        $this->db->group_by('p.id_tingkat_sekolah');
+        $this->db->group_by('pm.id_mapel');
+
         $this->db->order_by('tp.id_tahun_pelajaran', 'DESC');
+        $this->db->order_by('t.tingkat_angka', 'ASC');
         $this->db->order_by('m.nama_mapel', 'ASC');
         return $this->db->get()->result();
     }
 
     public function getGuruItems($id_ptk, $status_tahun = 'Aktif')
     {
-        $this->db->select('pm.id_pembelajaran_mapel, pp.id_perangkat, l.nama_lembaga, l.nama_lembaga_singkat, t.nama_tingkat, r.nama_rombel, tp.tahun_pelajaran, tp.semester, m.nama_mapel, COUNT(ap.id_agenda) AS total_materi, SUM(CASE WHEN ap.status = "Terlaksana" THEN 1 ELSE 0 END) AS diajarkan, pp.file_cp, pp.file_tp, pp.file_atp, pp.file_kktp, pp.file_kisi_sts, pp.file_soal_sts, pp.file_kisi_sas, pp.file_soal_sas, (SELECT COUNT(*) FROM perangkat_pembelajaran_modul_ajar ma WHERE ma.id_tahun_pelajaran = p.id_tahun_pelajaran AND ma.id_tingkat_sekolah = p.id_tingkat_sekolah AND ma.id_mapel = pm.id_mapel) AS total_modul_ajar');
+        $this->db->select('MIN(pm.id_pembelajaran_mapel) AS id_pembelajaran_mapel, pp.id_perangkat, l.nama_lembaga, l.nama_lembaga_singkat, t.nama_tingkat, GROUP_CONCAT(DISTINCT r.nama_rombel ORDER BY r.nama_rombel SEPARATOR ", ") AS nama_rombel, tp.tahun_pelajaran, tp.semester, m.nama_mapel, COUNT(ap.id_agenda) AS total_materi, SUM(CASE WHEN ap.status = "Terlaksana" THEN 1 ELSE 0 END) AS diajarkan, pp.file_cp, pp.file_tp, pp.file_atp, pp.file_kktp, pp.file_kisi_sts, pp.file_soal_sts, pp.file_kisi_sas, pp.file_soal_sas, (SELECT COUNT(*) FROM perangkat_pembelajaran_modul_ajar ma WHERE ma.id_tahun_pelajaran = p.id_tahun_pelajaran AND ma.id_tingkat_sekolah = p.id_tingkat_sekolah AND ma.id_mapel = pm.id_mapel) AS total_modul_ajar');
         $this->db->from('pembelajaran_mapel pm');
         $this->db->join('pembelajaran p', 'p.id_pembelajaran = pm.id_pembelajaran');
         $this->db->join('lembaga l', 'l.id_lembaga = p.id_lembaga');
@@ -156,7 +161,12 @@ class Perangkat_pembelajaran_model extends MY_Model
             $this->db->group_end();
         }
 
-        $this->db->group_by('pm.id_pembelajaran_mapel');
+        $this->db->group_by('p.id_tahun_pelajaran');
+        $this->db->group_by('p.id_lembaga');
+        $this->db->group_by('p.id_tingkat_sekolah');
+        $this->db->group_by('pm.id_mapel');
+
+        $this->db->order_by('t.tingkat_angka', 'ASC');
         $this->db->order_by('m.nama_mapel', 'ASC');
         return $this->db->get()->result();
     }
@@ -788,6 +798,7 @@ class Perangkat_pembelajaran_model extends MY_Model
         $this->db->where('p.id_tingkat_sekolah', $target->id_tingkat_sekolah);
         $this->db->where('pm.id_mapel', $target->id_mapel);
         $this->db->where('pm.id_pembelajaran_mapel !=', $target_id_pembelajaran_mapel);
+        $this->db->order_by('r.nama_rombel', 'ASC');
         
         return $this->db->get()->result();
     }
@@ -797,7 +808,7 @@ class Perangkat_pembelajaran_model extends MY_Model
      * mapel & tingkat yang sama di tahun ajaran yang sama, lengkap dengan
      * statistik agenda masing-masing rombel.
      */
-    public function getAllRombelSameMapelTingkat($id_pembelajaran_mapel)
+    public function getAllRombelSameMapelTingkat($id_pembelajaran_mapel, $id_ptk = null)
     {
         $target = $this->getPembelajaranMapel($id_pembelajaran_mapel);
         if (!$target) return [];
@@ -817,6 +828,9 @@ class Perangkat_pembelajaran_model extends MY_Model
         $this->db->where('p.id_tahun_pelajaran',  $target->id_tahun_pelajaran);
         $this->db->where('p.id_tingkat_sekolah',  $target->id_tingkat_sekolah);
         $this->db->where('pm.id_mapel',            $target->id_mapel);
+        if ($id_ptk !== null) {
+            $this->db->where('pm.id_ptk', (int) $id_ptk);
+        }
         $this->db->group_by('pm.id_pembelajaran_mapel');
         $this->db->order_by('r.nama_rombel', 'ASC');
 

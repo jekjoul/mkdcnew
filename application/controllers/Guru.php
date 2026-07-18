@@ -97,7 +97,7 @@ class Guru extends MY_Controller
         // Copy features data
         $this->page_data['source_last_year_id'] = $this->perangkat_model->getSourceLastYearAgenda($id_pembelajaran_mapel);
         $this->page_data['other_active_rombel_agendas'] = $this->perangkat_model->getOtherActiveRombelAgendas($id_pembelajaran_mapel);
-        $this->page_data['all_rombel'] = $this->perangkat_model->getAllRombelSameMapelTingkat($id_pembelajaran_mapel);
+        $this->page_data['all_rombel'] = $this->perangkat_model->getAllRombelSameMapelTingkat($id_pembelajaran_mapel, $ptk->id_ptk);
         $this->page_data['detail_base_url'] = url('guru/perangkat_detail');
         
         $this->page_data['back_url'] = url('guru/perangkat');
@@ -856,6 +856,8 @@ class Guru extends MY_Controller
         $this->db->where('pm.id_ptk', (int) $id_ptk);
         $this->db->where('tp.status', 'Aktif');
         $this->db->group_by('pm.id_pembelajaran_mapel');
+        $this->db->order_by('t.tingkat_angka', 'ASC');
+        $this->db->order_by('r.nama_rombel', 'ASC');
         $this->db->order_by('m.nama_mapel', 'ASC');
         return $this->db->get()->result();
     }

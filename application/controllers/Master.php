@@ -597,9 +597,13 @@ class Master extends MY_Controller
         $this->page_data['page']->subtitle = $is_nonaktif ? 'Rombongan Belajar Nonaktif' : 'Rombongan Belajar';
         $this->page_data['page']->subtitleUrl = $is_nonaktif ? 'master/rombelNonaktif' : 'master/rombel';
         $this->page_data['page']->icon = 'solar:users-group-two-rounded-linear';
-        $this->db->where('status', $status);
-        $this->db->order_by('nama_rombel', 'ASC');
-        $this->page_data['rombel'] = $this->db->get($this->rombel)->result();
+        $this->db->select('r.*, t.nama_tingkat');
+        $this->db->from('rombel r');
+        $this->db->join('master_tingkat_sekolah t', 'r.id_tingkat_sekolah = t.id_tingkat_sekolah', 'left');
+        $this->db->where('r.status', $status);
+        $this->db->order_by('t.tingkat_angka', 'ASC');
+        $this->db->order_by('r.nama_rombel', 'ASC');
+        $this->page_data['rombel'] = $this->db->get()->result();
         $this->page_data['is_nonaktif'] = $is_nonaktif;
         $this->load->view('master/v_rombel_list', $this->page_data);
     }

@@ -21,6 +21,9 @@ class Pembelajaran extends MY_Controller
         $this->db->join('master_tingkat_sekolah t', 'p.id_tingkat_sekolah = t.id_tingkat_sekolah');
         $this->db->join('rombel r', 'p.id_rombel = r.id_rombel');
         $this->db->join('pembelajaran_tahun_pelajaran tp', 'p.id_tahun_pelajaran = tp.id_tahun_pelajaran');
+        $this->db->order_by('tp.id_tahun_pelajaran', 'DESC');
+        $this->db->order_by('t.tingkat_angka', 'ASC');
+        $this->db->order_by('r.nama_rombel', 'ASC');
         $this->page_data['pembelajaran'] = $this->db->get()->result();
 
         $this->load->view('pembelajaran/list', $this->page_data);
@@ -33,7 +36,12 @@ class Pembelajaran extends MY_Controller
 
         $this->page_data['lembaga'] = $this->master_model->getAllLembaga();
         $this->page_data['tingkat'] = $this->master_model->getTingkatSekolah();
-        $this->page_data['rombel']  = $this->db->get('rombel')->result();
+        $this->db->select('r.*');
+        $this->db->from('rombel r');
+        $this->db->join('master_tingkat_sekolah t', 'r.id_tingkat_sekolah = t.id_tingkat_sekolah', 'left');
+        $this->db->order_by('t.tingkat_angka', 'ASC');
+        $this->db->order_by('r.nama_rombel', 'ASC');
+        $this->page_data['rombel']  = $this->db->get()->result();
         $this->page_data['mapel']   = $this->master_model->getMapel();
         $this->page_data['siswa']   = $this->db->get('data_siswa')->result(); // Mengacu pada M_rest
         $this->page_data['ta_aktif'] = $this->db->get_where('pembelajaran_tahun_pelajaran', ['status' => 'Aktif'])->row();

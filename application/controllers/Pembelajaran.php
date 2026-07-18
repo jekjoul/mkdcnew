@@ -304,9 +304,13 @@ class Pembelajaran extends MY_Controller
     {
         $this->page_data['lembaga'] = $this->master_model->getAllLembaga();
         $this->page_data['tingkat'] = $this->master_model->getTingkatSekolah();
-        $this->db->where('status', 'Aktif');
-        $this->db->order_by('nama_rombel', 'ASC');
-        $this->page_data['rombel']  = ($q = $this->db->get('rombel')) ? $q->result() : [];
+        $this->db->select('r.*');
+        $this->db->from('rombel r');
+        $this->db->join('master_tingkat_sekolah t', 'r.id_tingkat_sekolah = t.id_tingkat_sekolah', 'left');
+        $this->db->where('r.status', 'Aktif');
+        $this->db->order_by('t.tingkat_angka', 'ASC');
+        $this->db->order_by('r.nama_rombel', 'ASC');
+        $this->page_data['rombel']  = ($q = $this->db->get()) ? $q->result() : [];
         $this->db->where('status_keaktifan', 'Aktif');
         $this->db->order_by('nama_ptk', 'ASC');
         $this->page_data['ptk'] = $this->db->get('ptk')->result();
