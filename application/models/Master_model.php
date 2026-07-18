@@ -23,6 +23,7 @@ class Master_model extends MY_Model
 
     public function getMapel()
     {
+        $this->db->order_by('urutan', 'ASC');
         $query = $this->db->get($this->mapel);
         return $query ? $query->result() : [];
     }

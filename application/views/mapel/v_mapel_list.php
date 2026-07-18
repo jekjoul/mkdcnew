@@ -17,6 +17,7 @@
                         <table class="table bordered-table mb-0" id="dataTable">
                             <thead>
                                 <tr>
+                                    <th width="40" class="text-center">Geser</th>
                                     <th>No</th>
                                     <th>Nama Mata Pelajaran</th>
                                     <th>Singkatan</th>
@@ -27,7 +28,10 @@
                             <tbody>
                                 <?php $no = 1;
                                 foreach ($mapel as $m): ?>
-                                    <tr>
+                                    <tr data-id="<?php echo $m->id_mapel; ?>">
+                                        <td class="text-center drag-handle" style="cursor: move;">
+                                            <iconify-icon icon="lucide:grip-vertical" class="text-xl text-neutral-500"></iconify-icon>
+                                        </td>
                                         <td><?php echo $no++; ?></td>
                                         <td><?php echo $m->nama_mapel; ?></td>
                                         <td><?php echo $m->mapel_singkat ?: '-'; ?></td>
@@ -58,8 +62,99 @@
 </div>
 
 <?php include viewPath('includes/footer'); ?>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script>
-    let table = new DataTable('#dataTable');
+    let table = new DataTable('#dataTable', {
+        paging: false,
+        ordering: false,
+        searching: true,
+        info: false
+    });
+    
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+
+    // Custom Toast Notification
+    function showToast(message, type = 'success') {
+        // Hapus toast sebelumnya jika ada
+        const oldToast = document.getElementById('sort-toast');
+        if (oldToast) oldToast.remove();
+
+        const toast = document.createElement('div');
+        toast.id = 'sort-toast';
+        
+        let bgClass = 'bg-success-600';
+        let icon = 'lucide:check-circle';
+        if (type === 'danger') {
+            bgClass = 'bg-danger-600';
+            icon = 'lucide:alert-circle';
+        } else if (type === 'info') {
+            bgClass = 'bg-info-600';
+            icon = 'lucide:info';
+        }
+
+        toast.className = `position-fixed bottom-0 end-0 m-24 p-16 ${bgClass} text-white radius-8 shadow-lg d-flex align-items-center gap-2`;
+        toast.style.zIndex = '9999';
+        toast.style.transition = 'opacity 0.3s ease-in-out';
+        toast.innerHTML = `
+            <iconify-icon icon="${icon}" class="text-xl"></iconify-icon>
+            <span class="text-sm fw-medium">${message}</span>
+        `;
+        document.body.appendChild(toast);
+        
+        if (type !== 'info') {
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+    }
+
+    // Sortable JS Integration
+    const tbody = document.querySelector('#dataTable tbody');
+    new Sortable(tbody, {
+        handle: '.drag-handle',
+        animation: 150,
+        ghostClass: 'bg-neutral-100',
+        onEnd: function() {
+            const order = [];
+            tbody.querySelectorAll('tr').forEach((tr) => {
+                const id = tr.getAttribute('data-id');
+                if (id) {
+                    order.push(id);
+                }
+            });
+
+            showToast('Menyimpan urutan mata pelajaran...', 'info');
+
+            fetch('<?php echo url("master/mapelUrutanUpdate"); ?>', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ order: order })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showToast(data.message, 'success');
+                    
+                    // Rerender row numbers dynamically
+                    let indexNo = 1;
+                    tbody.querySelectorAll('tr').forEach((tr) => {
+                        const noTd = tr.querySelector('td:nth-child(2)');
+                        if (noTd) {
+                            noTd.textContent = indexNo++;
+                        }
+                    });
+                } else {
+                    showToast(data.message || 'Gagal menyimpan urutan.', 'danger');
+                }
+            })
+            .catch(err => {
+                showToast('Terjadi kesalahan koneksi ke server.', 'danger');
+            });
+        }
+    });
 </script>
