@@ -207,6 +207,14 @@ class Siswa extends MY_Controller
 
         $this->db->order_by('tanggal', 'DESC');
         $this->page_data['prestasi'] = $this->db->get_where('siswa_prestasi', ['id_siswa' => $id])->result();
+
+        // Riwayat pelanggaran kedisiplinan
+        $this->db->select('kp.*, kk.nama_pelanggaran, kk.bobot_poin');
+        $this->db->from('kedisiplinan_pelanggaran_siswa kp');
+        $this->db->join('kedisiplinan_pelanggaran_kategori kk', 'kk.id_kategori = kp.id_kategori', 'left');
+        $this->db->where('kp.id_siswa', $id);
+        $this->db->order_by('kp.tanggal_pelanggaran', 'DESC');
+        $this->page_data['pelanggaran_siswa'] = $this->db->get()->result();
         
         $this->db->select('r.nama_rombel, t.nama_tingkat');
         $this->db->from('pembelajaran p');

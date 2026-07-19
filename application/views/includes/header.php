@@ -112,13 +112,12 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                             <?php if ($is_google_connected): ?>
                                 <span class="badge bg-success-focus text-success-main radius-8 px-12 py-8 d-inline-flex align-items-center gap-1">
                                     <iconify-icon icon="logos:google-icon" class="align-middle"></iconify-icon>
-                                    <span class="text-xs fw-semibold">Terhubung ke Google</span>
+                                    <span class="text-xs fw-semibold"><?php echo html_escape($current_user->name); ?></span>
                                 </span>
                             <?php else: ?>
-                                <a href="<?php echo url('profile/index/google') ?>" class="badge bg-neutral-200 text-neutral-600 radius-8 px-12 py-8 d-inline-flex align-items-center gap-1 hover-bg-neutral-300">
-                                    <iconify-icon icon="lucide:link" class="align-middle text-xs"></iconify-icon>
-                                    <span class="text-xs fw-semibold">Hubungkan ke Google</span>
-                                </a>
+                                <span class="badge bg-neutral-200 text-neutral-600 radius-8 px-12 py-8 d-inline-flex align-items-center gap-1">
+                                    <span class="text-xs fw-semibold"><?php echo html_escape($current_user->name); ?></span>
+                                </span>
                             <?php endif; ?>
                         </div>
                         <button type="button" data-theme-toggle

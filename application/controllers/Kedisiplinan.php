@@ -26,6 +26,15 @@ class Kedisiplinan extends MY_Controller
         $this->db->order_by('kp.tanggal_pelanggaran', 'DESC');
         $this->page_data['pelanggaran'] = $this->db->get()->result();
 
+        // Rekapitulasi poin per siswa
+        $this->db->select('s.id_siswa, s.nama_siswa, s.nisn, s.rombel, COUNT(kp.id_pelanggaran_siswa) as total_pelanggaran, SUM(COALESCE(kk.bobot_poin, 0)) as total_poin');
+        $this->db->from('siswa s');
+        $this->db->join('kedisiplinan_pelanggaran_siswa kp', 's.id_siswa = kp.id_siswa');
+        $this->db->join('kedisiplinan_pelanggaran_kategori kk', 'kk.id_kategori = kp.id_kategori', 'left');
+        $this->db->group_by('s.id_siswa');
+        $this->db->order_by('total_poin', 'DESC');
+        $this->page_data['rekap_siswa'] = $this->db->get()->result();
+
         $this->load->view('kedisiplinan/list', $this->page_data);
     }
 
@@ -97,6 +106,7 @@ class Kedisiplinan extends MY_Controller
             'tanggal_pelanggaran' => post('tanggal_pelanggaran') ?: date('Y-m-d'),
             'catatan' => post('catatan'),
             'tindak_lanjut' => post('tindak_lanjut') ?: 'Belum ditentukan',
+            'pelapor' => post('pelapor') ?: logged('name'),
             'created_at' => date('Y-m-d H:i:s'),
         ];
 
@@ -171,11 +181,19 @@ class Kedisiplinan extends MY_Controller
                 'tanggal_pelanggaran' => ['type' => 'DATE'],
                 'catatan' => ['type' => 'TEXT', 'null' => true],
                 'tindak_lanjut' => ['type' => 'TEXT', 'null' => true],
+                'pelapor' => ['type' => 'VARCHAR', 'constraint' => 150, 'null' => true],
                 'created_at' => ['type' => 'DATETIME', 'null' => true],
                 'updated_at' => ['type' => 'DATETIME', 'null' => true],
             ]);
             $this->dbforge->add_key('id_pelanggaran_siswa', true);
             $this->dbforge->create_table('kedisiplinan_pelanggaran_siswa', true);
+        } else {
+            // Check if column 'pelapor' exists, if not add it
+            if (!$this->db->field_exists('pelapor', 'kedisiplinan_pelanggaran_siswa')) {
+                $this->dbforge->add_column('kedisiplinan_pelanggaran_siswa', [
+                    'pelapor' => ['type' => 'VARCHAR', 'constraint' => 150, 'null' => true]
+                ]);
+            }
         }
     }
 }

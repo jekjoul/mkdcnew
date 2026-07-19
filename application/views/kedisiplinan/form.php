@@ -37,6 +37,14 @@ if ($this->db->table_exists('user_roles')) {
                             </select>
                         </div>
                         
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Nama Pelapor <span class="text-danger">*</span></label>
+                            <?php if ($is_admin_or_bk): ?>
+                                <input type="text" name="pelapor" class="form-control" placeholder="Tuliskan nama guru/staff pelapor..." required>
+                            <?php else: ?>
+                                <input type="text" name="pelapor" class="form-control" value="<?php echo html_escape(logged('name')); ?>" readonly>
+                            <?php endif; ?>
+                        </div>
                         <?php if ($is_admin_or_bk): ?>
                             <div class="mb-3">
                                 <label class="form-label fw-semibold">Pilih Jenis / Kategori Pelanggaran <span class="text-danger">*</span></label>

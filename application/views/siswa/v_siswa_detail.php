@@ -71,6 +71,7 @@ $is_admin_or_staff = (hasPermissions('siswa_edit') || hasPermissions('menu_buku_
                                 <li class="nav-item"><button class="nav-link px-24" data-bs-toggle="pill" data-bs-target="#pills-arsip" type="button">Arsip</button></li>
                                 <li class="nav-item"><button class="nav-link px-24" data-bs-toggle="pill" data-bs-target="#pills-medis" type="button">Rekam Medis</button></li>
                                 <li class="nav-item"><button class="nav-link px-24" data-bs-toggle="pill" data-bs-target="#pills-prestasi" type="button">Prestasi Siswa</button></li>
+                                <li class="nav-item"><button class="nav-link px-24" data-bs-toggle="pill" data-bs-target="#pills-kedisiplinan" type="button">Kedisiplinan</button></li>
                                 <li class="nav-item"><button class="nav-link px-24" data-bs-toggle="pill" data-bs-target="#pills-setting" type="button">Setting</button></li>
                             <?php endif; ?>
                         </ul>
@@ -298,6 +299,92 @@ $is_admin_or_staff = (hasPermissions('siswa_edit') || hasPermissions('menu_buku_
                                 </div>
                             </div>
                         </div>
+                        <div class="tab-pane fade" id="pills-kedisiplinan">
+                            <div class="card basic-data-table shadow">
+                                <div class="card-header py-16 px-24 bg-base d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                    <?php
+                                    $total_poin = 0;
+                                    if (!empty($pelanggaran_siswa)) {
+                                        foreach ($pelanggaran_siswa as $p) {
+                                            $total_poin += (int) $p->bobot_poin;
+                                        }
+                                    }
+                                    ?>
+                                    <h6 class="text-lg mb-0">Riwayat Kedisiplinan Siswa</h6>
+                                    <div>
+                                        <span class="badge bg-danger-600 text-light px-16 py-8 font-bold text-xs">Total Akumulasi: <?php echo $total_poin; ?> Poin</span>
+                                        <?php 
+                                        if ($total_poin == 0) {
+                                            echo '<span class="badge bg-success-100 text-success-800 px-12 py-8 text-xs font-bold ms-2">Sangat Baik (0 Poin)</span>';
+                                        } elseif ($total_poin <= 15) {
+                                            echo '<span class="badge bg-success-100 text-success-800 px-12 py-8 text-xs font-bold ms-2">Pembinaan Ringan</span>';
+                                        } elseif ($total_poin <= 30) {
+                                            echo '<span class="badge bg-warning-100 text-warning-800 px-12 py-8 text-xs font-bold ms-2">Peringatan I</span>';
+                                        } elseif ($total_poin <= 50) {
+                                            echo '<span class="badge bg-warning-200 text-warning-900 px-12 py-8 text-xs font-bold ms-2">Peringatan II</span>';
+                                        } elseif ($total_poin <= 75) {
+                                            echo '<span class="badge bg-danger-100 text-danger-800 px-12 py-8 text-xs font-bold ms-2">Peringatan Keras (Panggil Ortu)</span>';
+                                        } else {
+                                            echo '<span class="badge bg-danger-600 text-light px-12 py-8 text-xs font-bold ms-2">Skorsing / Drop Out</span>';
+                                        }
+                                        ?>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table bordered-table w-100" id="tableKedisiplinan" style="width: 100% !important;">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col" class="text-center" width="60">No</th>
+                                                    <th scope="col">Kategori Pelanggaran</th>
+                                                    <th scope="col" class="text-center">Bobot Poin</th>
+                                                    <th scope="col" class="text-center">Tanggal</th>
+                                                    <th scope="col">Catatan Laporan</th>
+                                                    <th scope="col">Pelapor</th>
+                                                    <th scope="col">Tindak Lanjut BK</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php $no = 1; ?>
+                                                <?php if (!empty($pelanggaran_siswa)): ?>
+                                                    <?php foreach ($pelanggaran_siswa as $p): ?>
+                                                        <tr>
+                                                            <td class="text-center"><?php echo $no++; ?></td>
+                                                            <td>
+                                                                <?php if (empty($p->nama_pelanggaran) || $p->id_kategori == 0): ?>
+                                                                    <span class="badge bg-warning-100 text-warning-800">Belum Diklasifikasi BK</span>
+                                                                <?php else: ?>
+                                                                    <span class="badge bg-danger-100 text-danger-800"><?php echo html_escape($p->nama_pelanggaran); ?></span>
+                                                                <?php endif; ?>
+                                                            </td>
+                                                            <td class="text-center">
+                                                                <?php if (empty($p->nama_pelanggaran) || $p->id_kategori == 0): ?>
+                                                                    <span class="badge bg-neutral-200 text-neutral-800">- Poin</span>
+                                                                <?php else: ?>
+                                                                    <span class="badge bg-danger-600 text-light px-12 py-6"><?php echo (int) $p->bobot_poin; ?> Poin</span>
+                                                                <?php endif; ?>
+                                                            </td>
+                                                            <td class="text-center"><?php echo date('d-m-Y', strtotime($p->tanggal_pelanggaran)); ?></td>
+                                                            <td><?php echo html_escape($p->catatan ?: '-'); ?></td>
+                                                            <td>
+                                                                <span class="badge bg-info-100 text-info-800 px-10 py-6"><?php echo html_escape($p->pelapor ?: '-'); ?></span>
+                                                            </td>
+                                                            <td>
+                                                                <span class="fw-medium text-warning-main"><?php echo html_escape($p->tindak_lanjut ?: '-'); ?></span>
+                                                            </td>
+                                                        </tr>
+                                                    <?php endforeach; ?>
+                                                <?php else: ?>
+                                                    <tr>
+                                                        <td colspan="7" class="text-center text-neutral-400 py-20 italic">Tidak ada catatan pelanggaran kedisiplinan siswa ini.</td>
+                                                    </tr>
+                                                <?php endif; ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="tab-pane fade" id="pills-setting">
                             <?php include viewPath('siswa/partials/v_siswa_form_fields'); ?>
                         </div>
@@ -427,6 +514,7 @@ $is_admin_or_staff = (hasPermissions('siswa_edit') || hasPermissions('menu_buku_
     let table = new DataTable('#dataPribadi');
     let tableMedis = new DataTable('#tableMedis');
     let tablePrestasi = new DataTable('#tablePrestasi');
+    let tableKedisiplinan = new DataTable('#tableKedisiplinan');
     
     // Auto active tab from window hash URL
     var hash = window.location.hash;
