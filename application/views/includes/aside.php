@@ -661,7 +661,7 @@
     <?php endif; ?>
 <?php endif; ?>
 
-<?php if (hasPermissions('menu_edit_inline_ptk') || hasPermissions('menu_edit_inline_siswa')): ?>
+<?php if (hasPermissions('menu_alat_khusus')): ?>
     <li class="sidebar-menu-group-title"
         style="background: #bdd3b1;
                background: linear-gradient(90deg, rgb(255, 220, 185) 0%, rgba(255, 255, 255, 0) 100%);">
@@ -686,6 +686,22 @@
             <a href="<?php echo url('input_rekam_medis') ?>">
                 <iconify-icon icon="solar:heart-pulse-linear" class="menu-icon"></iconify-icon>
                 <span>Input Rekam Medis</span>
+            </a>
+        </li>
+    <?php endif; ?>
+    <?php if (hasPermissions('menu_export_siswa')): ?>
+        <li>
+            <a href="<?php echo url('export_siswa') ?>">
+                <iconify-icon icon="solar:download-linear" class="menu-icon"></iconify-icon>
+                <span>Export Siswa massal</span>
+            </a>
+        </li>
+    <?php endif; ?>
+    <?php if (hasPermissions('menu_export_ptk')): ?>
+        <li>
+            <a href="<?php echo url('export_ptk') ?>">
+                <iconify-icon icon="solar:download-linear" class="menu-icon"></iconify-icon>
+                <span>Export PTK massal</span>
             </a>
         </li>
     <?php endif; ?>
