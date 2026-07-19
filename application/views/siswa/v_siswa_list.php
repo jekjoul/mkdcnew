@@ -16,12 +16,17 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                         <h6 class="text-light"><?php echo isset($judul_tabel) ? $judul_tabel : 'Data Siswa'; ?></h6>
                     </div>
                     <div class="d-flex flex-wrap align-items-center gap-2">
-                        <a href="<?php echo url(!empty($is_nonaktif) ? 'siswa/all' : 'siswa/nonaktif') ?>" class="btn btn-warning-600 radius-8 px-20 py-11 d-flex align-items-center gap-2">
+                        <!-- <a href="<?php echo url(!empty($is_nonaktif) ? 'siswa/all' : 'siswa/nonaktif') ?>" class="btn btn-warning-600 radius-8 px-20 py-11 d-flex align-items-center gap-2">
                             <iconify-icon icon="<?php echo !empty($is_nonaktif) ? 'solar:arrow-left-linear' : 'solar:archive-linear'; ?>" class="text-xl"></iconify-icon>
                             <?php echo !empty($is_nonaktif) ? 'Kembali ke Aktif' : 'Data Tidak Aktif'; ?>
-                        </a>
+                        </a> -->
                         <?php if (empty($is_nonaktif)): ?>
-                            <?php if (hasPermissions('siswa_add')): ?>
+                            <?php if (!empty($id_pembelajaran)): ?>
+                                <button type="button" class="btn btn-success-600 radius-8 px-20 py-11 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#cetakModal">
+                                    <iconify-icon icon="solar:printer-linear" class="text-xl"></iconify-icon> Cetak Absensi Rombel
+                                </button>
+                            <?php endif; ?>
+                            <?php if (hasPermissions('siswa_add') && empty($id_pembelajaran)): ?>
                                 <a href="<?php echo url(isset($tambah_url) ? $tambah_url : 'siswa/siswaAdd'); ?>" class="btn btn-primary-600 radius-8 px-20 py-11 d-flex align-items-center gap-2">
                                     <iconify-icon icon="lucide:plus" class="text-xl"></iconify-icon> <?php echo isset($tambah_label) ? $tambah_label : 'Tambah Siswa'; ?>
                                 </a>
@@ -89,6 +94,54 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
     </div>
 </div>
 
+<!-- Modal Cetak Rombel -->
+<?php if (!empty($id_pembelajaran)): ?>
+<div class="modal fade" id="cetakModal" tabindex="-1" aria-labelledby="cetakModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success-600">
+                <h6 class="modal-title text-light" id="cetakModalLabel">Opsi Cetak Absensi Rombel</h6>
+                <button type="button" class="btn-close text-light" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-24">
+                <div class="mb-20">
+                    <label class="form-label fw-bold text-primary-light mb-8">Pilihan Tampilan Dokumen:</label>
+                    <div class="form-check mb-8">
+                        <input class="form-check-input" type="checkbox" value="1" id="checkKop">
+                        <label class="form-check-label text-sm text-secondary-light" for="checkKop">
+                            Gunakan Kop Surat Lembaga
+                        </label>
+                    </div>
+                    <div class="form-check mb-8">
+                        <input class="form-check-input" type="checkbox" value="1" id="checkTtd">
+                        <label class="form-check-label text-sm text-secondary-light" for="checkTtd">
+                            Tampilkan Tanda Tangan (Kepala Sekolah & Wali Kelas)
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="1" id="checkJumlah">
+                        <label class="form-check-label text-sm text-secondary-light" for="checkJumlah">
+                            Tampilkan Statistik Jumlah Siswa (L/P/Total)
+                        </label>
+                    </div>
+                </div>
+                <hr>
+                <div class="d-flex flex-column gap-10 mt-15">
+                    <button type="button" id="btnCetakHtml" class="btn btn-primary radius-8 d-flex align-items-center justify-content-center gap-2 py-10">
+                        <iconify-icon icon="solar:printer-linear" class="text-xl"></iconify-icon> Cetak / Print HTML (A4)
+                    </button>
+                    <button type="button" id="btnCetakPdf" class="btn btn-danger radius-8 d-flex align-items-center justify-content-center gap-2 py-10">
+                        <iconify-icon icon="solar:document-add-linear" class="text-xl"></iconify-icon> Export ke PDF
+                    </button>
+                    <button type="button" id="btnCetakExcel" class="btn btn-success radius-8 d-flex align-items-center justify-content-center gap-2 py-10">
+                        <iconify-icon icon="lucide:file-spreadsheet" class="text-xl"></iconify-icon> Export ke Excel (.xls)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
 
 <?php include viewPath('includes/footer'); ?>
 <script>
@@ -121,5 +174,33 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                 }).tooltip('show');
             });
         });
+
+        <?php if (!empty($id_pembelajaran)): ?>
+        function getPrintUrl(format) {
+            let pakaiKop = $('#checkKop').is(':checked') ? '1' : '0';
+            let pakaiTtd = $('#checkTtd').is(':checked') ? '1' : '0';
+            let pakaiJumlah = $('#checkJumlah').is(':checked') ? '1' : '0';
+            let id_pembelajaran = "<?php echo $id_pembelajaran; ?>";
+            return "<?php echo url('pencetakan/absensi') ?>?id_pembelajaran=" + id_pembelajaran + "&format=" + format + "&pakai_kop=" + pakaiKop + "&pakai_ttd=" + pakaiTtd + "&pakai_jumlah=" + pakaiJumlah;
+        }
+
+        $('#btnCetakHtml').on('click', function() {
+            let url = getPrintUrl('html');
+            window.open(url, '_blank');
+            $('#cetakModal').modal('hide');
+        });
+
+        $('#btnCetakPdf').on('click', function() {
+            let url = getPrintUrl('pdf');
+            window.open(url, '_blank');
+            $('#cetakModal').modal('hide');
+        });
+
+        $('#btnCetakExcel').on('click', function() {
+            let url = getPrintUrl('excel');
+            window.location.href = url;
+            $('#cetakModal').modal('hide');
+        });
+        <?php endif; ?>
     });
 </script>

@@ -48,8 +48,8 @@ class Pembelajaran extends MY_Controller
             $this->db->group_end();
         }
         $this->db->order_by('tp.id_tahun_pelajaran', 'DESC');
+        $this->db->order_by('CAST(t.tingkat_angka AS UNSIGNED)', 'ASC');
         $this->db->order_by('l.nama_lembaga', 'ASC');
-        $this->db->order_by('t.tingkat_angka', 'ASC');
         $this->db->order_by('r.nama_rombel', 'ASC');
         $this->page_data['pembelajaran'] = $this->db->get()->result();
         $this->page_data['is_nonaktif'] = $is_nonaktif;

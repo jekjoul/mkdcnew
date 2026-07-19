@@ -221,9 +221,49 @@
         <li>
             <a href="<?php echo url('siswa/all') ?>">
                 <iconify-icon icon="icon-park-outline:every-user" class="menu-icon"></iconify-icon>
-                <span>Data Siswa</span>
+                <span>Data Siswa (Semua)</span>
             </a>
         </li>
+        <?php
+        $CI = &get_instance();
+        $CI->db->select('p.id_pembelajaran, l.nama_lembaga, l.nama_lembaga_singkat, l.bentuk_pendidikan, t.nama_tingkat, t.tingkat_angka, r.nama_rombel');
+        $CI->db->from('pembelajaran p');
+        $CI->db->join('lembaga l', 'p.id_lembaga = l.id_lembaga');
+        $CI->db->join('master_tingkat_sekolah t', 'p.id_tingkat_sekolah = t.id_tingkat_sekolah');
+        $CI->db->join('rombel r', 'p.id_rombel = r.id_rombel');
+        $CI->db->join('pembelajaran_tahun_pelajaran tp', 'p.id_tahun_pelajaran = tp.id_tahun_pelajaran');
+        $CI->db->where('tp.status', 'Aktif');
+        $CI->db->where('p.status', 'Aktif');
+        $CI->db->order_by('l.nama_lembaga', 'ASC');
+        $CI->db->order_by('t.tingkat_angka', 'ASC');
+        $CI->db->order_by('r.nama_rombel', 'ASC');
+        $menu_pembelajaran_siswa = $CI->db->get()->result();
+
+        $menu_siswa_lembaga = [];
+        foreach ($menu_pembelajaran_siswa as $menu_row) {
+            $nama_singkat = !empty($menu_row->nama_lembaga_singkat) 
+                ? $menu_row->nama_lembaga_singkat 
+                : (!empty($menu_row->bentuk_pendidikan) ? $menu_row->bentuk_pendidikan : $menu_row->nama_lembaga);
+            $menu_siswa_lembaga[$nama_singkat][] = $menu_row;
+        }
+        ?>
+        <?php foreach ($menu_siswa_lembaga as $nama_lembaga_singkat => $menu_rows): ?>
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="lucide:users" class="menu-icon"></iconify-icon>
+                    <span>Data Siswa <?php echo html_escape($nama_lembaga_singkat) ?></span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <?php foreach ($menu_rows as $menu_row): ?>
+                        <li>
+                            <a href="<?php echo url('siswa/pembelajaran/' . $menu_row->id_pembelajaran) ?>">
+                                <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> <?php echo html_escape($menu_row->nama_tingkat . ' - ' . $menu_row->nama_rombel) ?>
+                            </a>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            </li>
+        <?php endforeach; ?>
     <?php endif; ?>
     <?php if (hasPermissions('menu_generate_nipd')): ?>
         <li>

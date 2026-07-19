@@ -109,5 +109,5 @@
 </div>
 <?php include viewPath('includes/footer'); ?>
 <script>
-    let table = new DataTable('#dataTable');
+    let table = new DataTable('#dataTable', { order: [] });
 </script>

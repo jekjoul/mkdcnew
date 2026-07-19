@@ -167,6 +167,7 @@ class Siswa extends MY_Controller
         $this->page_data['judul_tabel'] = 'Data Siswa ' . $rombel_label;
         $this->page_data['tambah_url'] = 'pembelajaran/daftar_siswa/' . $id_pembelajaran;
         $this->page_data['tambah_label'] = 'Atur Siswa';
+        $this->page_data['id_pembelajaran'] = $id_pembelajaran;
 
         $this->load->view('siswa/v_siswa_list', $this->page_data);
     }
@@ -688,6 +689,97 @@ class Siswa extends MY_Controller
         $rombel = trim((string) $pembelajaran->nama_rombel);
 
         return $tingkat !== '' ? $tingkat . ' - ' . $rombel : $rombel;
+    }
+
+    public function cetak_rombel($id_pembelajaran = null)
+    {
+        ifPermissions('siswa_list');
+        if (!$id_pembelajaran) {
+            redirect('siswa/all');
+        }
+
+        // Load detail pembelajaran
+        $this->db->select('p.*, l.nama_lembaga, l.npsn, l.alamat, l.logo, l.bentuk_pendidikan, l.telepon, l.email, l.website, l.no_sk_akreditasi, l.akreditasi, t.nama_tingkat, r.nama_rombel, tp.tahun_pelajaran, tp.semester, w.nama_ptk as nama_walikelas');
+        $this->db->from('pembelajaran p');
+        $this->db->join('lembaga l', 'p.id_lembaga = l.id_lembaga');
+        $this->db->join('master_tingkat_sekolah t', 'p.id_tingkat_sekolah = t.id_tingkat_sekolah');
+        $this->db->join('rombel r', 'p.id_rombel = r.id_rombel');
+        $this->db->join('pembelajaran_tahun_pelajaran tp', 'p.id_tahun_pelajaran = tp.id_tahun_pelajaran');
+        $this->db->join('ptk w', 'p.id_ptk_wali = w.id_ptk', 'left');
+        $this->db->where('p.id_pembelajaran', $id_pembelajaran);
+        $pembelajaran = $this->db->get()->row();
+
+        if (!$pembelajaran) {
+            show_404();
+        }
+
+        // Get active students in this class
+        $this->db->select('s.*');
+        $this->db->from('pembelajaran_siswa ps');
+        $this->db->join('siswa s', 's.id_siswa = ps.peserta_didik_id');
+        $this->db->where('ps.id_pembelajaran', $id_pembelajaran);
+        $this->db->where('s.status_keaktifan', 'Aktif');
+        $this->db->order_by('s.nama_siswa', 'ASC');
+        $students = $this->db->get()->result();
+
+        // Load Kepala Sekolah details
+        $kepsek = null;
+        if ($pembelajaran->id_lembaga) {
+            $lembaga = $this->db->get_where('lembaga', ['id_lembaga' => $pembelajaran->id_lembaga])->row();
+            if ($lembaga && $lembaga->id_ptk_kepsek) {
+                $ptk = $this->db->get_where('ptk', ['id_ptk' => $lembaga->id_ptk_kepsek])->row();
+                if ($ptk) {
+                    $kepsek = $ptk->nama_ptk;
+                }
+            }
+        }
+
+        // Load Kop Surat aktif
+        $kop = $this->db->get_where('surat_kop', ['status' => 'Aktif'])->row();
+        if (!$kop) {
+            $kop = $this->db->get('surat_kop')->row();
+        }
+
+        $pakai_kop = $this->input->get('pakai_kop') !== '0';
+        $pakai_ttd = $this->input->get('pakai_ttd') !== '0';
+        $format = $this->input->get('format') ?: 'html';
+
+        $this->page_data['pembelajaran'] = $pembelajaran;
+        $this->page_data['students'] = $students;
+        $this->page_data['kepsek'] = $kepsek ?: '...........................';
+        $this->page_data['kop'] = $kop;
+        $this->page_data['pakai_kop'] = $pakai_kop;
+        $this->page_data['pakai_ttd'] = $pakai_ttd;
+
+        if ($format === 'pdf') {
+            $this->page_data['is_pdf'] = true;
+            $html = $this->load->view('siswa/v_siswa_print', $this->page_data, true);
+            
+            $options = new \Dompdf\Options();
+            $options->set('isHtml5ParserEnabled', true);
+            $options->set('isRemoteEnabled', true);
+            
+            $dompdf = new \Dompdf\Dompdf($options);
+            $dompdf->loadHtml($html);
+            $dompdf->setPaper('A4', 'portrait');
+            $dompdf->render();
+            
+            $filename = 'Daftar_Siswa_' . str_replace(' ', '_', $pembelajaran->nama_tingkat . '_' . $pembelajaran->nama_rombel) . '.pdf';
+            $dompdf->stream($filename, array("Attachment" => 0));
+            return;
+        } elseif ($format === 'excel') {
+            $filename = 'Daftar_Siswa_' . str_replace(' ', '_', $pembelajaran->nama_tingkat . '_' . $pembelajaran->nama_rombel) . '.xls';
+            header("Content-Type: application/vnd.ms-excel; charset=utf-8");
+            header("Content-Disposition: attachment; filename=\"$filename\"");
+            header("Cache-Control: max-age=0");
+            
+            $this->page_data['is_excel'] = true;
+            $this->load->view('siswa/v_siswa_excel', $this->page_data);
+            return;
+        } else {
+            $this->page_data['is_pdf'] = false;
+            $this->load->view('siswa/v_siswa_print', $this->page_data);
+        }
     }
 
     public function rekamMedisSimpan($id_siswa)

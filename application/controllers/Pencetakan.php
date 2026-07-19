@@ -60,6 +60,7 @@ class Pencetakan extends MY_Controller
             $has_submit = $this->input->get('id_pembelajaran') !== null;
             $pakai_kop = $has_submit ? ($this->input->get('pakai_kop') === '1') : true;
             $pakai_ttd = $has_submit ? ($this->input->get('pakai_ttd') === '1') : true;
+            $pakai_jumlah = $has_submit ? ($this->input->get('pakai_jumlah') === '1') : true;
             $size = $this->input->get('size') ?: 'landscape';
 
             $this->page_data['pembelajaran'] = $pembelajaran;
@@ -68,6 +69,7 @@ class Pencetakan extends MY_Controller
             $this->page_data['kop'] = $kop;
             $this->page_data['pakai_kop'] = $pakai_kop;
             $this->page_data['pakai_ttd'] = $pakai_ttd;
+            $this->page_data['pakai_jumlah'] = $pakai_jumlah;
             $this->page_data['size'] = $size;
 
             $format = $this->input->get('format');
