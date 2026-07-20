@@ -249,10 +249,10 @@ class Presensi extends CI_Controller
         $token = $this->input->get('token');
         $this->validate_token($token);
 
-        $this->db->select('pin_fingerprint as pin, nama_siswa as nama');
+        $this->db->select('CAST(nipd AS UNSIGNED) as pin, nama_siswa as nama');
         $this->db->from('siswa');
         $this->db->where('status_keaktifan', 'Aktif');
-        $this->db->where('pin_fingerprint >', 0);
+        $this->db->where("nipd IS NOT NULL AND nipd != ''");
         $this->db->order_by('nama_siswa', 'ASC');
         $students = $this->db->get()->result();
 

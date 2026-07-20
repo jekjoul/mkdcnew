@@ -156,41 +156,45 @@ class MY_Controller extends CI_Controller {
 	private function initializeFingerprintTables()
 	{
 		$this->load->database();
+		
+		// 1. Inisialisasi kolom tabel siswa
 		if (!$this->db->field_exists('pin_fingerprint', 'siswa')) {
-			// Jalankan patching database secara dinamis jika belum ada kolom sidik jari
 			$this->db->query("ALTER TABLE siswa ADD COLUMN pin_fingerprint INT DEFAULT NULL UNIQUE");
-			
-			if (!$this->db->field_exists('pin_fingerprint', 'ptk')) {
-				$this->db->query("ALTER TABLE ptk ADD COLUMN pin_fingerprint INT DEFAULT NULL UNIQUE");
-			}
-
-			$this->db->query("CREATE TABLE IF NOT EXISTS presensi_harian (
-			  id_presensi INT AUTO_INCREMENT PRIMARY KEY,
-			  tipe_user ENUM('siswa', 'ptk') NOT NULL,
-			  id_user INT NOT NULL,
-			  pin INT NOT NULL,
-			  tanggal DATE NOT NULL,
-			  jam_masuk TIME DEFAULT NULL,
-			  jam_pulang TIME DEFAULT NULL,
-			  status ENUM('Hadir', 'Sakit', 'Izin', 'Alfa') DEFAULT 'Hadir',
-			  keterangan VARCHAR(255) DEFAULT NULL,
-			  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-			  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-			  UNIQUE KEY user_tanggal (tipe_user, id_user, tanggal)
-			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
-
-			$this->db->query("CREATE TABLE IF NOT EXISTS fingerprint_tasks (
-			  id INT AUTO_INCREMENT PRIMARY KEY,
-			  action ENUM('SET_USER', 'DEL_USER') NOT NULL,
-			  pin INT NOT NULL,
-			  nama VARCHAR(150) DEFAULT NULL,
-			  status ENUM('pending', 'success', 'failed') DEFAULT 'pending',
-			  attempts INT DEFAULT 0,
-			  error_message TEXT DEFAULT NULL,
-			  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-			  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
 		}
+		
+		// 2. Inisialisasi kolom tabel ptk
+		if (!$this->db->field_exists('pin_fingerprint', 'ptk')) {
+			$this->db->query("ALTER TABLE ptk ADD COLUMN pin_fingerprint INT DEFAULT NULL UNIQUE");
+		}
+
+		// 3. Inisialisasi tabel presensi_harian (versi baru untuk sync sesi)
+		$this->db->query("CREATE TABLE IF NOT EXISTS presensi_harian (
+		  id_presensi INT AUTO_INCREMENT PRIMARY KEY,
+		  tipe_user ENUM('siswa', 'ptk') NOT NULL,
+		  id_user INT NOT NULL,
+		  pin INT NOT NULL,
+		  tanggal DATE NOT NULL,
+		  jam_scan TIME DEFAULT NULL,
+		  sesi ENUM('dhuha', 'dzuhur', 'other') DEFAULT 'other',
+		  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+		  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+		  UNIQUE KEY user_tanggal_sesi (tipe_user, id_user, tanggal, sesi),
+		  INDEX idx_pin_tanggal (pin, tanggal)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+		// 4. Inisialisasi tabel fingerprint_tasks
+		$this->db->query("CREATE TABLE IF NOT EXISTS fingerprint_tasks (
+		  id INT AUTO_INCREMENT PRIMARY KEY,
+		  action ENUM('SET_USER', 'DEL_USER') NOT NULL,
+		  pin INT NOT NULL,
+		  nama VARCHAR(150) DEFAULT NULL,
+		  status ENUM('pending', 'success', 'failed') DEFAULT 'pending',
+		  attempts INT DEFAULT 0,
+		  error_message TEXT DEFAULT NULL,
+		  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+		  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+		  INDEX idx_status (status)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
 
 		// Pendaftaran category parent (Level 1)
 		$parent_id = 0;
