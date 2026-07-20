@@ -272,6 +272,17 @@ class Siswa extends MY_Controller
         if ($this->db->insert($this->table, $data)) {
             $id = $this->db->insert_id();
             $this->uploadFotoSiswa($id);
+            
+            // Tambahkan tugas sinkronisasi ke mesin fingerprint jika PIN diisi
+            if (!empty($data['pin_fingerprint'])) {
+                $this->db->insert('fingerprint_tasks', [
+                    'action' => 'SET_USER',
+                    'pin' => intval($data['pin_fingerprint']),
+                    'nama' => $data['nama_siswa'],
+                    'status' => 'pending'
+                ]);
+            }
+
             $this->activity_model->add(logged('name') . ' Menambah data siswa: ' . $data['nama_siswa'], logged('id'));
             $this->session->set_flashdata('alert-type', 'success');
             if ($this->isAlumniStatus($data['status_keaktifan'])) {
@@ -300,6 +311,35 @@ class Siswa extends MY_Controller
         $data = $this->siswaData();
         $this->db->where('id_siswa', $id);
         if ($this->db->update($this->table, $data)) {
+            // Logika sinkronisasi fingerprint dua arah
+            if ($siswa->pin_fingerprint != $data['pin_fingerprint']) {
+                // Jika PIN lama ada, hapus dari mesin sidik jari
+                if (!empty($siswa->pin_fingerprint)) {
+                    $this->db->insert('fingerprint_tasks', [
+                        'action' => 'DEL_USER',
+                        'pin' => intval($siswa->pin_fingerprint),
+                        'status' => 'pending'
+                    ]);
+                }
+                // Jika ada PIN baru, daftarkan ke mesin sidik jari
+                if (!empty($data['pin_fingerprint'])) {
+                    $this->db->insert('fingerprint_tasks', [
+                        'action' => 'SET_USER',
+                        'pin' => intval($data['pin_fingerprint']),
+                        'nama' => $data['nama_siswa'],
+                        'status' => 'pending'
+                    ]);
+                }
+            } else if (!empty($data['pin_fingerprint']) && $siswa->nama_siswa != $data['nama_siswa']) {
+                // Jika PIN sama tetapi nama berubah, update nama di mesin sidik jari
+                $this->db->insert('fingerprint_tasks', [
+                    'action' => 'SET_USER',
+                    'pin' => intval($data['pin_fingerprint']),
+                    'nama' => $data['nama_siswa'],
+                    'status' => 'pending'
+                ]);
+            }
+
             $this->uploadFotoSiswa($id);
             $this->activity_model->add(logged('name') . ' Mengubah data siswa: ' . $data['nama_siswa'], logged('id'));
             $this->session->set_flashdata('alert-type', 'success');
@@ -355,6 +395,15 @@ class Siswa extends MY_Controller
         $siswa = $this->db->get_where($this->table, ['id_siswa' => $id])->row();
         if (!$siswa) {
             show_404();
+        }
+
+        // Hapus dari mesin sidik jari jika ada PIN terdaftar
+        if (!empty($siswa->pin_fingerprint)) {
+            $this->db->insert('fingerprint_tasks', [
+                'action' => 'DEL_USER',
+                'pin' => intval($siswa->pin_fingerprint),
+                'status' => 'pending'
+            ]);
         }
 
         foreach ($this->db->get_where('siswa_foto', ['id_siswa' => $id])->result() as $foto) {
@@ -510,6 +559,7 @@ class Siswa extends MY_Controller
 
         return [
             'nama_siswa' => post('nama_siswa'),
+            'pin_fingerprint' => post('pin_fingerprint') ? intval(post('pin_fingerprint')) : null,
             'nisn' => post('nisn'),
             'nipd' => post('nipd'),
             'nik' => post('nik'),

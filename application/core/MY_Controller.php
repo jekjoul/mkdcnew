@@ -38,6 +38,8 @@ class MY_Controller extends CI_Controller {
 
 		}
 
+		$this->initializeFingerprintTables();
+
 		
 
 		date_default_timezone_set( setting('timezone') );
@@ -151,11 +153,110 @@ class MY_Controller extends CI_Controller {
 		// die(var_dump('test_func'));
 
 	}
+	private function initializeFingerprintTables()
+	{
+		$this->load->database();
+		if (!$this->db->field_exists('pin_fingerprint', 'siswa')) {
+			// Jalankan patching database secara dinamis jika belum ada kolom sidik jari
+			$this->db->query("ALTER TABLE siswa ADD COLUMN pin_fingerprint INT DEFAULT NULL UNIQUE");
+			
+			if (!$this->db->field_exists('pin_fingerprint', 'ptk')) {
+				$this->db->query("ALTER TABLE ptk ADD COLUMN pin_fingerprint INT DEFAULT NULL UNIQUE");
+			}
 
-	
+			$this->db->query("CREATE TABLE IF NOT EXISTS presensi_harian (
+			  id_presensi INT AUTO_INCREMENT PRIMARY KEY,
+			  tipe_user ENUM('siswa', 'ptk') NOT NULL,
+			  id_user INT NOT NULL,
+			  pin INT NOT NULL,
+			  tanggal DATE NOT NULL,
+			  jam_masuk TIME DEFAULT NULL,
+			  jam_pulang TIME DEFAULT NULL,
+			  status ENUM('Hadir', 'Sakit', 'Izin', 'Alfa') DEFAULT 'Hadir',
+			  keterangan VARCHAR(255) DEFAULT NULL,
+			  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+			  UNIQUE KEY user_tanggal (tipe_user, id_user, tanggal)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
 
+			$this->db->query("CREATE TABLE IF NOT EXISTS fingerprint_tasks (
+			  id INT AUTO_INCREMENT PRIMARY KEY,
+			  action ENUM('SET_USER', 'DEL_USER') NOT NULL,
+			  pin INT NOT NULL,
+			  nama VARCHAR(150) DEFAULT NULL,
+			  status ENUM('pending', 'success', 'failed') DEFAULT 'pending',
+			  attempts INT DEFAULT 0,
+			  error_message TEXT DEFAULT NULL,
+			  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+		}
 
+		// Pendaftaran category parent (Level 1)
+		$parent_id = 0;
+		$check_parent = $this->db->get_where('permissions', ['code' => 'menu_presensi_group'])->row();
+		if (!$check_parent) {
+			$this->db->insert('permissions', [
+				'title' => 'Presensi & Kehadiran',
+				'code' => 'menu_presensi_group',
+				'level' => 1,
+				'parent_id' => 0
+			]);
+			$parent_id = $this->db->insert_id();
+		} else {
+			$parent_id = $check_parent->id;
+			// Pastikan level dan parent_id ter-update jika salah
+			if ($check_parent->level != 1 || $check_parent->parent_id != 0) {
+				$this->db->where('id', $parent_id)->update('permissions', ['level' => 1, 'parent_id' => 0]);
+			}
+		}
 
+		// Pendaftaran sub-menu (Level 2): menu_presensi
+		$check_perm = $this->db->get_where('permissions', ['code' => 'menu_presensi'])->row();
+		if (!$check_perm) {
+			$this->db->insert('permissions', [
+				'title' => 'Akses Menu Presensi',
+				'code' => 'menu_presensi',
+				'level' => 2,
+				'parent_id' => $parent_id
+			]);
+		} else {
+			// Perbarui level dan parent_id agar tampil di hierarchy tree
+			if ($check_perm->level != 2 || $check_perm->parent_id != $parent_id) {
+				$this->db->where('id', $check_perm->id)->update('permissions', ['level' => 2, 'parent_id' => $parent_id, 'title' => 'Akses Menu Presensi']);
+			}
+		}
+
+		// Pendaftaran sub-menu (Level 2): presensi_view
+		$check_perm2 = $this->db->get_where('permissions', ['code' => 'presensi_view'])->row();
+		if (!$check_perm2) {
+			$this->db->insert('permissions', [
+				'title' => 'Akses Lihat Detail Presensi',
+				'code' => 'presensi_view',
+				'level' => 2,
+				'parent_id' => $parent_id
+			]);
+		} else {
+			// Perbarui level dan parent_id agar tampil di hierarchy tree
+			if ($check_perm2->level != 2 || $check_perm2->parent_id != $parent_id) {
+				$this->db->where('id', $check_perm2->id)->update('permissions', ['level' => 2, 'parent_id' => $parent_id, 'title' => 'Akses Lihat Detail Presensi']);
+			}
+		}
+
+		// Daftarkan permissions presensi untuk semua role agar tidak terlewat
+		$all_roles = $this->db->get('roles')->result();
+		foreach ($all_roles as $r) {
+			$r_id = intval($r->id);
+			$check_role_perm = $this->db->get_where('role_permissions', ['role' => $r_id, 'permission' => 'menu_presensi'])->row();
+			if (!$check_role_perm) {
+				$this->db->insert('role_permissions', ['role' => $r_id, 'permission' => 'menu_presensi']);
+			}
+			$check_role_perm2 = $this->db->get_where('role_permissions', ['role' => $r_id, 'permission' => 'presensi_view'])->row();
+			if (!$check_role_perm2) {
+				$this->db->insert('role_permissions', ['role' => $r_id, 'permission' => 'presensi_view']);
+			}
+		}
+	}
 }
 
 

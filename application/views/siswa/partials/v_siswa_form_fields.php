@@ -9,9 +9,13 @@ function siswa_value($row, $field, $default = '')
 ?>
 <form action="<?php echo $action ?>" method="post" enctype="multipart/form-data">
     <div class="row">
-        <div class="col-sm-6 mb-20">
+        <div class="col-sm-4 mb-20">
             <label class="form-label fw-semibold text-primary-light text-sm mb-8">Nama Lengkap <span class="text-danger-600">*</span></label>
             <input type="text" class="form-control radius-8" name="nama_siswa" required value="<?php echo siswa_value($row, 'nama_siswa') ?>">
+        </div>
+        <div class="col-sm-2 mb-20">
+            <label class="form-label fw-semibold text-primary-light text-sm mb-8">PIN Sidik Jari</label>
+            <input type="number" class="form-control radius-8" name="pin_fingerprint" placeholder="PIN" value="<?php echo siswa_value($row, 'pin_fingerprint') ?>">
         </div>
         <div class="col-sm-3 mb-20">
             <label class="form-label fw-semibold text-primary-light text-sm mb-8">NISN</label>

@@ -507,6 +507,38 @@
     <?php endif; ?>
 <?php endif; ?>
 
+<?php if (hasPermissions('menu_presensi')): ?>
+    <li class="sidebar-menu-group-title"
+        style="background: #bdd3b1;
+        background: linear-gradient(90deg, rgb(253, 206, 154) 0%, rgba(255, 255, 255, 0) 100%);">Presensi</li>
+    <li class="dropdown">
+        <a href="javascript:void(0)">
+            <iconify-icon icon="solar:user-speak-linear" class="menu-icon"></iconify-icon>
+            <span>Presensi & Kehadiran</span>
+        </a>
+        <ul class="sidebar-submenu">
+            <li>
+                <a href="<?php echo url('presensi/siswa') ?>">
+                    <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
+                    Presensi Siswa
+                </a>
+            </li>
+            <li>
+                <a href="<?php echo url('presensi/guru') ?>">
+                    <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
+                    Presensi Guru
+                </a>
+            </li>
+            <li>
+                <a href="<?php echo url('presensi/mesin') ?>">
+                    <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
+                    Konfigurasi & Antrean
+                </a>
+            </li>
+        </ul>
+    </li>
+<?php endif; ?>
+
 
 
 <?php if (hasPermissions('menu_alumni') || hasPermissions('menu_buku_induk_siswa') || hasPermissions('menu_kesiswaan_data_siswa')): ?>

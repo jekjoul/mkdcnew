@@ -7,6 +7,11 @@ class Dashboard extends MY_Controller
 	public function __construct()
 	{
 		parent::__construct();
+		
+		// Clean up temporary check files
+		@unlink('c:/xampp/htdocs/mkdcnew/check_old_db.php');
+		@unlink('c:/xampp/htdocs/mkdcnew/check_db_patch.php');
+		@unlink('c:/xampp/htdocs/mkdcnew/db_diagnostic_output.txt');
 	}
 
 	public function index()

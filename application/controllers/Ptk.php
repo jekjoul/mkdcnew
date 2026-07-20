@@ -589,6 +589,7 @@ class Ptk extends MY_Controller
 
 		$data = [
 			'nama_ptk' => post('nama_ptk'),
+			'pin_fingerprint' => post('pin_fingerprint') ? intval(post('pin_fingerprint')) : null,
 			'gelar_depan' => post('gelar_depan'),
 			'gelar_belakang' => post('gelar_belakang'),
 			'jenis_kelamin' => post('jenis_kelamin'),
@@ -619,6 +620,15 @@ class Ptk extends MY_Controller
 		];
 
 		if ($this->db->insert($this->table, $data)) {
+			// Tambahkan tugas sinkronisasi ke mesin fingerprint jika PIN diisi
+			if (!empty($data['pin_fingerprint'])) {
+				$this->db->insert('fingerprint_tasks', [
+					'action' => 'SET_USER',
+					'pin' => intval($data['pin_fingerprint']),
+					'nama' => $data['nama_ptk'],
+					'status' => 'pending'
+				]);
+			}
 			$this->activity_model->add(logged('name') . ' Menambah data PTK: ' . $data['nama_ptk'], logged('id'));
 			$this->session->set_flashdata('alert-type', 'success');
 			$this->session->set_flashdata('alert', 'Data PTK Berhasil Ditambahkan');
@@ -649,8 +659,14 @@ class Ptk extends MY_Controller
 			}
 		}
 
+		$ptk = $this->db->get_where($this->table, ['id_ptk' => $id])->row();
+		if (!$ptk) {
+			show_404();
+		}
+
 		$data = [
 			'nama_ptk' => post('nama_ptk'),
+			'pin_fingerprint' => post('pin_fingerprint') ? intval(post('pin_fingerprint')) : null,
 			'gelar_depan' => post('gelar_depan'),
 			'gelar_belakang' => post('gelar_belakang'),
 			'jenis_kelamin' => post('jenis_kelamin'),
@@ -709,7 +725,36 @@ class Ptk extends MY_Controller
 		}
 
 		$this->db->where('id_ptk', $id);
-		$this->db->update($this->table, $data);
+		if ($this->db->update($this->table, $data)) {
+			// Logika sinkronisasi fingerprint dua arah
+			if ($ptk->pin_fingerprint != $data['pin_fingerprint']) {
+				// Hapus PIN lama jika terdaftar di mesin
+				if (!empty($ptk->pin_fingerprint)) {
+					$this->db->insert('fingerprint_tasks', [
+						'action' => 'DEL_USER',
+						'pin' => intval($ptk->pin_fingerprint),
+						'status' => 'pending'
+					]);
+				}
+				// Daftarkan PIN baru ke mesin
+				if (!empty($data['pin_fingerprint'])) {
+					$this->db->insert('fingerprint_tasks', [
+						'action' => 'SET_USER',
+						'pin' => intval($data['pin_fingerprint']),
+						'nama' => $data['nama_ptk'],
+						'status' => 'pending'
+					]);
+				}
+			} else if (!empty($data['pin_fingerprint']) && $ptk->nama_ptk != $data['nama_ptk']) {
+				// Jika PIN sama tetapi nama berubah, update di mesin
+				$this->db->insert('fingerprint_tasks', [
+					'action' => 'SET_USER',
+					'pin' => intval($data['pin_fingerprint']),
+					'nama' => $data['nama_ptk'],
+					'status' => 'pending'
+				]);
+			}
+		}
 
 		// Synchronize with Users table if linked
 		$user = $this->db->get_where('users', ['id_ptk' => $id])->row();
@@ -792,6 +837,14 @@ class Ptk extends MY_Controller
 	{
 		$ptk = $this->db->get_where($this->table, ['id_ptk' => $id])->row();
 		if ($ptk) {
+			// Tambahkan tugas hapus user dari mesin sidik jari
+			if (!empty($ptk->pin_fingerprint)) {
+				$this->db->insert('fingerprint_tasks', [
+					'action' => 'DEL_USER',
+					'pin' => intval($ptk->pin_fingerprint),
+					'status' => 'pending'
+				]);
+			}
 			$this->db->where('id_ptk', $id);
 			$this->db->delete($this->table);
 			$this->activity_model->add(logged('name') . ' Menghapus data PTK: ' . $ptk->nama_ptk, logged('id'));

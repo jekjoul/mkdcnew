@@ -1,0 +1,9 @@
+{
+  "device_ip": "192.168.1.100",
+  "device_port": 80,
+  "device_sn": "6668601649075",
+  "server_url": "http://localhost/mkdcnew",
+  "api_token": "MKDC_FINGERPRINT_SECRET_KEY_2026",
+  "sync_interval_seconds": 30,
+  "delete_device_log_after_sync": false
+}

@@ -19,10 +19,16 @@ $action_url = !empty($row->id_ptk) ? url('ptk/ptkUpdate/' . $row->id_ptk) : url(
     </div>
 
     <div class="row">
-        <div class="col-sm-6">
+        <div class="col-sm-4">
             <div class="mb-20">
                 <label for="setting_nama_ptk" class="form-label fw-semibold text-primary-light text-sm mb-8">Nama Lengkap <span class="text-danger-600">*</span></label>
                 <input type="text" class="form-control radius-8" id="setting_nama_ptk" name="nama_ptk" required value="<?php echo htmlspecialchars($row->nama_ptk, ENT_QUOTES, 'UTF-8') ?>">
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="mb-20">
+                <label for="setting_pin_fingerprint" class="form-label fw-semibold text-primary-light text-sm mb-8">PIN Sidik Jari</label>
+                <input type="number" class="form-control radius-8" id="setting_pin_fingerprint" name="pin_fingerprint" value="<?php echo htmlspecialchars($row->pin_fingerprint ?? '', ENT_QUOTES, 'UTF-8') ?>">
             </div>
         </div>
         <div class="col-sm-6">
