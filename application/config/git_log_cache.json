@@ -1,9 +1,93 @@
 [
     {
+        "step": "4c93f4a",
+        "date": "2026-07-19",
+        "author": "jekjoul",
+        "message": "Perbaikan fitur kedisiplinan siswa"
+    },
+    {
+        "step": "5da8f34",
+        "date": "2026-07-19",
+        "author": "jekjoul",
+        "message": "Tambah fitur export masal"
+    },
+    {
+        "step": "2930d1b",
+        "date": "2026-07-19",
+        "author": "jekjoul",
+        "message": "Perbaikan tampilan list siswa"
+    },
+    {
+        "step": "3375f30",
+        "date": "2026-07-19",
+        "author": "jekjoul",
+        "message": "Cek IP"
+    },
+    {
+        "step": "c0c66cf",
+        "date": "2026-07-18",
+        "author": "jekjoul",
+        "message": "Merge pull request #37 from jekjoul\/Dev-Rumah"
+    },
+    {
+        "step": "603017b",
+        "date": "2026-07-18",
+        "author": "jekjoul",
+        "message": "Tambah fitur urutan mapel"
+    },
+    {
+        "step": "57efe0f",
+        "date": "2026-07-18",
+        "author": "jekjoul",
+        "message": "Merge pull request #36 from jekjoul\/Dev-Rumah"
+    },
+    {
+        "step": "e8bc3b2",
+        "date": "2026-07-18",
+        "author": "jekjoul",
+        "message": "Perbaikan generate KKTP"
+    },
+    {
+        "step": "fc3b541",
+        "date": "2026-07-18",
+        "author": "jekjoul",
+        "message": "Merge pull request #35 from jekjoul\/Dev-Rumah"
+    },
+    {
+        "step": "ca73e63",
+        "date": "2026-07-18",
+        "author": "jekjoul",
+        "message": "Perbaikan download berkas pembelajaran langsung dari google drive"
+    },
+    {
+        "step": "5993657",
+        "date": "2026-07-18",
+        "author": "jekjoul",
+        "message": "Merge pull request #34 from jekjoul\/Dev-Rumah"
+    },
+    {
+        "step": "032a3b7",
+        "date": "2026-07-18",
+        "author": "jekjoul",
+        "message": "Perbaikan tampilan pembelajaran dan Print Absensi"
+    },
+    {
+        "step": "f836375",
+        "date": "2026-07-18",
+        "author": "jekjoul",
+        "message": "Merge pull request #33 from jekjoul\/Dev-Rumah"
+    },
+    {
         "step": "a3ff43f",
         "date": "2026-07-18",
         "author": "jekjoul",
         "message": "Update : Perbaikanan tampilan profil guru dan perbaikan bug di halaman berkas pembelajaran"
+    },
+    {
+        "step": "c232dce",
+        "date": "2026-07-17",
+        "author": "jekjoul",
+        "message": "Merge pull request #32 from jekjoul\/Dev-Rumah"
     },
     {
         "step": "3bba4ef",
@@ -12,10 +96,22 @@
         "message": "Update : Perbaikan bug perbedaan data jadwal di admin dan di guru"
     },
     {
+        "step": "247b3d5",
+        "date": "2026-07-17",
+        "author": "jekjoul",
+        "message": "Merge pull request #31 from jekjoul\/Dev-Rumah"
+    },
+    {
         "step": "53e5e1f",
         "date": "2026-07-17",
         "author": "jekjoul",
         "message": "Add : Fitur rekam medis siswa"
+    },
+    {
+        "step": "aa7e3ac",
+        "date": "2026-07-17",
+        "author": "jekjoul",
+        "message": "Merge pull request #30 from jekjoul\/Dev-Rumah"
     },
     {
         "step": "21dff7e",
@@ -24,10 +120,22 @@
         "message": "Update : Perbaikan ignore tanggal pendaftaran ketika siswa dikembalikan dari alumni ke siswa aktif"
     },
     {
+        "step": "8f88395",
+        "date": "2026-07-17",
+        "author": "jekjoul",
+        "message": "Merge pull request #29 from jekjoul\/Dev-Rumah"
+    },
+    {
         "step": "6f48c28",
         "date": "2026-07-17",
         "author": "jekjoul",
         "message": "Update : Persentasi perangkat pembelajaran, perbaikan fitur mutasi siswa"
+    },
+    {
+        "step": "2c63f63",
+        "date": "2026-07-17",
+        "author": "jekjoul",
+        "message": "Merge pull request #28 from jekjoul\/Dev-Rumah"
     },
     {
         "step": "b7285c8",

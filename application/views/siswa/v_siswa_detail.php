@@ -374,10 +374,6 @@ $is_admin_or_staff = (hasPermissions('siswa_edit') || hasPermissions('menu_buku_
                                                             </td>
                                                         </tr>
                                                     <?php endforeach; ?>
-                                                <?php else: ?>
-                                                    <tr>
-                                                        <td colspan="7" class="text-center text-neutral-400 py-20 italic">Tidak ada catatan pelanggaran kedisiplinan siswa ini.</td>
-                                                    </tr>
                                                 <?php endif; ?>
                                             </tbody>
                                         </table>
@@ -514,7 +510,11 @@ $is_admin_or_staff = (hasPermissions('siswa_edit') || hasPermissions('menu_buku_
     let table = new DataTable('#dataPribadi');
     let tableMedis = new DataTable('#tableMedis');
     let tablePrestasi = new DataTable('#tablePrestasi');
-    let tableKedisiplinan = new DataTable('#tableKedisiplinan');
+    let tableKedisiplinan = new DataTable('#tableKedisiplinan', {
+        language: {
+            emptyTable: 'Tidak ada catatan pelanggaran kedisiplinan siswa ini.'
+        }
+    });
     
     // Auto active tab from window hash URL
     var hash = window.location.hash;
