@@ -864,10 +864,11 @@ class Perangkat_pembelajaran extends MY_Controller
             $this->db->where('id_agenda', $id_agenda);
             $this->db->where('id_pembelajaran_mapel', $id_pembelajaran_mapel);
             $this->db->update('agenda_pembelajaran', [
-                'materi' => $this->input->post('materi'),
-                'kegiatan' => $this->input->post('kegiatan'),
-                'status' => post('status'),
-                'catatan' => post('catatan'),
+                'materi'     => $this->input->post('materi'),
+                'kegiatan'   => $this->input->post('kegiatan'),
+                'status'     => post('status'),
+                'catatan'    => post('catatan'),
+                'link_video' => post('link_video') ?: null,
                 'updated_at' => date('Y-m-d H:i:s')
             ]);
         }

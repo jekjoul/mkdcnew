@@ -602,6 +602,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                         <th width="150">Hari & Tanggal</th>
                                         <th width="100" class="text-center">Waktu (JP)</th>
                                         <th>Materi Pembelajaran</th>
+                                        <th width="80" class="text-center">Video</th>
                                         <th width="150" class="text-center">Status</th>
                                         <th width="100" class="text-center">Aksi</th>
                                     </tr>
@@ -635,6 +636,17 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                                 <textarea class="d-none hidden-kegiatan"><?php echo html_escape($row->kegiatan) ?></textarea>
                                             </td>
                                             <td class="text-center">
+                                                <?php if (!empty($row->link_video)): ?>
+                                                    <a href="<?php echo html_escape($row->link_video) ?>" target="_blank" rel="noopener noreferrer"
+                                                       class="btn btn-sm btn-danger-100 text-danger-600 px-8 py-4 radius-6"
+                                                       title="Tonton Video Pembelajaran">
+                                                        <iconify-icon icon="logos:youtube-icon" style="font-size:16px;"></iconify-icon>
+                                                    </a>
+                                                <?php else: ?>
+                                                    <span class="text-neutral-300" title="Belum ada link video"><iconify-icon icon="lucide:video-off" style="font-size:15px;"></iconify-icon></span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td class="text-center">
                                                 <?php
                                                 $sb = 'bg-neutral-100 text-neutral-600';
                                                 if ($row->status === 'Terlaksana') $sb = 'bg-success-focus text-success-main';
@@ -651,6 +663,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                                     data-tanggal="<?php echo date('d M Y', strtotime($row->tanggal)) ?>"
                                                     data-status="<?php echo html_escape($row->status) ?>"
                                                     data-catatan="<?php echo html_escape($row->catatan) ?>"
+                                                    data-video="<?php echo html_escape($row->link_video) ?>"
                                                     data-jumlah-jam="<?php echo html_escape($row->jumlah_jam) ?>"
                                                     data-jam-mulai="<?php echo html_escape($row->jam_mulai) ?>"
                                                     data-jam-selesai="<?php echo html_escape($row->jam_selesai) ?>">
@@ -727,6 +740,16 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                     <div class="col-12">
                         <label class="form-label fw-semibold text-primary-light text-sm mb-8">Catatan / Hambatan</label>
                         <input type="text" name="catatan" id="modal-catatan" placeholder="Misal: Siswa antusias, listrik padam..." class="form-control radius-8">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-semibold text-primary-light text-sm mb-8">
+                            <iconify-icon icon="logos:youtube-icon" class="me-1" style="font-size:16px;"></iconify-icon>
+                            Link Video Pembelajaran (Opsional)
+                        </label>
+                        <input type="url" name="link_video" id="modal-link-video"
+                               placeholder="https://www.youtube.com/watch?v=..."
+                               class="form-control radius-8">
+                        <div class="text-xs text-secondary-light mt-4">Tempel URL YouTube atau platform video lain sebagai referensi belajar untuk pertemuan ini.</div>
                     </div>
                 </div>
             </div>
@@ -885,6 +908,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
             const tgl = btn.data('tanggal');
             const status = btn.data('status');
             const catatan = btn.data('catatan');
+            const video = btn.data('video') || '';
             const jmlJam = btn.data('jumlah-jam');
             const jamMulai = btn.data('jam-mulai');
             const jamSelesai = btn.data('jam-selesai');
@@ -897,6 +921,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
             $('#modal-date-text').val(hari + ', ' + tgl);
             $('#modal-status').val(status);
             $('#modal-catatan').val(catatan);
+            $('#modal-link-video').val(video);
             $('#modal-jumlah-jam').val(jmlJam);
             $('#modal-jam-mulai').val(jamMulai);
             $('#modal-jam-selesai').val(jamSelesai);
