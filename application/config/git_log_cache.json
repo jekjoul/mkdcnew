@@ -1,5 +1,29 @@
 [
     {
+        "step": "9e7084e",
+        "date": "2026-07-21",
+        "author": "jekjoul",
+        "message": "Update link youtube di agenda harian pembelajaran"
+    },
+    {
+        "step": "43cc4a0",
+        "date": "2026-07-21",
+        "author": "jekjoul",
+        "message": "Perbaikan tampilan detail siswa"
+    },
+    {
+        "step": "ada1fdb",
+        "date": "2026-07-20",
+        "author": "jekjoul",
+        "message": "Perbaikan API presensi, membandingkan PIN dengan NIPD"
+    },
+    {
+        "step": "916a14f",
+        "date": "2026-07-20",
+        "author": "jekjoul",
+        "message": "tambah fitur absensi siswa dan api ke datacenter client"
+    },
+    {
         "step": "4c93f4a",
         "date": "2026-07-19",
         "author": "jekjoul",

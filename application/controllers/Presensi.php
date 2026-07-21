@@ -113,11 +113,19 @@ class Presensi extends MY_Controller
     // =========================================================================
     private function _get_bulan_list()
     {
-        $rows = $this->db
-            ->select("DISTINCT(DATE_FORMAT(tanggal_absensi, '%Y-%m')) as bulan_tahun")
-            ->from('absensi_tanggal')
-            ->order_by('bulan_tahun', 'DESC')
-            ->get()->result();
+        $rows = [];
+
+        // Hanya query jika tabel absensi_tanggal sudah ada
+        if ($this->db->table_exists('absensi_tanggal')) {
+            $query = $this->db
+                ->select("DISTINCT(DATE_FORMAT(tanggal_absensi, '%Y-%m')) as bulan_tahun")
+                ->from('absensi_tanggal')
+                ->order_by('bulan_tahun', 'DESC')
+                ->get();
+            if ($query !== false) {
+                $rows = $query->result();
+            }
+        }
 
         $bulan_berjalan = date('Y-m'); // contoh: '2026-07'
 
@@ -178,11 +186,15 @@ class Presensi extends MY_Controller
             $year  = substr($selected_month, 0, 4);
             $month = substr($selected_month, 5, 2);
 
-            // Daftar tanggal efektif bulan ini
-            $this->db->where('YEAR(tanggal_absensi)', $year);
-            $this->db->where('MONTH(tanggal_absensi)', $month);
-            $this->db->order_by('tanggal_absensi', 'ASC');
-            $tanggal_list = $this->db->get('absensi_tanggal')->result();
+            // Daftar tanggal efektif bulan ini (aman jika tabel belum ada)
+            $tanggal_list = [];
+            if ($this->db->table_exists('absensi_tanggal')) {
+                $this->db->where('YEAR(tanggal_absensi)', $year);
+                $this->db->where('MONTH(tanggal_absensi)', $month);
+                $this->db->order_by('tanggal_absensi', 'ASC');
+                $q = $this->db->get('absensi_tanggal');
+                $tanggal_list = ($q !== false) ? $q->result() : [];
+            }
             $this->page_data['tanggal_list'] = $tanggal_list;
 
             // Daftar siswa di rombel terpilih
@@ -231,10 +243,15 @@ class Presensi extends MY_Controller
             $year  = substr($selected_month, 0, 4);
             $month = substr($selected_month, 5, 2);
 
-            $this->db->where('YEAR(tanggal_absensi)', $year);
-            $this->db->where('MONTH(tanggal_absensi)', $month);
-            $this->db->order_by('tanggal_absensi', 'ASC');
-            $tanggal_list = $this->db->get('absensi_tanggal')->result();
+            // Daftar tanggal efektif bulan ini (aman jika tabel belum ada)
+            $tanggal_list = [];
+            if ($this->db->table_exists('absensi_tanggal')) {
+                $this->db->where('YEAR(tanggal_absensi)', $year);
+                $this->db->where('MONTH(tanggal_absensi)', $month);
+                $this->db->order_by('tanggal_absensi', 'ASC');
+                $q = $this->db->get('absensi_tanggal');
+                $tanggal_list = ($q !== false) ? $q->result() : [];
+            }
             $this->page_data['tanggal_list'] = $tanggal_list;
 
             $this->db->order_by('nama_ptk', 'ASC');
@@ -398,9 +415,14 @@ class Presensi extends MY_Controller
 
         $this->page_data['api_token'] = 'MKDC_FINGERPRINT_SECRET_KEY_2026';
 
-        $this->db->order_by('id', 'DESC');
-        $this->db->limit(100);
-        $this->page_data['tasks'] = $this->db->get('fingerprint_tasks')->result();
+        $tasks = [];
+        if ($this->db->table_exists('fingerprint_tasks')) {
+            $this->db->order_by('id', 'DESC');
+            $this->db->limit(100);
+            $q = $this->db->get('fingerprint_tasks');
+            $tasks = ($q !== false) ? $q->result() : [];
+        }
+        $this->page_data['tasks'] = $tasks;
 
         $this->load->view('presensi/v_mesin', $this->page_data);
     }

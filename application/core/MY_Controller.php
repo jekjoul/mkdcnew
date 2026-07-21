@@ -247,10 +247,10 @@ class MY_Controller extends CI_Controller {
 			}
 		}
 
-		// Daftarkan permissions presensi untuk semua role agar tidak terlewat
-		$all_roles = $this->db->get('roles')->result();
-		foreach ($all_roles as $r) {
-			$r_id = intval($r->id);
+		// Daftarkan permissions presensi HANYA untuk Admin dan Tenaga Administrasi.
+		// Role lain (Guru, Wakasek, dll) harus diaktifkan manual via manajemen role.
+		$default_presensi_roles = [1, 3]; // 1=Admin, 3=Tenaga Administrasi Sekolah
+		foreach ($default_presensi_roles as $r_id) {
 			$check_role_perm = $this->db->get_where('role_permissions', ['role' => $r_id, 'permission' => 'menu_presensi'])->row();
 			if (!$check_role_perm) {
 				$this->db->insert('role_permissions', ['role' => $r_id, 'permission' => 'menu_presensi']);
