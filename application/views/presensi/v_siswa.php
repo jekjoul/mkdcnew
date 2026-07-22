@@ -155,12 +155,6 @@
                                                     </td>
                                                 </tr>
                                             <?php endforeach; ?>
-                                        <?php else: ?>
-                                            <tr>
-                                                <td colspan="7" class="text-center text-secondary-light py-20">
-                                                    Belum ada data kehadiran siswa pada tanggal terpilih.
-                                                </td>
-                                            </tr>
                                         <?php endif; ?>
                                     </tbody>
                                 </table>
@@ -392,7 +386,13 @@
 <?php include viewPath('includes/footer'); ?>
 <script>
 $(document).ready(function () {
-    if ($('#presensiSiswaTable').length) new DataTable('#presensiSiswaTable');
+    if ($('#presensiSiswaTable').length) {
+        new DataTable('#presensiSiswaTable', {
+            language: {
+                emptyTable: "Belum ada data kehadiran siswa pada tanggal terpilih."
+            }
+        });
+    }
 });
 
 function openEditModal(tipeUser, idUser, nama, tanggal, currentStatus, currentKet) {

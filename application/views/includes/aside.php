@@ -529,12 +529,7 @@
                     Presensi Guru
                 </a>
             </li>
-            <li>
-                <a href="<?php echo url('presensi/mesin') ?>">
-                    <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
-                    Konfigurasi & Antrean
-                </a>
-            </li>
+
         </ul>
     </li>
 <?php endif; ?>

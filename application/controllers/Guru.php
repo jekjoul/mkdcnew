@@ -106,6 +106,7 @@ class Guru extends MY_Controller
         $this->page_data['unduh_berkas_url'] = url('guru/unduh_berkas/' . $id_pembelajaran_mapel);
         $this->page_data['generate_agenda_url'] = url('guru/generate_agenda/' . $id_pembelajaran_mapel);
         $this->page_data['generate_agenda_ai_url'] = url('guru/generate_agenda_ai/' . $id_pembelajaran_mapel);
+        $this->page_data['generate_media_ai_url'] = url('guru/generate_media_ai/' . $id_pembelajaran_mapel);
         $this->page_data['save_agenda_url'] = url('guru/simpan_agenda/' . $id_pembelajaran_mapel);
         $this->page_data['salin_perangkat_url'] = url('guru/salin_perangkat/' . $id_pembelajaran_mapel);
         $this->page_data['salin_agenda_url'] = url('guru/salin_agenda/' . $id_pembelajaran_mapel);
@@ -331,6 +332,47 @@ class Guru extends MY_Controller
         }
 
         redirect('guru/perangkat_detail/' . $id_pembelajaran_mapel);
+    }
+
+    public function generate_media_ai($id_pembelajaran_mapel)
+    {
+        postAllowed();
+        $ptk = $this->currentPtk();
+        if (!$ptk) {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'status'  => false,
+                    'message' => 'Akses ditolak.'
+                ]));
+        }
+
+        $jenis_media     = $this->input->post('jenis_media');
+        $materi_topik    = $this->input->post('materi_topik');
+        $prompt_tambahan = $this->input->post('prompt_tambahan');
+
+        if (empty($materi_topik)) {
+            $materi_topik = "Materi Pembelajaran";
+        }
+
+        $this->load->library('GoogleAI_Helper');
+        $result = $this->googleai_helper->generateAgendaMedia($jenis_media, $materi_topik, $prompt_tambahan);
+
+        if (isset($result['error'])) {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'status'  => false,
+                    'message' => $result['error']
+                ]));
+        }
+
+        return $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode([
+                'status' => true,
+                'data'   => $result
+            ]));
     }
 
     public function simpan_agenda($id_pembelajaran_mapel)

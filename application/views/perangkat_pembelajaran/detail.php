@@ -741,6 +741,46 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                         <label class="form-label fw-semibold text-primary-light text-sm mb-8">Catatan / Hambatan</label>
                         <input type="text" name="catatan" id="modal-catatan" placeholder="Misal: Siswa antusias, listrik padam..." class="form-control radius-8">
                     </div>
+                    
+                    <!-- Widget Asisten AI (Google Gemini) -->
+                    <div class="col-12">
+                        <div class="card border border-primary-200 bg-primary-50 radius-12 p-16">
+                            <div class="d-flex align-items-center justify-content-between mb-12">
+                                <h6 class="text-primary-600 mb-0 d-flex align-items-center gap-2 text-sm fw-bold">
+                                    <iconify-icon icon="logos:google-gemini" style="font-size:18px;"></iconify-icon>
+                                    Generate Media & Materi Pembelajaran (Google AI)
+                                </h6>
+                                <span class="badge bg-primary-100 text-primary-600 text-xs px-8 py-4 radius-4">Kurikulum Merdeka</span>
+                            </div>
+
+                            <div class="row gy-2">
+                                <div class="col-md-5">
+                                    <label class="form-label text-xs fw-semibold text-secondary-light mb-4">Pilih Jenis Output / Media</label>
+                                    <select id="ai-media-type" class="form-select form-select-sm radius-8 text-xs">
+                                        <option value="gambar">🖼️ Diagram / Visual (SVG/HTML Card)</option>
+                                        <option value="slide">📊 Slide Presentasi Interaktif</option>
+                                        <option value="materi">📝 Rangkuman Materi & Kuis Pembelajaran</option>
+                                        <option value="youtube">🎬 Cari Link Video YouTube Relevan</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-7">
+                                    <label class="form-label text-xs fw-semibold text-secondary-light mb-4">Prompt / Instruksi Tambahan (Opsional)</label>
+                                    <input type="text" id="ai-custom-prompt" placeholder="Contoh: Buat slide 4 poin penting, buat diagram daur air..." class="form-control form-control-sm radius-8 text-xs">
+                                </div>
+                                <div class="col-12 mt-8 d-flex flex-wrap justify-content-between align-items-center gap-2">
+                                    <span class="text-xs text-secondary-light">
+                                        <i class="ri-information-line me-1"></i> Audio & Video generator tidak diperkenankan; video dicari dari YouTube.
+                                    </span>
+                                    <button type="button" id="btn-generate-ai-media" class="btn btn-sm btn-primary-600 radius-8 px-16 py-6 text-xs d-inline-flex align-items-center gap-1">
+                                        <iconify-icon icon="solar:stars-minimalistic-bold" class="text-sm"></iconify-icon>
+                                        <span id="ai-btn-text">Generate dengan AI</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="ai-media-alert" class="mt-8 d-none"></div>
+                        </div>
+                    </div>
+
                     <div class="col-12">
                         <label class="form-label fw-semibold text-primary-light text-sm mb-8">
                             <iconify-icon icon="logos:youtube-icon" class="me-1" style="font-size:16px;"></iconify-icon>
@@ -937,6 +977,10 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
             $('#modal-jam-mulai').val(jamMulai);
             $('#modal-jam-selesai').val(jamSelesai);
 
+            // Reset AI Widget inputs
+            $('#ai-custom-prompt').val('');
+            $('#ai-media-alert').addClass('d-none').removeClass('alert-danger alert-success').html('');
+
             // Set TinyMCE content after modal is shown
             const modalEl = document.getElementById('modalEditAgenda');
             const bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
@@ -946,6 +990,72 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                 if (tinymce.get('modal-materi-editor')) tinymce.get('modal-materi-editor').setContent(materi);
                 if (tinymce.get('modal-kegiatan-editor')) tinymce.get('modal-kegiatan-editor').setContent(kegiatan);
                 modalEl.removeEventListener('shown.bs.modal', handler);
+            });
+        });
+
+        // Handle Generate Media AI di Modal Edit Agenda
+        $(document).on('click', '#btn-generate-ai-media', function() {
+            var btn = $(this);
+            var jenisMedia = $('#ai-media-type').val();
+            var customPrompt = $('#ai-custom-prompt').val();
+
+            // Ambil materi dari TinyMCE atau teks biasa
+            var currentMateriHtml = '';
+            if (tinymce.get('modal-materi-editor')) {
+                currentMateriHtml = tinymce.get('modal-materi-editor').getContent({format: 'text'}).trim();
+            }
+            if (!currentMateriHtml) {
+                currentMateriHtml = $('#modal-date-text').val() || 'Pembelajaran Terpadu';
+            }
+
+            var generateUrl = "<?php echo $generate_media_ai_url ?? '' ?>";
+
+            btn.prop('disabled', true);
+            $('#ai-btn-text').text('Menyusun AI...');
+            $('#ai-media-alert').addClass('d-none').removeClass('alert-danger alert-success').html('');
+
+            $.ajax({
+                url: generateUrl,
+                type: 'POST',
+                data: {
+                    jenis_media: jenisMedia,
+                    materi_topik: currentMateriHtml,
+                    prompt_tambahan: customPrompt
+                },
+                dataType: 'json',
+                success: function(res) {
+                    btn.prop('disabled', false);
+                    $('#ai-btn-text').text('Generate dengan AI');
+
+                    if (res && res.status && res.data) {
+                        var d = res.data;
+                        if (d.type === 'youtube' && d.url) {
+                            $('#modal-link-video').val(d.url);
+                            $('#ai-media-alert').removeClass('d-none alert-danger').addClass('alert alert-success py-6 px-12 text-xs')
+                                .html('<i class="ri-checkbox-circle-fill me-1"></i> Video YouTube ditemukan: <strong>' + (d.title || d.url) + '</strong> (Otomatis diisikan ke kolom link video).');
+                        } else if (d.type === 'html' && d.content) {
+                            if (tinymce.get('modal-materi-editor')) {
+                                var oldContent = tinymce.get('modal-materi-editor').getContent();
+                                tinymce.get('modal-materi-editor').setContent(oldContent + '<br>' + d.content);
+                            }
+                            $('#ai-media-alert').removeClass('d-none alert-danger').addClass('alert alert-success py-6 px-12 text-xs')
+                                .html('<i class="ri-checkbox-circle-fill me-1"></i> ' + (d.title || 'Media/Materi') + ' berhasil digenerate dan disisipkan ke editor Materi Pembelajaran.');
+                        } else {
+                            $('#ai-media-alert').removeClass('d-none alert-success').addClass('alert alert-danger py-6 px-12 text-xs')
+                                .html('<i class="ri-error-warning-fill me-1"></i> Gagal memproses keluaran AI.');
+                        }
+                    } else {
+                        var msg = (res && res.message) ? res.message : 'Terjadi kesalahan sistem.';
+                        $('#ai-media-alert').removeClass('d-none alert-success').addClass('alert alert-danger py-6 px-12 text-xs')
+                            .html('<i class="ri-error-warning-fill me-1"></i> ' + msg);
+                    }
+                },
+                error: function() {
+                    btn.prop('disabled', false);
+                    $('#ai-btn-text').text('Generate dengan AI');
+                    $('#ai-media-alert').removeClass('d-none alert-success').addClass('alert alert-danger py-6 px-12 text-xs')
+                        .html('<i class="ri-error-warning-fill me-1"></i> Gagal terhubung ke server untuk proses AI.');
+                }
             });
         });
 

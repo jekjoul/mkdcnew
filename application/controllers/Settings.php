@@ -168,6 +168,7 @@ class Settings extends MY_Controller {
 		$this->page_data['page']->subtitle = 'Integrasi API';
 		$this->page_data['page']->subtitleUrl = 'settings/api_settings';
 		$this->page_data['page']->submenu = 'api_settings';
+		$this->page_data['api_token'] = 'MKDC_FINGERPRINT_SECRET_KEY_2026';
 		$this->load->view('settings/api_settings', $this->page_data);
 	}
 

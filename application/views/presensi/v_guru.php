@@ -149,12 +149,6 @@
                                                     </td>
                                                 </tr>
                                             <?php endforeach; ?>
-                                        <?php else: ?>
-                                            <tr>
-                                                <td colspan="7" class="text-center text-secondary-light py-20">
-                                                    Belum ada data kehadiran guru pada tanggal terpilih.
-                                                </td>
-                                            </tr>
                                         <?php endif; ?>
                                     </tbody>
                                 </table>
@@ -356,7 +350,13 @@
 <?php include viewPath('includes/footer'); ?>
 <script>
 $(document).ready(function () {
-    if ($('#presensiGuruTable').length) new DataTable('#presensiGuruTable');
+    if ($('#presensiGuruTable').length) {
+        new DataTable('#presensiGuruTable', {
+            language: {
+                emptyTable: "Belum ada data kehadiran guru pada tanggal terpilih."
+            }
+        });
+    }
 });
 
 function openEditModal(tipeUser, idUser, nama, tanggal, currentStatus, currentKet) {
