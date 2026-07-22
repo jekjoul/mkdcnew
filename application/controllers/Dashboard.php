@@ -81,6 +81,10 @@ class Dashboard extends MY_Controller
 		}
 		$this->page_data['siswa_rombel'] = $siswa_rombel;
 
+		$ptk_id = logged('ptk_id');
+		$this->load->model('Perangkat_pembelajaran_model', 'perangkat_model');
+		$this->page_data['agenda_terdekat'] = $this->perangkat_model->getAgendaTerdekatGuru($ptk_id, 5);
+
 		$this->load->view('dashboard', $this->page_data);
 	}
 }

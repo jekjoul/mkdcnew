@@ -56,6 +56,18 @@
                             <span>Perangkat Pembelajaran</span>
                         </a>
                     </li>
+                    <li>
+                        <a href="<?php echo url('guru/agenda') ?>">
+                            <iconify-icon icon="solar:notebook-linear" class="menu-icon"></iconify-icon>
+                            <span>Agenda Pembelajaran Saya</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="<?php echo url('guru/rekap_absensi_agenda') ?>">
+                            <iconify-icon icon="solar:chart-square-linear" class="menu-icon"></iconify-icon>
+                            <span>Rekap Absensi Agenda</span>
+                        </a>
+                    </li>
                 <?php endif; ?>
 
                 <?php if (hasPermissions('menu_jadwal_guru')): ?>
@@ -419,6 +431,14 @@
             <a href="<?php echo url('tahun_pelajaran') ?>">
                 <iconify-icon icon="material-symbols:punch-clock-outline-sharp" class="menu-icon"></iconify-icon>
                 <span>Tahun Pelajaran</span>
+            </a>
+        </li>
+    <?php endif; ?>
+    <?php if (logged('role') == '1' || logged('role') == 'admin'): ?>
+        <li>
+            <a href="<?php echo url('tutup_semester') ?>">
+                <iconify-icon icon="solar:lock-keyhole-bold" class="menu-icon text-danger-main"></iconify-icon>
+                <span class="text-danger-main fw-semibold">Penutupan Semester</span>
             </a>
         </li>
     <?php endif; ?>

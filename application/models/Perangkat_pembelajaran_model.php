@@ -56,12 +56,25 @@ class Perangkat_pembelajaran_model extends MY_Model
                 'jumlah_jam' => ['type' => 'INT', 'constraint' => 11, 'null' => true],
                 'jam_mulai' => ['type' => 'VARCHAR', 'constraint' => 10, 'null' => true],
                 'jam_selesai' => ['type' => 'VARCHAR', 'constraint' => 10, 'null' => true],
+                'link_video' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
+                'slide_drive_id' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
                 'created_at' => ['type' => 'DATETIME', 'null' => true],
                 'updated_at' => ['type' => 'DATETIME', 'null' => true],
             ]);
             $this->dbforge->add_key('id_agenda', true);
             $this->dbforge->add_key('id_pembelajaran_mapel');
             $this->dbforge->create_table('agenda_pembelajaran', true);
+        } else {
+            if (!$this->db->field_exists('slide_drive_id', 'agenda_pembelajaran')) {
+                $this->dbforge->add_column('agenda_pembelajaran', [
+                    'slide_drive_id' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true]
+                ]);
+            }
+            if (!$this->db->field_exists('link_video', 'agenda_pembelajaran')) {
+                $this->dbforge->add_column('agenda_pembelajaran', [
+                    'link_video' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true]
+                ]);
+            }
         }
     }
 
@@ -890,5 +903,597 @@ class Perangkat_pembelajaran_model extends MY_Model
             return $row;
         }
         return false;
+    }
+
+    /**
+     * Get Mapel and Rombel filter options for active year
+     */
+    public function getGuruMapelRombelFilter($ptk_id = null)
+    {
+        // Mapel List
+        $this->db->select('DISTINCT(m.id_mapel) as id_mapel, m.nama_mapel');
+        $this->db->from('pembelajaran_mapel pm');
+        $this->db->join('pembelajaran p', 'p.id_pembelajaran = pm.id_pembelajaran');
+        $this->db->join('pembelajaran_tahun_pelajaran tp', 'tp.id_tahun_pelajaran = p.id_tahun_pelajaran');
+        $this->db->join('mapel m', 'm.id_mapel = pm.id_mapel');
+        $this->db->where('tp.status', 'Aktif');
+        $this->db->where('p.status', 'Aktif');
+        if ($ptk_id) {
+            $this->db->where('pm.id_ptk', (int) $ptk_id);
+        }
+        $this->db->order_by('m.nama_mapel', 'ASC');
+        $mapel_list = $this->db->get()->result();
+
+        // Rombel List
+        $this->db->select('DISTINCT(r.id_rombel) as id_rombel, r.nama_rombel, pm.id_mapel');
+        $this->db->from('pembelajaran_mapel pm');
+        $this->db->join('pembelajaran p', 'p.id_pembelajaran = pm.id_pembelajaran');
+        $this->db->join('pembelajaran_tahun_pelajaran tp', 'tp.id_tahun_pelajaran = p.id_tahun_pelajaran');
+        $this->db->join('rombel r', 'r.id_rombel = p.id_rombel');
+        $this->db->where('tp.status', 'Aktif');
+        $this->db->where('p.status', 'Aktif');
+        if ($ptk_id) {
+            $this->db->where('pm.id_ptk', (int) $ptk_id);
+        }
+        $this->db->order_by('r.nama_rombel', 'ASC');
+        $rombel_list = $this->db->get()->result();
+
+        return [
+            'mapel_list'  => $mapel_list,
+            'rombel_list' => $rombel_list
+        ];
+    }
+
+    /**
+     * Get filtered Agenda Pembelajaran
+     */
+    public function getAgendaGuruFiltered($ptk_id = null, $id_mapel = null, $id_rombel = null, $status = null)
+    {
+        $this->db->select('a.*, pm.id_pembelajaran_mapel, r.id_rombel, r.nama_rombel, t.nama_tingkat, t.tingkat_angka, m.id_mapel, m.nama_mapel, tp.tahun_pelajaran, tp.semester, ptk.nama_ptk');
+        $this->db->from('agenda_pembelajaran a');
+        $this->db->join('pembelajaran_mapel pm', 'pm.id_pembelajaran_mapel = a.id_pembelajaran_mapel');
+        $this->db->join('pembelajaran p', 'p.id_pembelajaran = pm.id_pembelajaran');
+        $this->db->join('rombel r', 'r.id_rombel = p.id_rombel');
+        $this->db->join('master_tingkat_sekolah t', 't.id_tingkat_sekolah = p.id_tingkat_sekolah', 'left');
+        $this->db->join('mapel m', 'm.id_mapel = pm.id_mapel');
+        $this->db->join('pembelajaran_tahun_pelajaran tp', 'tp.id_tahun_pelajaran = p.id_tahun_pelajaran');
+        $this->db->join('ptk', 'ptk.id_ptk = pm.id_ptk', 'left');
+
+        $this->db->where('tp.status', 'Aktif');
+        $this->db->where('p.status', 'Aktif');
+
+        if ($ptk_id) {
+            $this->db->where('pm.id_ptk', (int) $ptk_id);
+        }
+        if ($id_mapel) {
+            $this->db->where('m.id_mapel', (int) $id_mapel);
+        }
+        if ($id_rombel) {
+            $this->db->where('r.id_rombel', (int) $id_rombel);
+        }
+        if ($status) {
+            $this->db->where('a.status', $status);
+        }
+
+        $today = date('Y-m-d');
+        $this->db->order_by("CASE WHEN a.tanggal >= '$today' THEN 0 ELSE 1 END", "ASC", false);
+        $this->db->order_by('a.tanggal', 'ASC');
+        $this->db->order_by('a.jam_mulai', 'ASC');
+        $this->db->order_by('a.pertemuan_ke', 'ASC');
+
+        return $this->db->get()->result();
+    }
+
+    /**
+     * Quick toggle status agenda (Belum <-> Terlaksana)
+     */
+    public function toggleAgendaStatus($id_agenda)
+    {
+        $row = $this->db->get_where('agenda_pembelajaran', ['id_agenda' => (int) $id_agenda])->row();
+        if (!$row) return false;
+
+        $new_status = ($row->status === 'Terlaksana') ? 'Belum' : 'Terlaksana';
+
+        $this->db->where('id_agenda', (int) $id_agenda);
+        $this->db->update('agenda_pembelajaran', [
+            'status'     => $new_status,
+            'updated_at' => date('Y-m-d H:i:s')
+        ]);
+
+        return $new_status;
+    }
+
+    /**
+     * Get upcoming / today's Agenda Pembelajaran for specific PTK Guru
+     */
+    public function getAgendaTerdekatGuru($ptk_id, $limit = 5)
+    {
+        $today    = date('Y-m-d');
+        $tomorrow = date('Y-m-d', strtotime('+1 day'));
+
+        $this->db->select('a.*, pm.id_pembelajaran_mapel, r.id_rombel, r.nama_rombel, t.nama_tingkat, t.tingkat_angka, m.id_mapel, m.nama_mapel, tp.tahun_pelajaran, tp.semester, ptk.nama_ptk');
+        $this->db->from('agenda_pembelajaran a');
+        $this->db->join('pembelajaran_mapel pm', 'pm.id_pembelajaran_mapel = a.id_pembelajaran_mapel');
+        $this->db->join('pembelajaran p', 'p.id_pembelajaran = pm.id_pembelajaran');
+        $this->db->join('rombel r', 'r.id_rombel = p.id_rombel');
+        $this->db->join('master_tingkat_sekolah t', 't.id_tingkat_sekolah = p.id_tingkat_sekolah', 'left');
+        $this->db->join('mapel m', 'm.id_mapel = pm.id_mapel');
+        $this->db->join('pembelajaran_tahun_pelajaran tp', 'tp.id_tahun_pelajaran = p.id_tahun_pelajaran');
+        $this->db->join('ptk', 'ptk.id_ptk = pm.id_ptk', 'left');
+
+        $this->db->where('tp.status', 'Aktif');
+        $this->db->where('p.status', 'Aktif');
+        $this->db->where('a.status !=', 'Terlaksana');
+
+        if ($ptk_id) {
+            $this->db->where('pm.id_ptk', (int) $ptk_id);
+        }
+
+        // Prioritaskan Hari Ini (0), Besok (1), Tanggal Mendatang (2), Tanggal Lalu (3)
+        $this->db->order_by("CASE 
+            WHEN a.tanggal = '$today' THEN 0 
+            WHEN a.tanggal = '$tomorrow' THEN 1 
+            WHEN a.tanggal > '$tomorrow' THEN 2 
+            ELSE 3 
+        END", "ASC", false);
+        $this->db->order_by('a.tanggal', 'ASC');
+        $this->db->order_by('a.jam_mulai', 'ASC');
+
+        $this->db->limit((int) $limit);
+
+        return $this->db->get()->result();
+    }
+
+    /**
+     * Get single Agenda Pembelajaran Detail by ID
+     */
+    public function getAgendaDetail($id_agenda)
+    {
+        $this->db->select('a.*, pm.id_pembelajaran_mapel, pm.id_ptk, r.id_rombel, r.nama_rombel, t.nama_tingkat, t.tingkat_angka, m.id_mapel, m.nama_mapel, tp.tahun_pelajaran, tp.semester, ptk.nama_ptk');
+        $this->db->from('agenda_pembelajaran a');
+        $this->db->join('pembelajaran_mapel pm', 'pm.id_pembelajaran_mapel = a.id_pembelajaran_mapel');
+        $this->db->join('pembelajaran p', 'p.id_pembelajaran = pm.id_pembelajaran');
+        $this->db->join('rombel r', 'r.id_rombel = p.id_rombel');
+        $this->db->join('master_tingkat_sekolah t', 't.id_tingkat_sekolah = p.id_tingkat_sekolah', 'left');
+        $this->db->join('mapel m', 'm.id_mapel = pm.id_mapel');
+        $this->db->join('pembelajaran_tahun_pelajaran tp', 'tp.id_tahun_pelajaran = p.id_tahun_pelajaran');
+        $this->db->join('ptk', 'ptk.id_ptk = pm.id_ptk', 'left');
+        $this->db->where('a.id_agenda', (int) $id_agenda);
+
+        $query = $this->db->get();
+        if ($query) {
+            return $query->row();
+        }
+        return null;
+    }
+
+    /**
+     * Update status and catatan for Agenda Pembelajaran
+     */
+    public function updateAgendaStatusCatatan($id_agenda, $status, $catatan = null)
+    {
+        $data = [
+            'status'     => $status,
+            'updated_at' => date('Y-m-d H:i:s')
+        ];
+        if ($catatan !== null) {
+            $data['catatan'] = $catatan;
+        }
+
+        $this->db->where('id_agenda', (int) $id_agenda);
+        return $this->db->update('agenda_pembelajaran', $data);
+    }
+
+    public function ensurePresensiAgendaTable()
+    {
+        $this->db->query("
+            CREATE TABLE IF NOT EXISTS `presensi_agenda_siswa` (
+              `id_presensi_agenda` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+              `id_agenda` INT UNSIGNED NOT NULL,
+              `id_siswa` INT UNSIGNED NOT NULL,
+              `status` ENUM('Hadir', 'Izin', 'Sakit', 'Alpa') NULL DEFAULT NULL,
+              `catatan` VARCHAR(255) NULL,
+              `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+              `updated_at` DATETIME NULL ON UPDATE CURRENT_TIMESTAMP,
+              UNIQUE KEY `uk_agenda_siswa` (`id_agenda`, `id_siswa`),
+              INDEX `idx_agenda` (`id_agenda`),
+              INDEX `idx_siswa` (`id_siswa`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        ");
+    }
+
+    /**
+     * Get daftar siswa rombel agenda beserta status presensi
+     */
+    public function getSiswaAgenda($id_agenda)
+    {
+        $this->ensurePresensiAgendaTable();
+
+        $agenda = $this->getAgendaDetail($id_agenda);
+        if (!$agenda) return [];
+
+        $this->db->select('s.id_siswa, s.nama_siswa, s.nisn, s.nipd, s.jenis_kelamin, pas.status AS status_presensi, pas.catatan AS catatan_presensi');
+        $this->db->from('pembelajaran_mapel pm');
+        $this->db->join('pembelajaran p', 'p.id_pembelajaran = pm.id_pembelajaran');
+        $this->db->join('pembelajaran_siswa ps', 'ps.id_pembelajaran = p.id_pembelajaran');
+        $this->db->join('siswa s', 's.id_siswa = ps.peserta_didik_id');
+        $this->db->join('presensi_agenda_siswa pas', 'pas.id_agenda = ' . (int)$id_agenda . ' AND pas.id_siswa = s.id_siswa', 'left');
+        $this->db->where('pm.id_pembelajaran_mapel', (int)$agenda->id_pembelajaran_mapel);
+        $this->db->order_by('s.nama_siswa', 'ASC');
+
+        return $this->db->get()->result();
+    }
+
+    /**
+     * Simpan status presensi 1 siswa secara realtime (AJAX Auto-save)
+     */
+    public function saveSinglePresensiSiswa($id_agenda, $id_siswa, $status, $catatan = null)
+    {
+        $this->ensurePresensiAgendaTable();
+
+        $allowed_status = ['Hadir', 'Izin', 'Sakit', 'Alpa'];
+        if (!in_array($status, $allowed_status)) {
+            $status = null;
+        }
+
+        $data = [
+            'id_agenda'  => (int)$id_agenda,
+            'id_siswa'   => (int)$id_siswa,
+            'status'     => $status,
+            'catatan'    => $catatan,
+            'updated_at' => date('Y-m-d H:i:s')
+        ];
+
+        $existing = $this->db->get_where('presensi_agenda_siswa', [
+            'id_agenda' => (int)$id_agenda,
+            'id_siswa'  => (int)$id_siswa
+        ])->row();
+
+        if ($existing) {
+            $this->db->where('id_presensi_agenda', $existing->id_presensi_agenda);
+            return $this->db->update('presensi_agenda_siswa', $data);
+        } else {
+            $data['created_at'] = date('Y-m-d H:i:s');
+            return $this->db->insert('presensi_agenda_siswa', $data);
+        }
+    }
+
+    /**
+     * Get Rekapitulasi Absensi Agenda Siswa Per Mapel & Per Bulan
+     */
+    public function getRekapAbsensiAgendaGuru($ptk_id, $id_mapel = null, $id_rombel = null, $bulan = null, $tahun = null)
+    {
+        $this->ensurePresensiAgendaTable();
+
+        if (!$bulan) $bulan = date('m');
+        if (!$tahun) $tahun = date('Y');
+
+        // 1. Dapatkan unit pembelajaran_id milik PTK & Mapel/Rombel
+        $this->db->select('pm.id_pembelajaran, pm.id_pembelajaran_mapel');
+        $this->db->from('pembelajaran_mapel pm');
+        $this->db->join('pembelajaran p', 'p.id_pembelajaran = pm.id_pembelajaran');
+        $this->db->join('pembelajaran_tahun_pelajaran tp', 'tp.id_tahun_pelajaran = p.id_tahun_pelajaran');
+        $this->db->where('tp.status', 'Aktif');
+        $this->db->where('p.status', 'Aktif');
+        if ($ptk_id) {
+            $this->db->where('pm.id_ptk', (int) $ptk_id);
+        }
+        if ($id_mapel) {
+            $this->db->where('pm.id_mapel', (int) $id_mapel);
+        }
+        if ($id_rombel) {
+            $this->db->where('p.id_rombel', (int) $id_rombel);
+        }
+        $pm_rows = $this->db->get()->result();
+
+        $pembelajaran_ids = array_unique(array_column($pm_rows, 'id_pembelajaran'));
+
+        // 2. Ambil seluruh daftar siswa yang diampu di Rombel/Pembelajaran tersebut
+        $siswa_list = [];
+        if (!empty($pembelajaran_ids)) {
+            $this->db->select('s.id_siswa, s.nama_siswa, s.nisn, s.nipd, s.jenis_kelamin');
+            $this->db->from('pembelajaran_siswa ps');
+            $this->db->join('siswa s', 's.id_siswa = ps.peserta_didik_id');
+            $this->db->where_in('ps.id_pembelajaran', $pembelajaran_ids);
+            $this->db->group_by('s.id_siswa');
+            $this->db->order_by('s.nama_siswa', 'ASC');
+            $siswa_list = $this->db->get()->result();
+        }
+
+        // 3. Ambil daftar agenda KBM pada mapel, rombel & bulan/tahun terpilih
+        $this->db->select('a.id_agenda, a.tanggal, p.id_pembelajaran, pm.id_mapel');
+        $this->db->from('agenda_pembelajaran a');
+        $this->db->join('pembelajaran_mapel pm', 'pm.id_pembelajaran_mapel = a.id_pembelajaran_mapel');
+        $this->db->join('pembelajaran p', 'p.id_pembelajaran = pm.id_pembelajaran');
+        $this->db->join('pembelajaran_tahun_pelajaran tp', 'tp.id_tahun_pelajaran = p.id_tahun_pelajaran');
+        
+        $this->db->where('tp.status', 'Aktif');
+        $this->db->where('p.status', 'Aktif');
+        if ($ptk_id) {
+            $this->db->where('pm.id_ptk', (int) $ptk_id);
+        }
+        if ($id_mapel) {
+            $this->db->where('pm.id_mapel', (int) $id_mapel);
+        }
+        if ($id_rombel) {
+            $this->db->where('p.id_rombel', (int) $id_rombel);
+        }
+        $this->db->where('MONTH(a.tanggal)', (int) $bulan);
+        $this->db->where('YEAR(a.tanggal)', (int) $tahun);
+
+        $agendas = $this->db->get()->result();
+        $total_pertemuan = count($agendas);
+        $agenda_ids = array_column($agendas, 'id_agenda');
+
+        // 4. Hitung akumulasi presensi per siswa (Meskipun belum ada agenda, daftar siswa TETAP TAMPIL!)
+        $rekap_siswa = [];
+        foreach ($siswa_list as $siswa) {
+            $hadir = 0; $izin = 0; $sakit = 0; $alpa = 0;
+
+            if (!empty($agenda_ids)) {
+                $this->db->select("
+                    SUM(CASE WHEN pas.status = 'Hadir' THEN 1 ELSE 0 END) AS total_hadir,
+                    SUM(CASE WHEN pas.status = 'Izin' THEN 1 ELSE 0 END) AS total_izin,
+                    SUM(CASE WHEN pas.status = 'Sakit' THEN 1 ELSE 0 END) AS total_sakit,
+                    SUM(CASE WHEN pas.status = 'Alpa' THEN 1 ELSE 0 END) AS total_alpa
+                ");
+                $this->db->from('presensi_agenda_siswa pas');
+                $this->db->where_in('pas.id_agenda', $agenda_ids);
+                $this->db->where('pas.id_siswa', (int) $siswa->id_siswa);
+
+                $stat = $this->db->get()->row();
+                if ($stat) {
+                    $hadir = (int) $stat->total_hadir;
+                    $izin  = (int) $stat->total_izin;
+                    $sakit = (int) $stat->total_sakit;
+                    $alpa  = (int) $stat->total_alpa;
+                }
+            }
+
+            $persentase = $total_pertemuan > 0 ? round(($hadir / $total_pertemuan) * 100, 1) : 0;
+
+            $rekap_siswa[] = (object) [
+                'id_siswa'      => $siswa->id_siswa,
+                'nama_siswa'    => $siswa->nama_siswa,
+                'nisn'          => $siswa->nisn,
+                'nipd'          => $siswa->nipd,
+                'jenis_kelamin' => $siswa->jenis_kelamin,
+                'total_hadir'   => $hadir,
+                'total_izin'    => $izin,
+                'total_sakit'   => $sakit,
+                'total_alpa'    => $alpa,
+                'persentase'    => $persentase
+            ];
+        }
+
+        return [
+            'agendas'         => $agendas,
+            'total_pertemuan' => $total_pertemuan,
+            'rekap_siswa'     => $rekap_siswa
+        ];
+    }
+
+    /**
+     * Konversi tanggal Y-m-d ke Nama Hari Bahasa Indonesia
+     */
+    private function getNamaHariIndo($tanggal)
+    {
+        $day = date('N', strtotime($tanggal));
+        $days = [
+            1 => 'Senin',
+            2 => 'Selasa',
+            3 => 'Rabu',
+            4 => 'Kamis',
+            5 => 'Jumat',
+            6 => 'Sabtu',
+            7 => 'Minggu'
+        ];
+        return isset($days[$day]) ? $days[$day] : 'Senin';
+    }
+
+    /**
+     * Update Waktu & Jadwal Agenda (Hari, Tanggal, Jam Mulai, Jam Selesai)
+     * Tanpa merubah materi, kegiatan, catatan, atau berkas media.
+     */
+    public function updateAgendaJadwalWaktu($id_agenda, $tanggal, $jam_mulai = null, $jam_selesai = null)
+    {
+        $hari = $this->getNamaHariIndo($tanggal);
+
+        $data = [
+            'tanggal'    => $tanggal,
+            'hari'       => $hari,
+            'updated_at' => date('Y-m-d H:i:s')
+        ];
+
+        if ($jam_mulai !== null) {
+            $data['jam_mulai'] = $jam_mulai;
+        }
+        if ($jam_selesai !== null) {
+            $data['jam_selesai'] = $jam_selesai;
+        }
+
+        $this->db->where('id_agenda', (int) $id_agenda);
+        return $this->db->update('agenda_pembelajaran', $data);
+    }
+
+    /**
+     * Get Pengaturan Kerangka Waktu Mingguan untuk suatu pembelajaran dan hari
+     */
+    public function getJadwalPengaturanPembelajaran($id_pembelajaran, $hari)
+    {
+        $setting = null;
+        if ($this->db->table_exists('jadwal_pelajaran_pengaturan')) {
+            $row = $this->db->get_where('jadwal_pelajaran_pengaturan', [
+                'id_pembelajaran' => (int) $id_pembelajaran,
+                'hari'            => $hari
+            ])->row();
+
+            if (!$row) {
+                $row = $this->db->get_where('jadwal_pelajaran_pengaturan', [
+                    'id_pembelajaran' => 0,
+                    'hari'            => $hari
+                ])->row();
+            }
+
+            if ($row) {
+                $setting = [
+                    'jam_mulai' => !empty($row->jam_mulai) ? substr($row->jam_mulai, 0, 5) : '07:00',
+                    'menit_jp'  => (int) ($row->menit_jp ?: 40),
+                    'jumlah_jp' => (int) ($row->jumlah_jp ?: 8),
+                    'istirahat' => json_decode($row->istirahat_json ?: '[]', true) ?: []
+                ];
+            }
+        }
+
+        if (!$setting) {
+            $setting = [
+                'jam_mulai' => '07:00',
+                'menit_jp'  => 40,
+                'jumlah_jp' => 8,
+                'istirahat' => [['name' => 'Istirahat', 'after' => 4, 'duration' => 20]]
+            ];
+        }
+
+        return $setting;
+    }
+
+    /**
+     * Hitung Waktu Jam Mulai & Jam Selesai berbasis Slot (Min Slot & Max Slot)
+     */
+    public function calculateSlotTimeRange($setting, $min_slot, $max_slot)
+    {
+        $jam_mulai_str = $setting['jam_mulai'];
+        $menit_jp      = (int) $setting['menit_jp'];
+        
+        $breaks = [];
+        if (!empty($setting['istirahat']) && is_array($setting['istirahat'])) {
+            foreach ($setting['istirahat'] as $b) {
+                if (isset($b['after'], $b['duration'])) {
+                    $breaks[(int) $b['after']] = (int) $b['duration'];
+                }
+            }
+        }
+
+        $parts = explode(':', $jam_mulai_str);
+        $start_minutes = ((int) $parts[0] * 60) + (isset($parts[1]) ? (int) $parts[1] : 0);
+
+        // Calculate start time of min_slot
+        $min_start_min = $start_minutes;
+        if (isset($breaks[0])) {
+            $min_start_min += (int) $breaks[0];
+        }
+        for ($i = 1; $i < $min_slot; $i++) {
+            $min_start_min += $menit_jp;
+            if (isset($breaks[$i])) {
+                $min_start_min += (int) $breaks[$i];
+            }
+        }
+
+        // Calculate end time of max_slot
+        $max_end_min = $start_minutes;
+        if (isset($breaks[0])) {
+            $max_end_min += (int) $breaks[0];
+        }
+        for ($i = 1; $i <= $max_slot; $i++) {
+            $max_end_min += $menit_jp;
+            if (isset($breaks[$i]) && $i < $max_slot) {
+                $max_end_min += (int) $breaks[$i];
+            }
+        }
+
+        $h_start = sprintf('%02d', floor($min_start_min / 60));
+        $m_start = sprintf('%02d', $min_start_min % 60);
+
+        $h_end   = sprintf('%02d', floor($max_end_min / 60));
+        $m_end   = sprintf('%02d', $max_end_min % 60);
+
+        return [
+            'jam_mulai'   => $h_start . ':' . $m_start,
+            'jam_selesai' => $h_end . ':' . $m_end
+        ];
+    }
+
+    /**
+     * Get referensi Jadwal Master KBM secara realtime dari kerangka waktu mingguan
+     */
+    public function getJadwalMasterPembelajaran($id_pembelajaran_mapel, $hari_spesifik = null)
+    {
+        $pm = $this->db->get_where('pembelajaran_mapel', ['id_pembelajaran_mapel' => (int) $id_pembelajaran_mapel])->row();
+        if (!$pm) {
+            return null;
+        }
+
+        if (!$this->db->table_exists('jadwal_pelajaran_item')) {
+            return null;
+        }
+
+        $this->db->select('hari, MIN(slot_ke) AS min_slot, MAX(slot_ke) AS max_slot');
+        $this->db->from('jadwal_pelajaran_item');
+        $this->db->where('id_pembelajaran', (int) $pm->id_pembelajaran);
+        $this->db->where('id_mapel', (int) $pm->id_mapel);
+        if (!empty($hari_spesifik)) {
+            $this->db->where('hari', $hari_spesifik);
+        }
+        $this->db->group_by('hari');
+
+        $row = $this->db->get()->row();
+        if (!$row) {
+            return null;
+        }
+
+        $setting = $this->getJadwalPengaturanPembelajaran($pm->id_pembelajaran, $row->hari);
+        $time_range = $this->calculateSlotTimeRange($setting, (int) $row->min_slot, (int) $row->max_slot);
+
+        return (object) [
+            'hari'        => $row->hari,
+            'jam_mulai'   => $time_range['jam_mulai'],
+            'jam_selesai' => $time_range['jam_selesai'],
+            'min_slot'    => (int) $row->min_slot,
+            'max_slot'    => (int) $row->max_slot
+        ];
+    }
+
+    /**
+     * Sinkronisasi Massal Jam Masuk & Jam Keluar Seluruh Agenda dengan Jadwal Master KBM
+     */
+    public function syncAllAgendaWithMasterJadwal($ptk_id = null, $id_mapel = null, $id_rombel = null)
+    {
+        $this->db->select('a.id_agenda, a.id_pembelajaran_mapel, a.tanggal, a.hari');
+        $this->db->from('agenda_pembelajaran a');
+        $this->db->join('pembelajaran_mapel pm', 'pm.id_pembelajaran_mapel = a.id_pembelajaran_mapel');
+        $this->db->join('pembelajaran p', 'p.id_pembelajaran = pm.id_pembelajaran');
+        $this->db->join('pembelajaran_tahun_pelajaran tp', 'tp.id_tahun_pelajaran = p.id_tahun_pelajaran');
+        
+        $this->db->where('tp.status', 'Aktif');
+        $this->db->where('p.status', 'Aktif');
+
+        if ($ptk_id) {
+            $this->db->where('pm.id_ptk', (int) $ptk_id);
+        }
+        if ($id_mapel) {
+            $this->db->where('pm.id_mapel', (int) $id_mapel);
+        }
+        if ($id_rombel) {
+            $this->db->where('p.id_rombel', (int) $id_rombel);
+        }
+
+        $agendas = $this->db->get()->result();
+        if (empty($agendas)) {
+            return 0;
+        }
+
+        $count_updated = 0;
+        foreach ($agendas as $ag) {
+            $master = $this->getJadwalMasterPembelajaran($ag->id_pembelajaran_mapel, $ag->hari);
+            if ($master && (!empty($master->jam_mulai) || !empty($master->jam_selesai))) {
+                $jam_mulai   = !empty($master->jam_mulai) ? $master->jam_mulai : null;
+                $jam_selesai = !empty($master->jam_selesai) ? $master->jam_selesai : null;
+
+                $this->updateAgendaJadwalWaktu($ag->id_agenda, $ag->tanggal, $jam_mulai, $jam_selesai);
+                $count_updated++;
+            }
+        }
+
+        return $count_updated;
     }
 }

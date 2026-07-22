@@ -977,4 +977,163 @@ class Perangkat_pembelajaran extends MY_Controller
         }
         return null;
     }
+
+    public function agenda()
+    {
+        ifPermissions('perangkat_pembelajaran_list');
+
+        $this->page_data['page']->title = 'agenda_pembelajaran';
+        $this->page_data['page']->titleUrl = 'perangkat_pembelajaran/agenda';
+        $this->page_data['page']->subtitle = 'Agenda Pembelajaran';
+        $this->page_data['page']->subtitleUrl = 'perangkat_pembelajaran/agenda';
+
+        $ptk_id = null;
+        if (logged('role') != '1') {
+            $ptk_id = logged('ptk_id');
+        }
+
+        $id_mapel  = $this->input->get('id_mapel') ?: null;
+        $id_rombel = $this->input->get('id_rombel') ?: null;
+        $status    = $this->input->get('status') ?: null;
+
+        $filters = $this->perangkat_model->getGuruMapelRombelFilter($ptk_id);
+        $this->page_data['mapel_list']  = $filters['mapel_list'];
+        $this->page_data['rombel_list'] = $filters['rombel_list'];
+
+        $this->page_data['selected_mapel']  = $id_mapel;
+        $this->page_data['selected_rombel'] = $id_rombel;
+        $this->page_data['selected_status'] = $status;
+
+        $this->page_data['agendas'] = $this->perangkat_model->getAgendaGuruFiltered($ptk_id, $id_mapel, $id_rombel, $status);
+
+        $this->load->view('perangkat_pembelajaran/agenda', $this->page_data);
+    }
+
+    public function agenda_detail($id_agenda)
+    {
+        ifPermissions('perangkat_pembelajaran_list');
+
+        $agenda = $this->perangkat_model->getAgendaDetail($id_agenda);
+        if (!$agenda) show_404();
+
+        $this->page_data['page']->title = 'agenda_pembelajaran';
+        $this->page_data['page']->titleUrl = 'perangkat_pembelajaran/agenda';
+        $this->page_data['page']->subtitle = 'Detail Agenda Pembelajaran';
+        $this->page_data['page']->subtitleUrl = 'perangkat_pembelajaran/agenda_detail/' . $id_agenda;
+
+        $this->page_data['agenda'] = $agenda;
+        $this->page_data['siswa_presensi'] = $this->perangkat_model->getSiswaAgenda($id_agenda);
+        $this->load->view('perangkat_pembelajaran/agenda_detail', $this->page_data);
+    }
+
+    public function autosave_presensi_siswa($id_agenda)
+    {
+        postAllowed();
+        ifPermissions('perangkat_pembelajaran_edit');
+
+        $id_siswa = (int) post('id_siswa');
+        $status   = post('status') ?: 'Hadir';
+        $catatan  = post('catatan');
+
+        if ($id_siswa > 0 && $id_agenda > 0) {
+            $this->perangkat_model->saveSinglePresensiSiswa($id_agenda, $id_siswa, $status, $catatan);
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'status'  => true,
+                    'message' => 'Presensi siswa berhasil disimpan secara otomatis.'
+                ]));
+        }
+
+        return $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode([
+                'status'  => false,
+                'message' => 'Parameter tidak lengkap.'
+            ]));
+    }
+
+    public function update_status_agenda($id_agenda)
+    {
+        postAllowed();
+        ifPermissions('perangkat_pembelajaran_edit');
+
+        $agenda = $this->perangkat_model->getAgendaDetail($id_agenda);
+        if (!$agenda) show_404();
+
+        $status  = post('status') ?: 'Terlaksana';
+        $catatan = post('catatan');
+
+        $this->perangkat_model->updateAgendaStatusCatatan($id_agenda, $status, $catatan);
+
+        $this->session->set_flashdata('alert-type', 'success');
+        $this->session->set_flashdata('alert', 'Status pelaksanaan dan catatan tambahan agenda berhasil disimpan.');
+        redirect('perangkat_pembelajaran/agenda_detail/' . $id_agenda);
+    }
+
+    public function toggle_status_agenda($id_agenda)
+    {
+        ifPermissions('perangkat_pembelajaran_edit');
+
+        $new_status = $this->perangkat_model->toggleAgendaStatus($id_agenda);
+
+        if ($this->input->is_ajax_request()) {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'status'     => true,
+                    'new_status' => $new_status,
+                    'message'    => 'Status agenda berhasil diperbarui menjadi ' . $new_status
+                ]));
+        }
+
+        $this->load->library('user_agent');
+        $this->session->set_flashdata('alert-type', 'success');
+        $this->session->set_flashdata('alert', 'Status agenda berhasil diperbarui.');
+        redirect($this->agent->referrer() ?: 'perangkat_pembelajaran/agenda');
+    }
+
+    public function sesuaikan_jadwal_agenda($id_agenda)
+    {
+        postAllowed();
+        ifPermissions('perangkat_pembelajaran_edit');
+
+        $agenda = $this->perangkat_model->getAgendaDetail($id_agenda);
+        if (!$agenda) show_404();
+
+        $tanggal     = post('tanggal') ?: $agenda->tanggal;
+        $jam_mulai   = post('jam_mulai');
+        $jam_selesai = post('jam_selesai');
+
+        if (post('sync_master') == '1') {
+            $master = $this->perangkat_model->getJadwalMasterPembelajaran($agenda->id_pembelajaran_mapel);
+            if ($master) {
+                if (!empty($master->jam_mulai)) $jam_mulai = $master->jam_mulai;
+                if (!empty($master->jam_selesai)) $jam_selesai = $master->jam_selesai;
+            }
+        }
+
+        $this->perangkat_model->updateAgendaJadwalWaktu($id_agenda, $tanggal, $jam_mulai, $jam_selesai);
+
+        $this->load->library('user_agent');
+        $this->session->set_flashdata('alert-type', 'success');
+        $this->session->set_flashdata('alert', 'Jadwal hari, tanggal, dan jam masuk/keluar agenda berhasil disesuaikan.');
+        redirect($this->agent->referrer() ?: 'perangkat_pembelajaran/agenda');
+    }
+
+    public function sync_all_agenda_jadwal()
+    {
+        postAllowed();
+        ifPermissions('perangkat_pembelajaran_edit');
+
+        $id_mapel  = post('id_mapel');
+        $id_rombel = post('id_rombel');
+
+        $updated_count = $this->perangkat_model->syncAllAgendaWithMasterJadwal(null, $id_mapel, $id_rombel);
+
+        $this->load->library('user_agent');
+        $this->session->set_flashdata('alert-type', 'success');
+        $this->session->set_flashdata('alert', 'Berhasil menyelaraskan ' . $updated_count . ' agenda pembelajaran dengan Jadwal Master KBM.');
+        redirect($this->agent->referrer() ?: 'perangkat_pembelajaran/agenda');
+    }
 }

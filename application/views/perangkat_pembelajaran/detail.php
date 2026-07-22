@@ -636,15 +636,35 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                                 <textarea class="d-none hidden-kegiatan"><?php echo html_escape($row->kegiatan) ?></textarea>
                                             </td>
                                             <td class="text-center">
-                                                <?php if (!empty($row->link_video)): ?>
-                                                    <a href="<?php echo html_escape($row->link_video) ?>" target="_blank" rel="noopener noreferrer"
-                                                       class="btn btn-sm btn-danger-100 text-danger-600 px-8 py-4 radius-6"
-                                                       title="Tonton Video Pembelajaran">
-                                                        <iconify-icon icon="logos:youtube-icon" style="font-size:16px;"></iconify-icon>
-                                                    </a>
-                                                <?php else: ?>
-                                                    <span class="text-neutral-300" title="Belum ada link video"><iconify-icon icon="lucide:video-off" style="font-size:15px;"></iconify-icon></span>
-                                                <?php endif; ?>
+                                                <div class="d-flex align-items-center gap-4 justify-content-center flex-wrap">
+                                                    <?php if (!empty($row->link_video)): ?>
+                                                        <a href="<?php echo html_escape($row->link_video) ?>" target="_blank" rel="noopener noreferrer"
+                                                           class="btn btn-sm btn-danger-100 text-danger-600 px-8 py-4 radius-6"
+                                                           title="Tonton Video Pembelajaran (YouTube)">
+                                                            <iconify-icon icon="logos:youtube-icon" style="font-size:16px;"></iconify-icon>
+                                                        </a>
+                                                    <?php endif; ?>
+
+                                                    <?php if (!empty($row->slide_drive_id)): ?>
+                                                        <button type="button"
+                                                            class="btn btn-sm btn-info-100 text-info-600 px-8 py-4 radius-6 btn-preview-doc"
+                                                            title="Lihat Slide Presentasi (Preview)"
+                                                            data-drive-id="<?php echo html_escape($row->slide_drive_id) ?>"
+                                                            data-title="Slide Agenda Ke-<?php echo $row->pertemuan_ke ?>">
+                                                            <iconify-icon icon="lucide:eye" style="font-size:15px;"></iconify-icon>
+                                                        </button>
+                                                        <?php $slide_drive_url = 'https://docs.google.com/document/d/' . html_escape($row->slide_drive_id) . '/edit'; ?>
+                                                        <a href="<?php echo $slide_drive_url ?>" target="_blank" rel="noopener noreferrer"
+                                                           class="btn btn-sm btn-success-100 text-success-600 px-8 py-4 radius-6"
+                                                           title="Edit Slide Online (Google Drive)">
+                                                            <iconify-icon icon="logos:google-drive" style="font-size:15px;"></iconify-icon>
+                                                        </a>
+                                                    <?php endif; ?>
+
+                                                    <?php if (empty($row->link_video) && empty($row->slide_drive_id)): ?>
+                                                        <span class="text-neutral-300" title="Belum ada media"><iconify-icon icon="lucide:video-off" style="font-size:15px;"></iconify-icon></span>
+                                                    <?php endif; ?>
+                                                </div>
                                             </td>
                                             <td class="text-center">
                                                 <?php
@@ -664,6 +684,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                                     data-status="<?php echo html_escape($row->status) ?>"
                                                     data-catatan="<?php echo html_escape($row->catatan) ?>"
                                                     data-video="<?php echo html_escape($row->link_video) ?>"
+                                                    data-slide-drive-id="<?php echo html_escape($row->slide_drive_id ?? '') ?>"
                                                     data-jumlah-jam="<?php echo html_escape($row->jumlah_jam) ?>"
                                                     data-jam-mulai="<?php echo html_escape($row->jam_mulai) ?>"
                                                     data-jam-selesai="<?php echo html_escape($row->jam_selesai) ?>">
@@ -699,6 +720,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
             </div>
             <div class="modal-body p-24">
                 <input type="hidden" name="id_agenda" id="modal-id-agenda">
+                <input type="hidden" name="slide_drive_id" id="modal-slide-drive-id">
                 <div class="row gy-3">
                     <div class="col-md-6">
                         <label class="form-label fw-semibold text-primary-light text-sm mb-8">Hari / Tanggal</label>
@@ -939,15 +961,16 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
             });
         }
 
-        // Initialize TinyMCE editors inside modal
+        // Initialize TinyMCE Rich Text Editor ala Google Docs inside modal
         tinymce.init({
             selector: 'textarea.tinymce-editor',
-            height: 220,
-            menubar: false,
+            height: 380,
+            menubar: 'file edit view insert format tools table',
             branding: false,
-            statusbar: false,
-            plugins: 'lists link code wordcount',
-            toolbar: 'undo redo | bold italic | bullist numlist | removeformat | code'
+            statusbar: true,
+            plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table code help wordcount fontfamily fontsize blocks align forecolor backcolor',
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | table link image media | removeformat code fullscreen preview',
+            content_style: 'body { font-family:Inter,sans-serif; font-size:14px; line-height:1.6; }'
         });
 
         // Handle "Edit Agenda" button click
@@ -960,6 +983,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
             const status = btn.data('status');
             const catatan = btn.data('catatan');
             const video = btn.data('video') || '';
+            const slideDriveId = btn.data('slide-drive-id') || '';
             const jmlJam = btn.data('jumlah-jam');
             const jamMulai = btn.data('jam-mulai');
             const jamSelesai = btn.data('jam-selesai');
@@ -969,6 +993,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
             $('#modal-agenda-title').text('Edit Agenda — Pertemuan Ke-' + pert);
             $('#modal-id-agenda').val(id);
+            $('#modal-slide-drive-id').val(slideDriveId);
             $('#modal-date-text').val(hari + ', ' + tgl);
             $('#modal-status').val(status);
             $('#modal-catatan').val(catatan);
@@ -1032,14 +1057,34 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                         if (d.type === 'youtube' && d.url) {
                             $('#modal-link-video').val(d.url);
                             $('#ai-media-alert').removeClass('d-none alert-danger').addClass('alert alert-success py-6 px-12 text-xs')
-                                .html('<i class="ri-checkbox-circle-fill me-1"></i> Video YouTube ditemukan: <strong>' + (d.title || d.url) + '</strong> (Otomatis diisikan ke kolom link video).');
+                                .html('<i class="ri-checkbox-circle-fill me-1"></i> Video YouTube ditemukan: <strong>' + (d.title || d.url) + '</strong> (Otomatis dimasukkan ke kolom Link Video Pembelajaran).');
                         } else if (d.type === 'html' && d.content) {
-                            if (tinymce.get('modal-materi-editor')) {
-                                var oldContent = tinymce.get('modal-materi-editor').getContent();
-                                tinymce.get('modal-materi-editor').setContent(oldContent + '<br>' + d.content);
+                            if (jenisMedia === 'slide') {
+                                if (d.slide_drive_id) {
+                                    $('#modal-slide-drive-id').val(d.slide_drive_id);
+                                    var driveEditUrl = 'https://docs.google.com/document/d/' + d.slide_drive_id + '/edit';
+                                    $('#ai-media-alert').removeClass('d-none alert-danger').addClass('alert alert-success py-8 px-12 text-xs')
+                                        .html('<i class="ri-checkbox-circle-fill me-1"></i> Slide Presentasi berhasil dibuat & disimpan ke Google Drive Anda!<br>'
+                                            + '<div class="mt-4 gap-2 d-flex"><button type="button" class="btn btn-xs btn-info-100 text-info-600 radius-6 px-8 py-4 btn-preview-doc" data-drive-id="' + d.slide_drive_id + '" data-title="' + d.title + '"><i class="ri-eye-line me-1"></i> Lihat Preview</button> '
+                                            + '<a href="' + driveEditUrl + '" target="_blank" class="btn btn-xs btn-success-100 text-success-600 radius-6 px-8 py-4"><i class="ri-google-fill me-1"></i> Edit Online di Google Drive</a></div>');
+                                } else {
+                                    $('#ai-media-alert').removeClass('d-none alert-danger').addClass('alert alert-success py-6 px-12 text-xs')
+                                        .html('<i class="ri-checkbox-circle-fill me-1"></i> Slide Presentasi berhasil digenerate.');
+                                }
+
+                                if (tinymce.get('modal-materi-editor')) {
+                                    var oldContent = tinymce.get('modal-materi-editor').getContent();
+                                    tinymce.get('modal-materi-editor').setContent(oldContent + '<br>' + d.content);
+                                }
+                            } else {
+                                // Diagram / Visual atau Rangkuman Materi & Kuis -> Masuk ke editor Materi Pembelajaran
+                                if (tinymce.get('modal-materi-editor')) {
+                                    var oldContent = tinymce.get('modal-materi-editor').getContent();
+                                    tinymce.get('modal-materi-editor').setContent(oldContent + '<br>' + d.content);
+                                }
+                                $('#ai-media-alert').removeClass('d-none alert-danger').addClass('alert alert-success py-6 px-12 text-xs')
+                                    .html('<i class="ri-checkbox-circle-fill me-1"></i> ' + (d.title || 'Media/Materi') + ' berhasil digenerate dan dimasukkan ke form Materi Pembelajaran.');
                             }
-                            $('#ai-media-alert').removeClass('d-none alert-danger').addClass('alert alert-success py-6 px-12 text-xs')
-                                .html('<i class="ri-checkbox-circle-fill me-1"></i> ' + (d.title || 'Media/Materi') + ' berhasil digenerate dan disisipkan ke editor Materi Pembelajaran.');
                         } else {
                             $('#ai-media-alert').removeClass('d-none alert-success').addClass('alert alert-danger py-6 px-12 text-xs')
                                 .html('<i class="ri-error-warning-fill me-1"></i> Gagal memproses keluaran AI.');
