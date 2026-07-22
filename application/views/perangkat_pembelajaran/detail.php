@@ -522,8 +522,8 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                         </button>
                         <?php echo form_close(); ?>
 
-                        <!-- Salin dari tahun lalu (jika ada) -->
-                        <?php if ($source_last_year_id): ?>
+                        <!-- Salin dari tahun lalu / rombel lain (jika ada) -->
+                        <?php if ($source_last_year_id || !empty($other_active_rombel_agendas)): ?>
                             <button type="button" class="btn btn-outline-secondary radius-8 px-24 py-12"
                                 data-bs-toggle="modal" data-bs-target="#modalSalinAgenda">
                                 <iconify-icon icon="lucide:copy" class="me-1"></iconify-icon> Salin dari Sumber Lain
@@ -786,9 +786,13 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
                     <div class="d-flex flex-column gap-12">
 
-                        <?php if ($source_last_year_id): ?>
+                        <?php 
+                        $first_checked = false;
+                        if ($source_last_year_id): 
+                            $first_checked = true;
+                        ?>
                             <label class="d-flex align-items-start gap-12 p-16 border border-2 border-primary radius-12 cursor-pointer salin-option" style="cursor:pointer">
-                                <input type="radio" name="source_id" value="<?php echo $source_last_year_id ?>" class="form-check-input mt-1 flex-shrink-0">
+                                <input type="radio" name="source_id" value="<?php echo $source_last_year_id ?>" class="form-check-input mt-1 flex-shrink-0" checked>
                                 <div>
                                     <span class="fw-semibold text-primary-light d-block">
                                         <iconify-icon icon="lucide:history" class="me-1"></iconify-icon>
@@ -801,16 +805,23 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                             </label>
                         <?php endif; ?>
 
-                        <?php foreach ($other_active_rombel_agendas as $rombel): ?>
-                            <label class="d-flex align-items-start gap-12 p-16 border border-2 border-secondary rounded-3 cursor-pointer salin-option" style="cursor:pointer">
-                                <input type="radio" name="source_id" value="<?php echo $rombel->id_pembelajaran_mapel ?>" class="form-check-input mt-1 flex-shrink-0">
+                        <?php foreach ($other_active_rombel_agendas as $index => $rombel): 
+                            $checked_attr = '';
+                            $border_class = 'border-secondary';
+                            if (!$first_checked && $index === 0) {
+                                $checked_attr = 'checked';
+                                $border_class = 'border-primary';
+                            }
+                        ?>
+                            <label class="d-flex align-items-start gap-12 p-16 border border-2 <?php echo $border_class ?> radius-12 cursor-pointer salin-option" style="cursor:pointer">
+                                <input type="radio" name="source_id" value="<?php echo $rombel->id_pembelajaran_mapel ?>" class="form-check-input mt-1 flex-shrink-0" <?php echo $checked_attr ?>>
                                 <div>
                                     <span class="fw-semibold text-primary-light d-block">
                                         <iconify-icon icon="lucide:users" class="me-1"></iconify-icon>
                                         Salin dari Rombel <?php echo html_escape($rombel->nama_rombel) ?>
                                     </span>
                                     <span class="text-xs text-secondary-light">
-                                        <?php echo html_escape($item->nama_mapel) ?> — <?php echo html_escape($rombel->tahun_pelajaran . ' (' . $rombel->semester . ')') ?>
+                                        <?php echo html_escape($item->nama_mapel) ?> — <?php echo html_escape($rombel->tahun_pelajaran . ' (' . $rombel->semester . ')') ?> (<?php echo $rombel->total_agenda ?> Agenda)
                                     </span>
                                 </div>
                             </label>

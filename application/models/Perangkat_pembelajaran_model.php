@@ -781,7 +781,15 @@ class Perangkat_pembelajaran_model extends MY_Model
             'id_mapel' => $target->id_mapel
         ])->row();
 
-        return $prev_pm ? $prev_pm->id_pembelajaran_mapel : null;
+        if ($prev_pm) {
+            // Pastikan ada agenda di tahun sebelumnya
+            $count = $this->db->get_where($this->agenda_table, ['id_pembelajaran_mapel' => $prev_pm->id_pembelajaran_mapel])->num_rows();
+            if ($count > 0) {
+                return $prev_pm->id_pembelajaran_mapel;
+            }
+        }
+
+        return null;
     }
 
     public function getOtherActiveRombelAgendas($target_id_pembelajaran_mapel)
@@ -789,15 +797,18 @@ class Perangkat_pembelajaran_model extends MY_Model
         $target = $this->getPembelajaranMapel($target_id_pembelajaran_mapel);
         if (!$target) return [];
 
-        $this->db->select('pm.id_pembelajaran_mapel, r.nama_rombel, tp.tahun_pelajaran, tp.semester');
+        $this->db->select('pm.id_pembelajaran_mapel, r.nama_rombel, tp.tahun_pelajaran, tp.semester, COUNT(ap.id_agenda) as total_agenda');
         $this->db->from('pembelajaran_mapel pm');
         $this->db->join('pembelajaran p', 'p.id_pembelajaran = pm.id_pembelajaran');
         $this->db->join('rombel r', 'r.id_rombel = p.id_rombel');
         $this->db->join('pembelajaran_tahun_pelajaran tp', 'tp.id_tahun_pelajaran = p.id_tahun_pelajaran');
+        $this->db->join($this->agenda_table . ' ap', 'ap.id_pembelajaran_mapel = pm.id_pembelajaran_mapel', 'left');
         $this->db->where('p.id_tahun_pelajaran', $target->id_tahun_pelajaran);
         $this->db->where('p.id_tingkat_sekolah', $target->id_tingkat_sekolah);
         $this->db->where('pm.id_mapel', $target->id_mapel);
         $this->db->where('pm.id_pembelajaran_mapel !=', $target_id_pembelajaran_mapel);
+        $this->db->group_by('pm.id_pembelajaran_mapel');
+        $this->db->having('total_agenda >', 0);
         $this->db->order_by('r.nama_rombel', 'ASC');
         
         return $this->db->get()->result();
