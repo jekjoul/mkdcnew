@@ -779,14 +779,25 @@ if (!empty($tren_pendaftaran)) {
                 }, 1250);
             }
         });
-    // Realtime Clock & Date Update Script
+    }).trigger('scroll');
+    // ================================ Aminated Radial Progress Bar End ================================ 
+
+    // Realtime Clock & Date Update Script (Server Time Synchronized UTC+7 WIB)
     (function() {
+        var serverStartMs = <?php echo (new DateTime('now', new DateTimeZone('Asia/Jakarta')))->getTimestamp() * 1000; ?>;
+        var clientStartMs = Date.now();
+
         function updateRealtimeClock() {
-            var now = new Date();
-            
-            var hours = String(now.getHours()).padStart(2, '0');
-            var minutes = String(now.getMinutes()).padStart(2, '0');
-            var seconds = String(now.getSeconds()).padStart(2, '0');
+            var elapsed = Date.now() - clientStartMs;
+            var serverNow = new Date(serverStartMs + elapsed);
+
+            // Convert to UTC+7 (WIB)
+            var utcMs = serverNow.getTime() + (serverNow.getTimezoneOffset() * 60000);
+            var wibDate = new Date(utcMs + (7 * 3600000));
+
+            var hours = String(wibDate.getHours()).padStart(2, '0');
+            var minutes = String(wibDate.getMinutes()).padStart(2, '0');
+            var seconds = String(wibDate.getSeconds()).padStart(2, '0');
             var clockStr = hours + ':' + minutes + ':' + seconds + ' WIB';
 
             var hariNames = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
@@ -795,18 +806,24 @@ if (!empty($tren_pendaftaran)) {
                 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
             ];
             
-            var hari = hariNames[now.getDay()];
-            var tgl = now.getDate();
-            var bulan = bulanNames[now.getMonth()];
-            var tahun = now.getFullYear();
+            var hari = hariNames[wibDate.getDay()];
+            var tgl = wibDate.getDate();
+            var bulan = bulanNames[wibDate.getMonth()];
+            var tahun = wibDate.getFullYear();
             var dateStr = hari + ', ' + tgl + ' ' + bulan + ' ' + tahun;
 
-            $('.realtime-clock-display').text(clockStr);
-            $('.realtime-date-display').text(dateStr);
+            var clockEls = document.querySelectorAll('.realtime-clock-display');
+            for (var i = 0; i < clockEls.length; i++) {
+                clockEls[i].textContent = clockStr;
+            }
+
+            var dateEls = document.querySelectorAll('.realtime-date-display');
+            for (var j = 0; j < dateEls.length; j++) {
+                dateEls[j].textContent = dateStr;
+            }
         }
 
         updateRealtimeClock();
         setInterval(updateRealtimeClock, 1000);
     })();
-    // ================================ Aminated Radial Progress Bar End ================================ 
 </script>

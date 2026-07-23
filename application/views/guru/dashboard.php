@@ -246,30 +246,48 @@ $(document).ready(function() {
         });
     });
 
-    // Realtime Clock & Date Script
-    function updateRealtimeClock() {
-        var now = new Date();
-        var hours = String(now.getHours()).padStart(2, '0');
-        var minutes = String(now.getMinutes()).padStart(2, '0');
-        var seconds = String(now.getSeconds()).padStart(2, '0');
-        
-        $('.realtime-clock-display').text(hours + ':' + minutes + ':' + seconds + ' WIB');
+    // Realtime Clock & Date Script (Server Time Synchronized UTC+7 WIB)
+    (function() {
+        var serverStartMs = <?php echo (new DateTime('now', new DateTimeZone('Asia/Jakarta')))->getTimestamp() * 1000; ?>;
+        var clientStartMs = Date.now();
 
-        var hariNames = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-        var bulanNames = [
-            'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-        ];
-        
-        var hari = hariNames[now.getDay()];
-        var tgl = now.getDate();
-        var bulan = bulanNames[now.getMonth()];
-        var tahun = now.getFullYear();
+        function updateRealtimeClock() {
+            var elapsed = Date.now() - clientStartMs;
+            var serverNow = new Date(serverStartMs + elapsed);
 
-        $('.realtime-date-display').text(hari + ', ' + tgl + ' ' + bulan + ' ' + tahun);
-    }
+            var utcMs = serverNow.getTime() + (serverNow.getTimezoneOffset() * 60000);
+            var wibDate = new Date(utcMs + (7 * 3600000));
 
-    updateRealtimeClock();
-    setInterval(updateRealtimeClock, 1000);
+            var hours = String(wibDate.getHours()).padStart(2, '0');
+            var minutes = String(wibDate.getMinutes()).padStart(2, '0');
+            var seconds = String(wibDate.getSeconds()).padStart(2, '0');
+            var clockStr = hours + ':' + minutes + ':' + seconds + ' WIB';
+
+            var hariNames = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            var bulanNames = [
+                'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+            ];
+            
+            var hari = hariNames[wibDate.getDay()];
+            var tgl = wibDate.getDate();
+            var bulan = bulanNames[wibDate.getMonth()];
+            var tahun = wibDate.getFullYear();
+            var dateStr = hari + ', ' + tgl + ' ' + bulan + ' ' + tahun;
+
+            var clockEls = document.querySelectorAll('.realtime-clock-display');
+            for (var i = 0; i < clockEls.length; i++) {
+                clockEls[i].textContent = clockStr;
+            }
+
+            var dateEls = document.querySelectorAll('.realtime-date-display');
+            for (var j = 0; j < dateEls.length; j++) {
+                dateEls[j].textContent = dateStr;
+            }
+        }
+
+        updateRealtimeClock();
+        setInterval(updateRealtimeClock, 1000);
+    })();
 });
 </script>
