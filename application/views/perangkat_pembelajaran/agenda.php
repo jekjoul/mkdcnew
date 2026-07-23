@@ -3,7 +3,7 @@
 
 <div class="dashboard-main-body">
     <!-- Breadcrumb -->
-    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+    <div class="d-none d-sm-block d-flex flex-wrap align-items-center justify-content-between gap-3 ">
         <div>
             <h6 class="fw-semibold mb-0 text-primary-light">Daftar Agenda Pembelajaran Saya</h6>
             <p class="text-secondary-light text-sm mb-0">Kelola dan pantau seluruh rencana serta pelaksanaan KBM harian Anda.</p>
@@ -50,36 +50,36 @@
     $total_terlaksana = count($agendas_sudah);
     $total_belum = count($agendas_belum);
     ?>
-    <div class="row g-3 mb-24">
-        <div class="col-md-4">
+    <div class="row g-3 mb-24 mt-10">
+        <div class="col-4">
             <div class="card border-0 radius-12 bg-primary-50 p-20 d-flex align-items-center flex-row justify-content-between">
                 <div>
                     <span class="text-xs text-primary-600 fw-semibold text-uppercase">Total Agenda Harian</span>
                     <h3 class="mb-0 text-primary-900 fw-bold mt-1"><?php echo $total_agenda ?></h3>
                 </div>
-                <div class="w-48-px h-48-px bg-primary-600 rounded-circle d-flex align-items-center justify-content-center text-white">
+                <div class="d-none d-sm-block w-48-px h-48-px bg-primary-600 rounded-circle d-flex align-items-center justify-content-center text-white">
                     <iconify-icon icon="solar:notebook-bold" class="text-2xl"></iconify-icon>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-4">
             <div class="card border-0 radius-12 bg-warning-50 p-20 d-flex align-items-center flex-row justify-content-between">
                 <div>
                     <span class="text-xs text-warning-600 fw-semibold text-uppercase">Belum Dilaksanakan</span>
                     <h3 class="mb-0 text-warning-900 fw-bold mt-1"><?php echo $total_belum ?></h3>
                 </div>
-                <div class="w-48-px h-48-px bg-warning-600 rounded-circle d-flex align-items-center justify-content-center text-white">
+                <div class="d-none d-sm-block w-48-px h-48-px bg-warning-600 rounded-circle d-flex align-items-center justify-content-center text-white">
                     <iconify-icon icon="solar:clock-circle-bold" class="text-2xl"></iconify-icon>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-4">
             <div class="card border-0 radius-12 bg-success-50 p-20 d-flex align-items-center flex-row justify-content-between">
                 <div>
                     <span class="text-xs text-success-600 fw-semibold text-uppercase">Sudah Dilaksanakan</span>
                     <h3 class="mb-0 text-success-900 fw-bold mt-1"><?php echo $total_terlaksana ?></h3>
                 </div>
-                <div class="w-48-px h-48-px bg-success-600 rounded-circle d-flex align-items-center justify-content-center text-white">
+                <div class="d-none d-sm-block w-48-px h-48-px bg-success-600 rounded-circle d-flex align-items-center justify-content-center text-white">
                     <iconify-icon icon="solar:check-circle-bold" class="text-2xl"></iconify-icon>
                 </div>
             </div>
@@ -162,17 +162,14 @@
                         <table class="table bordered-table align-middle w-100" id="agendaTableBelum">
                             <thead>
                                 <tr>
-                                    <th class="text-center" style="width: 50px;">No</th>
-                                    <th class="text-center" style="width: 170px;">Pertemuan & Jam</th>
-                                    <th style="width: 160px;">Hari / Tanggal</th>
-                                    <th>Rombel / Mapel</th>
-                                    <th class="text-center" style="width: 220px;">Status</th>
-                                    <th class="text-center" style="width: 100px;">Aksi</th>
+                                    <th>Hari, Tanggal & Jadwal</th>
+                                    <th>Rombel & Mapel</th>
+                                    <th class="text-center" style="width: 140px;">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php if (!empty($agendas_belum)): ?>
-                                    <?php $no_b = 1; foreach ($agendas_belum as $row): ?>
+                                    <?php foreach ($agendas_belum as $row): ?>
                                         <?php
                                         $is_past_date = ($row->tanggal < $today_str);
                                         $is_today     = ($row->tanggal === $today_str);
@@ -185,38 +182,53 @@
                                         }
                                         ?>
                                         <tr>
-                                            <td class="text-center fw-semibold"><?php echo $no_b++ ?></td>
-                                            <td class="text-center">
-                                                <span class="badge bg-info-100 text-info-600 radius-4">Pert. Ke-<?php echo $row->pertemuan_ke ?></span>
-                                                <?php if (!empty($row->jam_mulai)): ?>
-                                                    <div class="text-xs text-secondary-light mt-4 fw-bold"><?php echo html_escape($row->jam_mulai) ?> - <?php echo html_escape($row->jam_selesai) ?> WIB</div>
-                                                <?php else: ?>
-                                                    <div class="text-xs text-neutral-400 mt-4">Belum diatur</div>
-                                                <?php endif; ?>
-                                            </td>
+                                            <!-- 1. HARI, TANGGAL & JADWAL -->
                                             <td>
-                                                <span class="fw-semibold text-primary-light d-block"><?php echo html_escape($row->hari) ?></span>
-                                                <span class="text-xs text-secondary-light"><?php echo date('d M Y', strtotime($row->tanggal)) ?></span>
+                                                <div class="mb-1">
+                                                    <?php if ($row->tanggal === $today_str): ?>
+                                                        <span class="badge bg-warning-50 text-warning-700 radius-4 me-1 fw-bold">HARI INI</span>
+                                                    <?php elseif ($row->tanggal === date('Y-m-d', strtotime('+1 day'))): ?>
+                                                        <span class="badge bg-info-50 text-info-700 radius-4 me-1 fw-bold">BESOK</span>
+                                                    <?php endif; ?><br>
+                                                    <span class="fw-semibold text-primary-light"><?php echo html_escape($row->hari) ?>,</span>
+                                                    <span class="text-xs text-secondary-light"><?php echo date('d M Y', strtotime($row->tanggal)) ?></span>
+                                                </div>
+
+                                                <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                                                    <?php if (!empty($row->jam_mulai)): ?>
+                                                        <span class="fw-bold text-primary-900 text-xs">
+                                                            <?php echo html_escape($row->jam_mulai) ?> - <?php echo html_escape($row->jam_selesai) ?> WIB
+                                                        </span>
+                                                    <?php else: ?>
+                                                        <span class="text-xs text-neutral-400">Belum diatur</span>
+                                                    <?php endif; ?>
+                                                </div>
+
+                                                <div>
+                                                    <?php if ($is_late): ?>
+                                                        <span class="badge bg-danger-focus text-danger-main px-10 py-4 radius-4 d-inline-flex align-items-center gap-1" title="Jadwal mengajar telah lewat tetapi belum dilaksanakan">
+                                                            <iconify-icon icon="solar:danger-triangle-bold" class="text-xs"></iconify-icon> Terlambat
+                                                        </span>
+                                                    <?php elseif ($row->status === 'Libur'): ?>
+                                                        <span class="badge bg-danger-focus text-danger-main px-10 py-4 radius-4">Libur KBM</span>
+                                                    <?php else: ?>
+                                                        <span class="badge bg-neutral-200 text-neutral-700 px-10 py-4 radius-4">Belum Dilaksanakan</span>
+                                                    <?php endif; ?>
+                                                </div>
                                             </td>
+
+                                            <!-- 2. ROMBEL & MAPEL -->
                                             <td>
                                                 <span class="badge bg-primary-50 text-primary-600 radius-4 mb-4 d-inline-block"><?php echo html_escape((!empty($row->nama_tingkat) ? $row->nama_tingkat . ' - ' : '') . $row->nama_rombel) ?></span>
-                                                <div class="fw-medium text-neutral-800 text-sm"><?php echo html_escape($row->nama_mapel) ?></div>
+                                                <div class="fw-semibold text-neutral-800 text-sm"><?php echo html_escape($row->nama_mapel) ?></div>
+                                                <span class="badge bg-info-100 text-info-600 radius-4">Pert. Ke-<?php echo $row->pertemuan_ke ?></span>
                                             </td>
-                                            <td class="text-center">
-                                                <?php if ($is_late): ?>
-                                                    <span class="badge bg-danger-focus text-danger-main px-12 py-6 radius-4 d-inline-flex align-items-center gap-1" title="Jadwal mengajar telah lewat tetapi belum dilaksanakan">
-                                                        <iconify-icon icon="solar:danger-triangle-bold"></iconify-icon> Terlambat
-                                                    </span>
-                                                <?php elseif ($row->status === 'Libur'): ?>
-                                                    <span class="badge bg-danger-focus text-danger-main px-12 py-6 radius-4">Libur KBM</span>
-                                                <?php else: ?>
-                                                    <span class="badge bg-neutral-200 text-neutral-700 px-12 py-6 radius-4">Belum Dilaksanakan</span>
-                                                <?php endif; ?>
-                                            </td>
+
+                                            <!-- 3. AKSI -->
                                             <td class="text-center">
                                                 <?php $detail_route = (logged('role') == '1') ? 'perangkat_pembelajaran/agenda_detail/' : 'guru/agenda_detail/'; ?>
-                                                <a href="<?php echo url($detail_route . $row->id_agenda) ?>" class="btn btn-sm btn-outline-primary radius-8 px-14 py-6">
-                                                    <iconify-icon icon="solar:eye-bold" class="me-1"></iconify-icon> Detail
+                                                <a href="<?php echo url($detail_route . $row->id_agenda) ?>" class="btn btn-sm btn-success-600 text-white radius-8 px-14 py-8 d-inline-flex align-items-center gap-1 fw-semibold shadow-xs">
+                                                    <iconify-icon icon="solar:play-circle-bold" class="text-lg"></iconify-icon> Buka
                                                 </a>
                                             </td>
                                         </tr>
@@ -233,42 +245,54 @@
                         <table class="table bordered-table align-middle w-100" id="agendaTableSudah">
                             <thead>
                                 <tr>
-                                    <th class="text-center" style="width: 50px;">No</th>
-                                    <th class="text-center" style="width: 170px;">Pertemuan & Jam</th>
-                                    <th style="width: 160px;">Hari / Tanggal</th>
-                                    <th>Rombel / Mapel</th>
-                                    <th class="text-center" style="width: 220px;">Status</th>
-                                    <th class="text-center" style="width: 100px;">Aksi</th>
+                                    <th>Hari, Tanggal & Jadwal</th>
+                                    <th>Rombel & Mapel</th>
+                                    <th class="text-center" style="width: 140px;">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php if (!empty($agendas_sudah)): ?>
-                                    <?php $no_s = 1; foreach ($agendas_sudah as $row): ?>
+                                    <?php foreach ($agendas_sudah as $row): ?>
                                         <tr>
-                                            <td class="text-center fw-semibold"><?php echo $no_s++ ?></td>
-                                            <td class="text-center">
-                                                <span class="badge bg-info-100 text-info-600 radius-4">Pert. Ke-<?php echo $row->pertemuan_ke ?></span>
-                                                <?php if (!empty($row->jam_mulai)): ?>
-                                                    <div class="text-xs text-secondary-light mt-4 fw-bold"><?php echo html_escape($row->jam_mulai) ?> - <?php echo html_escape($row->jam_selesai) ?> WIB</div>
-                                                <?php else: ?>
-                                                    <div class="text-xs text-neutral-400 mt-4">Belum diatur</div>
-                                                <?php endif; ?>
-                                            </td>
+                                            <!-- 1. HARI, TANGGAL & JADWAL -->
                                             <td>
-                                                <span class="fw-semibold text-primary-light d-block"><?php echo html_escape($row->hari) ?></span>
-                                                <span class="text-xs text-secondary-light"><?php echo date('d M Y', strtotime($row->tanggal)) ?></span>
+                                                <div class="mb-1">
+                                                    <?php if ($row->tanggal === $today_str): ?>
+                                                        <span class="badge bg-warning-50 text-warning-700 radius-4 me-1 fw-bold">HARI INI</span>
+                                                    <?php elseif ($row->tanggal === date('Y-m-d', strtotime('+1 day'))): ?>
+                                                        <span class="badge bg-info-50 text-info-700 radius-4 me-1 fw-bold">BESOK</span>
+                                                    <?php endif; ?><br>
+                                                    <span class="fw-semibold text-primary-light"><?php echo html_escape($row->hari) ?>,</span>
+                                                    <span class="text-xs text-secondary-light"><?php echo date('d M Y', strtotime($row->tanggal)) ?></span>
+                                                </div>
+
+                                                <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                                                    <?php if (!empty($row->jam_mulai)): ?>
+                                                        <span class="fw-bold text-primary-900 text-xs">
+                                                            <?php echo html_escape($row->jam_mulai) ?> - <?php echo html_escape($row->jam_selesai) ?> WIB
+                                                        </span>
+                                                    <?php else: ?>
+                                                        <span class="text-xs text-neutral-400">Belum diatur</span>
+                                                    <?php endif; ?>
+                                                </div>
+
+                                                <div>
+                                                    <span class="badge bg-success-focus text-success-main px-10 py-4 radius-4">Terlaksana</span>
+                                                </div>
                                             </td>
+
+                                            <!-- 2. ROMBEL & MAPEL -->
                                             <td>
                                                 <span class="badge bg-primary-50 text-primary-600 radius-4 mb-4 d-inline-block"><?php echo html_escape((!empty($row->nama_tingkat) ? $row->nama_tingkat . ' - ' : '') . $row->nama_rombel) ?></span>
-                                                <div class="fw-medium text-neutral-800 text-sm"><?php echo html_escape($row->nama_mapel) ?></div>
+                                                <div class="fw-semibold text-neutral-800 text-sm"><?php echo html_escape($row->nama_mapel) ?></div>
+                                                <span class="badge bg-info-100 text-info-600 radius-4">Pert. Ke-<?php echo $row->pertemuan_ke ?></span>
                                             </td>
-                                            <td class="text-center">
-                                                <span class="badge bg-success-focus text-success-main px-12 py-6 radius-4">Terlaksana</span>
-                                            </td>
+
+                                            <!-- 3. AKSI -->
                                             <td class="text-center">
                                                 <?php $detail_route = (logged('role') == '1') ? 'perangkat_pembelajaran/agenda_detail/' : 'guru/agenda_detail/'; ?>
-                                                <a href="<?php echo url($detail_route . $row->id_agenda) ?>" class="btn btn-sm btn-outline-primary radius-8 px-14 py-6">
-                                                    <iconify-icon icon="solar:eye-bold" class="me-1"></iconify-icon> Detail
+                                                <a href="<?php echo url($detail_route . $row->id_agenda) ?>" class="btn btn-sm btn-outline-primary radius-8 px-14 py-8 d-inline-flex align-items-center gap-1 fw-semibold shadow-xs">
+                                                    <iconify-icon icon="solar:eye-bold" class="text-lg"></iconify-icon> Detail
                                                 </a>
                                             </td>
                                         </tr>
@@ -345,7 +369,7 @@ $(document).ready(function() {
             pageLength: 25,
             order: [],
             columnDefs: [
-                { orderable: false, targets: 0 }
+                { orderable: false, targets: 2 }
             ]
         });
     }
@@ -355,7 +379,7 @@ $(document).ready(function() {
             pageLength: 25,
             order: [],
             columnDefs: [
-                { orderable: false, targets: 0 }
+                { orderable: false, targets: 2 }
             ]
         });
     }
@@ -365,7 +389,7 @@ $(document).ready(function() {
             pageLength: 25,
             order: [],
             columnDefs: [
-                { orderable: false, targets: 0 }
+                { orderable: false, targets: 2 }
             ]
         });
     }

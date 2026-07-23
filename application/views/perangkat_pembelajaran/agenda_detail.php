@@ -3,7 +3,7 @@
 
 <div class="dashboard-main-body">
     <!-- Breadcrumb -->
-    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+    <div class="d-none d-sm-block d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
         <div>
             <h6 class="fw-semibold mb-0 text-primary-light">Detail Agenda Pembelajaran</h6>
             <p class="text-secondary-light text-sm mb-0">Rincian presensi siswa realtime, materi KBM, serta pengisian catatan pelaksanaan agenda harian.</p>
@@ -87,11 +87,11 @@
         <div class="card-body p-20">
             <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
                 <div class="row g-3 text-center text-sm-start flex-grow-1">
-                    <div class="col-sm-4 border-end-sm">
+                    <div class="col-sm-4 border-end-sm col-xs-6">
                         <span class="text-xs text-secondary-light d-block text-uppercase fw-semibold">Hari & Tanggal</span>
                         <span class="fw-bold text-primary-900 fs-6"><?php echo html_escape($agenda->hari) ?>, <?php echo date('d M Y', strtotime($agenda->tanggal)) ?></span>
                     </div>
-                    <div class="col-sm-4 border-end-sm">
+                    <div class="col-sm-4 border-end-sm col-xs-6">
                         <span class="text-xs text-secondary-light d-block text-uppercase fw-semibold">Jadwal Masuk (Waktu)</span>
                         <?php if (!empty($agenda->jam_mulai)): ?>
                             <span class="fw-bold text-primary-900 fs-6"><?php echo html_escape($agenda->jam_mulai) ?> - <?php echo html_escape($agenda->jam_selesai) ?> WIB</span>
@@ -99,12 +99,12 @@
                             <span class="text-neutral-400">Belum diatur</span>
                         <?php endif; ?>
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-4 d-none d-sm-block">
                         <span class="text-xs text-secondary-light d-block text-uppercase fw-semibold">Guru Pengampu</span>
                         <span class="fw-bold text-primary-900 fs-6"><?php echo html_escape($agenda->nama_ptk ?: 'Guru Mata Pelajaran') ?></span>
                     </div>
                 </div>
-                <div>
+                <div class="d-none d-sm-block">
                     <button type="button" class="btn btn-outline-primary radius-8 px-14 py-8 d-inline-flex align-items-center gap-1 shadow-xs" data-bs-toggle="modal" data-bs-target="#modalSesuaikanJadwal">
                         <iconify-icon icon="solar:calendar-minimalistic-bold" class="text-lg"></iconify-icon> Sesuaikan Jadwal
                     </button>
