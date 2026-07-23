@@ -1,59 +1,100 @@
 <?php include viewPath('includes/header'); ?>
 <div class="dashboard-main-body">
-    <div class="row gy-4 mb-4">
-        <div class="col-md-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <span class="text-secondary-light d-block">Pembelajaran Saya</span>
-                    <h4 class="mb-0"><?php echo (int) $jumlah_pembelajaran ?></h4>
-                    <a href="<?php echo url('guru/pembelajaran') ?>" class="btn btn-sm btn-primary-600 mt-3">Lihat Pembelajaran</a>
+    <!-- Welcome Card dengan Jam Realtime & Hari Tanggal -->
+    <div class="row g-2 g-md-3 mb-24">
+        <div class="col-md-12">
+            <div class="trail-bg h-100 p-20 radius-12 d-flex flex-wrap align-items-center justify-content-between gap-3 text-white">
+                <div>
+                    <p class="text-white text-sm mb-0" style="margin-bottom:0px !important">Selamat datang kembali,</p>
+                    <h6 class="text-white text-xl fw-bold mb-0"><?php echo html_escape(logged('name')) ?></h6>
+                </div>
+                <div class="text-end ms-auto">
+                    <h6 class="text-white text-xl fw-bold mb-0 realtime-clock-display">00:00:00 WIB</h6>
+                    <p class="text-white text-sm mb-0 realtime-date-display" style="margin-bottom:0px !important">Hari, 00 Bulan 0000</p>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <span class="text-secondary-light d-block">Siswa Terampu</span>
-                    <h4 class="mb-0"><?php echo (int) $jumlah_siswa ?></h4>
-                    <a href="<?php echo url('guru/siswa') ?>" class="btn btn-sm btn-info text-light mt-3">Lihat Siswa</a>
+    </div>
+    <!-- 3 Stat Cards (3 Kolom Sejajar) -->
+    <div class="row g-2 g-md-3 mb-4">
+        <div class="col-4">
+            <div class="card h-100 border-0 radius-12 shadow-xs">
+                <div class="card-body p-12 p-md-20 text-center">
+                    <span class="w-36-px h-36-px bg-primary-50 text-primary-600 rounded-circle d-inline-flex align-items-center justify-content-center mb-2">
+                        <iconify-icon icon="solar:notebook-bookmark-bold" class="text-xl"></iconify-icon>
+                    </span>
+                    <h5 class="mb-1 fw-bold text-primary-light text-truncate"><?php echo (int) $jumlah_pembelajaran ?></h5>
+                    <span class="text-secondary-light text-xs d-block text-truncate fw-medium">Pembelajaran</span>
+                    <a href="<?php echo url('guru/pembelajaran') ?>" class="btn btn-xs btn-primary-600 text-white w-100 mt-2 radius-8 text-xs py-1">Detail</a>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <span class="text-secondary-light d-block">Total Jam Mengajar</span>
-                    <h4 class="mb-0"><?php echo (int) $jumlah_jadwal ?></h4>
-                    <a href="<?php echo url('guru/jadwal') ?>" class="btn btn-sm btn-warning-600 mt-3">Lihat Jadwal</a>
+        <div class="col-4">
+            <div class="card h-100 border-0 radius-12 shadow-xs">
+                <div class="card-body p-12 p-md-20 text-center">
+                    <span class="w-36-px h-36-px bg-info-50 text-info-600 rounded-circle d-inline-flex align-items-center justify-content-center mb-2">
+                        <iconify-icon icon="solar:users-group-two-rounded-bold" class="text-xl"></iconify-icon>
+                    </span>
+                    <h5 class="mb-1 fw-bold text-primary-light text-truncate"><?php echo (int) $jumlah_siswa ?></h5>
+                    <span class="text-secondary-light text-xs d-block text-truncate fw-medium">Siswa Terampu</span>
+                    <a href="<?php echo url('guru/siswa') ?>" class="btn btn-xs btn-info text-white w-100 mt-2 radius-8 text-xs py-1">Detail</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="card h-100 border-0 radius-12 shadow-xs">
+                <div class="card-body p-12 p-md-20 text-center">
+                    <span class="w-36-px h-36-px bg-warning-50 text-warning-600 rounded-circle d-inline-flex align-items-center justify-content-center mb-2">
+                        <iconify-icon icon="solar:clock-circle-bold" class="text-xl"></iconify-icon>
+                    </span>
+                    <h5 class="mb-1 fw-bold text-primary-light text-truncate"><?php echo (int) $jumlah_jadwal ?></h5>
+                    <span class="text-secondary-light text-xs d-block text-truncate fw-medium">Jam Mengajar</span>
+                    <a href="<?php echo url('guru/jadwal') ?>" class="btn btn-xs btn-warning-600 text-white w-100 mt-2 radius-8 text-xs py-1">Detail</a>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="card mt-20">
-        <div class="card-header bg-warning-900">
-            <h6 class="text-light mb-0">Portal Guru</h6>
+    <!-- Quick Access Android App Grid Tiles -->
+    <div class="card border-0 radius-12 shadow-xs mt-20 mb-4">
+        <div class="card-header bg-white border-bottom p-16 d-flex align-items-center justify-content-between">
+            <h6 class="text-primary-light mb-0 fw-bold d-flex align-items-center gap-2">
+                <iconify-icon icon="solar:widget-bold" class="text-primary-600 text-xl"></iconify-icon>
+                Menu Portal Guru
+            </h6>
         </div>
-        <div class="card-body">
-            <div class="row gy-3">
-                <div class="col-md-3">
-                    <a href="<?php echo url('guru/siswa') ?>" class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center gap-2">
-                        <iconify-icon icon="solar:users-group-two-rounded-linear"></iconify-icon> Data Siswa
+        <div class="card-body p-16">
+            <div class="row row-cols-2 row-cols-md-4 g-2 g-md-3">
+                <div class="col">
+                    <a href="<?php echo url('guru/siswa') ?>" class="mobile-app-tile">
+                        <div class="mobile-app-tile-icon bg-info-50 text-info-600">
+                            <iconify-icon icon="solar:users-group-two-rounded-bold"></iconify-icon>
+                        </div>
+                        <span class="mobile-app-tile-label">Data Siswa</span>
                     </a>
                 </div>
-                <div class="col-md-3">
-                    <a href="<?php echo url('guru/pembelajaran') ?>" class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center gap-2">
-                        <iconify-icon icon="solar:notebook-bookmark-linear"></iconify-icon> Pembelajaran
+                <div class="col">
+                    <a href="<?php echo url('guru/pembelajaran') ?>" class="mobile-app-tile">
+                        <div class="mobile-app-tile-icon bg-primary-50 text-primary-600">
+                            <iconify-icon icon="solar:notebook-bookmark-bold"></iconify-icon>
+                        </div>
+                        <span class="mobile-app-tile-label">Pembelajaran</span>
                     </a>
                 </div>
-                <div class="col-md-3">
-                    <a href="<?php echo url('guru/agenda') ?>" class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center gap-2">
-                        <iconify-icon icon="solar:notebook-linear"></iconify-icon> Agenda Saya
+                <div class="col">
+                    <a href="<?php echo url('guru/agenda') ?>" class="mobile-app-tile">
+                        <div class="mobile-app-tile-icon bg-success-50 text-success-600">
+                            <iconify-icon icon="solar:calendar-mark-bold"></iconify-icon>
+                        </div>
+                        <span class="mobile-app-tile-label">Agenda Saya</span>
                     </a>
                 </div>
-                <div class="col-md-3">
-                    <a href="<?php echo url('guru/profil') ?>" class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center gap-2">
-                        <iconify-icon icon="icon-park-outline:user-business"></iconify-icon> Profil PTK
+                <div class="col">
+                    <a href="<?php echo url('guru/profil') ?>" class="mobile-app-tile">
+                        <div class="mobile-app-tile-icon bg-warning-50 text-warning-600">
+                            <iconify-icon icon="solar:user-id-bold"></iconify-icon>
+                        </div>
+                        <span class="mobile-app-tile-label">Profil PTK</span>
                     </a>
                 </div>
             </div>
@@ -204,5 +245,31 @@ $(document).ready(function() {
             }
         });
     });
+
+    // Realtime Clock & Date Script
+    function updateRealtimeClock() {
+        var now = new Date();
+        var hours = String(now.getHours()).padStart(2, '0');
+        var minutes = String(now.getMinutes()).padStart(2, '0');
+        var seconds = String(now.getSeconds()).padStart(2, '0');
+        
+        $('.realtime-clock-display').text(hours + ':' + minutes + ':' + seconds + ' WIB');
+
+        var hariNames = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+        var bulanNames = [
+            'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        ];
+        
+        var hari = hariNames[now.getDay()];
+        var tgl = now.getDate();
+        var bulan = bulanNames[now.getMonth()];
+        var tahun = now.getFullYear();
+
+        $('.realtime-date-display').text(hari + ', ' + tgl + ' ' + bulan + ' ' + tahun);
+    }
+
+    updateRealtimeClock();
+    setInterval(updateRealtimeClock, 1000);
 });
 </script>

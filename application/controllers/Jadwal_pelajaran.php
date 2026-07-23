@@ -480,7 +480,7 @@ class Jadwal_pelajaran extends MY_Controller
         $items = [];
         foreach ($rows as $row) {
             if ($settings !== null) {
-                if (empty($settings[$row->hari]['aktif']) || (int) $row->slot_ke > (int) $settings[$row->hari]['jumlah_jp']) {
+                if (isset($settings[$row->hari]['aktif']) && $settings[$row->hari]['aktif'] === false) {
                     continue;
                 }
             }

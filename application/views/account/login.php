@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
+  <script>
+    (function() {
+        var savedTheme = localStorage.getItem("theme");
+        if (savedTheme === "dark" || (!savedTheme && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+            document.documentElement.setAttribute("data-theme", "dark");
+        } else {
+            document.documentElement.setAttribute("data-theme", "light");
+        }
+    })();
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MKDC | Login</title>
@@ -35,6 +45,7 @@
   <link rel="stylesheet" href="<?php echo $assets ?>css/lib/audioplayer.css">
   <!-- main css -->
   <link rel="stylesheet" href="<?php echo $assets ?>css/style.css">
+  <link rel="stylesheet" href="<?php echo $assets ?>css/dark-theme.css">
 </head>
   <body>
 

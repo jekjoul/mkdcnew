@@ -19,137 +19,91 @@ if (!empty($tren_pendaftaran)) {
 
 
 <div class="dashboard-main-body">
-
-    <div class="row gy-4 mb-24">
-        <!-- ======================= First Row Cards Start =================== -->
-        <div class="col-xxl-12 col-lg-12">
-            <div class="card radius-8 border-0 p-20">
-                <div class="row gy-4">
-                    <div class="col-xxl-12 col-lg-12">
-                        <div class="row mt-3">
-                            <div class="col-xxl-4 col-lg-4 pb-3">
-                                <div class="card shadow-none border bg-gradient-start-1">
-                                    <div class="card-body p-20">
-                                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-                                            <div>
-                                                <p class="fw-medium text-primary-light mb-1">Seluruh Siswa</p>
-                                                <h5 class="mb-0"><?php echo number_format($total_siswa) ?></h5>
-                                            </div>
-                                            <div
-                                                class="w-50-px h-50-px bg-cyan rounded-circle d-flex justify-content-center align-items-center">
-                                                <iconify-icon icon="gridicons:multiple-users"
-                                                    class="text-base text-2xl mb-0"></iconify-icon>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div><!-- card end -->
-                            </div>
-                            <div class="col-xxl-4 col-lg-4 pb-3">
-                                <div class="card shadow-none border bg-gradient-start-2">
-                                    <div class="card-body p-20">
-                                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-                                            <div>
-                                                <p class="fw-medium text-primary-light mb-1">Pegawai</p>
-                                                <h5 class="mb-0"><?php echo number_format($total_ptk) ?></h5>
-                                            </div>
-                                            <div
-                                                class="w-50-px h-50-px bg-cyan rounded-circle d-flex justify-content-center align-items-center">
-                                                <iconify-icon icon="material-symbols:person-apron-rounded"
-                                                    class="text-base text-2xl mb-0"></iconify-icon>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div><!-- card end -->
-                            </div>
-                            <div class="col-xxl-4 col-lg-4 pb-3">
-                                <div class="card shadow-none border bg-gradient-start-3">
-                                    <div class="card-body p-20">
-                                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-                                            <div>
-                                                <p class="fw-medium text-primary-light mb-1">Alumni</p>
-                                                <h5 class="mb-0"><?php echo number_format($total_alumni) ?></h5>
-                                            </div>
-                                            <div
-                                                class="w-50-px h-50-px bg-cyan rounded-circle d-flex justify-content-center align-items-center">
-                                                <iconify-icon icon="material-symbols:person-apron-rounded"
-                                                    class="text-base text-2xl mb-0"></iconify-icon>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div><!-- card end -->
-                            </div>
-
-                        </div>
-
-                        <div class="row">
-                            <div class="col-xxl-4 col-lg-4 pb-3">
-                                <div class="card shadow-none border bg-gradient-start-4">
-                                    <div class="card-body p-20">
-                                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-                                            <div>
-                                                <p class="fw-medium text-primary-light mb-1">Siswa SMP</p>
-                                                <h5 class="mb-0"><?php echo number_format($total_smp) ?></h5>
-                                            </div>
-                                            <div
-                                                class="w-50-px h-50-px bg-cyan rounded-circle d-flex justify-content-center align-items-center">
-                                                <iconify-icon icon="gridicons:multiple-users"
-                                                    class="text-base text-2xl mb-0"></iconify-icon>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div><!-- card end -->
-                            </div>
-                            <div class="col-xxl-4 col-lg-4 pb-3">
-                                <div class="card shadow-none border bg-gradient-start-5">
-                                    <div class="card-body p-20">
-                                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-                                            <div>
-                                                <p class="fw-medium text-primary-light mb-1">Siswa SMA</p>
-                                                <h5 class="mb-0"><?php echo number_format($total_sma) ?></h5>
-                                            </div>
-                                            <div
-                                                class="w-50-px h-50-px bg-cyan rounded-circle d-flex justify-content-center align-items-center">
-                                                <iconify-icon icon="gridicons:multiple-users"
-                                                    class="text-base text-2xl mb-0"></iconify-icon>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div><!-- card end -->
-                            </div>
-                            <div class="col-xxl-4 col-lg-4 pb-3">
-                                <div class="card shadow-none border bg-gradient-start-1">
-                                    <div class="card-body p-20">
-                                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-                                            <div>
-                                                <p class="fw-medium text-primary-light mb-1">Santri Ponpes</p>
-                                                <h5 class="mb-0"><?php echo number_format($total_ponpes) ?></h5>
-                                            </div>
-                                            <div
-                                                class="w-50-px h-50-px bg-cyan rounded-circle d-flex justify-content-center align-items-center">
-                                                <iconify-icon icon="gridicons:multiple-users"
-                                                    class="text-base text-2xl mb-0"></iconify-icon>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div><!-- card end -->
-                            </div>
-
-                        </div>
-
-
-                    </div>
-
-
+    <div class="row g-2 g-md-3 mb-24">
+        <div class="col-md-12">
+            <div class="trail-bg h-100 p-20 radius-12 d-flex flex-wrap align-items-center justify-content-between gap-3 text-white">
+                <div>
+                    <p class="text-white text-sm mb-0" style="margin-bottom:0px !important">Selamat datang kembali,</p>
+                    <h6 class="text-white text-xl fw-bold mb-0"><?php echo html_escape(logged('name')) ?></h6>
+                </div>
+                <div class="text-end ms-auto">
+                    <h6 class="text-white text-xl fw-bold mb-0 realtime-clock-display">00:00:00 WIB</h6>
+                    <p class="text-white text-sm mb-0 realtime-date-display" style="margin-bottom:0px !important">Hari, 00 Bulan 0000</p>
                 </div>
             </div>
         </div>
+    </div>
+    <!-- ======================= Admin Stat Cards (3 Cards per Baris) =================== -->
+    <div class="row g-2 g-md-3 mb-24">
+        <div class="col-4">
+            <div class="card h-100 border-0 radius-12 shadow-xs bg-gradient-start-1">
+                <div class="card-body p-12 p-md-20 text-center">
+                    <div class="w-36-px h-36-px bg-cyan rounded-circle d-inline-flex justify-content-center align-items-center mb-2 mx-auto">
+                        <iconify-icon icon="gridicons:multiple-users" class="text-base text-xl mb-0"></iconify-icon>
+                    </div>
+                    <h5 class="mb-1 fw-bold text-primary-light text-truncate"><?php echo number_format($total_siswa) ?></h5>
+                    <span class="text-secondary-light text-xs d-block text-truncate fw-medium">Seluruh Siswa</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="card h-100 border-0 radius-12 shadow-xs bg-gradient-start-2">
+                <div class="card-body p-12 p-md-20 text-center">
+                    <div class="w-36-px h-36-px bg-cyan rounded-circle d-inline-flex justify-content-center align-items-center mb-2 mx-auto">
+                        <iconify-icon icon="material-symbols:person-apron-rounded" class="text-base text-xl mb-0"></iconify-icon>
+                    </div>
+                    <h5 class="mb-1 fw-bold text-primary-light text-truncate"><?php echo number_format($total_ptk) ?></h5>
+                    <span class="text-secondary-light text-xs d-block text-truncate fw-medium">Pegawai</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="card h-100 border-0 radius-12 shadow-xs bg-gradient-start-3">
+                <div class="card-body p-12 p-md-20 text-center">
+                    <div class="w-36-px h-36-px bg-cyan rounded-circle d-inline-flex justify-content-center align-items-center mb-2 mx-auto">
+                        <iconify-icon icon="material-symbols:person-apron-rounded" class="text-base text-xl mb-0"></iconify-icon>
+                    </div>
+                    <h5 class="mb-1 fw-bold text-primary-light text-truncate"><?php echo number_format($total_alumni) ?></h5>
+                    <span class="text-secondary-light text-xs d-block text-truncate fw-medium">Alumni</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="card h-100 border-0 radius-12 shadow-xs bg-gradient-start-4">
+                <div class="card-body p-12 p-md-20 text-center">
+                    <div class="w-36-px h-36-px bg-cyan rounded-circle d-inline-flex justify-content-center align-items-center mb-2 mx-auto">
+                        <iconify-icon icon="gridicons:multiple-users" class="text-base text-xl mb-0"></iconify-icon>
+                    </div>
+                    <h5 class="mb-1 fw-bold text-primary-light text-truncate"><?php echo number_format($total_smp) ?></h5>
+                    <span class="text-secondary-light text-xs d-block text-truncate fw-medium">Siswa SMP</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="card h-100 border-0 radius-12 shadow-xs bg-gradient-start-5">
+                <div class="card-body p-12 p-md-20 text-center">
+                    <div class="w-36-px h-36-px bg-cyan rounded-circle d-inline-flex justify-content-center align-items-center mb-2 mx-auto">
+                        <iconify-icon icon="gridicons:multiple-users" class="text-base text-xl mb-0"></iconify-icon>
+                    </div>
+                    <h5 class="mb-1 fw-bold text-primary-light text-truncate"><?php echo number_format($total_sma) ?></h5>
+                    <span class="text-secondary-light text-xs d-block text-truncate fw-medium">Siswa SMA</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="card h-100 border-0 radius-12 shadow-xs bg-gradient-start-1">
+                <div class="card-body p-12 p-md-20 text-center">
+                    <div class="w-36-px h-36-px bg-cyan rounded-circle d-inline-flex justify-content-center align-items-center mb-2 mx-auto">
+                        <iconify-icon icon="gridicons:multiple-users" class="text-base text-xl mb-0"></iconify-icon>
+                    </div>
+                    <h5 class="mb-1 fw-bold text-primary-light text-truncate"><?php echo number_format($total_ponpes) ?></h5>
+                    <span class="text-secondary-light text-xs d-block text-truncate fw-medium">Santri Ponpes</span>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <div class="row gy-4 mb-24">
         <div class="col-xxl-6 col-md-6">
             <div class="card h-100 radius-8 border-0">
                 <div class="card-body p-24 d-flex flex-column justify-content-between gap-8">
@@ -260,8 +214,7 @@ if (!empty($tren_pendaftaran)) {
                 </div>
             <?php endforeach; ?>
         <?php endif; ?>
-
-        <!-- ======================= First Row Cards End =================== -->
+    </div>
 
         <!-- ================== Second Row Cards Start ======================= -->
         <!-- Top Categories Card Start -->
@@ -826,6 +779,34 @@ if (!empty($tren_pendaftaran)) {
                 }, 1250);
             }
         });
-    }).trigger('scroll');
+    // Realtime Clock & Date Update Script
+    (function() {
+        function updateRealtimeClock() {
+            var now = new Date();
+            
+            var hours = String(now.getHours()).padStart(2, '0');
+            var minutes = String(now.getMinutes()).padStart(2, '0');
+            var seconds = String(now.getSeconds()).padStart(2, '0');
+            var clockStr = hours + ':' + minutes + ':' + seconds + ' WIB';
+
+            var hariNames = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            var bulanNames = [
+                'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+            ];
+            
+            var hari = hariNames[now.getDay()];
+            var tgl = now.getDate();
+            var bulan = bulanNames[now.getMonth()];
+            var tahun = now.getFullYear();
+            var dateStr = hari + ', ' + tgl + ' ' + bulan + ' ' + tahun;
+
+            $('.realtime-clock-display').text(clockStr);
+            $('.realtime-date-display').text(dateStr);
+        }
+
+        updateRealtimeClock();
+        setInterval(updateRealtimeClock, 1000);
+    })();
     // ================================ Aminated Radial Progress Bar End ================================ 
 </script>
