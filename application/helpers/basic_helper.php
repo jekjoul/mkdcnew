@@ -583,7 +583,11 @@ if (!function_exists('logged')) {
 
 
 
-		return (!$key) ? $logged : $logged->{$key};
+		if (!$key) {
+			return $logged;
+		}
+
+		return isset($logged->{$key}) ? $logged->{$key} : null;
 	}
 }
 

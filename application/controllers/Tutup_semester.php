@@ -14,6 +14,15 @@ class Tutup_semester extends MY_Controller
         }
     }
 
+    private function setPage($title, $subtitle, $subtitleUrl, $icon)
+    {
+        $this->page_data['page']->title = $title;
+        $this->page_data['page']->titleUrl = 'tutup_semester';
+        $this->page_data['page']->subtitle = $subtitle;
+        $this->page_data['page']->subtitleUrl = $subtitleUrl;
+        $this->page_data['page']->icon = $icon;
+    }
+
     public function index()
     {
         $this->setPage('Pengaturan', 'Penutupan Semester & Rekapitulasi Akhir', 'tutup_semester', 'solar:lock-keyhole-bold');

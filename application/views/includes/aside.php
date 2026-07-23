@@ -3,7 +3,7 @@
         <iconify-icon icon="radix-icons:cross-2"></iconify-icon>
     </button>
     <div>
-        <a href="<?php echo url('') ?>" class="sidebar-logo shadow">
+        <a  class="sidebar-logo shadow">
             <img src="<?php echo $url->assets ?>images/logodc.png" alt="site logo" class="light-logo">
             <img src="<?php echo $url->assets ?>images/logodc.png" alt="site logo" class="dark-logo">
             <img src="<?php echo $url->assets ?>images/logo-icon.png" alt="site logo" class="logo-icon">
@@ -434,14 +434,7 @@
             </a>
         </li>
     <?php endif; ?>
-    <?php if (logged('role') == '1' || logged('role') == 'admin'): ?>
-        <li>
-            <a href="<?php echo url('tutup_semester') ?>">
-                <iconify-icon icon="solar:lock-keyhole-bold" class="menu-icon text-danger-main"></iconify-icon>
-                <span class="text-danger-main fw-semibold">Penutupan Semester</span>
-            </a>
-        </li>
-    <?php endif; ?>
+    
     <?php if (hasPermissions('menu_ekstrakurikuler')): ?>
         <li>
             <a href="<?php echo url('ekstrakurikuler') ?>">
@@ -455,6 +448,14 @@
             <a href="<?php echo url('kelas_jauh') ?>">
                 <iconify-icon icon="solar:globus-linear" class="menu-icon"></iconify-icon>
                 <span>Kelas Jauh (Menginduk)</span>
+            </a>
+        </li>
+    <?php endif; ?>
+    <?php if (logged('role') == '1' || logged('role') == 'admin'): ?>
+        <li>
+            <a href="<?php echo url('tutup_semester') ?>">
+                <iconify-icon icon="solar:lock-keyhole-bold" class="menu-icon text-danger-main"></iconify-icon>
+                <span class="text-danger-main fw-semibold">Penutupan Semester</span>
             </a>
         </li>
     <?php endif; ?>
