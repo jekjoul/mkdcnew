@@ -180,6 +180,62 @@ html[data-theme="dark"] .mobile-app-tile:hover {
         padding: 8px 12px !important;
     }
 
+    /* Mobile Navbar Header Blue to Purple Gradient (Light Theme) */
+    html:not([data-theme="dark"]) .navbar-header,
+    html[data-theme="light"] .navbar-header {
+        background: linear-gradient(135deg, #2563eb 0%, #4f46e5 50%, #7c3aed 100%) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.25) !important;
+    }
+
+    /* Text & icons bright on light theme mobile header */
+    html:not([data-theme="dark"]) .navbar-header,
+    html:not([data-theme="dark"]) .navbar-header *,
+    html[data-theme="light"] .navbar-header,
+    html[data-theme="light"] .navbar-header * {
+        color: #ffffff;
+    }
+
+    html:not([data-theme="dark"]) .navbar-header .sidebar-mobile-toggle,
+    html:not([data-theme="dark"]) .navbar-header .sidebar-toggle,
+    html[data-theme="light"] .navbar-header .sidebar-mobile-toggle,
+    html[data-theme="light"] .navbar-header .sidebar-toggle {
+        color: #ffffff !important;
+    }
+
+    html:not([data-theme="dark"]) .navbar-header iconify-icon,
+    html[data-theme="light"] .navbar-header iconify-icon {
+        color: #ffffff !important;
+    }
+
+    html:not([data-theme="dark"]) .navbar-header a,
+    html[data-theme="light"] .navbar-header a {
+        color: #ffffff !important;
+    }
+
+    html:not([data-theme="dark"]) .navbar-header [data-theme-toggle],
+    html[data-theme="light"] .navbar-header [data-theme-toggle] {
+        background-color: rgba(255, 255, 255, 0.18) !important;
+        border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    }
+
+    html:not([data-theme="dark"]) .navbar-header [data-theme-toggle]::after,
+    html[data-theme="light"] .navbar-header [data-theme-toggle]::after {
+        color: #ffffff !important;
+    }
+
+    html:not([data-theme="dark"]) .navbar-header .badge,
+    html[data-theme="light"] .navbar-header .badge {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    }
+
+    html:not([data-theme="dark"]) .navbar-header .badge *,
+    html[data-theme="light"] .navbar-header .badge * {
+        color: #ffffff !important;
+    }
+
     .dashboard-main-body {
         padding: 14px 12px !important;
     }

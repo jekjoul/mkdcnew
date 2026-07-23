@@ -123,7 +123,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                         $current_user = $CI->db->get_where('users', ['id' => $user_id])->row();
                         $is_google_connected = ($current_user && !empty($current_user->google_id));
                         ?>
-                        <div class="d-flex align-items-center gap-2 me-12">
+                        <div class="d-none d-sm-block d-flex align-items-center gap-2 me-12">
                             <?php if ($is_google_connected): ?>
                                 <span class="badge bg-success-focus text-success-main radius-8 px-12 py-8 d-inline-flex align-items-center gap-1">
                                     <iconify-icon icon="logos:google-icon" class="align-middle"></iconify-icon>
