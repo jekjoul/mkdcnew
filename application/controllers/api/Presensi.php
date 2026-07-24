@@ -246,15 +246,29 @@ class Presensi extends CI_Controller
      */
     public function active_students()
     {
-        $token = $this->input->get('token');
+        $raw_input = file_get_contents('php://input');
+        $data      = json_decode($raw_input, true);
+        $token     = $this->input->get('token');
+        if (empty($token) && isset($data['token'])) {
+            $token = $data['token'];
+        }
+        if (empty($token)) {
+            $token = $this->input->post('token');
+        }
+
         $this->validate_token($token);
 
-        $this->db->select('CAST(nipd AS UNSIGNED) as pin, nama_siswa as nama');
+        $this->db->select('CAST(nipd AS UNSIGNED) as pin, nama_siswa as nama, nipd');
         $this->db->from('siswa');
         $this->db->where('status_keaktifan', 'Aktif');
         $this->db->where("nipd IS NOT NULL AND nipd != ''");
         $this->db->order_by('nama_siswa', 'ASC');
         $students = $this->db->get()->result();
+
+        // Convert PIN to int
+        foreach ($students as &$s) {
+            $s->pin = (int)$s->pin;
+        }
 
         echo json_encode([
             'status'   => 'success',

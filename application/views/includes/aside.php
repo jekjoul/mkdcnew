@@ -550,6 +550,18 @@
                     Presensi Guru
                 </a>
             </li>
+            <li>
+                <a href="<?php echo url('fingerprint_bridge') ?>">
+                    <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
+                    Bridge Mesin Fingerprint
+                </a>
+            </li>
+            <li>
+                <a href="<?php echo url('fingerprint_bridge/setting') ?>">
+                    <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
+                    Pengaturan Mesin & API
+                </a>
+            </li>
 
         </ul>
     </li>
