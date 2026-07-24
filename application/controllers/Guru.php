@@ -902,18 +902,19 @@ class Guru extends MY_Controller
             $settings_cache[$id_pem] = $this->getJadwalSettings($id_pem);
         }
 
-        // Filter out items that are on disabled days or exceed JP slots
+        // Filter out items that are on disabled days
         $filtered = [];
         foreach ($rows as $row) {
             $pem_id = $row->id_pembelajaran;
             $hari = $row->hari;
-            $slot = (int)$row->slot_ke;
 
             if (isset($settings_cache[$pem_id][$hari])) {
                 $set = $settings_cache[$pem_id][$hari];
-                if ($set['aktif'] && $slot <= $set['jumlah_jp']) {
+                if ($set['aktif'] !== false) {
                     $filtered[] = $row;
                 }
+            } else {
+                $filtered[] = $row;
             }
         }
 

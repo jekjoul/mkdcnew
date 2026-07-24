@@ -1,6 +1,53 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
+<?php
+// Dynamic Mobile Bottom Navigation Bar
+$CI = &get_instance();
+$current_url = current_url();
+$role_id = logged('role');
+$role_row = $CI->db->get_where('roles', ['id' => $role_id])->row();
+$role_title = $role_row ? strtolower((string)$role_row->title) : '';
+$is_guru = ($role_title === 'guru' || $role_id == 4);
+
+if ($is_guru) {
+    $nav_items = [
+        ['title' => 'Beranda', 'url' => url('guru'), 'icon' => 'solar:home-angle-2-linear'],
+        ['title' => 'Jadwal', 'url' => url('guru/jadwal'), 'icon' => 'akar-icons:schedule'],
+        ['title' => 'Agenda', 'url' => url('guru/agenda'), 'icon' => 'solar:notebook-linear'],
+        ['title' => 'Nilai', 'url' => url('guru/nilai'), 'icon' => 'solar:clipboard-list-linear'],
+    ];
+} else {
+    $nav_items = [
+        ['title' => 'Beranda', 'url' => url('dashboard'), 'icon' => 'solar:home-angle-2-linear'],
+        ['title' => 'Siswa', 'url' => url('siswa'), 'icon' => 'solar:users-group-two-rounded-linear'],
+        ['title' => 'Presensi', 'url' => url('presensi/v_siswa'), 'icon' => 'solar:calendar-check-linear'],
+        ['title' => 'Jadwal', 'url' => url('jadwal_pelajaran'), 'icon' => 'akar-icons:schedule'],
+    ];
+}
+?>
+<!-- Mobile Bottom Navigation Bar -->
+<nav class="mobile-bottom-nav">
+    <ul class="mobile-bottom-nav-items">
+        <?php foreach ($nav_items as $item): 
+            $is_active = (rtrim($current_url, '/') == rtrim($item['url'], '/'));
+        ?>
+            <li class="mobile-bottom-nav-item">
+                <a href="<?php echo $item['url']; ?>" class="mobile-bottom-nav-link <?php echo $is_active ? 'active' : ''; ?>">
+                    <iconify-icon icon="<?php echo $item['icon']; ?>"></iconify-icon>
+                    <span><?php echo $item['title']; ?></span>
+                </a>
+            </li>
+        <?php endforeach; ?>
+        <li class="mobile-bottom-nav-item">
+            <a href="javascript:void(0)" class="mobile-bottom-nav-link sidebar-mobile-toggle">
+                <iconify-icon icon="heroicons:bars-3-solid"></iconify-icon>
+                <span>Menu</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+
 <footer class="d-footer">
     <div class="row align-items-center justify-content-between">
         <div class="col-auto">

@@ -5,8 +5,21 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
 <html lang="en" data-theme="light">
 
 <head>
+    <script>
+        (function() {
+            var savedTheme = localStorage.getItem("theme");
+            if (savedTheme === "dark" || (!savedTheme && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+                document.documentElement.setAttribute("data-theme", "dark");
+            } else {
+                document.documentElement.setAttribute("data-theme", "light");
+            }
+        })();
+    </script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#487fff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>MKDC | <?php echo $page->title ?></title>
     <link rel="icon" type="image/png" href="<?php echo $url->assets ?>images/logodc_round.png" sizes="16x16">
     <!-- remix icon font css  -->
@@ -39,6 +52,8 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
     <link rel="stylesheet" href="<?php echo $url->assets ?>css/lib/audioplayer.css">
     <!-- main css -->
     <link rel="stylesheet" href="<?php echo $url->assets ?>css/style.css">
+    <link rel="stylesheet" href="<?php echo $url->assets ?>css/dark-theme.css">
+    <link rel="stylesheet" href="<?php echo $url->assets ?>css/mobile-app.css">
     <link href=" https://cdn.jsdelivr.net/npm/sweetalert2@11.26.2/dist/sweetalert2.min.css " rel="stylesheet">
 
     <style>
@@ -108,7 +123,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                         $current_user = $CI->db->get_where('users', ['id' => $user_id])->row();
                         $is_google_connected = ($current_user && !empty($current_user->google_id));
                         ?>
-                        <div class="d-flex align-items-center gap-2 me-12">
+                        <div class="d-none d-sm-block d-flex align-items-center gap-2 me-12">
                             <?php if ($is_google_connected): ?>
                                 <span class="badge bg-success-focus text-success-main radius-8 px-12 py-8 d-inline-flex align-items-center gap-1">
                                     <iconify-icon icon="logos:google-icon" class="align-middle"></iconify-icon>

@@ -92,7 +92,14 @@ function calculateSettingAsThemeString({ localStorageTheme }) {
   if (localStorageTheme !== null) {
     return localStorageTheme;
   }
-  return "light"; // default to light theme if nothing is stored
+  const htmlTheme = document.querySelector("html").getAttribute("data-theme");
+  if (htmlTheme) {
+    return htmlTheme;
+  }
+  if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+    return "dark";
+  }
+  return "light";
 }
 
 /**
