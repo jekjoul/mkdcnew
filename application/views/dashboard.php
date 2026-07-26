@@ -219,7 +219,7 @@ if (!empty($tren_pendaftaran)) {
         <!-- ================== Second Row Cards Start ======================= -->
         <!-- Top Categories Card Start -->
 
-        <div class="col-xxl-4 col-md-6">
+        <!-- <div class="col-xxl-4 col-md-6">
             <div class="card">
                 <div class="card-header">
                     <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between">
@@ -331,12 +331,12 @@ if (!empty($tren_pendaftaran)) {
 
                 </div>
             </div>
-        </div>
+        </div> -->
         <!-- Top Categories Card End -->
 
 
         <!-- Student Progress Card Start -->
-        <div class="col-xxl-4 col-md-6">
+        <!-- <div class="col-xxl-4 col-md-6">
             <div class="card">
                 <div class="card-header">
                     <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between">
@@ -483,7 +483,7 @@ if (!empty($tren_pendaftaran)) {
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
         <!-- Student Progress Card End -->
         <!-- ================== Second Row Cards End ======================= -->
 

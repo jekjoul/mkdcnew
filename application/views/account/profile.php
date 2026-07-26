@@ -86,41 +86,72 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
             
             <!-- Tab 1: View Profile -->
             <div class="tab-pane fade show active" id="viewProfile" role="tabpanel">
+              <?php
+              if (!function_exists('renderDapodikStatusIcon')) {
+                  function renderDapodikStatusIcon($val) {
+                      $clean = is_string($val) ? trim($val) : $val;
+                      $is_filled = (!empty($clean) && $clean !== '0' && $clean !== '-' && $clean !== '0000-00-00' && $clean !== 'Belum diisi');
+                      if ($is_filled) {
+                          return '<button type="button" class="text-success bg-transparent border-0 p-0" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Data sudah diisi"><iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon></button>';
+                      } else {
+                          return '<button type="button" class="text-danger bg-transparent border-0 p-0" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-danger" data-bs-title="Segera lengkapi data"><iconify-icon icon="solar:close-square-bold" class="text-xl"></iconify-icon></button>';
+                      }
+                  }
+              }
+              ?>
               <div class="row gy-3">
                 <div class="col-md-6">
-                  <div class="bg-light p-12 radius-8">
-                    <span class="text-secondary-light text-xs d-block mb-4">Nama Lengkap</span>
-                    <span class="fw-semibold text-primary-light"><?php echo htmlspecialchars($user->name, ENT_QUOTES, 'UTF-8'); ?></span>
+                  <div class="bg-light p-12 radius-8 d-flex align-items-center justify-content-between">
+                    <div>
+                      <span class="text-secondary-light text-xs d-block mb-4">Nama Lengkap</span>
+                      <span class="fw-semibold text-primary-light"><?php echo htmlspecialchars($user->name, ENT_QUOTES, 'UTF-8'); ?></span>
+                    </div>
+                    <?php echo renderDapodikStatusIcon($user->name); ?>
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <div class="bg-light p-12 radius-8">
-                    <span class="text-secondary-light text-xs d-block mb-4">Username</span>
-                    <span class="fw-semibold text-primary-light"><?php echo htmlspecialchars($user->username, ENT_QUOTES, 'UTF-8'); ?></span>
+                  <div class="bg-light p-12 radius-8 d-flex align-items-center justify-content-between">
+                    <div>
+                      <span class="text-secondary-light text-xs d-block mb-4">Username</span>
+                      <span class="fw-semibold text-primary-light"><?php echo htmlspecialchars($user->username, ENT_QUOTES, 'UTF-8'); ?></span>
+                    </div>
+                    <?php echo renderDapodikStatusIcon($user->username); ?>
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <div class="bg-light p-12 radius-8">
-                    <span class="text-secondary-light text-xs d-block mb-4">Email</span>
-                    <span class="fw-semibold text-primary-light"><?php echo htmlspecialchars($user->email, ENT_QUOTES, 'UTF-8'); ?></span>
+                  <div class="bg-light p-12 radius-8 d-flex align-items-center justify-content-between">
+                    <div>
+                      <span class="text-secondary-light text-xs d-block mb-4">Email</span>
+                      <span class="fw-semibold text-primary-light"><?php echo htmlspecialchars($user->email, ENT_QUOTES, 'UTF-8'); ?></span>
+                    </div>
+                    <?php echo renderDapodikStatusIcon($user->email); ?>
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <div class="bg-light p-12 radius-8">
-                    <span class="text-secondary-light text-xs d-block mb-4">Hak Akses / Role</span>
-                    <span class="fw-semibold text-primary-light"><?php echo $user->role->title ?></span>
+                  <div class="bg-light p-12 radius-8 d-flex align-items-center justify-content-between">
+                    <div>
+                      <span class="text-secondary-light text-xs d-block mb-4">Hak Akses / Role</span>
+                      <span class="fw-semibold text-primary-light"><?php echo $user->role->title ?></span>
+                    </div>
+                    <?php echo renderDapodikStatusIcon($user->role->title); ?>
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <div class="bg-light p-12 radius-8">
-                    <span class="text-secondary-light text-xs d-block mb-4">Kontak / Telepon</span>
-                    <span class="fw-semibold text-primary-light"><?php echo htmlspecialchars($user->phone ?: '-', ENT_QUOTES, 'UTF-8'); ?></span>
+                  <div class="bg-light p-12 radius-8 d-flex align-items-center justify-content-between">
+                    <div>
+                      <span class="text-secondary-light text-xs d-block mb-4">Kontak / Telepon</span>
+                      <span class="fw-semibold text-primary-light"><?php echo htmlspecialchars($user->phone ?: '-', ENT_QUOTES, 'UTF-8'); ?></span>
+                    </div>
+                    <?php echo renderDapodikStatusIcon($user->phone); ?>
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <div class="bg-light p-12 radius-8">
-                    <span class="text-secondary-light text-xs d-block mb-4">Alamat</span>
-                    <span class="fw-semibold text-primary-light"><?php echo !empty($user->address) ? nl2br(htmlspecialchars($user->address, ENT_QUOTES, 'UTF-8')) : '-' ?></span>
+                  <div class="bg-light p-12 radius-8 d-flex align-items-center justify-content-between">
+                    <div>
+                      <span class="text-secondary-light text-xs d-block mb-4">Alamat</span>
+                      <span class="fw-semibold text-primary-light"><?php echo !empty($user->address) ? nl2br(htmlspecialchars($user->address, ENT_QUOTES, 'UTF-8')) : '-' ?></span>
+                    </div>
+                    <?php echo renderDapodikStatusIcon($user->address); ?>
                   </div>
                 </div>
               </div>

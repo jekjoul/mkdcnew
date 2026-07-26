@@ -25,7 +25,7 @@
                     </span>
                     <h5 class="mb-1 fw-bold text-primary-light text-truncate"><?php echo (int) $jumlah_pembelajaran ?></h5>
                     <span class="text-secondary-light text-xs d-block text-truncate fw-medium">Pembelajaran</span>
-                    <a href="<?php echo url('guru/pembelajaran') ?>" class="btn btn-xs btn-primary-600 text-white w-100 mt-2 radius-8 text-xs py-1">Detail</a>
+                    <a href="<?php echo url('guru/pembelajaran') ?>" class="mobile-hide btn btn-xs btn-primary-600 text-white w-100 mt-2 radius-8 text-xs py-1">Detail</a>
                 </div>
             </div>
         </div>
@@ -37,7 +37,7 @@
                     </span>
                     <h5 class="mb-1 fw-bold text-primary-light text-truncate"><?php echo (int) $jumlah_siswa ?></h5>
                     <span class="text-secondary-light text-xs d-block text-truncate fw-medium">Siswa Terampu</span>
-                    <a href="<?php echo url('guru/siswa') ?>" class="btn btn-xs btn-info text-white w-100 mt-2 radius-8 text-xs py-1">Detail</a>
+                    <a href="<?php echo url('guru/siswa') ?>" class="mobile-hide btn btn-xs btn-info text-white w-100 mt-2 radius-8 text-xs py-1">Detail</a>
                 </div>
             </div>
         </div>
@@ -49,7 +49,7 @@
                     </span>
                     <h5 class="mb-1 fw-bold text-primary-light text-truncate"><?php echo (int) $jumlah_jadwal ?></h5>
                     <span class="text-secondary-light text-xs d-block text-truncate fw-medium">Jam Mengajar</span>
-                    <a href="<?php echo url('guru/jadwal') ?>" class="btn btn-xs btn-warning-600 text-white w-100 mt-2 radius-8 text-xs py-1">Detail</a>
+                    <a href="<?php echo url('guru/jadwal') ?>" class="mobile-hide btn btn-xs btn-warning-600 text-white w-100 mt-2 radius-8 text-xs py-1">Detail</a>
                 </div>
             </div>
         </div>
@@ -64,23 +64,26 @@
             </h6>
         </div>
         <div class="card-body p-16">
-            <div class="row row-cols-2 row-cols-md-4 g-2 g-md-3">
+            <div class="row row-cols-3 row-cols-md-6 g-2 g-md-3">
+                <!-- 1. Jadwal Saya -->
                 <div class="col">
-                    <a href="<?php echo url('guru/siswa') ?>" class="mobile-app-tile">
-                        <div class="mobile-app-tile-icon bg-info-50 text-info-600">
-                            <iconify-icon icon="solar:users-group-two-rounded-bold"></iconify-icon>
+                    <a href="<?php echo url('guru/jadwal') ?>" class="mobile-app-tile">
+                        <div class="mobile-app-tile-icon bg-warning-50 text-warning-600">
+                            <iconify-icon icon="solar:clock-circle-bold"></iconify-icon>
                         </div>
-                        <span class="mobile-app-tile-label">Data Siswa</span>
+                        <span class="mobile-app-tile-label">Jadwal Saya</span>
                     </a>
                 </div>
+                <!-- 2. Input Nilai -->
                 <div class="col">
-                    <a href="<?php echo url('guru/pembelajaran') ?>" class="mobile-app-tile">
-                        <div class="mobile-app-tile-icon bg-primary-50 text-primary-600">
-                            <iconify-icon icon="solar:notebook-bookmark-bold"></iconify-icon>
+                    <a href="<?php echo url('guru/nilai') ?>" class="mobile-app-tile">
+                        <div class="mobile-app-tile-icon bg-danger-50 text-danger-600">
+                            <iconify-icon icon="solar:document-text-bold"></iconify-icon>
                         </div>
-                        <span class="mobile-app-tile-label">Pembelajaran</span>
+                        <span class="mobile-app-tile-label">Input Nilai</span>
                     </a>
                 </div>
+                <!-- 3. Agenda Saya -->
                 <div class="col">
                     <a href="<?php echo url('guru/agenda') ?>" class="mobile-app-tile">
                         <div class="mobile-app-tile-icon bg-success-50 text-success-600">
@@ -89,12 +92,31 @@
                         <span class="mobile-app-tile-label">Agenda Saya</span>
                     </a>
                 </div>
+                <!-- 4. Perangkat Pembelajaran -->
+                <div class="col">
+                    <a href="<?php echo url('guru/perangkat') ?>" class="mobile-app-tile">
+                        <div class="mobile-app-tile-icon bg-primary-50 text-primary-600">
+                            <iconify-icon icon="solar:folder-with-files-bold"></iconify-icon>
+                        </div>
+                        <span class="mobile-app-tile-label">Perangkat</span>
+                    </a>
+                </div>
+                <!-- 5. Profil PTK -->
                 <div class="col">
                     <a href="<?php echo url('guru/profil') ?>" class="mobile-app-tile">
-                        <div class="mobile-app-tile-icon bg-warning-50 text-warning-600">
+                        <div class="mobile-app-tile-icon bg-purple-50 text-purple-600" style="background-color: rgba(147, 51, 234, 0.1); color: #9333ea;">
                             <iconify-icon icon="solar:user-id-bold"></iconify-icon>
                         </div>
                         <span class="mobile-app-tile-label">Profil PTK</span>
+                    </a>
+                </div>
+                <!-- 6. Data Siswa -->
+                <div class="col">
+                    <a href="<?php echo url('guru/siswa') ?>" class="mobile-app-tile">
+                        <div class="mobile-app-tile-icon bg-info-50 text-info-600">
+                            <iconify-icon icon="solar:users-group-two-rounded-bold"></iconify-icon>
+                        </div>
+                        <span class="mobile-app-tile-label">Data Siswa</span>
                     </a>
                 </div>
             </div>
@@ -112,11 +134,12 @@
                 <span class="text-xs text-secondary-light">Pantau jadwal masuk KBM dan status pelaksanaan agenda harian Anda.</span>
             </div>
             <a href="<?php echo url('guru/agenda') ?>" class="btn btn-sm btn-outline-primary radius-8">
-                Lihat Semua Agenda Saya <iconify-icon icon="solar:alt-arrow-right-linear" class="ms-1"></iconify-icon>
+                Lihat Semua <iconify-icon icon="solar:alt-arrow-right-linear" class="ms-1"></iconify-icon>
             </a>
         </div>
         <div class="card-body p-20">
-            <div class="table-responsive">
+            <!-- Desktop Table View -->
+            <div class="table-responsive d-none d-md-block">
                 <table class="table bordered-table align-middle w-100 mb-0">
                     <thead>
                         <tr>
@@ -164,7 +187,6 @@
                                             <?php else: ?>
                                                 <span class="text-xs text-neutral-400">Belum diatur</span>
                                             <?php endif; ?>
-                                            
                                         </div>
 
                                         <div>
@@ -207,6 +229,111 @@
                         <?php endif; ?>
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Mobile Accordion View -->
+            <style>
+            #accordionAgendaDashboard .accordion-button::after {
+                display: none !important;
+            }
+            #accordionAgendaDashboard .accordion-button {
+                padding-inline-end: 16px !important;
+            }
+            </style>
+            <div class="accordion d-block d-md-none" id="accordionAgendaDashboard">
+                <?php if (!empty($agenda_terdekat)): ?>
+                    <?php
+                    $today_str = date('Y-m-d');
+                    $now_time  = date('H:i');
+                    foreach ($agenda_terdekat as $idx => $ag):
+                        $is_past_date = ($ag->tanggal < $today_str);
+                        $is_today     = ($ag->tanggal === $today_str);
+                        $is_late      = false;
+
+                        if ($ag->status === 'Belum') {
+                            if ($is_past_date) {
+                                $is_late = true;
+                            } elseif ($is_today && !empty($ag->jam_mulai) && $now_time > $ag->jam_mulai) {
+                                $is_late = true;
+                            }
+                        }
+                    ?>
+                        <div class="accordion-item border radius-12 mb-12 shadow-xs overflow-hidden">
+                            <h2 class="accordion-header" id="headingDashAgenda<?php echo $ag->id_agenda ?>">
+                                <button class="accordion-button <?php echo ($idx === 0) ? '' : 'collapsed'; ?> bg-base text-primary-light px-16 py-12" 
+                                        type="button" 
+                                        data-bs-toggle="collapse" 
+                                        data-bs-target="#collapseDashAgenda<?php echo $ag->id_agenda ?>" 
+                                        aria-expanded="<?php echo ($idx === 0) ? 'true' : 'false'; ?>" 
+                                        aria-controls="collapseDashAgenda<?php echo $ag->id_agenda ?>">
+                                    <div class="w-100 me-2">
+                                        <div class="d-flex align-items-center justify-content-between gap-2 mb-1">
+                                            <div>
+                                                <?php if ($ag->tanggal === $today_str): ?>
+                                                    <span class="badge bg-warning-50 text-warning-700 radius-4 me-1 fw-bold">HARI INI</span>
+                                                <?php elseif ($ag->tanggal === date('Y-m-d', strtotime('+1 day'))): ?>
+                                                    <span class="badge bg-info-50 text-info-700 radius-4 me-1 fw-bold">BESOK</span>
+                                                <?php endif; ?>
+                                                <span class="fw-bold text-primary-900 text-sm"><?php echo html_escape($ag->hari) ?>, <?php echo date('d M Y', strtotime($ag->tanggal)) ?></span>
+                                            </div>
+                                            <div>
+                                                <?php if ($ag->status === 'Terlaksana'): ?>
+                                                    <span class="badge bg-success-focus text-success-main px-8 py-3 radius-4 text-xs">Terlaksana</span>
+                                                <?php elseif ($is_late): ?>
+                                                    <span class="badge bg-danger-focus text-danger-main px-8 py-3 radius-4 text-xs d-inline-flex align-items-center gap-1">
+                                                        <iconify-icon icon="solar:danger-triangle-bold" class="text-xs"></iconify-icon> Terlambat
+                                                    </span>
+                                                <?php elseif ($ag->status === 'Libur'): ?>
+                                                    <span class="badge bg-danger-focus text-danger-main px-8 py-3 radius-4 text-xs">Libur KBM</span>
+                                                <?php else: ?>
+                                                    <span class="badge bg-neutral-200 text-neutral-700 px-8 py-3 radius-4 text-xs">Belum</span>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                                            <span class="badge bg-primary-50 text-primary-600 radius-4 text-xs"><?php echo html_escape((!empty($ag->nama_tingkat) ? $ag->nama_tingkat . ' - ' : '') . $ag->nama_rombel) ?></span>
+                                            <span class="fw-semibold text-neutral-800 text-xs text-truncate"><?php echo html_escape($ag->nama_mapel) ?></span>
+                                        </div>
+                                    </div>
+                                </button>
+                            </h2>
+                            <div id="collapseDashAgenda<?php echo $ag->id_agenda ?>" 
+                                 class="accordion-collapse collapse <?php echo ($idx === 0) ? 'show' : ''; ?>" 
+                                 aria-labelledby="headingDashAgenda<?php echo $ag->id_agenda ?>" 
+                                 data-bs-parent="#accordionAgendaDashboard">
+                                <div class="accordion-body bg-neutral-50 p-16">
+                                    <div class="row g-2 mb-12">
+                                        <div class="col-6">
+                                            <span class="text-secondary-light text-xs d-block">Pertemuan</span>
+                                            <span class="badge bg-info-100 text-info-600 radius-4">Pert. Ke-<?php echo $ag->pertemuan_ke ?></span>
+                                        </div>
+                                        <div class="col-6">
+                                            <span class="text-secondary-light text-xs d-block">Waktu KBM</span>
+                                            <?php if (!empty($ag->jam_mulai)): ?>
+                                                <span class="fw-bold text-primary-900 text-xs">
+                                                    <?php echo html_escape($ag->jam_mulai) ?> - <?php echo html_escape($ag->jam_selesai) ?> WIB
+                                                </span>
+                                            <?php else: ?>
+                                                <span class="text-xs text-neutral-400">Belum diatur</span>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-12 pt-12 border-top">
+                                        <a href="<?php echo url('guru/agenda_detail/' . $ag->id_agenda) ?>" class="btn btn-sm btn-success-600 text-white w-100 radius-8 py-8 d-flex align-items-center justify-content-center gap-1 fw-semibold shadow-xs">
+                                            <iconify-icon icon="solar:play-circle-bold" class="text-lg"></iconify-icon> Buka Agenda & Presensi
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="text-center text-neutral-400 py-24 bg-base radius-12 border">
+                        <iconify-icon icon="solar:notebook-linear" style="font-size: 28px;"></iconify-icon>
+                        <div class="mt-4 text-xs">Belum ada agenda pembelajaran terdekat yang dijadwalkan.</div>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>

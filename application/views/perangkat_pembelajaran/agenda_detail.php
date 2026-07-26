@@ -124,7 +124,7 @@
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active px-16 py-10 fw-semibold" id="tab-presensi-btn" data-bs-toggle="tab" data-bs-target="#tab-presensi-siswa" type="button" role="tab">
                                 <iconify-icon icon="solar:users-group-two-rounded-bold" class="me-1 text-primary-600"></iconify-icon>
-                                Kehadiran Siswa
+                                Presensi
                                 <span class="badge bg-primary-50 text-primary-600 radius-4 ms-2 px-8 py-2"><?php echo count($siswa_presensi) ?> Siswa</span>
                             </button>
                         </li>
@@ -132,7 +132,7 @@
                         <li class="nav-item" role="presentation">
                             <button class="nav-link px-16 py-10 fw-semibold" id="tab-materi-btn" data-bs-toggle="tab" data-bs-target="#tab-materi-kegiatan" type="button" role="tab">
                                 <iconify-icon icon="solar:document-text-bold" class="me-1 text-info-600"></iconify-icon>
-                                Materi & Kegiatan KBM
+                                Materi & KBM
                             </button>
                         </li>
                     </ul>
@@ -178,46 +178,121 @@
                                 </div>
                             </div>
 
+                            <style>
+                            @media (max-width: 767.98px) {
+                                #tablePresensiSiswa thead {
+                                    display: none;
+                                }
+                                #tablePresensiSiswa tbody tr {
+                                    display: flex !important;
+                                    align-items: center;
+                                    width: 100%;
+                                    border-bottom: 1px solid #e2e8f0;
+                                    padding: 8px 4px;
+                                    position: relative;
+                                }
+                                #tablePresensiSiswa td.td-nama-siswa {
+                                    order: 1 !important;
+                                    flex-grow: 1 !important;
+                                    overflow-x: auto !important;
+                                    white-space: nowrap !important;
+                                    padding: 4px 8px 4px 0 !important;
+                                    border: none !important;
+                                    -webkit-overflow-scrolling: touch;
+                                }
+                                #tablePresensiSiswa td.td-nama-siswa::-webkit-scrollbar {
+                                    height: 3px;
+                                }
+                                #tablePresensiSiswa td.td-nama-siswa::-webkit-scrollbar-thumb {
+                                    background: #cbd5e1;
+                                    border-radius: 3px;
+                                }
+                                #tablePresensiSiswa td.td-status-presensi {
+                                    order: 2 !important;
+                                    flex-shrink: 0 !important;
+                                    width: 124px !important;
+                                    position: sticky !important;
+                                    right: 0 !important;
+                                    z-index: 5 !important;
+                                    background-color: #ffffff !important;
+                                    padding: 4px 0 4px 6px !important;
+                                    border: none !important;
+                                    box-shadow: -4px 0 6px -2px rgba(0, 0, 0, 0.06);
+                                }
+                                #tablePresensiSiswa td.td-status-presensi .btn-group .btn {
+                                    padding: 6px 4px !important;
+                                    font-size: 11px !important;
+                                    font-weight: 700 !important;
+                                }
+                            }
+                            </style>
+
                             <!-- Table Presensi Siswa -->
                             <div class="table-responsive">
-                                <table class="table bordered-table align-middle w-100" id="tablePresensiSiswa">
+                                <table class="table bordered-table align-middle w-100 mb-0" id="tablePresensiSiswa">
                                     <thead>
                                         <tr>
-                                            <th class="text-center" style="width: 40px;">No</th>
+                                            <th class="text-center d-none d-md-table-cell" style="width: 40px;">No</th>
                                             <th>Nama Siswa & NISN</th>
-                                            <th class="text-center" style="width: 50px;">L/P</th>
+                                            <th class="text-center d-none d-md-table-cell" style="width: 50px;">L/P</th>
                                             <th class="text-center" style="width: 320px;">Status Kehadiran</th>
-                                            <th>Catatan / Keterangan</th>
+                                            <th class="d-none d-md-table-cell">Catatan / Keterangan</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php if (!empty($siswa_presensi)): ?>
                                             <?php $ns = 1; foreach ($siswa_presensi as $s): ?>
                                                 <tr id="siswa-row-<?php echo $s->id_siswa ?>">
-                                                    <td class="text-center fw-semibold"><?php echo $ns++ ?></td>
-                                                    <td>
-                                                        <span class="fw-semibold text-primary-900 d-block"><?php echo html_escape($s->nama_siswa) ?></span>
-                                                        <span class="text-xs text-secondary-light">NISN: <?php echo html_escape($s->nisn ?: '-') ?> | NIPD: <?php echo html_escape($s->nipd ?: '-') ?></span>
-                                                    </td>
-                                                    <td class="text-center">
-                                                        <span class="badge bg-neutral-100 text-neutral-700"><?php echo html_escape($s->jenis_kelamin ?: 'L') ?></span>
-                                                    </td>
-                                                    <td class="text-center">
-                                                        <div class="btn-group w-100" role="group" aria-label="Status Presensi Siswa">
-                                                            <input type="radio" class="btn-check radio-presensi-siswa" name="status_s_<?php echo $s->id_siswa ?>" id="st_h_<?php echo $s->id_siswa ?>" data-siswa-id="<?php echo $s->id_siswa ?>" value="Hadir" <?php echo ($s->status_presensi === 'Hadir') ? 'checked' : '' ?>>
-                                                            <label class="btn btn-xs btn-outline-success px-8 py-6" for="st_h_<?php echo $s->id_siswa ?>">Hadir</label>
+                                                    <!-- No (Desktop Only) -->
+                                                    <td class="text-center fw-semibold d-none d-md-table-cell"><?php echo $ns ?></td>
 
-                                                            <input type="radio" class="btn-check radio-presensi-siswa" name="status_s_<?php echo $s->id_siswa ?>" id="st_i_<?php echo $s->id_siswa ?>" data-siswa-id="<?php echo $s->id_siswa ?>" value="Izin" <?php echo ($s->status_presensi === 'Izin') ? 'checked' : '' ?>>
-                                                            <label class="btn btn-xs btn-outline-info px-8 py-6" for="st_i_<?php echo $s->id_siswa ?>">Izin</label>
-
-                                                            <input type="radio" class="btn-check radio-presensi-siswa" name="status_s_<?php echo $s->id_siswa ?>" id="st_s_<?php echo $s->id_siswa ?>" data-siswa-id="<?php echo $s->id_siswa ?>" value="Sakit" <?php echo ($s->status_presensi === 'Sakit') ? 'checked' : '' ?>>
-                                                            <label class="btn btn-xs btn-outline-warning px-8 py-6" for="st_s_<?php echo $s->id_siswa ?>">Sakit</label>
-
-                                                            <input type="radio" class="btn-check radio-presensi-siswa" name="status_s_<?php echo $s->id_siswa ?>" id="st_a_<?php echo $s->id_siswa ?>" data-siswa-id="<?php echo $s->id_siswa ?>" value="Alpa" <?php echo ($s->status_presensi === 'Alpa') ? 'checked' : '' ?>>
-                                                            <label class="btn btn-xs btn-outline-danger px-8 py-6" for="st_a_<?php echo $s->id_siswa ?>">Alpa</label>
+                                                    <!-- Nama Siswa & NISN (Scrollable Horizontal on Mobile) -->
+                                                    <td class="td-nama-siswa">
+                                                        <div class="d-flex align-items-center gap-2">
+                                                            <span class="d-inline-block d-md-none fw-bold text-secondary-light text-xs flex-shrink-0"><?php echo $ns++ ?>.</span>
+                                                            <div class="d-inline-block">
+                                                                <span class="fw-semibold text-primary-900 d-block text-nowrap"><?php echo html_escape($s->nama_siswa) ?></span>
+                                                                <span class="text-xs text-secondary-light text-nowrap">
+                                                                    NISN: <?php echo html_escape($s->nisn ?: '-') ?> 
+                                                                    <span class="d-none d-md-inline">| NIPD: <?php echo html_escape($s->nipd ?: '-') ?></span>
+                                                                    <span class="badge bg-neutral-100 text-neutral-700 ms-1 d-inline-block d-md-none"><?php echo html_escape($s->jenis_kelamin ?: 'L') ?></span>
+                                                                </span>
+                                                            </div>
                                                         </div>
                                                     </td>
-                                                    <td>
+
+                                                    <!-- L/P (Desktop Only) -->
+                                                    <td class="text-center d-none d-md-table-cell">
+                                                        <span class="badge bg-neutral-100 text-neutral-700"><?php echo html_escape($s->jenis_kelamin ?: 'L') ?></span>
+                                                    </td>
+
+                                                    <!-- Status Kehadiran (Fixed Left on Mobile, H I S A) -->
+                                                    <td class="text-center td-status-presensi">
+                                                        <div class="btn-group w-100" role="group" aria-label="Status Presensi Siswa">
+                                                            <input type="radio" class="btn-check radio-presensi-siswa" name="status_s_<?php echo $s->id_siswa ?>" id="st_h_<?php echo $s->id_siswa ?>" data-siswa-id="<?php echo $s->id_siswa ?>" value="Hadir" <?php echo ($s->status_presensi === 'Hadir') ? 'checked' : '' ?>>
+                                                            <label class="btn btn-xs btn-outline-success px-8 py-6" for="st_h_<?php echo $s->id_siswa ?>">
+                                                                <span class="d-none d-md-inline">Hadir</span><span class="d-inline d-md-none fw-bold">H</span>
+                                                            </label>
+
+                                                            <input type="radio" class="btn-check radio-presensi-siswa" name="status_s_<?php echo $s->id_siswa ?>" id="st_i_<?php echo $s->id_siswa ?>" data-siswa-id="<?php echo $s->id_siswa ?>" value="Izin" <?php echo ($s->status_presensi === 'Izin') ? 'checked' : '' ?>>
+                                                            <label class="btn btn-xs btn-outline-info px-8 py-6" for="st_i_<?php echo $s->id_siswa ?>">
+                                                                <span class="d-none d-md-inline">Izin</span><span class="d-inline d-md-none fw-bold">I</span>
+                                                            </label>
+
+                                                            <input type="radio" class="btn-check radio-presensi-siswa" name="status_s_<?php echo $s->id_siswa ?>" id="st_s_<?php echo $s->id_siswa ?>" data-siswa-id="<?php echo $s->id_siswa ?>" value="Sakit" <?php echo ($s->status_presensi === 'Sakit') ? 'checked' : '' ?>>
+                                                            <label class="btn btn-xs btn-outline-warning px-8 py-6" for="st_s_<?php echo $s->id_siswa ?>">
+                                                                <span class="d-none d-md-inline">Sakit</span><span class="d-inline d-md-none fw-bold">S</span>
+                                                            </label>
+
+                                                            <input type="radio" class="btn-check radio-presensi-siswa" name="status_s_<?php echo $s->id_siswa ?>" id="st_a_<?php echo $s->id_siswa ?>" data-siswa-id="<?php echo $s->id_siswa ?>" value="Alpa" <?php echo ($s->status_presensi === 'Alpa') ? 'checked' : '' ?>>
+                                                            <label class="btn btn-xs btn-outline-danger px-8 py-6" for="st_a_<?php echo $s->id_siswa ?>">
+                                                                <span class="d-none d-md-inline">Alpa</span><span class="d-inline d-md-none fw-bold">A</span>
+                                                            </label>
+                                                        </div>
+                                                    </td>
+
+                                                    <!-- Catatan / Keterangan (Desktop Only, Hidden on Mobile) -->
+                                                    <td class="d-none d-md-table-cell">
                                                         <div class="position-relative">
                                                             <input type="text" class="form-control form-control-sm radius-6 input-catatan-siswa" data-siswa-id="<?php echo $s->id_siswa ?>" value="<?php echo html_escape($s->catatan_presensi ?? '') ?>" placeholder="Keterangan...">
                                                             <span class="position-absolute end-0 top-50 translate-middle-y me-8 text-success d-none save-indicator" id="indicator-<?php echo $s->id_siswa ?>">

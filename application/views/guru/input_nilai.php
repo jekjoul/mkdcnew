@@ -27,6 +27,12 @@ if ($setting) {
 }
 ?>
 <style>
+    .accordion-button::after {
+        display: none !important;
+    }
+    .accordion-button {
+        padding-inline-end: 16px !important;
+    }
     .editable-header {
         border-bottom: 1px dashed #405189;
         cursor: pointer;
@@ -180,11 +186,12 @@ if ($setting) {
         </div>
 
         <div class="card">
-            <div class="card-header bg-neutral-100">
+            <div class="card-header bg-neutral-100 d-flex align-items-center justify-content-between">
                 <h6 class="mb-0">Daftar Nilai</h6>
             </div>
             <div class="card-body">
-                <div class="table-responsive table-container-fixed">
+                <!-- TAMPILAN DESKTOP (Tabel) -->
+                <div class="table-responsive table-container-fixed d-none d-md-block">
                     <table class="table bordered-table mb-0 align-middle" id="tableNilai">
                         <thead>
                             <tr class="bg-neutral-50">
@@ -275,12 +282,155 @@ if ($setting) {
                         </tbody>
                     </table>
                 </div>
+
+                <!-- TAMPILAN MOBILE (Accordion List + Live Search) -->
+                <div class="d-block d-md-none">
+                    <!-- Form Search Mobile -->
+                    <div class="mb-16">
+                        <div class="position-relative">
+                            <input type="text" id="mobileNilaiSearch" class="form-control text-sm radius-8 ps-40" placeholder="🔍 Cari Nama Siswa, NISN, NIPD...">
+                            <span class="position-absolute top-50 start-0 translate-middle-y ms-16 text-secondary-light d-flex align-items-center">
+                                <iconify-icon icon="solar:magnifer-linear" class="text-lg"></iconify-icon>
+                            </span>
+                        </div>
+                    </div>
+
+                    <?php if (!empty($siswa)): ?>
+                        <div class="accordion custom-accordion" id="accordionNilaiMobile">
+                            <?php foreach ($siswa as $index => $s): ?>
+                                <?php
+                                $row = isset($nilai[(int) $s->id_siswa]) ? $nilai[(int) $s->id_siswa] : null;
+                                $extra_tugas_data = [];
+                                $extra_uh_data = [];
+                                if ($row) {
+                                    if (!empty($row->extra_tugas)) {
+                                        $extra_tugas_data = json_decode($row->extra_tugas, true) ?: [];
+                                    }
+                                    if (!empty($row->extra_uh)) {
+                                        $extra_uh_data = json_decode($row->extra_uh, true) ?: [];
+                                    }
+                                }
+                                $accordionId = "collapseNilai" . (int) $s->id_siswa;
+                                $headingId   = "headingNilai" . (int) $s->id_siswa;
+                                $searchableText = strtolower(html_escape($s->nama_siswa . ' ' . $s->nisn . ' ' . $s->nipd));
+                                $init_rapor = ($row && $row->nilai_rapor !== null) ? (float) $row->nilai_rapor : '-';
+                                ?>
+                                <div class="accordion-item border radius-8 mb-12 mobile-nilai-card nilai-row" data-siswa-id="<?php echo (int) $s->id_siswa ?>" data-search="<?php echo $searchableText; ?>">
+                                    <h2 class="accordion-header" id="<?php echo $headingId; ?>">
+                                        <button class="accordion-button collapsed px-16 py-12 text-sm fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#<?php echo $accordionId; ?>" aria-expanded="false">
+                                            <div class="d-flex flex-column gap-1 w-100 me-12">
+                                                <div class="d-flex align-items-center justify-content-between">
+                                                    <span class="text-primary-600 fw-bold"><?php echo html_escape($s->nama_siswa); ?></span>
+                                                    <span class="badge bg-primary-100 text-primary-700 px-8 py-2 radius-4 text-xs">Rapor: <strong class="mobile-badge-rapor-val"><?php echo $init_rapor; ?></strong></span>
+                                                </div>
+                                                <div class="d-flex align-items-center gap-12 text-xs text-secondary-light mt-4">
+                                                    <span><iconify-icon icon="solar:user-id-linear" class="me-4"></iconify-icon>NIPD: <strong><?php echo html_escape($s->nipd ?: '-'); ?></strong></span>
+                                                    <span><iconify-icon icon="solar:card-search-linear" class="me-4"></iconify-icon>NISN: <strong><?php echo html_escape($s->nisn ?: '-'); ?></strong></span>
+                                                </div>
+                                            </div>
+                                        </button>
+                                    </h2>
+                                    <div id="<?php echo $accordionId; ?>" class="accordion-collapse collapse" aria-labelledby="<?php echo $headingId; ?>" data-bs-parent="#accordionNilaiMobile">
+                                        <div class="accordion-body p-16 bg-neutral-50 radius-bottom-8">
+                                            <!-- Sub-Input Nilai Tugas -->
+                                            <div class="mb-12">
+                                                <span class="text-xs fw-bold text-info-800 d-block mb-6"><iconify-icon icon="solar:document-text-bold" class="me-4"></iconify-icon>Nilai Tugas</span>
+                                                <div class="row gy-2">
+                                                    <?php foreach ($labels_tugas as $idx => $lbl): ?>
+                                                        <div class="col-6 td-tugas" data-index="<?php echo $idx ?>">
+                                                            <label class="form-label text-xs mb-2 text-secondary-light"><?php echo html_escape($lbl) ?></label>
+                                                            <input type="number" min="0" max="100" step="0.01" class="form-control text-center nilai-input sub-tugas text-sm" name="nilai[<?php echo (int) $s->id_siswa ?>][extra_tugas][<?php echo $idx ?>]" value="<?php echo isset($extra_tugas_data[$idx]) && $extra_tugas_data[$idx] !== '' ? (float) $extra_tugas_data[$idx] : '' ?>">
+                                                        </div>
+                                                    <?php endforeach; ?>
+                                                </div>
+                                            </div>
+
+                                            <!-- Sub-Input Nilai UH -->
+                                            <div class="mb-12">
+                                                <span class="text-xs fw-bold text-primary-800 d-block mb-6"><iconify-icon icon="solar:checklist-minimalistic-bold" class="me-4"></iconify-icon>Nilai Ujian Harian (UH)</span>
+                                                <div class="row gy-2">
+                                                    <?php foreach ($labels_uh as $idx => $lbl): ?>
+                                                        <div class="col-6 td-uh" data-index="<?php echo $idx ?>">
+                                                            <label class="form-label text-xs mb-2 text-secondary-light"><?php echo html_escape($lbl) ?></label>
+                                                            <input type="number" min="0" max="100" step="0.01" class="form-control text-center nilai-input sub-uh text-sm" name="nilai[<?php echo (int) $s->id_siswa ?>][extra_uh][<?php echo $idx ?>]" value="<?php echo isset($extra_uh_data[$idx]) && $extra_uh_data[$idx] !== '' ? (float) $extra_uh_data[$idx] : '' ?>">
+                                                        </div>
+                                                    <?php endforeach; ?>
+                                                </div>
+                                            </div>
+
+                                            <!-- Form Input Nilai Utama -->
+                                            <div class="row gy-2 pt-12 border-top">
+                                                <div class="col-6">
+                                                    <label class="form-label text-xs mb-2 text-secondary-light">Rata2 Harian</label>
+                                                    <input type="text" class="form-control text-center nilai-harian bg-neutral-100 text-sm" name="nilai[<?php echo (int) $s->id_siswa ?>][harian]" value="<?php echo $row && $row->nilai_harian !== null ? (float) $row->nilai_harian : '' ?>" readonly>
+                                                </div>
+                                                <div class="col-6">
+                                                    <label class="form-label text-xs mb-2 text-warning-800 fw-semibold">PSTS</label>
+                                                    <input type="number" min="0" max="100" step="0.01" class="form-control text-center nilai-input nilai-psts text-sm" name="nilai[<?php echo (int) $s->id_siswa ?>][psts]" value="<?php echo $row && $row->nilai_psts !== null ? (float) $row->nilai_psts : '' ?>">
+                                                </div>
+                                                <div class="col-6 mt-8">
+                                                    <label class="form-label text-xs mb-2 text-success-800 fw-semibold">PSAS</label>
+                                                    <input type="number" min="0" max="100" step="0.01" class="form-control text-center nilai-input nilai-psas text-sm" name="nilai[<?php echo (int) $s->id_siswa ?>][psas]" value="<?php echo $row && $row->nilai_psas !== null ? (float) $row->nilai_psas : '' ?>">
+                                                </div>
+                                                <div class="col-6 mt-8">
+                                                    <label class="form-label text-xs mb-2 text-primary-900 fw-bold">Nilai Rapor</label>
+                                                    <input type="text" class="form-control text-center nilai-rapor bg-neutral-200 fw-bold text-sm" value="<?php echo $row && $row->nilai_rapor !== null ? (float) $row->nilai_rapor : '' ?>" readonly>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <div id="noMobileNilaiSearchResult" class="text-center py-24 text-secondary-light d-none">
+                            <iconify-icon icon="solar:magnifer-bug-linear" style="font-size: 32px;" class="mb-8"></iconify-icon>
+                            <p class="text-sm">Data siswa tidak ditemukan.</p>
+                        </div>
+                    <?php else: ?>
+                        <div class="text-center py-24 text-secondary-light">
+                            <p class="text-sm">Belum ada data siswa.</p>
+                        </div>
+                    <?php endif; ?>
+                </div>
             </div>
         </div>
 
-        <div class="mt-4 text-end mb-5">
-            <a href="<?php echo url('guru/nilai') ?>" class="btn btn-secondary">Kembali</a>
-            <button type="submit" class="btn btn-primary-600 px-4">Simpan Nilai</button>
+        <!-- Fixed Bottom Save Bar (Full Width di atas menu bawah) -->
+        <style>
+            .fixed-bottom-save-bar {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                width: 100%;
+                z-index: 999;
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(8px);
+                border-top: 1px solid #e3e6f0;
+                padding: 10px 16px;
+                box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+            }
+            @media (max-width: 991px) {
+                .fixed-bottom-save-bar {
+                    bottom: 60px; /* Di atas mobile-bottom-nav */
+                }
+            }
+            .dashboard-main-body {
+                padding-bottom: 120px !important;
+            }
+        </style>
+
+        <div class="fixed-bottom-save-bar">
+            <div class="container-fluid px-0">
+                <div class="d-flex align-items-center gap-2">
+                    <a href="<?php echo url('guru/nilai') ?>" class="btn btn-outline-secondary radius-8 px-16 py-10 fw-semibold text-sm d-inline-flex align-items-center gap-1">
+                        <iconify-icon icon="solar:arrow-left-linear" class="text-base"></iconify-icon> <span class="d-none d-sm-inline">Kembali</span>
+                    </a>
+                    <button type="submit" class="btn btn-primary-600 radius-8 w-100 py-10 fw-semibold text-sm d-flex align-items-center justify-content-center gap-2 shadow-sm">
+                        <iconify-icon icon="solar:diskette-bold" class="text-lg"></iconify-icon> Simpan Nilai Siswa
+                    </button>
+                </div>
+            </div>
         </div>
     </form>
 </div>
@@ -352,15 +502,51 @@ if ($setting) {
             rapor += psas * persenPsas / 100;
         }
 
-        row.find('.nilai-rapor').val(hasValue ? rapor.toFixed(2).replace(/\.00$/, '') : '');
+        const fnRaporVal = hasValue ? rapor.toFixed(2).replace(/\.00$/, '') : '';
+        row.find('.nilai-rapor').val(fnRaporVal);
+        row.find('.mobile-badge-rapor-val').text(fnRaporVal !== '' ? fnRaporVal : '-');
     }
 
     $(document).on('input', '.nilai-input', function() {
-        hitungRow($(this).closest('.nilai-row'));
+        let siswaId = $(this).closest('.nilai-row').data('siswa-id');
+        if (siswaId) {
+            let val = $(this).val();
+            let name = $(this).attr('name');
+            if (name) {
+                $(`input[name="${name}"]`).not(this).val(val);
+            }
+            $(`.nilai-row[data-siswa-id="${siswaId}"]`).each(function() {
+                hitungRow($(this));
+            });
+        } else {
+            hitungRow($(this).closest('.nilai-row'));
+        }
     });
 
     $('.nilai-row').each(function() {
         hitungRow($(this));
+    });
+
+    // Real-time Search untuk Accordion Mobile Input Nilai
+    $('#mobileNilaiSearch').on('keyup input', function() {
+        let q = $(this).val().toLowerCase().trim();
+        let matchCount = 0;
+
+        $('.mobile-nilai-card').each(function() {
+            let text = $(this).attr('data-search') || '';
+            if (text.indexOf(q) !== -1) {
+                $(this).removeClass('d-none');
+                matchCount++;
+            } else {
+                $(this).addClass('d-none');
+            }
+        });
+
+        if (matchCount === 0) {
+            $('#noMobileNilaiSearchResult').removeClass('d-none');
+        } else {
+            $('#noMobileNilaiSearchResult').addClass('d-none');
+        }
     });
 
     function updateLabel(type, idx, element) {

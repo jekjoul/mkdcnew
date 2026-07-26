@@ -11,7 +11,11 @@ class Welcome extends CI_Controller
 
     public function index()
     {
-        // If user is already logged in, redirect them to dashboard directly
+        // Langsung arahkan ke login jika controller Welcome dipanggil
+        // PETUNJUK: Untuk mengaktifkan kembali Landing Page, cukup komentari/hapus baris redirect('login') di bawah ini:
+        redirect('login');
+
+        // --- KODE LANDING PAGE UTUH (TIDAK DIHAPUS, SIAP DIAKTIFKAN KEMBALI SEWAKTU-WAKTU) ---
         if (is_logged()) {
             redirect('dashboard', 'refresh');
         }

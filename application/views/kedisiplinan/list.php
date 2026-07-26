@@ -38,7 +38,17 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="table-responsive">
+                    <style>
+                    .accordion-button::after {
+                        display: none !important;
+                    }
+                    .accordion-button {
+                        padding-inline-end: 16px !important;
+                    }
+                    </style>
+
+                    <!-- Desktop Table View -->
+                    <div class="table-responsive d-none d-md-block">
                         <table class="table bordered-table mb-0" id="dataTable">
                             <thead>
                                 <tr>
@@ -153,6 +163,94 @@
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- Mobile Accordion View -->
+                    <div class="d-block d-md-none">
+                        <div class="mb-16">
+                            <div class="position-relative">
+                                <input type="text" id="mobilePelanggaranSearch" class="form-control text-sm radius-8 ps-40" placeholder="🔍 Cari nama siswa, rombel, atau pelanggaran...">
+                                <span class="position-absolute top-50 start-0 translate-middle-y ms-16 text-secondary-light d-flex align-items-center">
+                                    <iconify-icon icon="solar:magnifer-linear" class="text-lg"></iconify-icon>
+                                </span>
+                            </div>
+                        </div>
+
+                        <?php if (!empty($pelanggaran)): ?>
+                            <div class="accordion custom-accordion" id="accordionPelanggaranMobile">
+                                <?php foreach ($pelanggaran as $idx => $p): ?>
+                                    <?php
+                                    $accordionId = "collapsePelanggaran" . $p->id_pelanggaran_siswa;
+                                    $headingId   = "headingPelanggaran" . $p->id_pelanggaran_siswa;
+                                    $searchableText = strtolower(html_escape($p->nama_siswa . ' ' . $p->rombel . ' ' . $p->nama_pelanggaran . ' ' . $p->catatan . ' ' . $p->pelapor));
+                                    ?>
+                                    <div class="accordion-item border radius-8 mb-12 mobile-pelanggaran-card" data-search="<?php echo $searchableText; ?>">
+                                        <h2 class="accordion-header" id="<?php echo $headingId; ?>">
+                                            <button class="accordion-button <?php echo ($idx === 0) ? '' : 'collapsed'; ?> px-16 py-12 text-sm fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#<?php echo $accordionId; ?>" aria-expanded="<?php echo ($idx === 0) ? 'true' : 'false'; ?>">
+                                                <div class="d-flex flex-column gap-1 w-100 me-12">
+                                                    <div class="d-flex align-items-center justify-content-between gap-2">
+                                                        <span class="text-primary-600 fw-bold"><?php echo html_escape($p->nama_siswa); ?></span>
+                                                        <span class="badge bg-neutral-100 text-neutral-800 text-xs px-8 py-2 radius-4"><?php echo html_escape($p->rombel ?: '-'); ?></span>
+                                                    </div>
+                                                    <div class="d-flex align-items-center justify-content-between gap-2 mt-1">
+                                                        <?php if (empty($p->nama_pelanggaran) || $p->id_kategori == 0): ?>
+                                                            <span class="badge bg-warning-100 text-warning-800 text-xs">Belum Diklasifikasi BK</span>
+                                                        <?php else: ?>
+                                                            <span class="badge bg-danger-100 text-danger-800 text-xs"><?php echo html_escape($p->nama_pelanggaran); ?></span>
+                                                        <?php endif; ?>
+
+                                                        <?php if (empty($p->nama_pelanggaran) || $p->id_kategori == 0): ?>
+                                                            <span class="badge bg-neutral-200 text-neutral-800 text-xs">- Poin</span>
+                                                        <?php else: ?>
+                                                            <span class="badge bg-danger-600 text-light text-xs px-8 py-2"><?php echo (int) $p->bobot_poin; ?> Poin</span>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </div>
+                                            </button>
+                                        </h2>
+                                        <div id="<?php echo $accordionId; ?>" class="accordion-collapse collapse <?php echo ($idx === 0) ? 'show' : ''; ?>" aria-labelledby="<?php echo $headingId; ?>" data-bs-parent="#accordionPelanggaranMobile">
+                                            <div class="accordion-body bg-neutral-50 p-16 radius-b-8">
+                                                <div class="d-flex flex-column gap-8 text-xs">
+                                                    <div class="d-flex justify-content-between border-bottom pb-8">
+                                                        <span class="text-secondary-light">Tanggal Pelanggaran:</span>
+                                                        <span class="fw-semibold text-primary-light"><?php echo date('d-m-Y', strtotime($p->tanggal_pelanggaran)); ?></span>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between border-bottom pb-8">
+                                                        <span class="text-secondary-light">Pelapor:</span>
+                                                        <span class="badge bg-info-100 text-info-800 px-8 py-2"><?php echo html_escape($p->pelapor ?: '-'); ?></span>
+                                                    </div>
+                                                    <div class="border-bottom pb-8">
+                                                        <span class="text-secondary-light d-block mb-4">Catatan Laporan:</span>
+                                                        <span class="fw-semibold text-primary-light"><?php echo html_escape($p->catatan ?: '-'); ?></span>
+                                                    </div>
+                                                    <div class="border-bottom pb-8">
+                                                        <span class="text-secondary-light d-block mb-4">Tindak Lanjut BK:</span>
+                                                        <span class="fw-medium text-warning-main"><?php echo html_escape($p->tindak_lanjut ?: '-'); ?></span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="d-flex align-items-center justify-content-end gap-2 mt-12 pt-8">
+                                                    <?php if (hasPermissions('kedisiplinan_bk')): ?>
+                                                        <button class="btn btn-sm btn-info-100 text-info-600 d-inline-flex align-items-center gap-1 radius-8 px-12 py-6 text-xs" data-bs-toggle="modal" data-bs-target="#modalTindakLanjut<?php echo $p->id_pelanggaran_siswa ?>">
+                                                            <iconify-icon icon="solar:user-speak-linear"></iconify-icon> BK
+                                                        </button>
+                                                    <?php endif; ?>
+                                                    <?php if (hasPermissions('kedisiplinan_delete')): ?>
+                                                        <a href="<?php echo url('kedisiplinan/hapus/' . $p->id_pelanggaran_siswa); ?>" class="btn btn-sm btn-danger-100 text-danger-600 d-inline-flex align-items-center gap-1 radius-8 px-12 py-6 text-xs" onclick="return confirm('Hapus laporan pelanggaran ini?')">
+                                                            <iconify-icon icon="lucide:trash-2"></iconify-icon> Hapus
+                                                        </a>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php else: ?>
+                            <div class="text-center text-secondary-light py-24 bg-base radius-8 border">
+                                Belum ada laporan pelanggaran.
+                            </div>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </div>
         </div>
@@ -164,7 +262,8 @@
                     <h6 class="text-light mb-0">Catatan & Akumulasi Poin Kedisiplinan Siswa</h6>
                 </div>
                 <div class="card-body">
-                    <div class="table-responsive">
+                    <!-- Desktop Table View -->
+                    <div class="table-responsive d-none d-md-block">
                         <table class="table bordered-table mb-0" id="rekapTable">
                             <thead>
                                 <tr>
@@ -214,6 +313,79 @@
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- Mobile Accordion View -->
+                    <div class="d-block d-md-none">
+                        <div class="mb-16">
+                            <div class="position-relative">
+                                <input type="text" id="mobileRekapKedisiplinanSearch" class="form-control text-sm radius-8 ps-40" placeholder="🔍 Cari siswa, NISN, atau rombel...">
+                                <span class="position-absolute top-50 start-0 translate-middle-y ms-16 text-secondary-light d-flex align-items-center">
+                                    <iconify-icon icon="solar:magnifer-linear" class="text-lg"></iconify-icon>
+                                </span>
+                            </div>
+                        </div>
+
+                        <?php if (!empty($rekap_siswa)): ?>
+                            <div class="accordion custom-accordion" id="accordionRekapKedisiplinanMobile">
+                                <?php foreach ($rekap_siswa as $ridx => $r): ?>
+                                    <?php
+                                    $accordionRekapId = "collapseRekap" . $r->id_siswa;
+                                    $headingRekapId   = "headingRekap" . $r->id_siswa;
+                                    $searchableText = strtolower(html_escape($r->nama_siswa . ' ' . $r->nisn . ' ' . $r->rombel));
+                                    ?>
+                                    <div class="accordion-item border radius-8 mb-12 mobile-rekap-card" data-search="<?php echo $searchableText; ?>">
+                                        <h2 class="accordion-header" id="<?php echo $headingRekapId; ?>">
+                                            <button class="accordion-button <?php echo ($ridx === 0) ? '' : 'collapsed'; ?> px-16 py-12 text-sm fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#<?php echo $accordionRekapId; ?>" aria-expanded="<?php echo ($ridx === 0) ? 'true' : 'false'; ?>">
+                                                <div class="d-flex flex-column gap-1 w-100 me-12">
+                                                    <div class="d-flex align-items-center justify-content-between gap-2">
+                                                        <span class="text-primary-600 fw-bold"><?php echo html_escape($r->nama_siswa); ?></span>
+                                                        <span class="badge bg-neutral-100 text-neutral-800 text-xs px-8 py-2 radius-4"><?php echo html_escape($r->rombel ?: '-'); ?></span>
+                                                    </div>
+                                                    <div class="d-flex align-items-center justify-content-between gap-2 mt-1">
+                                                        <span class="badge bg-neutral-100 text-neutral-800 font-bold px-8 py-2 text-xs"><?php echo $r->total_pelanggaran; ?> Kali Pelanggaran</span>
+                                                        <span class="badge bg-danger-600 text-light px-10 py-4 font-bold text-xs"><?php echo (int) $r->total_poin; ?> Poin</span>
+                                                    </div>
+                                                </div>
+                                            </button>
+                                        </h2>
+                                        <div id="<?php echo $accordionRekapId; ?>" class="accordion-collapse collapse <?php echo ($ridx === 0) ? 'show' : ''; ?>" aria-labelledby="<?php echo $headingRekapId; ?>" data-bs-parent="#accordionRekapKedisiplinanMobile">
+                                            <div class="accordion-body bg-neutral-50 p-16 radius-b-8">
+                                                <div class="d-flex flex-column gap-8 text-xs">
+                                                    <div class="d-flex justify-content-between border-bottom pb-8">
+                                                        <span class="text-secondary-light">NISN:</span>
+                                                        <span class="fw-semibold text-primary-light"><?php echo html_escape($r->nisn ?: '-'); ?></span>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between align-items-center pt-4">
+                                                        <span class="text-secondary-light">Status Pembinaan / Sanksi:</span>
+                                                        <div>
+                                                            <?php 
+                                                            $poin = (int) $r->total_poin;
+                                                            if ($poin <= 15) {
+                                                                echo '<span class="badge bg-success-100 text-success-800 px-10 py-4 text-xs">Pembinaan Ringan</span>';
+                                                            } elseif ($poin <= 30) {
+                                                                echo '<span class="badge bg-warning-100 text-warning-800 px-10 py-4 text-xs">Peringatan I</span>';
+                                                            } elseif ($poin <= 50) {
+                                                                echo '<span class="badge bg-warning-200 text-warning-900 px-10 py-4 text-xs">Peringatan II</span>';
+                                                            } elseif ($poin <= 75) {
+                                                                echo '<span class="badge bg-danger-100 text-danger-800 px-10 py-4 text-xs">Peringatan Keras (Panggil Ortu)</span>';
+                                                            } else {
+                                                                echo '<span class="badge bg-danger-600 text-light px-10 py-4 text-xs">Skorsing / Drop Out</span>';
+                                                            }
+                                                            ?>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php else: ?>
+                            <div class="text-center text-secondary-light py-24 bg-base radius-8 border">
+                                Belum ada rekap data kedisiplinan.
+                            </div>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </div>
         </div>
@@ -227,5 +399,19 @@
     $(document).ready(function() {
         let table = new DataTable('#dataTable');
         let rekapTable = new DataTable('#rekapTable');
+
+        $('#mobilePelanggaranSearch').on('keyup', function() {
+            let value = $(this).val().toLowerCase();
+            $('.mobile-pelanggaran-card').filter(function() {
+                $(this).toggle($(this).data('search').indexOf(value) > -1);
+            });
+        });
+
+        $('#mobileRekapKedisiplinanSearch').on('keyup', function() {
+            let value = $(this).val().toLowerCase();
+            $('.mobile-rekap-card').filter(function() {
+                $(this).toggle($(this).data('search').indexOf(value) > -1);
+            });
+        });
     });
 </script>

@@ -54,7 +54,7 @@
         <div class="col-4">
             <div class="card border-0 radius-12 bg-primary-50 p-20 d-flex align-items-center flex-row justify-content-between">
                 <div>
-                    <span class="text-xs text-primary-600 fw-semibold text-uppercase">Total Agenda Harian</span>
+                    <span class="text-xs text-primary-600 fw-semibold text-uppercase">Total</span>
                     <h3 class="mb-0 text-primary-900 fw-bold mt-1"><?php echo $total_agenda ?></h3>
                 </div>
                 <div class="d-none d-sm-block w-48-px h-48-px bg-primary-600 rounded-circle d-flex align-items-center justify-content-center text-white">
@@ -65,7 +65,7 @@
         <div class="col-4">
             <div class="card border-0 radius-12 bg-warning-50 p-20 d-flex align-items-center flex-row justify-content-between">
                 <div>
-                    <span class="text-xs text-warning-600 fw-semibold text-uppercase">Belum Dilaksanakan</span>
+                    <span class="text-xs text-warning-600 fw-semibold text-uppercase">Belum</span>
                     <h3 class="mb-0 text-warning-900 fw-bold mt-1"><?php echo $total_belum ?></h3>
                 </div>
                 <div class="d-none d-sm-block w-48-px h-48-px bg-warning-600 rounded-circle d-flex align-items-center justify-content-center text-white">
@@ -76,7 +76,7 @@
         <div class="col-4">
             <div class="card border-0 radius-12 bg-success-50 p-20 d-flex align-items-center flex-row justify-content-between">
                 <div>
-                    <span class="text-xs text-success-600 fw-semibold text-uppercase">Sudah Dilaksanakan</span>
+                    <span class="text-xs text-success-600 fw-semibold text-uppercase">Terlaksana</span>
                     <h3 class="mb-0 text-success-900 fw-bold mt-1"><?php echo $total_terlaksana ?></h3>
                 </div>
                 <div class="d-none d-sm-block w-48-px h-48-px bg-success-600 rounded-circle d-flex align-items-center justify-content-center text-white">
@@ -135,14 +135,14 @@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active px-20 py-10 fw-semibold" id="tab-belum-btn" data-bs-toggle="tab" data-bs-target="#tab-agenda-belum" type="button" role="tab">
                         <iconify-icon icon="solar:clock-circle-bold" class="me-1 text-warning-600"></iconify-icon>
-                        Belum Dilaksanakan
+                        Agenda
                         <span class="badge bg-warning-50 text-warning-600 radius-4 ms-2 px-8 py-2"><?php echo $total_belum ?></span>
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link px-20 py-10 fw-semibold" id="tab-sudah-btn" data-bs-toggle="tab" data-bs-target="#tab-agenda-sudah" type="button" role="tab">
                         <iconify-icon icon="solar:check-circle-bold" class="me-1 text-success-600"></iconify-icon>
-                        Sudah Dilaksanakan
+                        Terlaksana
                         <span class="badge bg-success-50 text-success-600 radius-4 ms-2 px-8 py-2"><?php echo $total_terlaksana ?></span>
                     </button>
                 </li>
@@ -155,10 +155,21 @@
         </div>
 
         <div class="card-body p-20">
+            <!-- Form Search Mobile -->
+            <div class="d-block d-md-none mb-16">
+                <div class="position-relative">
+                    <input type="text" id="mobileAgendaSearch" class="form-control text-sm radius-8 ps-40" placeholder="🔍 Cari Agenda, Hari, Tanggal, Rombel, atau Mapel...">
+                    <span class="position-absolute top-50 start-0 translate-middle-y ms-16 text-secondary-light d-flex align-items-center">
+                        <iconify-icon icon="solar:magnifer-linear" class="text-lg"></iconify-icon>
+                    </span>
+                </div>
+            </div>
+
             <div class="tab-content">
                 <!-- TAB 1: BELUM DILAKSANAKAN -->
                 <div class="tab-pane fade show active" id="tab-agenda-belum" role="tabpanel">
-                    <div class="table-responsive">
+                    <!-- Desktop Table -->
+                    <div class="table-responsive d-none d-md-block">
                         <table class="table bordered-table align-middle w-100" id="agendaTableBelum">
                             <thead>
                                 <tr>
@@ -182,7 +193,6 @@
                                         }
                                         ?>
                                         <tr>
-                                            <!-- 1. HARI, TANGGAL & JADWAL -->
                                             <td>
                                                 <div class="mb-1">
                                                     <?php if ($row->tanggal === $today_str): ?>
@@ -217,14 +227,12 @@
                                                 </div>
                                             </td>
 
-                                            <!-- 2. ROMBEL & MAPEL -->
                                             <td>
                                                 <span class="badge bg-primary-50 text-primary-600 radius-4 mb-4 d-inline-block"><?php echo html_escape((!empty($row->nama_tingkat) ? $row->nama_tingkat . ' - ' : '') . $row->nama_rombel) ?></span>
                                                 <div class="fw-semibold text-neutral-800 text-sm"><?php echo html_escape($row->nama_mapel) ?></div>
                                                 <span class="badge bg-info-100 text-info-600 radius-4">Pert. Ke-<?php echo $row->pertemuan_ke ?></span>
                                             </td>
 
-                                            <!-- 3. AKSI -->
                                             <td class="text-center">
                                                 <?php $detail_route = (logged('role') == '1') ? 'perangkat_pembelajaran/agenda_detail/' : 'guru/agenda_detail/'; ?>
                                                 <a href="<?php echo url($detail_route . $row->id_agenda) ?>" class="btn btn-sm btn-success-600 text-white radius-8 px-14 py-8 d-inline-flex align-items-center gap-1 fw-semibold shadow-xs">
@@ -237,11 +245,87 @@
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- Mobile Accordion -->
+                    <div class="d-block d-md-none">
+                        <?php if (!empty($agendas_belum)): ?>
+                            <div class="accordion custom-accordion" id="accordionAgendaBelumMobile">
+                                <?php foreach ($agendas_belum as $i => $row): ?>
+                                    <?php
+                                    $is_past_date = ($row->tanggal < $today_str);
+                                    $is_today     = ($row->tanggal === $today_str);
+                                    $is_late      = false;
+
+                                    if ($is_past_date) {
+                                        $is_late = true;
+                                    } elseif ($is_today && !empty($row->jam_mulai) && $now_time > $row->jam_mulai) {
+                                        $is_late = true;
+                                    }
+                                    $accordionId = "collapseAgendaBelum" . $row->id_agenda;
+                                    $headingId   = "headingAgendaBelum" . $row->id_agenda;
+                                    $searchableText = strtolower(html_escape($row->hari . ' ' . date('d M Y', strtotime($row->tanggal)) . ' ' . $row->nama_mapel . ' ' . $row->nama_rombel));
+                                    ?>
+                                    <div class="accordion-item border radius-8 mb-12 mobile-agenda-card" data-search="<?php echo $searchableText; ?>">
+                                        <h2 class="accordion-header" id="<?php echo $headingId; ?>">
+                                            <button class="accordion-button collapsed px-16 py-12 text-sm fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#<?php echo $accordionId; ?>" aria-expanded="false">
+                                                <div class="d-flex flex-column gap-1 w-100 me-12">
+                                                    <div class="d-flex align-items-center justify-content-between">
+                                                        <span class="text-primary-600 fw-bold"><?php echo html_escape($row->nama_mapel); ?></span>
+                                                        <?php if ($is_late): ?>
+                                                            <span class="badge bg-danger-focus text-danger-main px-8 py-2 radius-4 text-xs" style="position: relative;right: 35px;top: 15px;">Terlambat</span>
+                                                        <?php else: ?>
+                                                            <span class="badge bg-warning-50 text-warning-700 px-8 py-2 radius-4 text-xs" style="position: relative;right: 35px;top: 15px;">Belum</span>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                    <div class="d-flex align-items-center gap-12 text-xs text-secondary-light mt-4">
+                                                        <span><?php echo html_escape($row->hari) ?>, <?php echo date('d M Y', strtotime($row->tanggal)) ?></span>
+                                                    </div>
+                                                    <div class="d-flex align-items-center gap-12 text-xs text-secondary-light mt-4">
+                                                        <span><?php echo html_escape((!empty($row->nama_tingkat) ? $row->nama_tingkat . ' - ' : '') . $row->nama_rombel) ?></span>
+                                                    </div>
+                                                </div>
+                                            </button>
+                                        </h2>
+                                        <div id="<?php echo $accordionId; ?>" class="accordion-collapse collapse" aria-labelledby="<?php echo $headingId; ?>" data-bs-parent="#accordionAgendaBelumMobile">
+                                            <div class="accordion-body p-16 bg-neutral-50 radius-bottom-8">
+                                                <div class="row gy-2 text-xs mb-12">
+                                                    <div class="col-6">
+                                                        <span class="text-secondary-light d-block mb-2">Rombel</span>
+                                                        <span class="fw-semibold text-primary-light"><?php echo html_escape((!empty($row->nama_tingkat) ? $row->nama_tingkat . ' - ' : '') . $row->nama_rombel); ?></span>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <span class="text-secondary-light d-block mb-2">Pertemuan</span>
+                                                        <span class="fw-semibold text-primary-light">Pert. Ke-<?php echo $row->pertemuan_ke; ?></span>
+                                                    </div>
+                                                    <div class="col-12 mt-8">
+                                                        <span class="text-secondary-light d-block mb-2">Waktu KBM</span>
+                                                        <span class="fw-bold text-primary-900"><?php echo !empty($row->jam_mulai) ? html_escape($row->jam_mulai . ' - ' . $row->jam_selesai . ' WIB') : 'Belum diatur'; ?></span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mt-16 pt-12 border-top">
+                                                    <?php $detail_route = (logged('role') == '1') ? 'perangkat_pembelajaran/agenda_detail/' : 'guru/agenda_detail/'; ?>
+                                                    <a href="<?php echo url($detail_route . $row->id_agenda) ?>" class="btn btn-success-600 btn-sm text-white radius-8 w-100 d-flex align-items-center justify-content-center gap-2 py-8 fw-semibold">
+                                                        <iconify-icon icon="solar:play-circle-bold" class="text-lg"></iconify-icon> Buka Agenda & Presensi
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php else: ?>
+                            <div class="text-center py-24 text-secondary-light">
+                                <p class="text-sm">Tidak ada agenda belum dilaksanakan.</p>
+                            </div>
+                        <?php endif; ?>
+                    </div>
                 </div>
 
                 <!-- TAB 2: SUDAH DILAKSANAKAN -->
                 <div class="tab-pane fade" id="tab-agenda-sudah" role="tabpanel">
-                    <div class="table-responsive">
+                    <!-- Desktop Table -->
+                    <div class="table-responsive d-none d-md-block">
                         <table class="table bordered-table align-middle w-100" id="agendaTableSudah">
                             <thead>
                                 <tr>
@@ -254,7 +338,6 @@
                                 <?php if (!empty($agendas_sudah)): ?>
                                     <?php foreach ($agendas_sudah as $row): ?>
                                         <tr>
-                                            <!-- 1. HARI, TANGGAL & JADWAL -->
                                             <td>
                                                 <div class="mb-1">
                                                     <?php if ($row->tanggal === $today_str): ?>
@@ -277,18 +360,16 @@
                                                 </div>
 
                                                 <div>
-                                                    <span class="badge bg-success-focus text-success-main px-10 py-4 radius-4">Terlaksana</span>
+                                                    <span class="badge bg-success-focus text-success-main px-10 py-4 radius-4" >Terlaksana</span>
                                                 </div>
                                             </td>
 
-                                            <!-- 2. ROMBEL & MAPEL -->
                                             <td>
                                                 <span class="badge bg-primary-50 text-primary-600 radius-4 mb-4 d-inline-block"><?php echo html_escape((!empty($row->nama_tingkat) ? $row->nama_tingkat . ' - ' : '') . $row->nama_rombel) ?></span>
                                                 <div class="fw-semibold text-neutral-800 text-sm"><?php echo html_escape($row->nama_mapel) ?></div>
                                                 <span class="badge bg-info-100 text-info-600 radius-4">Pert. Ke-<?php echo $row->pertemuan_ke ?></span>
                                             </td>
 
-                                            <!-- 3. AKSI -->
                                             <td class="text-center">
                                                 <?php $detail_route = (logged('role') == '1') ? 'perangkat_pembelajaran/agenda_detail/' : 'guru/agenda_detail/'; ?>
                                                 <a href="<?php echo url($detail_route . $row->id_agenda) ?>" class="btn btn-sm btn-outline-primary radius-8 px-14 py-8 d-inline-flex align-items-center gap-1 fw-semibold shadow-xs">
@@ -300,6 +381,68 @@
                                 <?php endif; ?>
                             </tbody>
                         </table>
+                    </div>
+
+                    <!-- Mobile Accordion -->
+                    <div class="d-block d-md-none">
+                        <?php if (!empty($agendas_sudah)): ?>
+                            <div class="accordion custom-accordion" id="accordionAgendaSudahMobile">
+                                <?php foreach ($agendas_sudah as $i => $row): ?>
+                                    <?php
+                                    $accordionId = "collapseAgendaSudah" . $row->id_agenda;
+                                    $headingId   = "headingAgendaSudah" . $row->id_agenda;
+                                    $searchableText = strtolower(html_escape($row->hari . ' ' . date('d M Y', strtotime($row->tanggal)) . ' ' . $row->nama_mapel . ' ' . $row->nama_rombel));
+                                    ?>
+                                    <div class="accordion-item border radius-8 mb-12 mobile-agenda-card" data-search="<?php echo $searchableText; ?>">
+                                        <h2 class="accordion-header" id="<?php echo $headingId; ?>">
+                                            <button class="accordion-button collapsed px-16 py-12 text-sm fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#<?php echo $accordionId; ?>" aria-expanded="false">
+                                                <div class="d-flex flex-column gap-1 w-100 me-12">
+                                                    <div class="d-flex align-items-center justify-content-between">
+                                                        <span class="text-primary-600 fw-bold"><?php echo html_escape($row->nama_mapel); ?></span>
+                                                        <span class="badge bg-success-focus text-success-main px-8 py-2 radius-4 text-xs" style="position: relative;right: 35px;top: 15px;">Terlaksana</span>
+                                                    </div>
+                                                    <div class="d-flex align-items-center gap-12 text-xs text-secondary-light mt-4">
+                                                        <span><?php echo html_escape($row->hari) ?>, <?php echo date('d M Y', strtotime($row->tanggal)) ?></span>
+                                                    </div>
+                                                    <div class="d-flex align-items-center gap-12 text-xs text-secondary-light mt-4">
+                                                        <span><?php echo html_escape((!empty($row->nama_tingkat) ? $row->nama_tingkat . ' - ' : '') . $row->nama_rombel) ?></span>
+                                                    </div>
+                                                </div>
+                                            </button>
+                                        </h2>
+                                        <div id="<?php echo $accordionId; ?>" class="accordion-collapse collapse" aria-labelledby="<?php echo $headingId; ?>" data-bs-parent="#accordionAgendaSudahMobile">
+                                            <div class="accordion-body p-16 bg-neutral-50 radius-bottom-8">
+                                                <div class="row gy-2 text-xs mb-12">
+                                                    <div class="col-6">
+                                                        <span class="text-secondary-light d-block mb-2">Rombel</span>
+                                                        <span class="fw-semibold text-primary-light"><?php echo html_escape((!empty($row->nama_tingkat) ? $row->nama_tingkat . ' - ' : '') . $row->nama_rombel); ?></span>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <span class="text-secondary-light d-block mb-2">Pertemuan</span>
+                                                        <span class="fw-semibold text-primary-light">Pert. Ke-<?php echo $row->pertemuan_ke; ?></span>
+                                                    </div>
+                                                    <div class="col-12 mt-8">
+                                                        <span class="text-secondary-light d-block mb-2">Waktu KBM</span>
+                                                        <span class="fw-bold text-primary-900"><?php echo !empty($row->jam_mulai) ? html_escape($row->jam_mulai . ' - ' . $row->jam_selesai . ' WIB') : 'Belum diatur'; ?></span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mt-16 pt-12 border-top">
+                                                    <?php $detail_route = (logged('role') == '1') ? 'perangkat_pembelajaran/agenda_detail/' : 'guru/agenda_detail/'; ?>
+                                                    <a href="<?php echo url($detail_route . $row->id_agenda) ?>" class="btn btn-outline-primary btn-sm radius-8 w-100 d-flex align-items-center justify-content-center gap-2 py-8 fw-semibold">
+                                                        <iconify-icon icon="solar:eye-bold" class="text-lg"></iconify-icon> Detail Agenda
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php else: ?>
+                            <div class="text-center py-24 text-secondary-light">
+                                <p class="text-sm">Belum ada agenda yang terlaksana.</p>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -393,5 +536,19 @@ $(document).ready(function() {
             ]
         });
     }
+
+    // Real-time Search untuk Accordion Mobile Agenda Pembelajaran
+    $('#mobileAgendaSearch').on('keyup input', function() {
+        let q = $(this).val().toLowerCase().trim();
+
+        $('.mobile-agenda-card').each(function() {
+            let text = $(this).attr('data-search') || '';
+            if (text.indexOf(q) !== -1) {
+                $(this).removeClass('d-none');
+            } else {
+                $(this).addClass('d-none');
+            }
+        });
+    });
 });
 </script>

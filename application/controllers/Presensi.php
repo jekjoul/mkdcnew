@@ -67,12 +67,12 @@ class Presensi extends MY_Controller
                     NULL AS keterangan,
                     COUNT(*) AS total_tap
                 FROM presensi_harian
-                WHERE tipe_user = ?
-                  AND {$where_sql}
+                WHERE {$where_sql}
                   AND YEAR(tanggal)  = ?
                   AND MONTH(tanggal) = ?
                 GROUP BY id_user, pin, tanggal
             ";
+            $result = $this->db->query($sql, [$year, $month])->result();
         } else {
             // Ketentuan Presensi Siswa: Dhuha vs Dzuhur
             $sql = "
@@ -104,15 +104,13 @@ class Presensi extends MY_Controller
                     END AS keterangan,
                     COUNT(*) AS total_tap
                 FROM presensi_harian
-                WHERE tipe_user = ?
-                  AND {$where_sql}
+                WHERE {$where_sql}
                   AND YEAR(tanggal)  = ?
                   AND MONTH(tanggal) = ?
                 GROUP BY id_user, pin, tanggal
             ";
+            $result = $this->db->query($sql, [$year, $month])->result();
         }
-
-        $result = $this->db->query($sql, [$tipe_user, $year, $month])->result();
 
         $matrix_by_id  = [];
         $matrix_by_pin = [];
@@ -122,7 +120,10 @@ class Presensi extends MY_Controller
                 $matrix_by_id[$row->id_user][$row->tanggal] = $row;
             }
             if (!empty($row->pin)) {
-                $matrix_by_pin[(string)$row->pin][$row->tanggal] = $row;
+                $pin_val = (string)$row->pin;
+                $matrix_by_pin[$pin_val][$row->tanggal] = $row;
+                $matrix_by_pin[ltrim($pin_val, '0')][$row->tanggal] = $row;
+                $matrix_by_pin[(string)intval($pin_val)][$row->tanggal] = $row;
             }
         }
 
@@ -138,6 +139,13 @@ class Presensi extends MY_Controller
     private function _presensi_hari_ini($tipe_user, $tanggal, $join_table, $join_key, $join_name_col, $join_extra_col = null)
     {
         $extra_select = $join_extra_col ? ", u.{$join_extra_col}" : '';
+
+        $join_cond = "u.{$join_key} = p.id_user";
+        if ($tipe_user === 'ptk') {
+            $join_cond .= " OR (p.pin IS NOT NULL AND p.pin != '' AND (u.niy = p.pin OR ltrim(u.niy, '0') = ltrim(p.pin, '0') OR u.pin_fingerprint = p.pin OR u.nik = p.pin))";
+        } else {
+            $join_cond .= " OR (p.pin IS NOT NULL AND p.pin != '' AND (u.nipd = p.pin OR ltrim(u.nipd, '0') = ltrim(p.pin, '0') OR u.pin_fingerprint = p.pin OR u.nisn = p.pin OR u.nik = p.pin))";
+        }
 
         $sql = "
             SELECT
@@ -163,15 +171,13 @@ class Presensi extends MY_Controller
                     ELSE NULL
                 END AS keterangan
             FROM presensi_harian p
-            JOIN {$join_table} u ON u.{$join_key} = p.id_user
-            WHERE p.tipe_user = ?
-              AND p.tanggal   = ?
-            GROUP BY p.id_user, p.tanggal
+            JOIN {$join_table} u ON ({$join_cond})
+            WHERE p.tanggal = ?
+            GROUP BY u.{$join_key}, p.tanggal
             ORDER BY jam_dhuha ASC
         ";
 
-
-        return $this->db->query($sql, [$tipe_user, $tanggal])->result();
+        return $this->db->query($sql, [$tanggal])->result();
     }
 
     // =========================================================================
@@ -584,16 +590,82 @@ class Presensi extends MY_Controller
         $this->activity_model->add(logged('name') . ' Mengubah presensi manual (' . strtoupper($tipe_user) . ' ID #' . $id_user . ') Tanggal: ' . $tanggal . ' Status: ' . $status, logged('id'));
 
         $this->session->set_flashdata('alert-type', 'success');
-        $this->session->set_flashdata('alert', 'Presensi berhasil diperbarui secara manual.');
+        $this->session->set_flashdata('alert', 'Presensi manual berhasil diperbarui.');
 
-        $rombel     = $this->input->post('rombel');
+        $rombel      = $this->input->post('rombel');
         $bulan_tahun = $this->input->post('bulan_tahun');
 
-        if ($tipe_user === 'siswa') {
-            redirect('presensi/siswa?rombel=' . urlencode($rombel) . '&bulan_tahun=' . urlencode($bulan_tahun));
-        } else {
-            redirect('presensi/guru?bulan_tahun=' . urlencode($bulan_tahun));
+        $redirect_url = 'presensi/' . ($tipe_user === 'ptk' ? 'guru' : 'siswa');
+        $params = [];
+        if (!empty($rombel))      $params['rombel'] = $rombel;
+        if (!empty($bulan_tahun)) $params['bulan_tahun'] = $bulan_tahun;
+        if (!empty($params))      $redirect_url .= '?' . http_build_query($params);
+
+        redirect($redirect_url);
+    }
+
+    // =========================================================================
+    // Hapus Presensi Manual (Hapus Log Kehadiran per Hari/Tanggal)
+    // =========================================================================
+    public function hapus_manual()
+    {
+        ifPermissions('menu_presensi');
+
+        $tipe_user   = $this->input->post('tipe_user');
+        $id_user     = intval($this->input->post('id_user'));
+        $tanggal     = $this->input->post('tanggal');
+        $rombel      = $this->input->post('rombel');
+        $bulan_tahun = $this->input->post('bulan_tahun');
+
+        if (empty($tanggal)) {
+            $this->session->set_flashdata('alert-type', 'danger');
+            $this->session->set_flashdata('alert', 'Tanggal presensi tidak valid.');
+            redirect($_SERVER['HTTP_REFERER'] ?? 'presensi/' . ($tipe_user === 'ptk' ? 'guru' : 'siswa'));
+            return;
         }
+
+        // Ambil data PIN/NIY/NIPD user untuk pembersihan presensi_harian secara menyeluruh
+        $pin_list = [];
+        if ($tipe_user === 'ptk') {
+            $ptk = $this->db->get_where('ptk', ['id_ptk' => $id_user])->row();
+            if ($ptk) {
+                if (!empty($ptk->niy))              $pin_list[] = $ptk->niy;
+                if (!empty($ptk->pin_fingerprint)) $pin_list[] = $ptk->pin_fingerprint;
+                if (!empty($ptk->nik))              $pin_list[] = $ptk->nik;
+            }
+        } else {
+            $siswa = $this->db->get_where('siswa', ['id_siswa' => $id_user])->row();
+            if ($siswa) {
+                if (!empty($siswa->nipd))            $pin_list[] = $siswa->nipd;
+                if (!empty($siswa->pin_fingerprint)) $pin_list[] = $siswa->pin_fingerprint;
+                if (!empty($siswa->nisn))            $pin_list[] = $siswa->nisn;
+            }
+        }
+
+        // Hapus berdasarkan id_user ATAU pin
+        $this->db->group_start();
+        $this->db->where('id_user', $id_user);
+        if (!empty($pin_list)) {
+            $this->db->or_where_in('pin', $pin_list);
+        }
+        $this->db->group_end();
+        $this->db->where('tanggal', $tanggal);
+        $this->db->delete('presensi_harian');
+
+        // Hapus juga override manualnya
+        $this->db->where(['tipe_user' => $tipe_user, 'id_user' => $id_user, 'tanggal' => $tanggal]);
+        $this->db->delete('presensi_override');
+
+        $this->session->set_flashdata('alert-type', 'success');
+        $this->session->set_flashdata('alert', 'Berhasil menghapus data presensi tanggal ' . date('d-m-Y', strtotime($tanggal)) . '.');
+
+        $redirect_url = 'presensi/' . ($tipe_user === 'ptk' ? 'guru' : 'siswa');
+        $params = [];
+        if (!empty($rombel))      $params['rombel'] = $rombel;
+        if (!empty($bulan_tahun)) $params['bulan_tahun'] = $bulan_tahun;
+        if (!empty($params))      $redirect_url .= '?' . http_build_query($params);
+
+        redirect($redirect_url);
     }
 
     /**
@@ -765,7 +837,7 @@ class Presensi extends MY_Controller
             if (empty($pin_raw) || isset($processed_pins[$pin_raw]) || isset($processed_pins[$pin_clean])) continue;
 
             $merged_users[] = (object)[
-                'pin'               => $pin,
+                'pin'               => $m->pin,
                 'nama'              => $m->nama,
                 'nama_mesin'        => $m->nama,
                 'tipe_user'         => 'User Mesin Saja',

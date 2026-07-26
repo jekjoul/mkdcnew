@@ -284,7 +284,7 @@
 <!-- Modal Edit Presensi Manual -->
 <div class="modal fade" id="modalEditPresensi" tabindex="-1" aria-labelledby="modalEditPresensiLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <form method="post" action="<?php echo url('presensi/simpan_manual') ?>" class="modal-content">
+        <form method="post" id="formPresensiModalGuru" action="<?php echo url('presensi/simpan_manual') ?>" class="modal-content">
             <div class="modal-header bg-primary-600">
                 <h6 class="modal-title text-light" id="modalEditPresensiLabel">Perbarui Presensi Guru Manual</h6>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -318,9 +318,14 @@
                               rows="3" placeholder="Sakit flu, izin keluarga, dll."></textarea>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary text-sm" data-bs-dismiss="modal">Batal</button>
-                <button type="submit" class="btn btn-primary text-sm">Simpan</button>
+            <div class="modal-footer d-flex justify-content-between">
+                <button type="button" class="btn btn-danger text-sm" id="btnHapusPresensiGuru" onclick="confirmHapusPresensiGuru()">
+                    <iconify-icon icon="solar:trash-bin-trash-bold" class="me-1"></iconify-icon> Hapus Presensi
+                </button>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-secondary text-sm" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary text-sm">Simpan</button>
+                </div>
             </div>
         </form>
     </div>
@@ -352,5 +357,15 @@ function openEditModal(tipeUser, idUser, nama, tanggal, currentStatus, currentKe
     $('#modal_status').val(currentStatus || 'Hadir');
     $('#modal_keterangan').val(currentKet || '');
     new bootstrap.Modal(document.getElementById('modalEditPresensi')).show();
+}
+
+function confirmHapusPresensiGuru() {
+    let nama   = $('#modal_nama').val();
+    let tglFmt = $('#modal_tanggal_fmt').val();
+    if (confirm('Apakah Anda yakin ingin menghapus data presensi tanggal ' + tglFmt + ' untuk ' + nama + '?')) {
+        let form = document.getElementById('formPresensiModalGuru');
+        form.action = '<?php echo url('presensi/hapus_manual') ?>';
+        form.submit();
+    }
 }
 </script>

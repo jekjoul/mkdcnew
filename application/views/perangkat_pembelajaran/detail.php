@@ -120,7 +120,16 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                     <?php echo form_close(); ?>
                 </div>
                 <div class="card-body p-24">
-                    <div class="table-responsive">
+                    <style>
+                    .accordion-button::after {
+                        display: none !important;
+                    }
+                    .accordion-button {
+                        padding-inline-end: 16px !important;
+                    }
+                    </style>
+                    <!-- Desktop Table View -->
+                    <div class="table-responsive d-none d-md-block">
                         <table class="table bordered-table align-middle">
                             <thead>
                                 <tr>
@@ -271,6 +280,150 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- Mobile Accordion View -->
+                    <div class="accordion d-block d-md-none" id="accordionBerkasPerangkat">
+                        <?php
+                        $m_no = 1;
+                        foreach ($files_config as $field => $cfg):
+                            $uploaded_file = $perangkat ? $perangkat->$field : null;
+                        ?>
+                            <div class="accordion-item border radius-12 mb-12 shadow-xs overflow-hidden">
+                                <h2 class="accordion-header" id="headingBerkas<?php echo $cfg['key'] ?>">
+                                    <button class="accordion-button <?php echo ($m_no === 1) ? '' : 'collapsed'; ?> bg-base text-primary-light px-16 py-12" 
+                                            type="button" 
+                                            data-bs-toggle="collapse" 
+                                            data-bs-target="#collapseBerkas<?php echo $cfg['key'] ?>" 
+                                            aria-expanded="<?php echo ($m_no === 1) ? 'true' : 'false'; ?>" 
+                                            aria-controls="collapseBerkas<?php echo $cfg['key'] ?>">
+                                        <div class="w-100 me-2 d-flex align-items-center justify-content-between gap-2">
+                                            <div>
+                                                <span class="fw-bold text-primary-900 text-sm"><?php echo html_escape($cfg['label']) ?></span>
+                                            </div>
+                                            <div>
+                                                <?php if ($uploaded_file): ?>
+                                                    <span class="badge bg-success-focus text-success-main px-8 py-3 radius-4 text-xs">Sudah Upload</span>
+                                                <?php else: ?>
+                                                    <span class="badge bg-warning-focus text-warning-main px-8 py-3 radius-4 text-xs">Belum Ada</span>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    </button>
+                                </h2>
+                                <div id="collapseBerkas<?php echo $cfg['key'] ?>" 
+                                     class="accordion-collapse collapse <?php echo ($m_no === 1) ? 'show' : ''; ?>" 
+                                     aria-labelledby="headingBerkas<?php echo $cfg['key'] ?>" 
+                                     data-bs-parent="#accordionBerkasPerangkat">
+                                    <div class="accordion-body bg-neutral-50 p-16">
+                                        <span class="text-muted text-xs d-block mb-12"><?php echo $cfg['hint'] ?></span>
+                                        <?php if ($uploaded_file): ?>
+                                            <div class="d-flex flex-column gap-2">
+                                                <?php
+                                                $key_drive = $cfg['key'] . '_drive_file_id';
+                                                $drive_file_id = $perangkat ? $perangkat->$key_drive : null;
+                                                if ($drive_file_id):
+                                                ?>
+                                                    <button type="button"
+                                                        class="btn btn-sm btn-info-100 text-info-600 radius-8 px-12 py-8 d-inline-flex align-items-center justify-content-center gap-1 btn-preview-doc w-100"
+                                                        data-drive-id="<?php echo html_escape($drive_file_id) ?>"
+                                                        data-title="<?php echo html_escape($cfg['label']) ?>">
+                                                        <iconify-icon icon="lucide:eye"></iconify-icon> Lihat (Preview)
+                                                    </button>
+                                                <?php endif; ?>
+
+                                                <a href="<?php echo $unduh_berkas_url . '/' . $cfg['key'] ?>"
+                                                    class="btn btn-sm btn-secondary-100 text-secondary-600 radius-8 px-12 py-8 d-inline-flex align-items-center justify-content-center gap-1 w-100">
+                                                    <iconify-icon icon="lucide:download"></iconify-icon> Unduh
+                                                </a>
+
+                                                <?php if ($drive_file_id):
+                                                    $is_xlsx = (strpos($uploaded_file, '.xlsx') !== false);
+                                                    $editor_base = $is_xlsx ? 'https://docs.google.com/spreadsheets/d/' : 'https://docs.google.com/document/d/';
+                                                    $drive_url = $editor_base . html_escape($drive_file_id) . '/edit';
+                                                ?>
+                                                    <a href="<?php echo $drive_url ?>"
+                                                        target="_blank"
+                                                        class="btn btn-sm btn-success-100 text-success-600 radius-8 px-12 py-8 d-inline-flex align-items-center justify-content-center gap-1 w-100">
+                                                        <iconify-icon icon="logos:google-drive" class="align-middle"></iconify-icon> Edit Online
+                                                    </a>
+                                                <?php endif; ?>
+
+                                                <a href="<?php echo $hapus_berkas_url . '/' . $cfg['key'] ?>"
+                                                    onclick="return confirm('Hapus berkas ini? Rombel lain yang sama tingkat & mapelnya juga tidak bisa mengaksesnya.')"
+                                                    class="btn btn-sm btn-danger-100 text-danger-600 radius-8 px-12 py-8 d-inline-flex align-items-center justify-content-center gap-1 w-100">
+                                                    <iconify-icon icon="lucide:trash-2"></iconify-icon> Hapus & Upload Ulang
+                                                </a>
+                                            </div>
+                                        <?php else: ?>
+                                            <?php 
+                                            $seq_order = ['file_cp', 'file_tp', 'file_atp', 'file_kktp', 'file_kisi_sts', 'file_soal_sts', 'file_kisi_sas', 'file_soal_sas'];
+                                            $current_idx = array_search($field, $seq_order);
+                                            $can_generate_ai = true;
+                                            $prev_label = '';
+                                            
+                                            if ($current_idx > 0) {
+                                                $prev_field = $seq_order[$current_idx - 1];
+                                                $prev_uploaded = $perangkat ? $perangkat->$prev_field : null;
+                                                if (!$prev_uploaded) {
+                                                    $can_generate_ai = false;
+                                                    foreach ($files_config as $f_k => $cfg_item) {
+                                                        if ($f_k === $prev_field) {
+                                                            $prev_label = $cfg_item['label'];
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            ?>
+
+                                            <div class="d-flex flex-column gap-2">
+                                                <?php echo form_open_multipart($save_berkas_url, ['class' => 'd-flex flex-column gap-2']); ?>
+                                                <input type="hidden" name="single_field" value="<?php echo $field ?>">
+                                                <input type="file" name="<?php echo $field ?>" required class="form-control radius-8 form-control-sm w-100 scan-enabled" accept="<?php echo $cfg['accept'] ?>">
+                                                <button type="submit" class="btn btn-sm btn-primary-600 radius-8 px-12 py-8 d-inline-flex align-items-center justify-content-center gap-1 w-100">
+                                                    <iconify-icon icon="lucide:upload-cloud"></iconify-icon> Upload
+                                                </button>
+                                                <?php echo form_close(); ?>
+
+                                                <div class="mt-2">
+                                                    <?php if ($can_generate_ai): ?>
+                                                         <?php if ($cfg['key'] === 'kisi_sts' || $cfg['key'] === 'kisi_sas'): ?>
+                                                             <button type="button" 
+                                                                 data-field="<?php echo html_escape($field) ?>"
+                                                                 data-label="<?php echo html_escape($cfg['label']) ?>"
+                                                                 class="btn btn-sm btn-success-100 text-success-600 radius-8 px-12 py-8 d-inline-flex align-items-center justify-content-center gap-1 w-100 btn-trigger-kisi-modal">
+                                                                 <iconify-icon icon="logos:google-gemini" class="align-middle"></iconify-icon>
+                                                                 Generate via AI
+                                                             </button>
+                                                         <?php else: ?>
+                                                             <?php echo form_open($generate_berkas_ai_url); ?>
+                                                             <input type="hidden" name="field" value="<?php echo html_escape($field) ?>">
+                                                             <button type="submit" 
+                                                                 data-label="<?php echo html_escape($cfg['label']) ?>"
+                                                                 class="btn btn-sm btn-success-100 text-success-600 radius-8 px-12 py-8 d-inline-flex align-items-center justify-content-center gap-1 w-100 trigger-ai">
+                                                                 <iconify-icon icon="logos:google-gemini" class="align-middle"></iconify-icon>
+                                                                 Generate via AI
+                                                             </button>
+                                                             <?php echo form_close(); ?>
+                                                         <?php endif; ?>
+                                                    <?php else: ?>
+                                                        <button type="button" 
+                                                            disabled 
+                                                            title="Silakan upload/generate <?php echo html_escape($prev_label) ?> terlebih dahulu"
+                                                            class="btn btn-sm btn-light text-muted radius-8 px-12 py-8 d-inline-flex align-items-center justify-content-center gap-1 w-100">
+                                                            <iconify-icon icon="lucide:lock-keyhole" class="text-xs"></iconify-icon>
+                                                            Generate via AI (Terkunci)
+                                                        </button>
+                                                        <span class="text-xs text-danger fst-italic mt-1 d-block text-center">Terkunci! Butuh <?php echo html_escape(preg_replace('/^\d+\.\s+/', '', $prev_label)) ?></span>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php $m_no++; endforeach; ?>
+                    </div>
                 </div>
             </div>
     </div><!-- /tab-berkas -->
@@ -299,7 +452,8 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                         <h6 class="mb-0 text-primary-light">Daftar Modul Ajar / RPP Aktif</h6>
                     </div>
                     <div class="card-body p-24">
-                        <div class="table-responsive w-100">
+                        <!-- Desktop Table View -->
+                        <div class="table-responsive w-100 d-none d-md-block">
                             <table class="table bordered-table align-middle w-100" id="modulAjarTable" style="width: 100% !important;">
                                 <thead>
                                     <tr>
@@ -372,6 +526,79 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                     <?php endif; ?>
                                 </tbody>
                             </table>
+                        </div>
+
+                        <!-- Mobile Accordion View -->
+                        <div class="accordion d-block d-md-none" id="accordionModulAjar">
+                            <?php if (!empty($modul_ajar_list)): ?>
+                                <?php 
+                                $m_no_modul = 1;
+                                foreach ($modul_ajar_list as $modul): 
+                                ?>
+                                    <div class="accordion-item border radius-12 mb-12 shadow-xs overflow-hidden">
+                                        <h2 class="accordion-header" id="headingModul<?php echo $modul->id_modul ?>">
+                                            <button class="accordion-button <?php echo ($m_no_modul === 1) ? '' : 'collapsed'; ?> bg-base text-primary-light px-16 py-12" 
+                                                    type="button" 
+                                                    data-bs-toggle="collapse" 
+                                                    data-bs-target="#collapseModul<?php echo $modul->id_modul ?>" 
+                                                    aria-expanded="<?php echo ($m_no_modul === 1) ? 'true' : 'false'; ?>" 
+                                                    aria-controls="collapseModul<?php echo $modul->id_modul ?>">
+                                                <div class="w-100 me-2">
+                                                    <span class="fw-bold text-primary-900 text-sm d-block"><?php echo html_escape($modul->label) ?></span>
+                                                    <span class="text-muted text-xs d-block mt-2" style="word-break: break-all;">
+                                                        <iconify-icon icon="lucide:file-text" class="align-middle"></iconify-icon> 
+                                                        <?php echo html_escape($modul->nama_file) ?>
+                                                    </span>
+                                                </div>
+                                            </button>
+                                        </h2>
+                                        <div id="collapseModul<?php echo $modul->id_modul ?>" 
+                                             class="accordion-collapse collapse <?php echo ($m_no_modul === 1) ? 'show' : ''; ?>" 
+                                             aria-labelledby="headingModul<?php echo $modul->id_modul ?>" 
+                                             data-bs-parent="#accordionModulAjar">
+                                            <div class="accordion-body bg-neutral-50 p-16">
+                                                <div class="d-flex align-items-center gap-8 justify-content-center flex-wrap">
+                                                    <?php if ($modul->drive_file_id): ?>
+                                                        <button type="button"
+                                                            class="btn btn-sm btn-info-100 text-info-600 radius-8 px-12 py-8 d-inline-flex align-items-center gap-1 btn-preview-doc flex-grow-1 justify-content-center"
+                                                            title="Lihat (Preview)"
+                                                            data-drive-id="<?php echo html_escape($modul->drive_file_id) ?>"
+                                                            data-title="<?php echo html_escape($modul->label) ?>">
+                                                            <iconify-icon icon="lucide:eye"></iconify-icon> Lihat
+                                                        </button>
+
+                                                        <?php $drive_url = 'https://docs.google.com/document/d/' . html_escape($modul->drive_file_id) . '/edit'; ?>
+                                                        <a href="<?php echo $drive_url ?>"
+                                                            target="_blank"
+                                                            title="Edit Online"
+                                                            class="btn btn-sm btn-success-100 text-success-600 radius-8 px-12 py-8 d-inline-flex align-items-center gap-1 flex-grow-1 justify-content-center">
+                                                            <iconify-icon icon="logos:google-drive"></iconify-icon> Edit Online
+                                                        </a>
+                                                    <?php endif; ?>
+
+                                                    <a href="<?php echo $unduh_modul_url . '/' . $modul->id_modul ?>"
+                                                        title="Unduh (.docx)"
+                                                        class="btn btn-sm btn-secondary-100 text-secondary-600 radius-8 px-12 py-8 d-inline-flex align-items-center gap-1 flex-grow-1 justify-content-center">
+                                                        <iconify-icon icon="lucide:download"></iconify-icon> Unduh
+                                                    </a>
+
+                                                    <a href="<?php echo $delete_modul_url . '/' . $modul->id_modul ?>"
+                                                        title="Hapus"
+                                                        onclick="return confirm('Apakah Anda yakin ingin menghapus berkas modul ajar ini? Berkas lokal dan Google Drive akan dihapus secara permanen.')"
+                                                        class="btn btn-sm btn-danger-100 text-danger-600 radius-8 px-12 py-8 d-inline-flex align-items-center gap-1 flex-grow-1 justify-content-center">
+                                                        <iconify-icon icon="lucide:trash-2"></iconify-icon> Hapus
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php $m_no_modul++; endforeach; ?>
+                            <?php else: ?>
+                                <div class="text-center text-neutral-400 py-24 bg-base radius-12 border">
+                                    <iconify-icon icon="lucide:file-text" style="font-size: 28px;"></iconify-icon>
+                                    <div class="mt-4 text-xs">Belum ada file Modul Ajar / RPP yang diunggah atau digenerate.</div>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -594,7 +821,8 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                     </div>
 
                     <div class="card-body p-24">
-                        <div class="table-responsive w-100">
+                        <!-- Desktop Table View -->
+                        <div class="table-responsive w-100 d-none d-md-block">
                             <table class="table bordered-table w-100" id="agendaTable" style="width: 100% !important;">
                                 <thead>
                                     <tr>
@@ -696,6 +924,122 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                 </tbody>
                             </table>
                         </div>
+
+                        <!-- Mobile Accordion View -->
+                        <div class="accordion d-block d-md-none" id="accordionAgendaHarian">
+                            <?php if (!empty($agenda)): ?>
+                                <?php 
+                                $row_idx = 0;
+                                foreach ($agenda as $row): 
+                                ?>
+                                    <div class="accordion-item border radius-12 mb-12 shadow-xs overflow-hidden">
+                                        <h2 class="accordion-header" id="headingAgendaHarian<?php echo $row->id_agenda ?>">
+                                            <button class="accordion-button <?php echo ($row_idx === 0) ? '' : 'collapsed'; ?> bg-base text-primary-light px-16 py-12" 
+                                                    type="button" 
+                                                    data-bs-toggle="collapse" 
+                                                    data-bs-target="#collapseAgendaHarian<?php echo $row->id_agenda ?>" 
+                                                    aria-expanded="<?php echo ($row_idx === 0) ? 'true' : 'false'; ?>" 
+                                                    aria-controls="collapseAgendaHarian<?php echo $row->id_agenda ?>">
+                                                <div class="w-100 me-2">
+                                                    <div class="d-flex align-items-center justify-content-between gap-2 mb-1">
+                                                        <div>
+                                                            <span class="badge bg-info-100 text-info-600 radius-4 me-1">Pert. Ke-<?php echo $row->pertemuan_ke ?></span>
+                                                            <span class="fw-bold text-primary-900 text-sm"><?php echo html_escape($row->hari) ?>, <?php echo date('d M Y', strtotime($row->tanggal)) ?></span>
+                                                        </div>
+                                                        <div>
+                                                            <?php
+                                                            $sb = 'bg-neutral-100 text-neutral-600';
+                                                            if ($row->status === 'Terlaksana') $sb = 'bg-success-focus text-success-main';
+                                                            if ($row->status === 'Libur')      $sb = 'bg-danger-focus text-danger-main';
+                                                            ?>
+                                                            <span class="badge <?php echo $sb ?> px-8 py-3 radius-4 text-xs"><?php echo $row->status ?></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="text-xs text-secondary-light">
+                                                        <?php echo $row->jumlah_jam ? $row->jumlah_jam . ' JP' : '-' ?>
+                                                        <?php if ($row->jam_mulai || $row->jam_selesai): ?>
+                                                            | <?php echo html_escape($row->jam_mulai . ' - ' . $row->jam_selesai) ?>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </div>
+                                            </button>
+                                        </h2>
+                                        <div id="collapseAgendaHarian<?php echo $row->id_agenda ?>" 
+                                             class="accordion-collapse collapse <?php echo ($row_idx === 0) ? 'show' : ''; ?>" 
+                                             aria-labelledby="headingAgendaHarian<?php echo $row->id_agenda ?>" 
+                                             data-bs-parent="#accordionAgendaHarian">
+                                            <div class="accordion-body bg-neutral-50 p-16">
+                                                <div class="mb-12">
+                                                    <span class="text-secondary-light text-xs d-block mb-4">Materi Pembelajaran</span>
+                                                    <div class="text-sm text-primary-light bg-white p-12 radius-8 border">
+                                                        <?php 
+                                                        if (!empty($row->materi)) {
+                                                            $materi_plain = strip_tags($row->materi);
+                                                            echo html_escape(character_limiter($materi_plain, 150));
+                                                        } else {
+                                                            echo '<span class="text-muted fst-italic text-xs">Materi belum diisi</span>';
+                                                        }
+                                                        ?>
+                                                    </div>
+                                                    <textarea class="d-none hidden-materi"><?php echo html_escape($row->materi) ?></textarea>
+                                                    <textarea class="d-none hidden-kegiatan"><?php echo html_escape($row->kegiatan) ?></textarea>
+                                                </div>
+
+                                                <!-- Media Links (Video / Slide) -->
+                                                <?php if (!empty($row->link_video) || !empty($row->slide_drive_id)): ?>
+                                                    <div class="mb-12 d-flex align-items-center gap-8 flex-wrap">
+                                                        <?php if (!empty($row->link_video)): ?>
+                                                            <a href="<?php echo html_escape($row->link_video) ?>" target="_blank" rel="noopener noreferrer"
+                                                               class="btn btn-sm btn-danger-100 text-danger-600 px-10 py-6 radius-6 text-xs d-inline-flex align-items-center gap-1">
+                                                                <iconify-icon icon="logos:youtube-icon" style="font-size:16px;"></iconify-icon> Video YouTube
+                                                            </a>
+                                                        <?php endif; ?>
+
+                                                        <?php if (!empty($row->slide_drive_id)): ?>
+                                                            <button type="button"
+                                                                class="btn btn-sm btn-info-100 text-info-600 px-10 py-6 radius-6 text-xs d-inline-flex align-items-center gap-1 btn-preview-doc"
+                                                                data-drive-id="<?php echo html_escape($row->slide_drive_id) ?>"
+                                                                data-title="Slide Agenda Ke-<?php echo $row->pertemuan_ke ?>">
+                                                                <iconify-icon icon="lucide:eye" style="font-size:15px;"></iconify-icon> Lihat Slide
+                                                            </button>
+                                                            <?php $slide_drive_url = 'https://docs.google.com/document/d/' . html_escape($row->slide_drive_id) . '/edit'; ?>
+                                                            <a href="<?php echo $slide_drive_url ?>" target="_blank" rel="noopener noreferrer"
+                                                               class="btn btn-sm btn-success-100 text-success-600 px-10 py-6 radius-6 text-xs d-inline-flex align-items-center gap-1">
+                                                                <iconify-icon icon="logos:google-drive" style="font-size:15px;"></iconify-icon> Edit Slide Online
+                                                            </a>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                <?php endif; ?>
+
+                                                <div class="mt-12 pt-12 border-top">
+                                                    <button type="button"
+                                                        class="btn btn-sm btn-primary-600 text-white w-100 radius-8 py-8 d-flex align-items-center justify-content-center gap-1 edit-agenda-btn fw-semibold shadow-xs"
+                                                        data-id="<?php echo $row->id_agenda ?>"
+                                                        data-pertemuan="<?php echo $row->pertemuan_ke ?>"
+                                                        data-hari="<?php echo $row->hari ?>"
+                                                        data-tanggal="<?php echo date('d M Y', strtotime($row->tanggal)) ?>"
+                                                        data-status="<?php echo html_escape($row->status) ?>"
+                                                        data-catatan="<?php echo html_escape($row->catatan) ?>"
+                                                        data-video="<?php echo html_escape($row->link_video) ?>"
+                                                        data-slide-drive-id="<?php echo html_escape($row->slide_drive_id ?? '') ?>"
+                                                        data-jumlah-jam="<?php echo html_escape($row->jumlah_jam) ?>"
+                                                        data-jam-mulai="<?php echo html_escape($row->jam_mulai) ?>"
+                                                        data-jam-selesai="<?php echo html_escape($row->jam_selesai) ?>">
+                                                        <iconify-icon icon="lucide:edit"></iconify-icon> Edit Agenda & Materi
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php $row_idx++; endforeach; ?>
+                            <?php else: ?>
+                                <div class="text-center text-neutral-400 py-24 bg-base radius-12 border">
+                                    <iconify-icon icon="solar:calendar-date-linear" style="font-size: 28px;"></iconify-icon>
+                                    <div class="mt-4 text-xs">Belum ada agenda harian yang tersedia.</div>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
                     </div>
                 </div><!-- /card agenda table -->
 

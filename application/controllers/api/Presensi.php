@@ -118,6 +118,39 @@ class Presensi extends CI_Controller
             }
         }
 
+        // Map PTK & Siswa untuk auto-detect tipe_user & id_user jika PIN cocok (Guru: PIN = NIY)
+        $all_ptk = $this->db->select('id_ptk, niy, pin_fingerprint, nik')->get('ptk')->result();
+        $ptk_map = [];
+        if (!empty($all_ptk)) {
+            foreach ($all_ptk as $p) {
+                $id = $p->id_ptk;
+                foreach (['niy', 'pin_fingerprint', 'nik'] as $col) {
+                    $val = trim((string)($p->$col ?? ''));
+                    if (!empty($val) && $val !== '0') {
+                        $ptk_map[$val] = $id;
+                        $ptk_map[ltrim($val, '0')] = $id;
+                        $ptk_map[(string)intval($val)] = $id;
+                    }
+                }
+            }
+        }
+
+        $all_siswa = $this->db->select('id_siswa, nipd, pin_fingerprint, nisn, nik')->get('siswa')->result();
+        $siswa_map = [];
+        if (!empty($all_siswa)) {
+            foreach ($all_siswa as $s) {
+                $id = $s->id_siswa;
+                foreach (['pin_fingerprint', 'nipd', 'nisn', 'nik'] as $col) {
+                    $val = trim((string)($s->$col ?? ''));
+                    if (!empty($val) && $val !== '0') {
+                        $siswa_map[$val] = $id;
+                        $siswa_map[ltrim($val, '0')] = $id;
+                        $siswa_map[(string)intval($val)] = $id;
+                    }
+                }
+            }
+        }
+
         $inserted_count  = 0;
         $overwrite_count = 0;
         $ignored_count   = 0;
@@ -135,18 +168,38 @@ class Presensi extends CI_Controller
                 continue;
             }
 
-            $date     = date('Y-m-d', strtotime($scan_date));
-            $jam_scan = date('H:i:s', strtotime($scan_date));
-            $sesi     = $this->tentukan_sesi($jam_scan);
+            $date      = date('Y-m-d', strtotime($scan_date));
+            $jam_scan  = date('H:i:s', strtotime($scan_date));
+            $sesi      = $this->tentukan_sesi($jam_scan);
+            $clean_pin = ltrim($pin_raw, '0');
+
+            $tipe_user = 'siswa';
+            $id_user   = 0;
+
+            if (isset($ptk_map[$pin_raw])) {
+                $tipe_user = 'ptk';
+                $id_user   = $ptk_map[$pin_raw];
+            } elseif ($clean_pin !== '' && isset($ptk_map[$clean_pin])) {
+                $tipe_user = 'ptk';
+                $id_user   = $ptk_map[$clean_pin];
+            } elseif (isset($siswa_map[$pin_raw])) {
+                $tipe_user = 'siswa';
+                $id_user   = $siswa_map[$pin_raw];
+            } elseif ($clean_pin !== '' && isset($siswa_map[$clean_pin])) {
+                $tipe_user = 'siswa';
+                $id_user   = $siswa_map[$clean_pin];
+            }
 
             $exist_key = "{$pin_raw}_{$date}_{$jam_scan}";
 
             if (isset($existing_keys[$exist_key]) || isset($seen_in_loop[$exist_key])) {
                 $update_rows[] = [
-                    'pin'      => $pin_raw,
-                    'tanggal'  => $date,
-                    'jam_scan' => $jam_scan,
-                    'sesi'     => $sesi
+                    'pin'       => $pin_raw,
+                    'tanggal'   => $date,
+                    'jam_scan'  => $jam_scan,
+                    'sesi'      => $sesi,
+                    'tipe_user' => $tipe_user,
+                    'id_user'   => $id_user
                 ];
                 $overwrite_count++;
             } else {
@@ -154,8 +207,8 @@ class Presensi extends CI_Controller
                 $existing_keys[$exist_key] = true;
 
                 $new_rows[] = [
-                    'tipe_user'  => 'siswa',
-                    'id_user'    => 0,
+                    'tipe_user'  => $tipe_user,
+                    'id_user'    => $id_user,
                     'pin'        => $pin_raw,
                     'tanggal'    => $date,
                     'jam_scan'   => $jam_scan,
@@ -168,17 +221,18 @@ class Presensi extends CI_Controller
         }
 
         // HANYA data murni baru yang di-insert!
-        // Sehingga AUTO_INCREMENT bertambah urut rapat (1, 2, 3, 4, 5, ...) tanpa lompatan ID
         if (!empty($new_rows)) {
             $value_strings = [];
             foreach ($new_rows as $row) {
-                $pin_esc = $this->db->escape($row['pin']);
-                $tgl_esc = $this->db->escape($row['tanggal']);
-                $jam_esc = $this->db->escape($row['jam_scan']);
-                $ses_esc = $this->db->escape($row['sesi']);
-                $now_esc = $this->db->escape(date('Y-m-d H:i:s'));
+                $tipe_esc = $this->db->escape($row['tipe_user']);
+                $id_u_esc = intval($row['id_user']);
+                $pin_esc  = $this->db->escape($row['pin']);
+                $tgl_esc  = $this->db->escape($row['tanggal']);
+                $jam_esc  = $this->db->escape($row['jam_scan']);
+                $ses_esc  = $this->db->escape($row['sesi']);
+                $now_esc  = $this->db->escape(date('Y-m-d H:i:s'));
 
-                $value_strings[] = "('siswa', 0, {$pin_esc}, {$tgl_esc}, {$jam_esc}, {$ses_esc}, {$now_esc}, {$now_esc})";
+                $value_strings[] = "({$tipe_esc}, {$id_u_esc}, {$pin_esc}, {$tgl_esc}, {$jam_esc}, {$ses_esc}, {$now_esc}, {$now_esc})";
             }
 
             $sql_chunks = array_chunk($value_strings, 100);

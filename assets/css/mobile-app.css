@@ -159,7 +159,7 @@ html[data-theme="dark"] .mobile-app-tile:hover {
     body,
     .dashboard-main,
     .dashboard-main-body {
-        padding-bottom: 75px !important;
+        padding-bottom: 33px !important;
     }
 
     /* Prevent auto zoom on iOS Safari */
@@ -236,8 +236,79 @@ html[data-theme="dark"] .mobile-app-tile:hover {
         color: #ffffff !important;
     }
 
+    /* --- Fix Dropdown Menu Text Visibility (Profil & Logout) in Light Mode --- */
+    html:not([data-theme="dark"]) .navbar-header .dropdown-menu,
+    html[data-theme="light"] .navbar-header .dropdown-menu {
+        background-color: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12) !important;
+    }
+
+    html:not([data-theme="dark"]) .navbar-header .dropdown-menu *,
+    html[data-theme="light"] .navbar-header .dropdown-menu * {
+        color: #1e293b;
+    }
+
+    html:not([data-theme="dark"]) .navbar-header .dropdown-menu .bg-primary-50,
+    html[data-theme="light"] .navbar-header .dropdown-menu .bg-primary-50 {
+        background-color: #eef2ff !important;
+    }
+
+    html:not([data-theme="dark"]) .navbar-header .dropdown-menu .text-primary-light,
+    html[data-theme="light"] .navbar-header .dropdown-menu .text-primary-light {
+        color: #2563eb !important;
+    }
+
+    html:not([data-theme="dark"]) .navbar-header .dropdown-menu a,
+    html:not([data-theme="dark"]) .navbar-header .dropdown-menu .dropdown-item,
+    html[data-theme="light"] .navbar-header .dropdown-menu a,
+    html[data-theme="light"] .navbar-header .dropdown-menu .dropdown-item {
+        color: #1e293b !important;
+    }
+
+    html:not([data-theme="dark"]) .navbar-header .dropdown-menu iconify-icon,
+    html[data-theme="light"] .navbar-header .dropdown-menu iconify-icon {
+        color: #475569 !important;
+    }
+
+    html:not([data-theme="dark"]) .navbar-header .dropdown-menu a:hover,
+    html:not([data-theme="dark"]) .navbar-header .dropdown-menu .dropdown-item:hover,
+    html[data-theme="light"] .navbar-header .dropdown-menu a:hover,
+    html[data-theme="light"] .navbar-header .dropdown-menu .dropdown-item:hover {
+        background-color: #f8fafc !important;
+    }
+
+    html:not([data-theme="dark"]) .navbar-header .dropdown-menu a.hover-text-primary:hover,
+    html:not([data-theme="dark"]) .navbar-header .dropdown-menu .dropdown-item.hover-text-primary:hover,
+    html[data-theme="light"] .navbar-header .dropdown-menu a.hover-text-primary:hover,
+    html[data-theme="light"] .navbar-header .dropdown-menu .dropdown-item.hover-text-primary:hover {
+        color: #2563eb !important;
+    }
+
+    html:not([data-theme="dark"]) .navbar-header .dropdown-menu a.hover-text-primary:hover iconify-icon,
+    html:not([data-theme="dark"]) .navbar-header .dropdown-menu .dropdown-item.hover-text-primary:hover iconify-icon,
+    html[data-theme="light"] .navbar-header .dropdown-menu a.hover-text-primary:hover iconify-icon,
+    html[data-theme="light"] .navbar-header .dropdown-menu .dropdown-item.hover-text-primary:hover iconify-icon {
+        color: #2563eb !important;
+    }
+
+    html:not([data-theme="dark"]) .navbar-header .dropdown-menu a.hover-text-danger:hover,
+    html:not([data-theme="dark"]) .navbar-header .dropdown-menu .dropdown-item.hover-text-danger:hover,
+    html[data-theme="light"] .navbar-header .dropdown-menu a.hover-text-danger:hover,
+    html[data-theme="light"] .navbar-header .dropdown-menu .dropdown-item.hover-text-danger:hover {
+        color: #dc2626 !important;
+    }
+
+    html:not([data-theme="dark"]) .navbar-header .dropdown-menu a.hover-text-danger:hover iconify-icon,
+    html:not([data-theme="dark"]) .navbar-header .dropdown-menu .dropdown-item.hover-text-danger:hover iconify-icon,
+    html[data-theme="light"] .navbar-header .dropdown-menu a.hover-text-danger:hover iconify-icon,
+    html[data-theme="light"] .navbar-header .dropdown-menu .dropdown-item.hover-text-danger:hover iconify-icon {
+        color: #dc2626 !important;
+    }
+
     .dashboard-main-body {
         padding: 14px 12px !important;
+        background: linear-gradient(49deg, rgba(222, 222, 255, 1) 0%, rgba(247, 250, 255, 1) 100%);
     }
 
     /* Full width touch-friendly cards */
@@ -269,7 +340,77 @@ html[data-theme="dark"] .mobile-app-tile:hover {
     }
 
     /* Mobile Breadcrumbs polish */
-    .dashboard-main-body > .d-flex.mb-24 {
+    .dashboard-main-body>.d-flex.mb-24 {
         margin-bottom: 14px !important;
     }
+}
+
+/* --- Global Navbar Header Dropdown Light Mode Fix (Profil & Logout Visibility) --- */
+html:not([data-theme="dark"]) .navbar-header .dropdown-menu,
+html[data-theme="light"] .navbar-header .dropdown-menu {
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12) !important;
+}
+
+html:not([data-theme="dark"]) .navbar-header .dropdown-menu *,
+html[data-theme="light"] .navbar-header .dropdown-menu * {
+    color: #1e293b;
+}
+
+html:not([data-theme="dark"]) .navbar-header .dropdown-menu .bg-primary-50,
+html[data-theme="light"] .navbar-header .dropdown-menu .bg-primary-50 {
+    background-color: #eef2ff !important;
+}
+
+html:not([data-theme="dark"]) .navbar-header .dropdown-menu .text-primary-light,
+html[data-theme="light"] .navbar-header .dropdown-menu .text-primary-light {
+    color: #2563eb !important;
+}
+
+html:not([data-theme="dark"]) .navbar-header .dropdown-menu a,
+html:not([data-theme="dark"]) .navbar-header .dropdown-menu .dropdown-item,
+html[data-theme="light"] .navbar-header .dropdown-menu a,
+html[data-theme="light"] .navbar-header .dropdown-menu .dropdown-item {
+    color: #1e293b !important;
+}
+
+html:not([data-theme="dark"]) .navbar-header .dropdown-menu iconify-icon,
+html[data-theme="light"] .navbar-header .dropdown-menu iconify-icon {
+    color: #475569 !important;
+}
+
+html:not([data-theme="dark"]) .navbar-header .dropdown-menu a:hover,
+html:not([data-theme="dark"]) .navbar-header .dropdown-menu .dropdown-item:hover,
+html[data-theme="light"] .navbar-header .dropdown-menu a:hover,
+html[data-theme="light"] .navbar-header .dropdown-menu .dropdown-item:hover {
+    background-color: #f8fafc !important;
+}
+
+html:not([data-theme="dark"]) .navbar-header .dropdown-menu a.hover-text-primary:hover,
+html:not([data-theme="dark"]) .navbar-header .dropdown-menu .dropdown-item.hover-text-primary:hover,
+html[data-theme="light"] .navbar-header .dropdown-menu a.hover-text-primary:hover,
+html[data-theme="light"] .navbar-header .dropdown-menu .dropdown-item.hover-text-primary:hover {
+    color: #2563eb !important;
+}
+
+html:not([data-theme="dark"]) .navbar-header .dropdown-menu a.hover-text-primary:hover iconify-icon,
+html:not([data-theme="dark"]) .navbar-header .dropdown-menu .dropdown-item.hover-text-primary:hover iconify-icon,
+html[data-theme="light"] .navbar-header .dropdown-menu a.hover-text-primary:hover iconify-icon,
+html[data-theme="light"] .navbar-header .dropdown-menu .dropdown-item.hover-text-primary:hover iconify-icon {
+    color: #2563eb !important;
+}
+
+html:not([data-theme="dark"]) .navbar-header .dropdown-menu a.hover-text-danger:hover,
+html:not([data-theme="dark"]) .navbar-header .dropdown-menu .dropdown-item.hover-text-danger:hover,
+html[data-theme="light"] .navbar-header .dropdown-menu a.hover-text-danger:hover,
+html[data-theme="light"] .navbar-header .dropdown-menu .dropdown-item.hover-text-danger:hover {
+    color: #dc2626 !important;
+}
+
+html:not([data-theme="dark"]) .navbar-header .dropdown-menu a.hover-text-danger:hover iconify-icon,
+html:not([data-theme="dark"]) .navbar-header .dropdown-menu .dropdown-item.hover-text-danger:hover iconify-icon,
+html[data-theme="light"] .navbar-header .dropdown-menu a.hover-text-danger:hover iconify-icon,
+html[data-theme="light"] .navbar-header .dropdown-menu .dropdown-item.hover-text-danger:hover iconify-icon {
+    color: #dc2626 !important;
 }
