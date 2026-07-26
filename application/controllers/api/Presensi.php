@@ -229,11 +229,57 @@ class Presensi extends CI_Controller
         }
 
         if (!empty($batch_insert)) {
-            $this->db->insert_batch('presensi_harian', $batch_insert);
+            $value_strings = [];
+            foreach ($batch_insert as $row) {
+                $tipe    = $this->db->escape($row['tipe_user']);
+                $id_u    = intval($row['id_user']);
+                $pin_esc = $this->db->escape($row['pin']);
+                $tgl_esc = $this->db->escape($row['tanggal']);
+                $jam_esc = $this->db->escape($row['jam_scan']);
+                $ses_esc = $this->db->escape($row['sesi']);
+                $now_esc = $this->db->escape(date('Y-m-d H:i:s'));
+
+                $value_strings[] = "({$tipe}, {$id_u}, {$pin_esc}, {$tgl_esc}, {$jam_esc}, {$ses_esc}, {$now_esc}, {$now_esc})";
+            }
+
+            // Gunakan ON DUPLICATE KEY UPDATE agar query MySQL tidak abort jika ada duplikasi unik
+            $sql_chunks = array_chunk($value_strings, 100);
+            foreach ($sql_chunks as $chunk) {
+                $sql = "INSERT INTO presensi_harian (tipe_user, id_user, pin, tanggal, jam_scan, sesi, created_at, updated_at) 
+                        VALUES " . implode(',', $chunk) . "
+                        ON DUPLICATE KEY UPDATE 
+                            tipe_user  = VALUES(tipe_user),
+                            id_user    = VALUES(id_user),
+                            sesi       = VALUES(sesi),
+                            updated_at = VALUES(updated_at)";
+                $this->db->query($sql);
+            }
         }
 
         if (!empty($batch_update)) {
-            $this->db->update_batch('presensi_harian', $batch_update, 'id_presensi');
+            $value_strings = [];
+            foreach ($batch_update as $row) {
+                $id_p    = intval($row['id_presensi']);
+                $tipe    = $this->db->escape($row['tipe_user']);
+                $id_u    = intval($row['id_user']);
+                $pin_esc = $this->db->escape($row['pin']);
+                $ses_esc = $this->db->escape($row['sesi']);
+                $now_esc = $this->db->escape(date('Y-m-d H:i:s'));
+
+                $value_strings[] = "({$id_p}, {$tipe}, {$id_u}, {$pin_esc}, {$ses_esc}, {$now_esc})";
+            }
+
+            $sql_chunks = array_chunk($value_strings, 100);
+            foreach ($sql_chunks as $chunk) {
+                $sql = "INSERT INTO presensi_harian (id_presensi, tipe_user, id_user, pin, sesi, updated_at) 
+                        VALUES " . implode(',', $chunk) . "
+                        ON DUPLICATE KEY UPDATE 
+                            tipe_user  = VALUES(tipe_user),
+                            id_user    = VALUES(id_user),
+                            sesi       = VALUES(sesi),
+                            updated_at = VALUES(updated_at)";
+                $this->db->query($sql);
+            }
         }
 
         echo json_encode([

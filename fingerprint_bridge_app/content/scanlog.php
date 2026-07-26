@@ -305,6 +305,8 @@ function logToConsole(message, type = 'info') {
     if (type === 'start')   icon = '🚀';
     if (type === 'finish')  icon = '🎉';
     if (type === 'clean')   icon = '✨';
+    if (type === 'wait')    icon = '⏳';
+    if (type === 'retry')   icon = '⚠️';
 
     const logLine = `[${timeStr}] ${icon} ${message}\n`;
     consoleBox.innerText += logLine;
@@ -334,7 +336,11 @@ async function startBatchSync() {
         return false;
     }
 
-    const batchSize = 300;
+    // Konfigurasi Pengiriman Aman
+    const batchSize    = 200;  // Ukuran chunk 200 item per batch agar aman dari limit payload
+    const batchDelayMs = 1000; // Jeda 1 detik antar batch agar tidak memberatkan server production
+    const maxRetries   = 3;    // Maksimal 3 kali percobaan ulang jika server sibuk/error
+
     const totalLogs = rawLogs.length;
     const totalBatches = Math.ceil(totalLogs / batchSize);
 
@@ -342,7 +348,7 @@ async function startBatchSync() {
     document.getElementById('syncDoneBtnContainer').style.display = 'none';
     document.getElementById('syncLogConsole').innerText = '';
 
-    logToConsole("Memulai pengiriman " + totalLogs.toLocaleString() + " log presensi (" + totalBatches + " batch) ke Web API Server...", "start");
+    logToConsole("Memulai pengiriman " + totalLogs.toLocaleString() + " log presensi (" + totalBatches + " batch @ 200 item, jeda 1s) ke Web API Server...", "start");
 
     let totalInserted  = 0;
     let totalOverwrite = 0;
@@ -350,6 +356,12 @@ async function startBatchSync() {
     let errors = [];
 
     for (let b = 0; b < totalBatches; b++) {
+        // Berikan jeda waktu 1 detik antar batch (kecuali batch pertama)
+        if (b > 0) {
+            logToConsole("Jeda waktu " + (batchDelayMs / 1000) + " detik sebelum mengirim Batch " + (b + 1) + "...", "wait");
+            await new Promise(resolve => setTimeout(resolve, batchDelayMs));
+        }
+
         const start = b * batchSize;
         const end = Math.min(start + batchSize, totalLogs);
         const chunk = rawLogs.slice(start, end);
@@ -363,39 +375,54 @@ async function startBatchSync() {
 
         logToConsole("Mengirim Batch " + currentBatchNum + "/" + totalBatches + " (" + chunk.length + " record)...", "info");
 
-        try {
-            const formData = new FormData();
-            formData.append('action', 'sync_batch_chunk');
-            formData.append('chunk_logs', JSON.stringify(chunk));
+        let isSuccess = false;
+        let lastErrorMsg = '';
 
-            const response = await fetch('ajax.php', {
-                method: 'POST',
-                body: formData
-            });
-
-            const resJson = await response.json();
-            if (resJson && (resJson.status === 'success' || (typeof resJson.status === 'string' && resJson.status.toLowerCase() === 'success'))) {
-                const ins = resJson.inserted || 0;
-                const ovr = resJson.overwrite || 0;
-                const ign = resJson.ignored || 0;
-
-                totalInserted  += ins;
-                totalOverwrite += ovr;
-                totalIgnored   += ign;
-
-                document.getElementById('badgeInserted').innerText = 'Baris Baru: ' + totalInserted.toLocaleString();
-                document.getElementById('badgeOverwrite').innerText = 'Diperbarui: ' + totalOverwrite.toLocaleString();
-                document.getElementById('badgeIgnored').innerText = 'Dilewati: ' + totalIgnored.toLocaleString();
-
-                logToConsole("Batch " + currentBatchNum + " Sukses! (Baris Baru: " + ins + ", Diperbarui: " + ovr + ", Dilewati: " + ign + ")", "success");
-            } else {
-                const errMsg = resJson.message || 'Respons server tidak valid';
-                errors.push("Batch " + currentBatchNum + ": " + errMsg);
-                logToConsole("Batch " + currentBatchNum + " Gagal: " + errMsg, "error");
+        // Retry Loop hingga maxRetries (3x)
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            if (attempt > 1) {
+                logToConsole("Mencoba ulang Batch " + currentBatchNum + " (Percobaan " + attempt + "/" + maxRetries + ")...", "retry");
+                await new Promise(resolve => setTimeout(resolve, 1500)); // Jeda 1.5s sebelum retry
             }
-        } catch (err) {
-            errors.push("Batch " + currentBatchNum + ": " + err.message);
-            logToConsole("Batch " + currentBatchNum + " Error Network: " + err.message, "error");
+
+            try {
+                const formData = new FormData();
+                formData.append('action', 'sync_batch_chunk');
+                formData.append('chunk_logs', JSON.stringify(chunk));
+
+                const response = await fetch('ajax.php', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const resJson = await response.json();
+                if (resJson && (resJson.status === 'success' || (typeof resJson.status === 'string' && resJson.status.toLowerCase() === 'success'))) {
+                    const ins = resJson.inserted || 0;
+                    const ovr = resJson.overwrite || 0;
+                    const ign = resJson.ignored || 0;
+
+                    totalInserted  += ins;
+                    totalOverwrite += ovr;
+                    totalIgnored   += ign;
+
+                    document.getElementById('badgeInserted').innerText = 'Baris Baru: ' + totalInserted.toLocaleString();
+                    document.getElementById('badgeOverwrite').innerText = 'Diperbarui: ' + totalOverwrite.toLocaleString();
+                    document.getElementById('badgeIgnored').innerText = 'Dilewati: ' + totalIgnored.toLocaleString();
+
+                    logToConsole("Batch " + currentBatchNum + " Sukses! (Baris Baru: " + ins + ", Diperbarui: " + ovr + ", Dilewati: " + ign + ")", "success");
+                    isSuccess = true;
+                    break; // Berhasil, keluar dari retry loop
+                } else {
+                    lastErrorMsg = resJson.message || 'Respons server tidak valid';
+                }
+            } catch (err) {
+                lastErrorMsg = err.message || 'Koneksi terputus/timeout';
+            }
+        }
+
+        if (!isSuccess) {
+            errors.push("Batch " + currentBatchNum + " Gagal: " + lastErrorMsg);
+            logToConsole("Batch " + currentBatchNum + " Gagal setelah " + maxRetries + "x percobaan: " + lastErrorMsg, "error");
         }
     }
 
