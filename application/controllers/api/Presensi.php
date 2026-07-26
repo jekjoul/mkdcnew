@@ -16,7 +16,18 @@ class Presensi extends CI_Controller
     {
         parent::__construct();
         $this->load->database();
+
+        // Tambahkan header CORS lengkap agar dapat dipanggil dari JS Fingerprint Bridge App
+        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+        header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, Cache-Control');
         header('Content-Type: application/json');
+
+        // Tangani Preflight OPTIONS Request dari browser
+        if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+            http_response_code(200);
+            exit;
+        }
     }
 
     // Helper: Validasi token
@@ -89,19 +100,14 @@ class Presensi extends CI_Controller
         $siswa_map = [];
         if (!empty($all_siswa)) {
             foreach ($all_siswa as $s) {
-                if (!empty($s->pin_fingerprint)) {
-                    $siswa_map[(string)$s->pin_fingerprint] = $s->id_siswa;
-                    $siswa_map[ltrim((string)$s->pin_fingerprint, '0')] = $s->id_siswa;
-                }
-                if (!empty($s->nipd)) {
-                    $siswa_map[(string)$s->nipd] = $s->id_siswa;
-                    $siswa_map[ltrim((string)$s->nipd, '0')] = $s->id_siswa;
-                }
-                if (!empty($s->nisn)) {
-                    $siswa_map[(string)$s->nisn] = $s->id_siswa;
-                }
-                if (!empty($s->nik)) {
-                    $siswa_map[(string)$s->nik] = $s->id_siswa;
+                $id = $s->id_siswa;
+                foreach (['pin_fingerprint', 'nipd', 'nisn', 'nik'] as $col) {
+                    $val = trim((string)($s->$col ?? ''));
+                    if (!empty($val) && $val !== '0') {
+                        $siswa_map[$val] = $id;
+                        $siswa_map[ltrim($val, '0')] = $id;
+                        $siswa_map[(string)intval($val)] = $id;
+                    }
                 }
             }
         }
@@ -110,19 +116,14 @@ class Presensi extends CI_Controller
         $ptk_map = [];
         if (!empty($all_ptk)) {
             foreach ($all_ptk as $p) {
-                if (!empty($p->niy)) {
-                    $ptk_map[(string)$p->niy] = $p->id_ptk;
-                    $ptk_map[ltrim((string)$p->niy, '0')] = $p->id_ptk;
-                }
-                if (!empty($p->pin_fingerprint)) {
-                    $ptk_map[(string)$p->pin_fingerprint] = $p->id_ptk;
-                    $ptk_map[ltrim((string)$p->pin_fingerprint, '0')] = $p->id_ptk;
-                }
-                if (!empty($p->nik)) {
-                    $ptk_map[(string)$p->nik] = $p->id_ptk;
-                }
-                if (!empty($p->nuptk)) {
-                    $ptk_map[(string)$p->nuptk] = $p->id_ptk;
+                $id = $p->id_ptk;
+                foreach (['niy', 'pin_fingerprint', 'nik', 'nuptk'] as $col) {
+                    $val = trim((string)($p->$col ?? ''));
+                    if (!empty($val) && $val !== '0') {
+                        $ptk_map[$val] = $id;
+                        $ptk_map[ltrim($val, '0')] = $id;
+                        $ptk_map[(string)intval($val)] = $id;
+                    }
                 }
             }
         }
