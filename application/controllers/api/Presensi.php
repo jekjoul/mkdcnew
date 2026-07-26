@@ -95,129 +95,34 @@ class Presensi extends CI_Controller
             return;
         }
 
-        // Cache memory maps untuk siswa & ptk agar pencarian super cepat (O(1))
-        $all_siswa = $this->db->select('id_siswa, nipd, pin_fingerprint, nisn, nik')->get('siswa')->result();
-        $siswa_map = [];
-        if (!empty($all_siswa)) {
-            foreach ($all_siswa as $s) {
-                $id = $s->id_siswa;
-                foreach (['pin_fingerprint', 'nipd', 'nisn', 'nik'] as $col) {
-                    $val = trim((string)($s->$col ?? ''));
-                    if (!empty($val) && $val !== '0') {
-                        $siswa_map[$val] = $id;
-                        $siswa_map[ltrim($val, '0')] = $id;
-                        $siswa_map[(string)intval($val)] = $id;
-                    }
-                }
-            }
-        }
-
-        $all_ptk = $this->db->select('id_ptk, niy, pin_fingerprint, nik, nuptk')->get('ptk')->result();
-        $ptk_map = [];
-        if (!empty($all_ptk)) {
-            foreach ($all_ptk as $p) {
-                $id = $p->id_ptk;
-                foreach (['niy', 'pin_fingerprint', 'nik', 'nuptk'] as $col) {
-                    $val = trim((string)($p->$col ?? ''));
-                    if (!empty($val) && $val !== '0') {
-                        $ptk_map[$val] = $id;
-                        $ptk_map[ltrim($val, '0')] = $id;
-                        $ptk_map[(string)intval($val)] = $id;
-                    }
-                }
-            }
-        }
-
-        // Kumpulkan semua tanggal dari batch logs untuk pre-fetch existing records O(1)
-        $dates_in_batch = [];
-        foreach ($logs as $l) {
-            if (!empty($l['scan_date'])) {
-                $dates_in_batch[] = date('Y-m-d', strtotime($l['scan_date']));
-            }
-        }
-        $dates_in_batch = array_unique($dates_in_batch);
-
-        $existing_map = [];
-        if (!empty($dates_in_batch)) {
-            $this->db->select('id_presensi, pin, tanggal, jam_scan');
-            $this->db->where_in('tanggal', $dates_in_batch);
-            $q_exist = $this->db->get('presensi_harian')->result();
-            if (!empty($q_exist)) {
-                foreach ($q_exist as $ex) {
-                    $key = "{$ex->pin}_{$ex->tanggal}_{$ex->jam_scan}";
-                    $existing_map[$key] = $ex->id_presensi;
-                }
-            }
-        }
-
         $inserted_count  = 0;
         $overwrite_count = 0;
         $ignored_count   = 0;
 
-        $batch_insert = [];
-        $batch_update = [];
-        $batch_seen   = [];
+        $batch_rows = [];
+        $seen_keys  = [];
 
         foreach ($logs as $log) {
-            $pin_raw   = trim((string)($log['pin'] ?? ''));
-            $scan_date = isset($log['scan_date']) ? trim($log['scan_date']) : '';
+            $pin_raw   = trim((string)($log['pin'] ?? $log['PIN'] ?? $log['user_id'] ?? $log['UserId'] ?? ''));
+            $scan_date = isset($log['scan_date']) ? trim($log['scan_date']) : (isset($log['ScanDate']) ? trim($log['ScanDate']) : '');
 
             if ($pin_raw === '' || empty($scan_date)) {
                 $ignored_count++;
                 continue;
             }
 
-            $pin       = $pin_raw;
-            $clean_pin = ltrim($pin, '0');
-
-            $tipe_user = 'siswa';
-            $id_user   = 0;
-
-            if (isset($ptk_map[$pin])) {
-                $tipe_user = 'ptk';
-                $id_user   = $ptk_map[$pin];
-            } elseif ($clean_pin !== '' && isset($ptk_map[$clean_pin])) {
-                $tipe_user = 'ptk';
-                $id_user   = $ptk_map[$clean_pin];
-            } elseif (isset($siswa_map[$pin])) {
-                $tipe_user = 'siswa';
-                $id_user   = $siswa_map[$pin];
-            } elseif ($clean_pin !== '' && isset($siswa_map[$clean_pin])) {
-                $tipe_user = 'siswa';
-                $id_user   = $siswa_map[$clean_pin];
-            }
-
             $date     = date('Y-m-d', strtotime($scan_date));
             $jam_scan = date('H:i:s', strtotime($scan_date));
             $sesi     = $this->tentukan_sesi($jam_scan);
 
-            $exist_key = "{$pin}_{$date}_{$jam_scan}";
+            $exist_key = "{$pin_raw}_{$date}_{$jam_scan}";
 
-            if (isset($existing_map[$exist_key])) {
-                $batch_update[] = [
-                    'id_presensi' => $existing_map[$exist_key],
-                    'tipe_user'   => $tipe_user,
-                    'id_user'     => $id_user,
-                    'pin'         => $pin,
-                    'sesi'        => $sesi,
-                    'updated_at'  => date('Y-m-d H:i:s')
-                ];
-                $overwrite_count++;
-            } elseif (isset($batch_seen[$exist_key])) {
-                $idx_in_insert = $batch_seen[$exist_key];
-                $batch_insert[$idx_in_insert]['tipe_user']  = $tipe_user;
-                $batch_insert[$idx_in_insert]['id_user']    = $id_user;
-                $batch_insert[$idx_in_insert]['sesi']       = $sesi;
-                $batch_insert[$idx_in_insert]['updated_at'] = date('Y-m-d H:i:s');
+            if (isset($seen_keys[$exist_key])) {
                 $overwrite_count++;
             } else {
-                $insert_idx = count($batch_insert);
-                $batch_seen[$exist_key] = $insert_idx;
-
-                $batch_insert[] = [
-                    'tipe_user'  => $tipe_user,
-                    'id_user'    => $id_user,
-                    'pin'        => $pin,
+                $seen_keys[$exist_key] = true;
+                $batch_rows[] = [
+                    'pin'        => $pin_raw,
                     'tanggal'    => $date,
                     'jam_scan'   => $jam_scan,
                     'sesi'       => $sesi,
@@ -228,54 +133,25 @@ class Presensi extends CI_Controller
             }
         }
 
-        if (!empty($batch_insert)) {
+        if (!empty($batch_rows)) {
             $value_strings = [];
-            foreach ($batch_insert as $row) {
-                $tipe    = $this->db->escape($row['tipe_user']);
-                $id_u    = intval($row['id_user']);
+            foreach ($batch_rows as $row) {
                 $pin_esc = $this->db->escape($row['pin']);
                 $tgl_esc = $this->db->escape($row['tanggal']);
                 $jam_esc = $this->db->escape($row['jam_scan']);
                 $ses_esc = $this->db->escape($row['sesi']);
                 $now_esc = $this->db->escape(date('Y-m-d H:i:s'));
 
-                $value_strings[] = "({$tipe}, {$id_u}, {$pin_esc}, {$tgl_esc}, {$jam_esc}, {$ses_esc}, {$now_esc}, {$now_esc})";
+                // id_user default 0, tipe_user default 'siswa' untuk kompatibilitas kolom DB
+                $value_strings[] = "('siswa', 0, {$pin_esc}, {$tgl_esc}, {$jam_esc}, {$ses_esc}, {$now_esc}, {$now_esc})";
             }
 
-            // Gunakan ON DUPLICATE KEY UPDATE agar query MySQL tidak abort jika ada duplikasi unik
+            // Gunakan ON DUPLICATE KEY UPDATE agar 100% data mentah (RAW) langsung tersimpan
             $sql_chunks = array_chunk($value_strings, 100);
             foreach ($sql_chunks as $chunk) {
                 $sql = "INSERT INTO presensi_harian (tipe_user, id_user, pin, tanggal, jam_scan, sesi, created_at, updated_at) 
                         VALUES " . implode(',', $chunk) . "
                         ON DUPLICATE KEY UPDATE 
-                            tipe_user  = VALUES(tipe_user),
-                            id_user    = VALUES(id_user),
-                            sesi       = VALUES(sesi),
-                            updated_at = VALUES(updated_at)";
-                $this->db->query($sql);
-            }
-        }
-
-        if (!empty($batch_update)) {
-            $value_strings = [];
-            foreach ($batch_update as $row) {
-                $id_p    = intval($row['id_presensi']);
-                $tipe    = $this->db->escape($row['tipe_user']);
-                $id_u    = intval($row['id_user']);
-                $pin_esc = $this->db->escape($row['pin']);
-                $ses_esc = $this->db->escape($row['sesi']);
-                $now_esc = $this->db->escape(date('Y-m-d H:i:s'));
-
-                $value_strings[] = "({$id_p}, {$tipe}, {$id_u}, {$pin_esc}, {$ses_esc}, {$now_esc})";
-            }
-
-            $sql_chunks = array_chunk($value_strings, 100);
-            foreach ($sql_chunks as $chunk) {
-                $sql = "INSERT INTO presensi_harian (id_presensi, tipe_user, id_user, pin, sesi, updated_at) 
-                        VALUES " . implode(',', $chunk) . "
-                        ON DUPLICATE KEY UPDATE 
-                            tipe_user  = VALUES(tipe_user),
-                            id_user    = VALUES(id_user),
                             sesi       = VALUES(sesi),
                             updated_at = VALUES(updated_at)";
                 $this->db->query($sql);
@@ -284,7 +160,7 @@ class Presensi extends CI_Controller
 
         echo json_encode([
             'status'    => 'success',
-            'message'   => 'Sync scanlog completed.',
+            'message'   => 'Sync scanlog RAW completed.',
             'inserted'  => $inserted_count,
             'overwrite' => $overwrite_count,
             'ignored'   => $ignored_count,
