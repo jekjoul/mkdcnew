@@ -338,7 +338,7 @@ async function startBatchSync() {
 
     // Konfigurasi Pengiriman Aman
     const batchSize    = 200;  // Ukuran chunk 200 item per batch agar aman dari limit payload
-    const batchDelayMs = 1000; // Jeda 1 detik antar batch agar tidak memberatkan server production
+    const batchDelayMs = 3000; // Jeda 3 detik antar batch agar tidak memberatkan server production
     const maxRetries   = 3;    // Maksimal 3 kali percobaan ulang jika server sibuk/error
 
     const totalLogs = rawLogs.length;
@@ -348,7 +348,7 @@ async function startBatchSync() {
     document.getElementById('syncDoneBtnContainer').style.display = 'none';
     document.getElementById('syncLogConsole').innerText = '';
 
-    logToConsole("Memulai pengiriman " + totalLogs.toLocaleString() + " log presensi (" + totalBatches + " batch @ 200 item, jeda 1s) ke Web API Server...", "start");
+    logToConsole("Memulai pengiriman " + totalLogs.toLocaleString() + " log presensi (" + totalBatches + " batch @ 200 item, jeda 3s) ke Web API Server...", "start");
 
     let totalInserted  = 0;
     let totalOverwrite = 0;
@@ -356,7 +356,7 @@ async function startBatchSync() {
     let errors = [];
 
     for (let b = 0; b < totalBatches; b++) {
-        // Berikan jeda waktu 1 detik antar batch (kecuali batch pertama)
+        // Berikan jeda waktu 3 detik antar batch (kecuali batch pertama)
         if (b > 0) {
             logToConsole("Jeda waktu " + (batchDelayMs / 1000) + " detik sebelum mengirim Batch " + (b + 1) + "...", "wait");
             await new Promise(resolve => setTimeout(resolve, batchDelayMs));
