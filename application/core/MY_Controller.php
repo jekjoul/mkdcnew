@@ -85,10 +85,19 @@ class MY_Controller extends CI_Controller {
 			}
 		}
 
-		// Redirect paksa hanya jika SATU-SATUNYA role yang dimiliki adalah Guru, 
-		// kecualikan segment menu guru, profile, ekstrakurikuler, kedisiplinan, dan aksi penyimpanan profil PTK mandiri.
-		$is_only_guru = (count($user_roles) === 1 && in_array('guru', $user_roles, true));
-		if ($is_only_guru) {
+		// Cek apakah pengguna memiliki peran Admin
+		$is_admin_user = false;
+		foreach ($user_roles as $r) {
+			$r_clean = trim(strtolower((string) $r));
+			if ($r_clean === 'admin' || $r_clean === 'administrator' || $r_clean === 'superadmin' || strpos($r_clean, 'admin') !== false) {
+				$is_admin_user = true;
+				break;
+			}
+		}
+
+		// Redirect paksa untuk seluruh pengguna non-Admin (Guru, Guru BK, Wakasek, dll) ke Dashboard Guru, 
+		// kecualikan segment menu guru, profile, ekstrakurikuler, kedisiplinan, pencetakan, dan aksi penyimpanan profil PTK mandiri.
+		if (!$is_admin_user) {
 			$segment1 = $this->uri->segment(1);
 			$segment2 = $this->uri->segment(2);
 			$allowed_segments = ['guru', 'profile', 'ekstrakurikuler', 'kedisiplinan', 'pencetakan'];

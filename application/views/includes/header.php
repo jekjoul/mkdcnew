@@ -80,6 +80,19 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
 </head>
 
 <body>
+    <!-- Mobile Page Loading Spinner / Preloader -->
+    <div id="mobile-page-loader" class="mobile-page-loader">
+        <div class="mobile-loader-container">
+            <div class="mobile-loader-spinner-wrapper">
+                <div class="mobile-loader-ring"></div>
+                <img src="<?php echo $url->assets ?>images/logo-icon.png" alt="Logo" class="mobile-loader-logo">
+            </div>
+            <div class="mobile-loader-text">
+                <span class="mobile-loader-label">Memuat</span>
+                <span class="mobile-loader-dots"><span>.</span><span>.</span><span>.</span></span>
+            </div>
+        </div>
+    </div>
     <main class="dashboard-main">
         <div class="navbar-header shadow">
             <div class="row align-items-center justify-content-between">

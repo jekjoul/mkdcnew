@@ -26,7 +26,9 @@ html[data-theme="dark"] .sidebar-menu .sidebar-menu-group-title {
 /* --- Layout Backgrounds & Borders --- */
 html[data-theme="dark"] .dashboard-main,
 html[data-theme="dark"] .dashboard-main-body {
+    background: #1b2431 !important;
     background-color: #1b2431 !important;
+    background-image: none !important;
 }
 
 html[data-theme="dark"] .navbar-header {

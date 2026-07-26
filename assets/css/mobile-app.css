@@ -308,6 +308,10 @@ html[data-theme="dark"] .mobile-app-tile:hover {
 
     .dashboard-main-body {
         padding: 14px 12px !important;
+    }
+
+    html:not([data-theme="dark"]) .dashboard-main-body,
+    html[data-theme="light"] .dashboard-main-body {
         background: linear-gradient(49deg, rgba(222, 222, 255, 1) 0%, rgba(247, 250, 255, 1) 100%);
     }
 
@@ -413,4 +417,130 @@ html:not([data-theme="dark"]) .navbar-header .dropdown-menu .dropdown-item.hover
 html[data-theme="light"] .navbar-header .dropdown-menu a.hover-text-danger:hover iconify-icon,
 html[data-theme="light"] .navbar-header .dropdown-menu .dropdown-item.hover-text-danger:hover iconify-icon {
     color: #dc2626 !important;
+}
+
+/* ==========================================================================
+   Dedicated Mobile Page Loading Spinner / Preloader
+   ========================================================================== */
+
+@media (min-width: 769px) {
+    .mobile-page-loader {
+        display: none !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .mobile-page-loader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(255, 255, 255, 0.94);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        z-index: 999999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+    }
+
+    html[data-theme="dark"] .mobile-page-loader {
+        background: rgba(27, 36, 49, 0.95);
+    }
+
+    .mobile-page-loader.loaded {
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
+
+    .mobile-loader-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+    }
+
+    .mobile-loader-spinner-wrapper {
+        position: relative;
+        width: 68px;
+        height: 68px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .mobile-loader-ring {
+        width: 68px;
+        height: 68px;
+        border: 3px solid rgba(72, 127, 255, 0.18);
+        border-top-color: #487fff;
+        border-right-color: #7c3aed;
+        border-radius: 50%;
+        animation: mobileSpin 0.8s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    }
+
+    html[data-theme="dark"] .mobile-loader-ring {
+        border-color: rgba(107, 177, 255, 0.18);
+        border-top-color: #6bb1ff;
+        border-right-color: #a855f7;
+    }
+
+    .mobile-loader-logo {
+        width: 30px;
+        height: 30px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        animation: mobilePulse 1.4s ease-in-out infinite alternate;
+        object-fit: contain;
+    }
+
+    .mobile-loader-text {
+        font-size: 13px;
+        font-weight: 600;
+        color: #475569;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        gap: 2px;
+    }
+
+    html[data-theme="dark"] .mobile-loader-text {
+        color: #cbd5e1;
+    }
+
+    .mobile-loader-dots span {
+        animation: mobileDotBlink 1.4s infinite;
+        opacity: 0;
+    }
+
+    .mobile-loader-dots span:nth-child(1) { animation-delay: 0s; }
+    .mobile-loader-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .mobile-loader-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes mobileSpin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    @keyframes mobilePulse {
+        0% { transform: translate(-50%, -50%) scale(0.88); opacity: 0.85; }
+        100% { transform: translate(-50%, -50%) scale(1.08); opacity: 1; }
+    }
+
+    @keyframes mobileDotBlink {
+        0%, 100% { opacity: 0; }
+        50% { opacity: 1; }
+    }
 }

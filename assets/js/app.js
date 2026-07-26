@@ -172,4 +172,50 @@ $('#selectAll').on('change', function () {
     }
   });
   // Remove Table Tr when click on remove btn end
+
+  // =========================== Dedicated Mobile Loader Handler ================================
+  function hideMobileLoader() {
+    var loader = $('#mobile-page-loader');
+    if (loader.length) {
+      loader.addClass('loaded');
+    }
+  }
+
+  function showMobileLoader() {
+    if (window.innerWidth <= 768) {
+      var loader = $('#mobile-page-loader');
+      if (loader.length) {
+        loader.removeClass('loaded');
+      }
+    }
+  }
+
+  // Hide loader when document ready & window loaded
+  hideMobileLoader();
+  $(window).on('load', function() {
+    hideMobileLoader();
+  });
+
+  // Safety fallback: ensure loader is hidden after max 1.5 seconds
+  setTimeout(hideMobileLoader, 1500);
+
+  // Show loader when navigating via links on mobile
+  $(document).on('click', 'a', function(e) {
+    if (window.innerWidth > 768) return;
+
+    var href = $(this).attr('href');
+    var target = $(this).attr('target');
+    var isToggle = $(this).attr('data-bs-toggle') || $(this).attr('data-toggle');
+
+    if (href && href !== '#' && href !== 'javascript:void(0)' && !href.startsWith('#') && !href.startsWith('javascript:') && target !== '_blank' && !isToggle) {
+      showMobileLoader();
+    }
+  });
+
+  // Show loader when submitting forms on mobile
+  $(document).on('submit', 'form', function() {
+    if (window.innerWidth <= 768) {
+      showMobileLoader();
+    }
+  });
 })(jQuery);

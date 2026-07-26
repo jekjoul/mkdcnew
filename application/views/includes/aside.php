@@ -13,9 +13,33 @@
         <ul class="sidebar-menu" id="sidebar-menu">
             <?php
             $CI = &get_instance();
-            $role_title_row = $CI->db->get_where('roles', ['id' => logged('role')])->row();
-            $role_title = $role_title_row ? strtolower((string) $role_title_row->title) : '';
-            $is_guru_portal = ($role_title === 'guru' || logged('role') == 4);
+            $userId = logged('id');
+            $user_roles_aside = [];
+            if ($userId && $CI->db->table_exists('user_roles')) {
+                foreach ($CI->db->get_where('user_roles', ['user_id' => $userId])->result() as $ur) {
+                    $r_row = $CI->db->get_where('roles', ['id' => $ur->role_id])->row();
+                    if ($r_row) {
+                        $user_roles_aside[] = strtolower((string) $r_row->title);
+                    }
+                }
+            }
+            if (empty($user_roles_aside)) {
+                $role_title_row = $CI->db->get_where('roles', ['id' => logged('role')])->row();
+                if ($role_title_row) {
+                    $user_roles_aside[] = strtolower((string) $role_title_row->title);
+                }
+            }
+
+            $is_admin_aside = false;
+            foreach ($user_roles_aside as $r) {
+                $r_clean = trim(strtolower((string) $r));
+                if ($r_clean === 'admin' || $r_clean === 'administrator' || $r_clean === 'superadmin' || strpos($r_clean, 'admin') !== false) {
+                    $is_admin_aside = true;
+                    break;
+                }
+            }
+
+            $is_guru_portal = !$is_admin_aside || in_array('guru', $user_roles_aside, true) || in_array('guru bk', $user_roles_aside, true) || in_array('bk', $user_roles_aside, true) || in_array('wakasek', $user_roles_aside, true) || logged('role') == 4;
             ?>
             <?php if ($is_guru_portal): ?>
                 <?php if (hasPermissions('menu_dashboard_guru')): ?>
@@ -27,7 +51,7 @@
                     </li>
                 <?php endif; ?>
 
-                <?php if (hasPermissions('menu_data_siswa_guru') || hasPermissions('menu_pembelajaran_guru') || hasPermissions('menu_perangkat_guru') || hasPermissions('menu_jadwal_guru') || hasPermissions('menu_input_nilai_guru') || hasPermissions('menu_profil_ptk_guru')): ?>
+                <?php if (hasPermissions('menu_data_siswa_guru') || hasPermissions('menu_pembelajaran_guru') || hasPermissions('menu_perangkat_guru') || hasPermissions('menu_jadwal_guru') || hasPermissions('menu_input_nilai_guru') || hasPermissions('menu_profil_ptk_guru') || hasPermissions('kedisiplinan_add') || hasPermissions('menu_kedisiplinan')): ?>
                     <li class="sidebar-menu-group-title">Portal Guru</li>
                 <?php endif; ?>
 
@@ -88,14 +112,22 @@
                     </li>
                 <?php endif; ?>
 
-                
+                <?php if (hasPermissions('kedisiplinan_add') || hasPermissions('menu_kedisiplinan')): ?>
+                    <li>
+                        <a href="<?php echo url('kedisiplinan/tambah') ?>" class="text-danger">
+                            <iconify-icon icon="solar:shield-warning-bold" class="menu-icon text-danger"></iconify-icon>
+                            <span class="text-danger fw-semibold">Laporkan Kenakalan</span>
+                        </a>
+                    </li>
+                <?php endif; ?>
+
             <?php endif; ?>
 
-<?php if (hasPermissions('menu_dashboard')): ?>
+<?php if ($is_admin_aside && hasPermissions('menu_dashboard')): ?>
     <li>
         <a href="<?php echo url('') ?>">
             <iconify-icon icon="solar:home-angle-2-linear" class="menu-icon"></iconify-icon>
-            <span>Dashboard</span>
+            <span>Dashboard Admin</span>
         </a>
     </li>
 <?php endif; ?>

@@ -120,6 +120,13 @@
                     </a>
                 </div>
             </div>
+            <!-- Tombol Laporkan Kenakalan Siswa (Full Width, Red Gradient dengan Icon) -->
+            <div class="mt-3">
+                <a href="<?php echo url('kedisiplinan/tambah') ?>" class="btn btn-danger radius-12 py-14 px-20 w-100 fw-bold text-white shadow-sm d-flex align-items-center justify-content-center gap-2" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border: none; font-size: 15px; letter-spacing: 0.3px;">
+                    <iconify-icon icon="solar:shield-warning-bold" class="text-2xl"></iconify-icon>
+                    <span>Laporkan Kenakalan</span>
+                </a>
+            </div>
         </div>
     </div>
 
