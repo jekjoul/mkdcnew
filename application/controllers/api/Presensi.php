@@ -85,20 +85,46 @@ class Presensi extends CI_Controller
         }
 
         // Cache memory maps untuk siswa & ptk agar pencarian super cepat (O(1))
-        $all_siswa = $this->db->select('id_siswa, nipd, pin_fingerprint')->get('siswa')->result();
+        $all_siswa = $this->db->select('id_siswa, nipd, pin_fingerprint, nisn, nik')->get('siswa')->result();
         $siswa_map = [];
-        foreach ($all_siswa as $s) {
-            if (!empty($s->pin_fingerprint)) $siswa_map[(string)$s->pin_fingerprint] = $s->id_siswa;
-            if (!empty($s->nipd))            $siswa_map[(string)$s->nipd]            = $s->id_siswa;
+        if (!empty($all_siswa)) {
+            foreach ($all_siswa as $s) {
+                if (!empty($s->pin_fingerprint)) {
+                    $siswa_map[(string)$s->pin_fingerprint] = $s->id_siswa;
+                    $siswa_map[ltrim((string)$s->pin_fingerprint, '0')] = $s->id_siswa;
+                }
+                if (!empty($s->nipd)) {
+                    $siswa_map[(string)$s->nipd] = $s->id_siswa;
+                    $siswa_map[ltrim((string)$s->nipd, '0')] = $s->id_siswa;
+                }
+                if (!empty($s->nisn)) {
+                    $siswa_map[(string)$s->nisn] = $s->id_siswa;
+                }
+                if (!empty($s->nik)) {
+                    $siswa_map[(string)$s->nik] = $s->id_siswa;
+                }
+            }
         }
 
-        $all_ptk = $this->db->select('id_ptk, niy, pin_fingerprint, nik, nip')->get('ptk')->result();
+        $all_ptk = $this->db->select('id_ptk, niy, pin_fingerprint, nik, nuptk')->get('ptk')->result();
         $ptk_map = [];
-        foreach ($all_ptk as $p) {
-            if (!empty($p->niy))              $ptk_map[(string)$p->niy]             = $p->id_ptk;
-            if (!empty($p->pin_fingerprint)) $ptk_map[(string)$p->pin_fingerprint] = $p->id_ptk;
-            if (!empty($p->nik))              $ptk_map[(string)$p->nik]             = $p->id_ptk;
-            if (!empty($p->nip))              $ptk_map[(string)$p->nip]             = $p->id_ptk;
+        if (!empty($all_ptk)) {
+            foreach ($all_ptk as $p) {
+                if (!empty($p->niy)) {
+                    $ptk_map[(string)$p->niy] = $p->id_ptk;
+                    $ptk_map[ltrim((string)$p->niy, '0')] = $p->id_ptk;
+                }
+                if (!empty($p->pin_fingerprint)) {
+                    $ptk_map[(string)$p->pin_fingerprint] = $p->id_ptk;
+                    $ptk_map[ltrim((string)$p->pin_fingerprint, '0')] = $p->id_ptk;
+                }
+                if (!empty($p->nik)) {
+                    $ptk_map[(string)$p->nik] = $p->id_ptk;
+                }
+                if (!empty($p->nuptk)) {
+                    $ptk_map[(string)$p->nuptk] = $p->id_ptk;
+                }
+            }
         }
 
         // Kumpulkan semua tanggal dari batch logs untuk pre-fetch existing records O(1)
@@ -115,9 +141,11 @@ class Presensi extends CI_Controller
             $this->db->select('id_presensi, pin, tanggal, jam_scan');
             $this->db->where_in('tanggal', $dates_in_batch);
             $q_exist = $this->db->get('presensi_harian')->result();
-            foreach ($q_exist as $ex) {
-                $key = "{$ex->pin}_{$ex->tanggal}_{$ex->jam_scan}";
-                $existing_map[$key] = $ex->id_presensi;
+            if (!empty($q_exist)) {
+                foreach ($q_exist as $ex) {
+                    $key = "{$ex->pin}_{$ex->tanggal}_{$ex->jam_scan}";
+                    $existing_map[$key] = $ex->id_presensi;
+                }
             }
         }
 
@@ -138,20 +166,24 @@ class Presensi extends CI_Controller
                 continue;
             }
 
-            $pin = $pin_raw;
+            $pin       = $pin_raw;
+            $clean_pin = ltrim($pin, '0');
 
             $tipe_user = 'siswa';
             $id_user   = 0;
 
-            if (strlen($pin) === 14) {
-                $tipe_user = 'ptk';
-                $id_user   = isset($ptk_map[$pin]) ? $ptk_map[$pin] : 0;
-            } elseif (isset($ptk_map[$pin])) {
+            if (isset($ptk_map[$pin])) {
                 $tipe_user = 'ptk';
                 $id_user   = $ptk_map[$pin];
+            } elseif ($clean_pin !== '' && isset($ptk_map[$clean_pin])) {
+                $tipe_user = 'ptk';
+                $id_user   = $ptk_map[$clean_pin];
             } elseif (isset($siswa_map[$pin])) {
                 $tipe_user = 'siswa';
                 $id_user   = $siswa_map[$pin];
+            } elseif ($clean_pin !== '' && isset($siswa_map[$clean_pin])) {
+                $tipe_user = 'siswa';
+                $id_user   = $siswa_map[$clean_pin];
             }
 
             $date     = date('Y-m-d', strtotime($scan_date));

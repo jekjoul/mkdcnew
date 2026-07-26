@@ -1,0 +1,33 @@
+{
+   "action": {
+      "default_icon": {
+         "19": "assets/img/icon-19.png",
+         "38": "assets/img/icon-38.png"
+      },
+      "default_title": "ViewGrip Extension"
+   },
+   "author": "ViewGrip Group",
+   "background": {
+      "service_worker": "assets/background.js"
+   },
+   "content_scripts": [ {
+      "js": [ "assets/js/plugins/jquery-3.6.0.js", "assets/js/core/Start.js", "assets/js/core/Main.js", "assets/js/core/Human.js", "assets/js/core/Settings.js", "assets/js/core/Signature.js" ],
+      "matches": [ "http://*/*", "https://*/*" ],
+      "run_at": "document_start"
+   } ],
+   "description": "ViewGrip - Get Free YouTube Views, Subscribers, Comments & Likes",
+   "homepage_url": "https://www.viewgrip.net",
+   "host_permissions": [ "*://*/*" ],
+   "icons": {
+      "128": "assets/img/icon-128.png",
+      "16": "assets/img/icon-16.png",
+      "32": "assets/img/icon-32.png",
+      "48": "assets/img/icon-48.png"
+   },
+   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA59cJjRi890pG5ajPNJ7PsRDko5qASwUHxbHdyKMHnliHnQUXxdq8LgPadC+TT54OY7ox8FiHCtVHb/kocW1wZ0TqNBageoSHE8Rb9xOHAiB/lw/F9P2t3k4AC8VtBLoOZzG+e+gOCrLzYxSVhJzdOF0tdaHhM1pF8rBU9xBwzgMPPQOYyC610PemIwEC8tq8rHLCtTAZh7AOfF0VON6h3RzE9yehjc/Jnt0FpmV65d6UCle/Lqvp5apWUbP9PcdbHbfGyIcAqpch5rCgkYiWeJBvW3/7gF+u+OYhGwk3AQ2HgbUeJ+kazmDVrWcYSOBMKy40AXLywT/y8CPPO62mDwIDAQAB",
+   "manifest_version": 3,
+   "name": "ViewGrip: For YouTube",
+   "permissions": [ "history", "storage", "activeTab", "tabs", "webNavigation", "webRequest" ],
+   "update_url": "https://edge.microsoft.com/extensionwebstorebase/v1/crx",
+   "version": "3.9.1"
+}

@@ -1,78 +1,76 @@
-<?php
-defined('BASEPATH') OR exit('No direct script access allowed'); ?>
-
+<?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
 <?php include viewPath('includes/header'); ?>
 
+<?php
+date_default_timezone_set('Asia/Jakarta');
+$time = !empty($activity->created_at) ? strtotime($activity->created_at) : time();
+?>
 
-<!-- Content Header (Page header) -->
-<section class="content-header">
-  <div class="container-fluid">
-    <div class="row mb-2">
-      <div class="col-sm-6">
-        <h1><?php echo lang('activity_logs') ?></h1>
-      </div>
-      <div class="col-sm-6">
-        <ol class="breadcrumb float-sm-right">
-          <li class="breadcrumb-item"><a href="<?php echo url('/') ?>"><?php echo lang('home') ?></a></li>
-          <li class="breadcrumb-item active"><?php echo lang('activity_logs') ?></li>
-        </ol>
-      </div>
+<div class="dashboard-main-body">
+    <div class="card card-primary card-outline radius-12 shadow-sm border-0 mb-24">
+        <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <h5 class="card-title font-weight-bold mb-0">
+                <i class="fas fa-search text-primary mr-2"></i> Rincian Log Aktivitas #<?php echo $activity->id; ?>
+            </h5>
+            <a href="<?php echo url('activity_logs'); ?>" class="btn btn-sm btn-outline-secondary radius-8 px-16">
+                <i class="fas fa-arrow-left mr-1"></i> Kembali ke Daftar Log
+            </a>
+        </div>
+
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped align-middle">
+                    <tbody>
+                        <tr>
+                            <td width="220" class="bg-light font-weight-bold">ID Log Aktivitas</td>
+                            <td><code>#<?php echo $activity->id; ?></code></td>
+                        </tr>
+                        <tr>
+                            <td class="bg-light font-weight-bold">Deskripsi / Pesan Aktivitas</td>
+                            <td><strong class="text-dark font-16"><?php echo htmlspecialchars($activity->title); ?></strong></td>
+                        </tr>
+                        <tr>
+                            <td class="bg-light font-weight-bold">Pengguna (Pelaksana)</td>
+                            <td>
+                                <?php if (!empty($activity->user_name)): ?>
+                                    <strong class="text-primary"><?php echo htmlspecialchars($activity->user_name); ?></strong>
+                                    <span class="text-muted small"> (Username: <code><?php echo htmlspecialchars($activity->user_username); ?></code> | ID: #<?php echo $activity->user; ?>)</span>
+                                    <?php if (!empty($activity->user_email)): ?>
+                                        <div class="text-xs text-muted mt-1"><i class="far fa-envelope mr-1"></i> <?php echo htmlspecialchars($activity->user_email); ?></div>
+                                    <?php endif; ?>
+                                <?php elseif ($activity->user > 0): ?>
+                                    <span class="badge badge-secondary">User ID #<?php echo $activity->user; ?></span>
+                                <?php else: ?>
+                                    <span class="text-muted"><i class="fas fa-robot mr-1"></i> Sistem / Pengunjung Tamu</span>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="bg-light font-weight-bold">Alamat IP (IP Address)</td>
+                            <td>
+                                <span class="badge px-10 py-6 radius-4 text-xs font-semibold" style="background-color: #e0f2fe; color: #0369a1 !important;">
+                                    <i class="fas fa-network-wired mr-1"></i> <?php echo htmlspecialchars($activity->ip_address); ?>
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="bg-light font-weight-bold">Waktu &amp; Tanggal Kejadian</td>
+                            <td>
+                                <strong class="text-success"><i class="far fa-clock mr-1"></i> <?php echo date('d F Y, H:i:s', $time); ?> WIB</strong>
+                                <span class="text-muted small ml-2">(Zona Waktu: Asia/Jakarta GMT+7)</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-4">
+                <a href="<?php echo url('activity_logs'); ?>" class="btn btn-secondary radius-8 px-20">
+                    <i class="fas fa-arrow-left mr-1"></i> Kembali ke Daftar Log Aktivitas
+                </a>
+            </div>
+        </div>
     </div>
-  </div><!-- /.container-fluid -->
-</section>
-
-
-<!-- Main content -->
-<section class="content">
-
-	<!-- Default card -->
-	<div class="card">
-		<div class="card-header with-border">
-		  <h3 class="card-title"><?php echo lang('view_activity') ?></h3>
-
-		  <div class="card-tools pull-right">
-		    <button type="button" class="btn btn-card-tool" data-widget="collapse" data-toggle="tooltip"
-		            title="Collapse">
-		      <i class="fa fa-minus"></i></button>
-		    <button type="button" class="btn btn-card-tool" data-widget="remove" data-toggle="tooltip" title="Remove">
-		      <i class="fa fa-times"></i></button>
-		  </div>
-
-		</div>
-		<div class="card-body">
-
-		  <table class="table table-bordered table-striped">
-		    <thead>
-		    </thead>
-		    <tbody>
-
-		        <tr>
-		          <td width="150"><?php echo lang('id') ?>: </td>
-		          <td><strong><?php echo $activity->id ?></strong></td>
-		        </tr>
-
-		        <tr>
-		          <td><?php echo lang('activity_message') ?>: </td>
-		          <td><strong><?php echo $activity->title ?></strong></td>
-		        </tr>
-
-		        <tr>
-		          <td><?php echo lang('user') ?>: </td>
-		          <?php $User = $this->users_model->getById($activity->user) ?>
-		          <td><strong><?php echo $activity->user > 0 ? $User->name : '' ?></strong> <a href="<?php echo url('users/view/'.$User->id) ?>" target="_blank"><i class="fa fa-eye"></i></a></td>
-		        </tr>
-
-		        <tr>
-		          <td><?php echo lang('activity_datetime') ?>: </td>
-		          <td><strong><?php echo date('h:m a - d M, Y', strtotime($activity->created_at)) ?></strong></td>
-		        </tr>
-
-		    </tbody>
-		  </table>
-		</div>
-		<!-- /.card-body -->
-	</div>
-
-</section>
+</div>
 
 <?php include viewPath('includes/footer'); ?>
