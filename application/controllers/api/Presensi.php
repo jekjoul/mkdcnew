@@ -162,7 +162,7 @@ class Presensi extends CI_Controller
             $pin_raw   = trim((string)($log['pin'] ?? ''));
             $scan_date = isset($log['scan_date']) ? trim($log['scan_date']) : '';
 
-            if (empty($pin_raw) || $pin_raw === '0' || empty($scan_date)) {
+            if ($pin_raw === '' || empty($scan_date)) {
                 $ignored_count++;
                 continue;
             }

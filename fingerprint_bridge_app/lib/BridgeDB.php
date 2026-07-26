@@ -59,7 +59,7 @@ class BridgeDB
             $pin  = trim((string)($l['pin'] ?? $l['PIN'] ?? $l['user_id'] ?? $l['UserId'] ?? ''));
             $date = trim((string)($l['scan_date'] ?? $l['ScanDate'] ?? $l['date'] ?? $l['Date'] ?? ''));
 
-            if (!empty($pin) && $pin !== '0' && !empty($date)) {
+            if ($pin !== '' && $date !== '') {
                 $stmt->execute([
                     ':sn'         => trim((string)($l['sn'] ?? 'FS-EASYLINK')),
                     ':pin'        => $pin,

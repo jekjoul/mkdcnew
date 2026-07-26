@@ -176,7 +176,7 @@ $logs_to_send = [];
 foreach ($logs as $l) {
     $p = trim((string)($l['pin'] ?? ''));
     $d = trim((string)($l['scan_date'] ?? ''));
-    if (!empty($p) && $p !== '0' && !empty($d)) {
+    if ($p !== '' && $d !== '') {
         $logs_to_send[] = [
             'pin'       => $p,
             'scan_date' => $d
@@ -265,7 +265,7 @@ $json_textarea_val = !empty($logs_to_send) ? json_encode($logs_to_send, JSON_PRE
             <span class="iconify" data-icon="solar:upload-bold-duotone"></span>
         </div>
         <h4 style="font-size: 1.25rem; font-weight: 700; color: #0f172a; margin-bottom: 0.25rem;" id="syncModalTitle">Mengirim Log Presensi ke Server Web API</h4>
-        <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1rem;" id="syncModalSub">Proses pengiriman berkala dalam batch (300 item/request) dengan pemantauan log langsung.</p>
+        <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1rem;" id="syncModalSub">Proses pengiriman berkala dalam batch (200 item/request) dengan pemantauan log langsung.</p>
 
         <!-- Progress Bar Container -->
         <div style="background: #e2e8f0; border-radius: 9999px; height: 16px; overflow: hidden; margin-bottom: 0.75rem; position: relative;">
