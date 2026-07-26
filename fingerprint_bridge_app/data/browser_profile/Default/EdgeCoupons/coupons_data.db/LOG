@@ -1,5 +1,0 @@
-2026/07/26-19:22:30.359 42b4 Creating DB C:\xampp\htdocs\mkdc_new_draft\fingerprint_bridge_app\data\browser_profile\Default\EdgeCoupons/coupons_data.db since it was missing.
-2026/07/26-19:22:30.451 42b4 Reusing MANIFEST C:\xampp\htdocs\mkdc_new_draft\fingerprint_bridge_app\data\browser_profile\Default\EdgeCoupons/coupons_data.db/MANIFEST-000001
-2026/07/26-19:22:36.133 4df4 Level-0 table #5: started
-2026/07/26-19:22:36.145 4df4 Level-0 table #5: 683041 bytes OK
-2026/07/26-19:22:36.150 4df4 Delete type=0 #3
