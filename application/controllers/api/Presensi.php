@@ -95,12 +95,36 @@ class Presensi extends CI_Controller
             return;
         }
 
+        // Kumpulkan semua tanggal dari batch logs untuk pre-fetch existing keys
+        $dates_in_batch = [];
+        foreach ($logs as $l) {
+            $d = isset($l['scan_date']) ? trim($l['scan_date']) : (isset($l['ScanDate']) ? trim($l['ScanDate']) : '');
+            if (!empty($d)) {
+                $dates_in_batch[] = date('Y-m-d', strtotime($d));
+            }
+        }
+        $dates_in_batch = array_unique($dates_in_batch);
+
+        $existing_keys = [];
+        if (!empty($dates_in_batch)) {
+            $this->db->select('pin, tanggal, jam_scan');
+            $this->db->where_in('tanggal', $dates_in_batch);
+            $q_exist = $this->db->get('presensi_harian')->result();
+            if (!empty($q_exist)) {
+                foreach ($q_exist as $ex) {
+                    $key = "{$ex->pin}_{$ex->tanggal}_{$ex->jam_scan}";
+                    $existing_keys[$key] = true;
+                }
+            }
+        }
+
         $inserted_count  = 0;
         $overwrite_count = 0;
         $ignored_count   = 0;
 
-        $batch_rows = [];
-        $seen_keys  = [];
+        $new_rows     = [];
+        $update_rows  = [];
+        $seen_in_loop = [];
 
         foreach ($logs as $log) {
             $pin_raw   = trim((string)($log['pin'] ?? $log['PIN'] ?? $log['user_id'] ?? $log['UserId'] ?? ''));
@@ -117,11 +141,21 @@ class Presensi extends CI_Controller
 
             $exist_key = "{$pin_raw}_{$date}_{$jam_scan}";
 
-            if (isset($seen_keys[$exist_key])) {
+            if (isset($existing_keys[$exist_key]) || isset($seen_in_loop[$exist_key])) {
+                $update_rows[] = [
+                    'pin'      => $pin_raw,
+                    'tanggal'  => $date,
+                    'jam_scan' => $jam_scan,
+                    'sesi'     => $sesi
+                ];
                 $overwrite_count++;
             } else {
-                $seen_keys[$exist_key] = true;
-                $batch_rows[] = [
+                $seen_in_loop[$exist_key]  = true;
+                $existing_keys[$exist_key] = true;
+
+                $new_rows[] = [
+                    'tipe_user'  => 'siswa',
+                    'id_user'    => 0,
                     'pin'        => $pin_raw,
                     'tanggal'    => $date,
                     'jam_scan'   => $jam_scan,
@@ -133,34 +167,44 @@ class Presensi extends CI_Controller
             }
         }
 
-        if (!empty($batch_rows)) {
+        // HANYA data murni baru yang di-insert!
+        // Sehingga AUTO_INCREMENT bertambah urut rapat (1, 2, 3, 4, 5, ...) tanpa lompatan ID
+        if (!empty($new_rows)) {
             $value_strings = [];
-            foreach ($batch_rows as $row) {
+            foreach ($new_rows as $row) {
                 $pin_esc = $this->db->escape($row['pin']);
                 $tgl_esc = $this->db->escape($row['tanggal']);
                 $jam_esc = $this->db->escape($row['jam_scan']);
                 $ses_esc = $this->db->escape($row['sesi']);
                 $now_esc = $this->db->escape(date('Y-m-d H:i:s'));
 
-                // id_user default 0, tipe_user default 'siswa' untuk kompatibilitas kolom DB
                 $value_strings[] = "('siswa', 0, {$pin_esc}, {$tgl_esc}, {$jam_esc}, {$ses_esc}, {$now_esc}, {$now_esc})";
             }
 
-            // Gunakan ON DUPLICATE KEY UPDATE agar 100% data mentah (RAW) langsung tersimpan
             $sql_chunks = array_chunk($value_strings, 100);
             foreach ($sql_chunks as $chunk) {
                 $sql = "INSERT INTO presensi_harian (tipe_user, id_user, pin, tanggal, jam_scan, sesi, created_at, updated_at) 
-                        VALUES " . implode(',', $chunk) . "
-                        ON DUPLICATE KEY UPDATE 
-                            sesi       = VALUES(sesi),
-                            updated_at = VALUES(updated_at)";
+                        VALUES " . implode(',', $chunk);
                 $this->db->query($sql);
+            }
+        }
+
+        // Untuk data yang sudah ada, lakukan UPDATE tanpa mengganggu AUTO_INCREMENT
+        if (!empty($update_rows)) {
+            foreach ($update_rows as $u_row) {
+                $this->db->where('pin', $u_row['pin']);
+                $this->db->where('tanggal', $u_row['tanggal']);
+                $this->db->where('jam_scan', $u_row['jam_scan']);
+                $this->db->update('presensi_harian', [
+                    'sesi'       => $u_row['sesi'],
+                    'updated_at' => date('Y-m-d H:i:s')
+                ]);
             }
         }
 
         echo json_encode([
             'status'    => 'success',
-            'message'   => 'Sync scanlog RAW completed.',
+            'message'   => 'Sync scanlog completed with contiguous Auto-Increment IDs.',
             'inserted'  => $inserted_count,
             'overwrite' => $overwrite_count,
             'ignored'   => $ignored_count,
