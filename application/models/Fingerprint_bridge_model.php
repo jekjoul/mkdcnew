@@ -96,6 +96,39 @@ class Fingerprint_bridge_model extends MY_Model
                 'updated_at'         => date('Y-m-d H:i:s')
             ]);
         }
+
+        // 3. Table presensi_machine_users
+        if (!$this->db->table_exists('presensi_machine_users')) {
+            $this->dbforge->add_field([
+                'id'              => ['type' => 'INT', 'constraint' => 11, 'auto_increment' => true],
+                'pin'             => ['type' => 'VARCHAR', 'constraint' => 50],
+                'nama'            => ['type' => 'VARCHAR', 'constraint' => 150, 'null' => true],
+                'password'        => ['type' => 'VARCHAR', 'constraint' => 50, 'null' => true],
+                'rfid'            => ['type' => 'VARCHAR', 'constraint' => 50, 'null' => true],
+                'privilege'       => ['type' => 'INT', 'constraint' => 11, 'default' => 0],
+                'jumlah_template' => ['type' => 'INT', 'constraint' => 11, 'default' => 0],
+                'created_at'      => ['type' => 'DATETIME', 'null' => true],
+                'updated_at'      => ['type' => 'DATETIME', 'null' => true],
+            ]);
+            $this->dbforge->add_key('id', true);
+            $this->dbforge->add_key('pin');
+            $this->dbforge->create_table('presensi_machine_users', true);
+        }
+
+        // 4. Table presensi_machine_templates
+        if (!$this->db->table_exists('presensi_machine_templates')) {
+            $this->dbforge->add_field([
+                'id'         => ['type' => 'INT', 'constraint' => 11, 'auto_increment' => true],
+                'pin'        => ['type' => 'VARCHAR', 'constraint' => 50],
+                'finger_idx' => ['type' => 'INT', 'constraint' => 11, 'default' => 0],
+                'alg_ver'    => ['type' => 'INT', 'constraint' => 11, 'default' => 10],
+                'template'   => ['type' => 'LONGTEXT', 'null' => true],
+                'created_at' => ['type' => 'DATETIME', 'null' => true],
+            ]);
+            $this->dbforge->add_key('id', true);
+            $this->dbforge->add_key('pin');
+            $this->dbforge->create_table('presensi_machine_templates', true);
+        }
     }
 
     public function getSettings()

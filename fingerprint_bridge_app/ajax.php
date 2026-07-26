@@ -1,204 +1,201 @@
 <?php
-session_start();
 header('Content-Type: application/json');
+set_time_limit(90);
 
-require_once __DIR__ . '/lib/BridgeStorage.php';
+require_once __DIR__ . '/koneksidb.php';
 require_once __DIR__ . '/lib/EasyLinkSDK.php';
 
-// Proteksi Session
-if (!isset($_SESSION['fp_bridge_admin'])) {
-    echo json_encode(['status' => 'error', 'message' => 'Unauthorized access. Silakan login.']);
-    exit;
-}
-
-$action = $_REQUEST['action'] ?? '';
+$action  = $_REQUEST['action'] ?? '';
+$dev_cfg = getActiveDeviceConfig($conn);
 
 switch ($action) {
     case 'test_connection':
-        $machine = BridgeStorage::getMachine();
-        $ip   = $_POST['ip_address'] ?? $machine['ip_address'] ?? '192.168.1.201';
-        $port = (int)($_POST['port'] ?? $machine['port'] ?? 4370);
-
-        $res = EasyLinkSDK::ping($ip, $port);
+        $ip   = $_POST['ip_address'] ?? $dev_cfg['server_IP'];
+        $port = intval($_POST['port'] ?? $dev_cfg['server_port']);
+        $res  = EasyLinkSDK::ping($ip, $port, 3);
         echo json_encode($res);
         break;
 
     case 'get_device_info':
-        $machine = BridgeStorage::getMachine();
-        $ip      = $_POST['ip_address'] ?? $machine['ip_address'] ?? '192.168.1.201';
-        $port    = (int)($_POST['port'] ?? $machine['port'] ?? 4370);
-        $sn      = $_POST['serial_number'] ?? $machine['serial_number'] ?? '';
-        $comm_key= $_POST['comm_key'] ?? $machine['comm_key'] ?? '0';
-
-        $res = EasyLinkSDK::getDeviceInfo($ip, $port, $sn, $comm_key);
+        $ip   = $_POST['ip_address'] ?? $dev_cfg['server_IP'];
+        $port = intval($_POST['port'] ?? $dev_cfg['server_port']);
+        $sn   = $_POST['serial_number'] ?? $dev_cfg['device_sn'];
+        $res  = EasyLinkSDK::getDeviceInfo($ip, $port, $sn);
         echo json_encode($res);
         break;
 
-    case 'ajaxFetchLog':
-        $machine = BridgeStorage::getMachine();
-        $sn      = $_POST['sn'] ?? $machine['serial_number'] ?? '';
-        $port    = (int)($_POST['port'] ?? $machine['port'] ?? 4370);
-        $ip      = $_POST['ip'] ?? $machine['ip_address'] ?? '127.0.0.1';
-        $mode    = $_POST['mode'] ?? 'new';
-
-        $limit     = "500";
-        $endpoint  = ($mode === 'all') ? "scanlog/all/paging" : "scanlog/new";
-        $parameter = "sn=" . urlencode($sn) . "&limit=" . $limit;
-
-        $res = EasyLinkSDK::webservice($ip, $port, $endpoint, $parameter, 10);
-        echo $res['raw'] ?? json_encode(['Result' => false, 'Data' => []]);
+    case 'get_all_user':
+    case 'download_users':
+        $res = EasyLinkSDK::getUsers($dev_cfg['server_IP'], $dev_cfg['server_port'], $dev_cfg['device_sn'], '0', 1);
+        echo json_encode($res);
         break;
 
-    case 'ajaxUploadBatch':
-        $data_json = $_POST['data'] ?? '';
-        $settings  = BridgeStorage::getSettings();
-        $api_url   = BridgeStorage::getActiveEndpointUrl();
-        $api_token = $settings['api_token'] ?? '';
+    case 'send_machine_users_to_server':
+        $res_users = EasyLinkSDK::getUsers($dev_cfg['server_IP'], $dev_cfg['server_port'], $dev_cfg['device_sn'], '0', 1);
+        $m_users   = $res_users['users'] ?? [];
 
-        $decoded  = json_decode($data_json, true);
-        $new_logs = [];
-        if (isset($decoded['Data']) && is_array($decoded['Data'])) {
-            foreach ($decoded['Data'] as $entry) {
-                $new_logs[] = [
-                    'pin'       => intval($entry['pin'] ?? 0),
-                    'scan_date' => $entry['tgl_scanlog'] ?? date('Y-m-d H:i:s'),
-                    'sn'        => $entry['sn_device'] ?? ''
-                ];
+        if (empty($m_users)) {
+            echo json_encode([
+                'status'  => false,
+                'message' => 'Gagal mengambil data user dari mesin atau data di mesin kosong: ' . ($res_users['message'] ?? '')
+            ]);
+            break;
+        }
+
+        $active_key = $dev_cfg['active_api_key'] ?? $dev_cfg['active_key'] ?? 'MKDC_FINGERPRINT_SECRET_KEY_2026';
+        $parsed_url = parse_url($dev_cfg['active_api'] ?? '');
+        $scheme     = $parsed_url['scheme'] ?? 'http';
+        $host       = $parsed_url['host'] ?? 'localhost';
+        $port_str   = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
+        $path       = $parsed_url['path'] ?? '/mkdc_new_draft/api/presensi';
+        $base_path  = preg_replace('#/(active_students|sync|active_ptk|receive_machine_users|pending_tasks|task_result).*$#', '', $path);
+        $api_url    = "{$scheme}://{$host}{$port_str}" . rtrim($base_path, '/') . '/receive_machine_users';
+
+        $payload = json_encode([
+            'token' => $active_key,
+            'users' => array_values($m_users)
+        ]);
+
+        $ch = curl_init($api_url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => $payload,
+            CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
+            CURLOPT_TIMEOUT        => 30,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => false
+        ]);
+        $resp = curl_exec($ch);
+        $err  = curl_error($ch);
+        curl_close($ch);
+
+        if ($err) {
+            echo json_encode([
+                'status'  => false,
+                'message' => 'Gagal mengirim data ke server MKDC: ' . $err
+            ]);
+            break;
+        }
+
+        $res_json = json_decode($resp, true);
+        if ($res_json && isset($res_json['status']) && $res_json['status'] === 'success') {
+            echo json_encode([
+                'status'  => true,
+                'message' => $res_json['message'] ?? 'Berhasil mengirim data user mesin ke server MKDC.'
+            ]);
+        } else {
+            echo json_encode([
+                'status'  => false,
+                'message' => 'Respon dari server MKDC: ' . ($res_json['message'] ?? $resp)
+            ]);
+        }
+        break;
+
+    case 'set_user':
+        $pin  = intval($_POST['pin'] ?? 0);
+        $nama = mb_substr(trim($_POST['nama'] ?? ''), 0, 15);
+        $pwd  = trim($_POST['pwd'] ?? '');
+        $rfid = trim($_POST['rfid'] ?? '');
+        $priv = intval($_POST['privilege'] ?? 0);
+
+        if ($pin <= 0 || empty($nama)) {
+            echo json_encode(['status' => false, 'message' => 'PIN dan Nama wajib diisi.']);
+            exit;
+        }
+
+        $res = EasyLinkSDK::setUser($dev_cfg['server_IP'], $dev_cfg['server_port'], $dev_cfg['device_sn'], $pin, $nama, $pwd, $rfid, $priv);
+        echo json_encode($res);
+        break;
+
+    case 'upload_all_users':
+        $users_json = $_POST['users_data'] ?? '[]';
+        $users      = json_decode($users_json, true);
+        $uploaded   = 0;
+
+        if (is_array($users) && !empty($users)) {
+            foreach ($users as $u) {
+                $pin  = intval($u['pin'] ?? 0);
+                $nama = mb_substr(trim($u['nama'] ?? ''), 0, 15);
+                if ($pin > 0 && !empty($nama)) {
+                    $r = EasyLinkSDK::setUser($dev_cfg['server_IP'], $dev_cfg['server_port'], $dev_cfg['device_sn'], $pin, $nama, $u['pwd'] ?? '', $u['rfid'] ?? '', intval($u['privilege'] ?? 0));
+                    if ($r['status']) $uploaded++;
+                }
             }
         }
 
-        $payload = json_encode([
-            'token' => $api_token,
-            'logs'  => $new_logs
-        ]);
-
-        $ch = curl_init($api_url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-
-        $response = curl_exec($ch);
-        $err      = curl_error($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        if ($err) {
-            $msg = "Gagal upload batch ke server API ({$api_url}): " . $err;
-            BridgeStorage::addSyncLog(['type' => 'push_presensi', 'status' => 'failed', 'message' => $msg]);
-            echo json_encode(['status' => 'error', 'alert' => $msg]);
-            exit;
-        }
-
-        $api_res = json_decode($response, true);
-        $inserted = $api_res['inserted'] ?? count($new_logs);
-        $alert_msg = "Data batch (" . count($new_logs) . " logs) tersimpan di server";
-        BridgeStorage::addSyncLog(['type' => 'push_presensi', 'status' => 'success', 'message' => $alert_msg]);
-
         echo json_encode([
-            'status' => 'success',
-            'alert'  => $alert_msg,
-            'count'  => count($new_logs)
+            'status'  => true,
+            'message' => "Berhasil mengunggah {$uploaded} pengguna ke dalam mesin."
         ]);
         break;
 
-    case 'fetch_machine_scanlogs':
-        $machine     = BridgeStorage::getMachine();
-        $machine_res = EasyLinkSDK::getScanlog($machine['ip_address'], $machine['port'], $machine['serial_number'], $machine['comm_key']);
+    case 'delete_user':
+        $pin = intval($_POST['pin'] ?? 0);
+        $res = EasyLinkSDK::deleteUser($dev_cfg['server_IP'], $dev_cfg['server_port'], $dev_cfg['device_sn'], $pin);
+        echo json_encode($res);
+        break;
+
+    case 'delete_all_users':
+        $res = EasyLinkSDK::deleteAllUsers($dev_cfg['server_IP'], $dev_cfg['server_port'], $dev_cfg['device_sn']);
+        echo json_encode($res);
+        break;
+
+    case 'delete_admin':
+        $res = EasyLinkSDK::deleteAdmin($dev_cfg['server_IP'], $dev_cfg['server_port'], $dev_cfg['device_sn']);
+        echo json_encode($res);
+        break;
+
+    case 'download_scanlog':
+        $mode = $_POST['mode'] ?? 'all';
+        $res  = EasyLinkSDK::getScanlog($dev_cfg['server_IP'], $dev_cfg['server_port'], $dev_cfg['device_sn'], 500, $mode);
+        echo json_encode($res);
+        break;
+
+    case 'delete_device_scanlog':
+        $res = EasyLinkSDK::deleteScanlog($dev_cfg['server_IP'], $dev_cfg['server_port'], $dev_cfg['device_sn']);
+        echo json_encode($res);
+        break;
+
+    case 'save_device_config':
+        $ip   = trim($_POST['ip_address'] ?? '10.10.10.10');
+        $port = trim($_POST['port'] ?? '8080');
+        $sn   = trim($_POST['serial_number'] ?? '616202024171114');
+
+        saveActiveDeviceConfig($ip, $port, $sn);
+
         echo json_encode([
-            'status'  => $machine_res['status'] ? 'success' : 'error',
-            'message' => $machine_res['message'],
-            'logs'    => $machine_res['logs'] ?? []
+            'status'  => true,
+            'message' => "Konfigurasi perangkat berhasil diperbarui (IP: {$ip}, Port: {$port}, SN: {$sn})."
         ]);
         break;
 
-    case 'push_presensi':
-        $machine  = BridgeStorage::getMachine();
-        $settings = BridgeStorage::getSettings();
-        $api_url  = BridgeStorage::getActiveEndpointUrl();
-        $api_token= $settings['api_token'] ?? '';
-
-        // 1. Membaca log dari mesin EasyLink
-        $machine_res = EasyLinkSDK::getScanlog($machine['ip_address'], $machine['port'], $machine['serial_number'], $machine['comm_key']);
-
-        if (!$machine_res['status']) {
-            echo json_encode([
-                'status'  => 'error',
-                'message' => 'Gagal membaca mesin: ' . $machine_res['message']
-            ]);
-            exit;
-        }
-
-        $logs = $machine_res['logs'];
-        if (empty($logs)) {
-            echo json_encode([
-                'status'  => 'success',
-                'message' => 'Koneksi mesin sukses. Tidak ada data scanlog baru di mesin.',
-                'count'   => 0
-            ]);
-            exit;
-        }
-
-        // 2. Kirim payload logs ke Endpoint API Web
-        $payload = json_encode([
-            'token' => $api_token,
-            'logs'  => $logs
-        ]);
-
-        $ch = curl_init($api_url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/json',
-            'Content-Length: ' . strlen($payload)
-        ]);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-
-        $response = curl_exec($ch);
-        $err      = curl_error($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        if ($err) {
-            $msg = "Gagal menghubungi Server API ({$api_url}): " . $err;
-            BridgeStorage::addSyncLog(['type' => 'push_presensi', 'status' => 'failed', 'message' => $msg]);
-            echo json_encode(['status' => 'error', 'message' => $msg]);
-            exit;
-        }
-
-        $api_res = json_decode($response, true);
-        if ($api_res && isset($api_res['status'])) {
-            $msg = "Sync Sukses! Total: " . count($logs) . " logs. Inserter: " . ($api_res['inserted'] ?? 0);
-            BridgeStorage::addSyncLog(['type' => 'push_presensi', 'status' => 'success', 'message' => $msg]);
-            echo json_encode([
-                'status'   => 'success',
-                'message'  => $msg,
-                'response' => $api_res
-            ]);
+    case 'exec_maintenance':
+        $type = $_POST['type'] ?? '';
+        if ($type === 'sync_time') {
+            $res = EasyLinkSDK::setTime($dev_cfg['server_IP'], $dev_cfg['server_port'], $dev_cfg['device_sn']);
+        } elseif ($type === 'del_admin') {
+            $res = EasyLinkSDK::deleteAdmin($dev_cfg['server_IP'], $dev_cfg['server_port'], $dev_cfg['device_sn']);
+        } elseif ($type === 'del_log') {
+            $res = EasyLinkSDK::deleteScanlog($dev_cfg['server_IP'], $dev_cfg['server_port'], $dev_cfg['device_sn']);
+        } elseif ($type === 'init_device') {
+            $res = EasyLinkSDK::initDevice($dev_cfg['server_IP'], $dev_cfg['server_port'], $dev_cfg['device_sn']);
         } else {
-            $msg = "Server merespons dengan HTTP {$httpCode}: " . substr($response, 0, 100);
-            BridgeStorage::addSyncLog(['type' => 'push_presensi', 'status' => 'error', 'message' => $msg]);
-            echo json_encode(['status' => 'error', 'message' => $msg, 'raw' => $response]);
+            $res = ['status' => false, 'message' => 'Perintah tidak dikenal.'];
         }
+        echo json_encode($res);
         break;
 
     case 'fetch_sync_diff':
-        $machine  = BridgeStorage::getMachine();
-        $settings = BridgeStorage::getSettings();
+        // LANGKAH 1: Get all user dulu dari mesin dengan paging limit 1
+        $m_res         = EasyLinkSDK::getUsers($dev_cfg['server_IP'], $dev_cfg['server_port'], $dev_cfg['device_sn'], '0', 1);
+        $machine_users = $m_res['users'] ?? [];
 
-        // 1. Ambil data server API active_students
-        $api_base = str_replace('/sync', '/active_students', BridgeStorage::getActiveEndpointUrl());
-        $url      = $api_base . '?token=' . urlencode($settings['api_token']);
-
-        $ch = curl_init($url);
+        // LANGKAH 2: Ambil data siswa dari server web API
+        $api_url = "http://localhost/mkdcnew/api/presensi/sync";
+        $ch      = curl_init($api_url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 45);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         $resp = curl_exec($ch);
         curl_close($ch);
@@ -211,63 +208,50 @@ switch ($action) {
             }
         }
 
-        // 2. Ambil data mesin pengguna
-        $m_res = EasyLinkSDK::getUsers($machine['ip_address'], $machine['port'], $machine['serial_number'], $machine['comm_key']);
-        $machine_users = $m_res['users'] ?? [];
-
-        // Formatting Map (PIN di mesin = NIPD di server, Nama server dipotong max 15 karakter)
-        $server_map = [];
-        foreach ($server_students as $s) {
-            $nipd_pin = (int)($s['pin'] ?? $s['nipd'] ?? 0);
-            if ($nipd_pin > 0) {
-                // Potong nama server maksimal 15 karakter termasuk spasi
-                $nama_15 = mb_substr(trim($s['nama'] ?? ''), 0, 15);
-                $server_map[$nipd_pin] = $nama_15;
-            }
-        }
-
+        // LANGKAH 3: Bandingkan datanya berdasarkan PIN di mesin sama dengan NIPD di server
         $machine_map = [];
         foreach ($machine_users as $m) {
-            $m_pin = (int)($m['pin'] ?? 0);
+            $m_pin = intval($m['pin'] ?? 0);
             if ($m_pin > 0) {
                 $machine_map[$m_pin] = trim($m['nama'] ?? '');
             }
         }
 
-        // Processing 3 Diff Categories:
-        $machine_only  = []; // Ada di Mesin, tidak ada di Server
-        $server_only   = []; // Ada di Server, tidak ada di Mesin
-        $name_mismatch = []; // Ada di dua-duanya tapi nama beda
+        $server_map = [];
+        foreach ($server_students as $s) {
+            $nipd_pin = intval($s['nipd'] ?? $s['pin'] ?? 0);
+            $s_nama   = trim($s['nama_siswa'] ?? $s['nama'] ?? $s['name'] ?? '');
+            if ($nipd_pin > 0 && !empty($s_nama)) {
+                // Ambil maksimal 15 karakter TANPA menambah spasi jika kurang dari 15 karakter
+                $nama_15 = trim(mb_substr($s_nama, 0, 15));
+                $server_map[$nipd_pin] = $nama_15;
+            }
+        }
 
-        // Check Machine Users
+        $matched_data  = [];
+        $machine_only  = [];
+        $server_only   = [];
+        $name_mismatch = [];
+
+        // Check user mesin vs server
         foreach ($machine_map as $pin => $m_nama) {
+            $m_nama_clean = trim($m_nama);
             if (!isset($server_map[$pin])) {
-                $machine_only[] = [
-                    'pin'   => $pin,
-                    'nama'  => $m_nama,
-                    'opt'   => 'hapus_mesin'
-                ];
+                $machine_only[] = ['pin' => $pin, 'nama' => $m_nama_clean, 'opt' => 'hapus_mesin'];
             } else {
                 $s_nama_15 = $server_map[$pin];
-                if (strcasecmp($m_nama, $s_nama_15) !== 0) {
-                    $name_mismatch[] = [
-                        'pin'         => $pin,
-                        'nama_mesin'  => $m_nama,
-                        'nama_server' => $s_nama_15,
-                        'opt'         => 'ubah_nama_mesin'
-                    ];
+                if (strcasecmp($m_nama_clean, $s_nama_15) === 0) {
+                    $matched_data[] = ['pin' => $pin, 'nama' => $m_nama_clean, 'nama_server' => $s_nama_15];
+                } else {
+                    $name_mismatch[] = ['pin' => $pin, 'nama_mesin' => $m_nama_clean, 'nama_server' => $s_nama_15, 'opt' => 'ubah_nama_mesin'];
                 }
             }
         }
 
-        // Check Server Users
+        // Check siswa server vs mesin
         foreach ($server_map as $pin => $s_nama_15) {
             if (!isset($machine_map[$pin])) {
-                $server_only[] = [
-                    'pin'  => $pin,
-                    'nama' => $s_nama_15,
-                    'opt'  => 'tambah_mesin'
-                ];
+                $server_only[] = ['pin' => $pin, 'nama' => $s_nama_15, 'opt' => 'tambah_mesin'];
             }
         }
 
@@ -275,60 +259,31 @@ switch ($action) {
             'status'         => 'success',
             'total_server'   => count($server_map),
             'total_machine'  => count($machine_map),
-            'machine_only'   => $machine_only,
+            'matched_data'   => $matched_data,
+            'name_mismatch'  => $name_mismatch,
             'server_only'    => $server_only,
-            'name_mismatch'  => $name_mismatch
+            'machine_only'   => $machine_only,
+            'machine_status' => $m_res['status'] ?? false,
+            'machine_msg'    => $m_res['message'] ?? ''
         ]);
         break;
 
     case 'exec_sync_single':
-        $machine = BridgeStorage::getMachine();
-        $type    = $_POST['type'] ?? '';
-        $pin     = (int)($_POST['pin'] ?? 0);
-        // Potong nama maksimal 15 karakter termasuk spasi
-        $nama    = mb_substr(trim($_POST['nama'] ?? ''), 0, 15);
+        $type = $_POST['type'] ?? '';
+        $pin  = intval($_POST['pin'] ?? 0);
+        $nama = mb_substr(trim($_POST['nama'] ?? ''), 0, 15);
 
-        if ($pin <= 0) {
-            echo json_encode(['status' => 'error', 'message' => 'NIPD / PIN tidak valid.']);
-            exit;
-        }
-
-        if ($type === 'hapus_mesin') {
-            $res = EasyLinkSDK::deleteUser($machine['ip_address'], $machine['port'], $machine['serial_number'], $machine['comm_key'], $pin);
-        } elseif ($type === 'tambah_mesin' || $type === 'ubah_nama_mesin') {
-            $res = EasyLinkSDK::setUser($machine['ip_address'], $machine['port'], $machine['serial_number'], $machine['comm_key'], $pin, $nama);
+        if ($type === 'tambah_mesin' || $type === 'ubah_nama_mesin') {
+            $res = EasyLinkSDK::setUser($dev_cfg['server_IP'], $dev_cfg['server_port'], $dev_cfg['device_sn'], $pin, $nama);
+        } elseif ($type === 'hapus_mesin') {
+            $res = EasyLinkSDK::deleteUser($dev_cfg['server_IP'], $dev_cfg['server_port'], $dev_cfg['device_sn'], $pin);
         } else {
-            $res = ['status' => false, 'message' => 'Tipe sinkronisasi tidak dikenal.'];
+            $res = ['status' => false, 'message' => 'Tipe aksi tidak valid.'];
         }
-
-        BridgeStorage::addSyncLog([
-            'type'    => 'user_sync',
-            'action'  => $type,
-            'pin'     => $pin,
-            'nama'    => $nama,
-            'status'  => $res['status'] ? 'success' : 'failed'
-        ]);
-
-        echo json_encode([
-            'status'  => $res['status'] ? 'success' : 'error',
-            'message' => $res['message']
-        ]);
-        break;
-
-    case 'change_password':
-        $new_pass = trim($_POST['new_password'] ?? '');
-        $new_name = trim($_POST['admin_name'] ?? '');
-
-        if (strlen($new_pass) < 4) {
-            echo json_encode(['status' => 'error', 'message' => 'Password minimal 4 karakter!']);
-            exit;
-        }
-
-        BridgeStorage::updatePassword($new_pass, $new_name);
-        echo json_encode(['status' => 'success', 'message' => 'Password & Profil Admin Standalone berhasil diperbarui.']);
+        echo json_encode($res);
         break;
 
     default:
-        echo json_encode(['status' => 'error', 'message' => 'Aksi tidak dikenal.']);
+        echo json_encode(['status' => false, 'message' => 'Action tidak valid.']);
         break;
 }

@@ -1112,6 +1112,15 @@ class Perangkat_pembelajaran_model extends MY_Model
         $agenda = $this->getAgendaDetail($id_agenda);
         if (!$agenda) return [];
 
+        $show_menginduk = (isset($_GET['show_menginduk']) && $_GET['show_menginduk'] == '1');
+        $menginduk_ids  = [];
+        if (!$show_menginduk && $this->db->table_exists('kelas_jauh_siswa')) {
+            $q_kj = $this->db->select('id_siswa')->get('kelas_jauh_siswa');
+            if ($q_kj && $q_kj->num_rows() > 0) {
+                $menginduk_ids = array_column($q_kj->result_array(), 'id_siswa');
+            }
+        }
+
         $this->db->select('s.id_siswa, s.nama_siswa, s.nisn, s.nipd, s.jenis_kelamin, pas.status AS status_presensi, pas.catatan AS catatan_presensi');
         $this->db->from('pembelajaran_mapel pm');
         $this->db->join('pembelajaran p', 'p.id_pembelajaran = pm.id_pembelajaran');
@@ -1119,6 +1128,11 @@ class Perangkat_pembelajaran_model extends MY_Model
         $this->db->join('siswa s', 's.id_siswa = ps.peserta_didik_id');
         $this->db->join('presensi_agenda_siswa pas', 'pas.id_agenda = ' . (int)$id_agenda . ' AND pas.id_siswa = s.id_siswa', 'left');
         $this->db->where('pm.id_pembelajaran_mapel', (int)$agenda->id_pembelajaran_mapel);
+
+        if (!empty($menginduk_ids)) {
+            $this->db->where_not_in('s.id_siswa', $menginduk_ids);
+        }
+
         $this->db->order_by('s.nama_siswa', 'ASC');
 
         return $this->db->get()->result();
@@ -1143,36 +1157,22 @@ class Perangkat_pembelajaran_model extends MY_Model
             'catatan'    => $catatan,
             'updated_at' => date('Y-m-d H:i:s')
         ];
-
-        $existing = $this->db->get_where('presensi_agenda_siswa', [
-            'id_agenda' => (int)$id_agenda,
-            'id_siswa'  => (int)$id_siswa
-        ])->row();
-
-        if ($existing) {
-            $this->db->where('id_presensi_agenda', $existing->id_presensi_agenda);
-            return $this->db->update('presensi_agenda_siswa', $data);
-        } else {
-            $data['created_at'] = date('Y-m-d H:i:s');
-            return $this->db->insert('presensi_agenda_siswa', $data);
-        }
+        $this->db->replace('presensi_agenda_siswa', $data);
     }
 
     /**
-     * Get Rekapitulasi Absensi Agenda Siswa Per Mapel & Per Bulan
+     * Get Rekap Absensi Agenda Per Mapel / Rombel Per Bulan untuk Guru
      */
-    public function getRekapAbsensiAgendaGuru($ptk_id, $id_mapel = null, $id_rombel = null, $bulan = null, $tahun = null)
+    public function getRekapAbsensiAgendaGuru($ptk_id, $id_mapel, $id_rombel, $bulan, $tahun)
     {
         $this->ensurePresensiAgendaTable();
 
-        if (!$bulan) $bulan = date('m');
-        if (!$tahun) $tahun = date('Y');
-
-        // 1. Dapatkan unit pembelajaran_id milik PTK & Mapel/Rombel
-        $this->db->select('pm.id_pembelajaran, pm.id_pembelajaran_mapel');
+        // 1. Ambil daftar pembelajaran_mapel yang diampu oleh PTK/Guru
+        $this->db->select('pm.id_pembelajaran_mapel, pm.id_pembelajaran, pm.id_mapel');
         $this->db->from('pembelajaran_mapel pm');
         $this->db->join('pembelajaran p', 'p.id_pembelajaran = pm.id_pembelajaran');
         $this->db->join('pembelajaran_tahun_pelajaran tp', 'tp.id_tahun_pelajaran = p.id_tahun_pelajaran');
+        
         $this->db->where('tp.status', 'Aktif');
         $this->db->where('p.status', 'Aktif');
         if ($ptk_id) {
@@ -1191,10 +1191,24 @@ class Perangkat_pembelajaran_model extends MY_Model
         // 2. Ambil seluruh daftar siswa yang diampu di Rombel/Pembelajaran tersebut
         $siswa_list = [];
         if (!empty($pembelajaran_ids)) {
+            $show_menginduk = (isset($_GET['show_menginduk']) && $_GET['show_menginduk'] == '1');
+            $menginduk_ids  = [];
+            if (!$show_menginduk && $this->db->table_exists('kelas_jauh_siswa')) {
+                $q_kj = $this->db->select('id_siswa')->get('kelas_jauh_siswa');
+                if ($q_kj && $q_kj->num_rows() > 0) {
+                    $menginduk_ids = array_column($q_kj->result_array(), 'id_siswa');
+                }
+            }
+
             $this->db->select('s.id_siswa, s.nama_siswa, s.nisn, s.nipd, s.jenis_kelamin');
             $this->db->from('pembelajaran_siswa ps');
             $this->db->join('siswa s', 's.id_siswa = ps.peserta_didik_id');
             $this->db->where_in('ps.id_pembelajaran', $pembelajaran_ids);
+
+            if (!empty($menginduk_ids)) {
+                $this->db->where_not_in('s.id_siswa', $menginduk_ids);
+            }
+
             $this->db->group_by('s.id_siswa');
             $this->db->order_by('s.nama_siswa', 'ASC');
             $siswa_list = $this->db->get()->result();

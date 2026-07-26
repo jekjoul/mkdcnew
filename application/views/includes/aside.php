@@ -547,22 +547,15 @@
             <li>
                 <a href="<?php echo url('presensi/guru') ?>">
                     <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
-                    Presensi Guru
+                    Presensi PTK
                 </a>
             </li>
             <li>
-                <a href="<?php echo url('fingerprint_bridge') ?>">
+                <a href="<?php echo url('presensi/user_fingerprint') ?>">
                     <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
-                    Bridge Mesin Fingerprint
+                    User Mesin & Sidik Jari
                 </a>
             </li>
-            <li>
-                <a href="<?php echo url('fingerprint_bridge/setting') ?>">
-                    <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
-                    Pengaturan Mesin & API
-                </a>
-            </li>
-
         </ul>
     </li>
 <?php endif; ?>

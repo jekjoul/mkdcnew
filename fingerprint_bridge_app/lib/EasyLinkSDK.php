@@ -1,22 +1,23 @@
 <?php
 /**
  * EasyLinkSDK - Driver Komunikasi Mesin Fingerprint EasyLink / Fingerspot / Revo
- * Disesuaikan secara presisi dengan Spesifikasi SDK EasyLink (C:\xampp\htdocs\sdkphp)
+ * Disesuaikan secara presisi dengan Spesifikasi SDK EasyLink & Delphi 7 Client SDK D7
  */
 
 class EasyLinkSDK
 {
     /**
-     * Helper Utama: WebService HTTP cURL Request Ke Machine / EasyLink Server
-     * Menggunakan format URL-encoded POST sesuai standar C:\xampp\htdocs\sdkphp
+     * WebService HTTP cURL Request Ke Mesin EasyLink
      */
-    public static function webservice($ip, $port, $endpoint, $parameter, $timeout = 10)
+    public static function webservice($ip, $port, $endpoint, $parameter, $timeout = 0)
     {
+        @set_time_limit(180);
         $endpoint    = ltrim($endpoint, '/');
         $url         = "http://{$ip}/{$endpoint}";
-        $max_retries = 5;
+        $max_retries = 30; // Jeda retry hingga 30 kali saat SDK memuat data dari mesin
         $retry_count = 0;
         $response    = "";
+        $eff_timeout = ($timeout > 0) ? (int)$timeout : 30;
 
         while ($retry_count < $max_retries) {
             $curl = curl_init();
@@ -26,7 +27,8 @@ class EasyLinkSDK
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING       => "",
                 CURLOPT_MAXREDIRS      => 5,
-                CURLOPT_TIMEOUT        => $timeout,
+                CURLOPT_CONNECTTIMEOUT => 6,
+                CURLOPT_TIMEOUT        => $eff_timeout,
                 CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
                 CURLOPT_CUSTOMREQUEST  => "POST",
                 CURLOPT_POSTFIELDS     => $parameter,
@@ -43,18 +45,23 @@ class EasyLinkSDK
             curl_close($curl);
 
             if ($err) {
+                $retry_count++;
+                if ($retry_count < $max_retries) {
+                    sleep(1);
+                    continue;
+                }
                 return [
                     'status'  => false,
-                    'message' => "cURL Error: " . $err,
+                    'message' => "Gagal menghubungi mesin ({$ip}:{$port}): " . $err,
                     'raw'     => null
                 ];
             }
 
             $decoded = json_decode($response, true);
             if (isset($decoded['Result']) && $decoded['Result'] === false && isset($decoded['message_code']) && $decoded['message_code'] == 3) {
-                // Mesin sibuk, tunggu 1.5 detik lalu coba lagi (Persis MKDC Client Absensi.php)
+                // Mesin / SDK sedang sibuk menarik data dari hardware, tunggu 1 detik lalu retry
                 $retry_count++;
-                usleep(1500000);
+                sleep(1);
             } else {
                 break;
             }
@@ -68,9 +75,9 @@ class EasyLinkSDK
     }
 
     /**
-     * Uji Koneksi Socket / Ping ke IP & Port Mesin
+     * Ping Socket ke IP & Port Mesin
      */
-    public static function ping($ip, $port = 4370, $timeout = 3)
+    public static function ping($ip, $port = 8080, $timeout = 3)
     {
         $fp = @fsockopen($ip, $port, $errno, $errstr, $timeout);
         if ($fp) {
@@ -88,381 +95,453 @@ class EasyLinkSDK
     }
 
     /**
-     * Membaca Detail Informasi & Spesifikasi Mesin (Get Info Mesin)
-     * Menggunakan Endpoint /dev/info (Sesuai C:\xampp\htdocs\sdkphp\content\info.php)
+     * Detail Informasi & Spesifikasi Mesin (Get Info Mesin - dev/info)
      */
     public static function getDeviceInfo($ip, $port = 8080, $sn = '', $comm_key = '0')
     {
         $parameter = "sn=" . urlencode($sn);
-        $res       = self::webservice($ip, $port, 'dev/info', $parameter, 5);
+        $res       = self::webservice($ip, $port, 'dev/info', $parameter, 10);
 
         if ($res['status'] && !empty($res['raw'])) {
             $json = json_decode($res['raw'], true);
             if (is_array($json)) {
-                $dev_data = $json['Data'] ?? $json;
                 return [
-                    'status'  => true,
-                    'message' => 'Berhasil mengambil info dari WebService EasyLink.',
-                    'info'    => [
-                        'device_name'   => $dev_data['DeviceName'] ?? $dev_data['Name'] ?? 'Fingerspot EasyLink',
-                        'firmware'      => $dev_data['Firmware'] ?? $dev_data['FWVersion'] ?? 'Ver 8.4.3',
-                        'serial_number' => $dev_data['SN'] ?? $sn,
-                        'platform'      => $dev_data['Platform'] ?? 'ZMM220_Linux',
-                        'device_time'   => $dev_data['DeviceTime'] ?? date('Y-m-d H:i:s'),
-                        'total_user'    => (int)($dev_data['UserCount'] ?? 0),
-                        'total_fp'      => (int)($dev_data['FPCount'] ?? 0),
-                        'total_log'     => (int)($dev_data['LogCount'] ?? 0),
+                    'status'   => true,
+                    'message'  => 'OK',
+                    'info'     => [
+                        'device_name'   => $json['DevName'] ?? $json['dev_name'] ?? 'EasyLink Revo Series',
+                        'firmware'      => $json['FWVer'] ?? $json['fw_ver'] ?? 'Ver 8.4.3',
+                        'serial_number' => $json['SN'] ?? $json['sn'] ?? $sn,
+                        'platform'      => $json['Platform'] ?? $json['platform'] ?? 'Linux',
+                        'device_time'   => $json['DevTime'] ?? $json['dev_time'] ?? date('Y-m-d H:i:s'),
+                        'total_user'    => intval($json['UserCount'] ?? $json['user_count'] ?? 0),
+                        'total_fp'      => intval($json['FPCount'] ?? $json['fp_count'] ?? 0),
+                        'total_log'     => intval($json['LogCount'] ?? $json['log_count'] ?? 0),
                         'ip_address'    => $ip,
                         'port'          => $port
-                    ]
+                    ],
+                    'raw_json' => $json
                 ];
             }
         }
 
-        // Fallback jika mode socket / offline simulation
         $ping = self::ping($ip, $port, 3);
-        $users_res = self::getUsers($ip, $port, $sn, $comm_key);
-        $logs_res  = self::getScanlog($ip, $port, $sn, $comm_key);
-
         return [
             'status'  => $ping['status'],
-            'message' => $ping['status'] ? 'Informasi mesin dibaca.' : $ping['message'],
+            'message' => $ping['status'] ? 'Mesin online, namun WebService dev/info tidak merespons.' : $ping['message'],
             'info'    => [
-                'device_name'    => 'Fingerspot / Revo EasyLink Series',
-                'firmware'       => 'Ver 8.4.3-EL-2026',
-                'serial_number'  => !empty($sn) ? $sn : 'FS-' . strtoupper(substr(md5($ip), 0, 8)),
-                'platform'       => 'ZMM220_Linux',
-                'device_time'    => date('Y-m-d H:i:s'),
-                'total_user'     => count($users_res['users'] ?? []),
-                'total_fp'       => count($users_res['users'] ?? []) * 2,
-                'total_log'      => count($logs_res['logs'] ?? []),
-                'ip_address'     => $ip,
-                'port'           => $port
-            ]
+                'device_name'   => 'Fingerspot Revo / EasyLink Series',
+                'firmware'      => 'Ver 8.4.3-EL-2026',
+                'serial_number' => !empty($sn) ? $sn : 'FS-EASYLINK',
+                'platform'      => 'ZMM220_Linux',
+                'device_time'   => date('Y-m-d H:i:s'),
+                'total_user'    => 0,
+                'total_fp'      => 0,
+                'total_log'     => 0,
+                'ip_address'    => $ip,
+                'port'          => $port
+            ],
+            'raw_json' => []
         ];
     }
 
     /**
-     * Membaca Scanlog Presensi dari Mesin EasyLink
-     * Menggunakan Endpoint /scanlog/all/paging atau /scanlog/new (Sesuai C:\xampp\htdocs\sdkphp\content\scanlog.php)
+     * Membaca Scanlog Presensi dari Mesin (scanlog/all/paging, scanlog/new)
      */
-    public static function getScanlog($ip, $port = 4370, $sn = '', $comm_key = '0')
-    {
-        $sn_list = array_filter(explode(';', $sn));
-        $sn_query = !empty($sn_list) ? reset($sn_list) : $sn;
-
-        $parameter = "sn=" . urlencode($sn_query) . "&limit=200";
-        $endpoints = ['scanlog/all/paging', 'scanlog/new', 'scanlog/all'];
-        $logs = [];
-        $found = false;
-        $message = '';
-
-        foreach ($endpoints as $ep) {
-            $res = self::webservice($ip, $port, $ep, $parameter, 5);
-            if ($res['status'] && !empty($res['raw'])) {
-                $raw_text = trim($res['raw']);
-                $json     = json_decode($raw_text, true);
-
-                $entries = null;
-                if (isset($json['Data']) && is_array($json['Data'])) {
-                    $entries = $json['Data'];
-                } elseif (isset($json['data']) && is_array($json['data'])) {
-                    $entries = $json['data'];
-                } elseif (is_array($json) && isset($json[0])) {
-                    $entries = $json;
-                }
-
-                if (is_array($entries) && count($entries) > 0) {
-                    foreach ($entries as $entry) {
-                        $pin = intval($entry['PIN'] ?? $entry['pin'] ?? $entry['PIN_No'] ?? $entry['user_id'] ?? 0);
-                        $scan_date = $entry['ScanDate'] ?? $entry['scan_date'] ?? $entry['Scan_Date'] ?? $entry['verify_time'] ?? date('Y-m-d H:i:s');
-                        $sn_val = $entry['SN'] ?? $entry['sn'] ?? $sn_query;
-                        $verify = $entry['VerifyMode'] ?? $entry['verifymode'] ?? 1;
-                        $iomode = $entry['IOMode'] ?? $entry['iomode'] ?? 0;
-
-                        if ($pin > 0) {
-                            $logs[] = [
-                                'pin'        => $pin,
-                                'scan_date'  => $scan_date,
-                                'sn'         => $sn_val,
-                                'verifymode' => $verify,
-                                'iomode'     => $iomode
-                            ];
-                        }
-                    }
-                    $found = true;
-                    $message = "Berhasil membaca " . count($logs) . " scanlog via EasyLink WebService ({$ep}).";
-                    break;
-                }
-            }
-        }
-
-        // Simpan cache scanlog ke file lokal agar selalu tampil di web
-        if ($found && !empty($logs)) {
-            $cache_file = __DIR__ . '/../data/scanlogs_cache.json';
-            file_put_contents($cache_file, json_encode($logs, JSON_PRETTY_PRINT));
-            return [
-                'status'  => true,
-                'message' => $message,
-                'logs'    => $logs
-            ];
-        }
-
-        // Cek jika ada cache scanlog tersimpan sebelumnya
-        $cache_file = __DIR__ . '/../data/scanlogs_cache.json';
-        if (file_exists($cache_file)) {
-            $cached_logs = json_decode(file_get_contents($cache_file), true);
-            if (is_array($cached_logs) && !empty($cached_logs)) {
-                return [
-                    'status'  => true,
-                    'message' => 'Membaca data scanlog presensi dari simpanan cache lokal.',
-                    'logs'    => $cached_logs
-                ];
-            }
-        }
-
-        // Fallback: Protocol ZK TCP Socket
-        $ping = self::ping($ip, $port, 3);
-        if (!$ping['status']) {
-            return [
-                'status'  => false,
-                'message' => $ping['message'],
-                'logs'    => []
-            ];
-        }
-
-        $socket = @fsockopen($ip, $port, $errno, $errstr, 5);
-        if (!$socket) {
-            return [
-                'status'  => false,
-                'message' => "Socket error: {$errstr}",
-                'logs'    => []
-            ];
-        }
-
-        stream_set_timeout($socket, 5);
-
-        $command        = 13;
-        $command_string = '';
-        $chksum         = 0;
-        $session_id     = 0;
-        $reply_id       = 0;
-
-        $buf = self::createHeader($command, $chksum, $session_id, $reply_id, $command_string);
-        fwrite($socket, $buf);
-
-        $response = fread($socket, 2048);
-        fclose($socket);
-
-        $logs = self::parseBinaryLogs($response);
-
-        return [
-            'status'  => true,
-            'message' => 'Berhasil membaca data dari mesin via Socket ZK/EasyLink.',
-            'logs'    => $logs
-        ];
-    }
-
-    /**
-     * Membaca Daftar Pengguna dari Mesin EasyLink dengan Paging Loop Lengkap
-     * (Sesuai Absensi.php ajaxFetchMachineUsers di MKDC Client v1.1.0)
-     */
-    public static function getUsers($ip, $port = 4370, $sn = '', $comm_key = '0')
+    public static function getScanlog($ip, $port = 8080, $sn = '', $limit = 500, $mode = 'all')
     {
         $sn_list  = array_filter(explode(';', $sn));
         $sn_query = !empty($sn_list) ? reset($sn_list) : $sn;
 
-        $all_users = [];
-        $session   = true;
-        $max_pages = 100;
-        $page      = 0;
+        $endpoint        = ($mode === 'new') ? 'scanlog/new' : 'scanlog/all/paging';
+        $master_logs_map = [];
+        $max_pages       = 300; // Dapat menarik hingga 300 halaman (30.000+ log)
+        $page            = 0;
+        $session         = true;
+        $batch_limit     = ($limit > 0) ? intval($limit) : 200;
+        $error_detail    = '';
 
-        while ($session && $page < $max_pages) {
-            $parameter = "sn=" . urlencode($sn_query) . "&limit=100";
-            $res       = self::webservice($ip, $port, 'user/all/paging', $parameter, 10);
+        do {
+            @set_time_limit(60);
+            $parameter = "sn=" . urlencode($sn_query) . "&limit=" . $batch_limit;
+            $res       = self::webservice($ip, $port, $endpoint, $parameter, 20);
 
-            if ($res['status'] && !empty($res['raw'])) {
-                $decoded = json_decode($res['raw'], true);
-                if (isset($decoded['Result']) && $decoded['Result'] === true && isset($decoded['Data']) && is_array($decoded['Data'])) {
-                    foreach ($decoded['Data'] as $entry) {
-                        $pin  = intval($entry['PIN'] ?? $entry['pin'] ?? 0);
-                        $nama = trim($entry['Name'] ?? $entry['nama'] ?? '');
-                        if ($pin > 0) {
-                            $all_users[] = [
-                                'pin'  => $pin,
-                                'nama' => $nama
+            if (!$res['status'] || empty($res['raw'])) {
+                $error_detail = $res['message'] ?? 'Mesin tidak merespons WebService request.';
+                break;
+            }
+
+            $decoded = json_decode(trim($res['raw']), true);
+            $entries = null;
+            if (is_array($decoded)) {
+                if (isset($decoded['Data']) && is_array($decoded['Data'])) {
+                    $entries = $decoded['Data'];
+                } elseif (isset($decoded['data']) && is_array($decoded['data'])) {
+                    $entries = $decoded['data'];
+                } elseif (isset($decoded[0]) && is_array($decoded[0])) {
+                    $entries = $decoded;
+                }
+            }
+
+            if (is_array($entries) && count($entries) > 0) {
+                $count_before = count($master_logs_map);
+
+                foreach ($entries as $entry) {
+                    $pin_raw = trim((string)($entry['PIN'] ?? $entry['pin'] ?? ''));
+                    $date    = trim($entry['ScanDate'] ?? $entry['scan_date'] ?? $entry['date'] ?? '');
+                    if (!empty($pin_raw) && $pin_raw !== '0' && !empty($date)) {
+                        $log_key = $pin_raw . '_' . $date;
+                        if (!isset($master_logs_map[$log_key])) {
+                            $master_logs_map[$log_key] = [
+                                'sn'         => $sn_query,
+                                'pin'        => $pin_raw,
+                                'scan_date'  => $date,
+                                'verifymode' => intval($entry['VerifyMode'] ?? $entry['verifymode'] ?? 1),
+                                'iomode'     => intval($entry['IOMode'] ?? $entry['iomode'] ?? 0),
+                                'workcode'   => intval($entry['WorkCode'] ?? $entry['workcode'] ?? 0)
                             ];
                         }
                     }
-                    $session = isset($decoded['IsSession']) ? (bool)$decoded['IsSession'] : false;
-                } else {
+                }
+
+                // Jika tidak ada data unik baru yang ditambahkan di iterasi ini, hentikan loop
+                if (count($master_logs_map) === $count_before) {
+                    $session = false;
                     break;
                 }
+
+                if ($mode === 'new') {
+                    $session = false;
+                } else {
+                    $is_sess_val = $decoded['IsSession'] ?? $decoded['is_session'] ?? null;
+                    if ($is_sess_val !== null) {
+                        $session_bool = is_string($is_sess_val) ? (strtolower($is_sess_val) === 'true' || $is_sess_val === '1') : (bool)$is_sess_val;
+                        if (!$session_bool) {
+                            $session = false;
+                        }
+                    }
+                }
             } else {
+                $session = false;
+            }
+
+            $page++;
+        } while ($session && $page < $max_pages);
+
+        $has_data = count($master_logs_map) > 0;
+        return [
+            'status'      => $has_data || empty($error_detail),
+            'message'     => $has_data ? 'Berhasil membaca scanlog.' : ($error_detail ?: 'Tidak ada log presensi pada mesin.'),
+            'total_read'  => count($master_logs_map),
+            'total_pages' => $page,
+            'data'        => array_values($master_logs_map)
+        ];
+    }
+
+    /**
+     * Membaca Seluruh User dari Mesin (Wajib Paging Limit 1)
+     */
+    public static function getAllUsers($ip, $port = 8080, $sn = '', $comm_key = '0')
+    {
+        return self::getUsers($ip, $port, $sn, $comm_key, 1);
+    }
+
+    /**
+     * Membaca Daftar Pengguna dari Mesin EasyLink (Wajib Paging Limit 1 via user/all/paging)
+     */
+    public static function getUsers($ip, $port = 8080, $sn = '', $comm_key = '0', $limit = 1)
+    {
+        $sn_list  = array_filter(explode(';', $sn));
+        $sn_query = !empty($sn_list) ? reset($sn_list) : $sn;
+
+        $master_users_map = [];
+        $last_error_msg   = '';
+        $machine_online   = false;
+
+        // Wajib Paging Limit = 1 sesuai permintaan
+        $batch_limit = 1;
+
+        // Panggil endpoint user/all/paging persis seperti Client_EasyLinkSDK_PHP (download_user_with_timer.php & user.php)
+        $session   = true;
+        $page      = 0;
+        $max_pages = 300;
+
+        do {
+            @set_time_limit(0);
+            $parameter = "sn=" . urlencode($sn_query) . "&limit=" . $batch_limit;
+
+            $res = self::webservice($ip, $port, 'user/all/paging', $parameter, 30);
+
+            if (!$res['status'] || empty($res['raw'])) {
+                if (!$res['status']) {
+                    $last_error_msg = $res['message'] ?? 'Koneksi ke WebService mesin gagal.';
+                }
                 break;
             }
+
+            $machine_online = true;
+            $raw_text       = trim($res['raw']);
+            $decoded        = json_decode($raw_text, true);
+
+            $entries = null;
+            if (is_array($decoded)) {
+                if (isset($decoded['Data']) && is_array($decoded['Data'])) {
+                    $entries = $decoded['Data'];
+                } elseif (isset($decoded['data']) && is_array($decoded['data'])) {
+                    $entries = $decoded['data'];
+                } elseif (isset($decoded['users']) && is_array($decoded['users'])) {
+                    $entries = $decoded['users'];
+                } elseif (isset($decoded[0]) && is_array($decoded[0])) {
+                    $entries = $decoded;
+                }
+            }
+
+            if (is_array($entries) && count($entries) > 0) {
+                foreach ($entries as $entry) {
+                    $pin_raw = $entry['PIN'] ?? $entry['pin'] ?? $entry['user_id'] ?? '';
+                    $pin     = trim((string)$pin_raw);
+                    $nama    = trim($entry['Name'] ?? $entry['name'] ?? $entry['nama'] ?? '');
+                    $pwd     = trim($entry['Password'] ?? $entry['pwd'] ?? '');
+                    $rfid    = trim($entry['RFID'] ?? $entry['rfid'] ?? '');
+                    $priv    = intval($entry['Privilege'] ?? $entry['privilege'] ?? 0);
+                    $tmpl    = $entry['Template'] ?? $entry['template'] ?? [];
+
+                    if ($pin !== '') {
+                        if (!isset($master_users_map[$pin])) {
+                            $master_users_map[$pin] = [
+                                'pin'       => $pin,
+                                'nama'      => $nama,
+                                'pwd'       => $pwd,
+                                'rfid'      => $rfid,
+                                'privilege' => $priv,
+                                'templates' => is_array($tmpl) ? $tmpl : []
+                            ];
+                        } else {
+                            if (!empty($nama) && empty($master_users_map[$pin]['nama'])) {
+                                $master_users_map[$pin]['nama'] = $nama;
+                            }
+                            if (is_array($tmpl) && !empty($tmpl)) {
+                                foreach ($tmpl as $t) {
+                                    $master_users_map[$pin]['templates'][] = $t;
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                $session = false;
+            }
+
+            // Paging loop dikendalikan murni oleh IsSession persis seperti Client_EasyLinkSDK_PHP ($session = $content->IsSession)
+            $is_sess_val = $decoded['IsSession'] ?? $decoded['is_session'] ?? null;
+            if ($is_sess_val !== null) {
+                $session_bool = is_string($is_sess_val) ? (strtolower($is_sess_val) === 'true' || $is_sess_val === '1') : (bool)$is_sess_val;
+                $session = $session_bool;
+            } else {
+                $session = false;
+            }
+
             $page++;
-        }
+        } while ($session && $page < $max_pages);
 
-        $cache_file = __DIR__ . '/../data/machine_users_cache.json';
+        $all_users    = array_values($master_users_map);
+        $actual_count = count($all_users);
 
-        if (!empty($all_users)) {
-            file_put_contents($cache_file, json_encode($all_users, JSON_PRETTY_PRINT));
+        // Ambil Info Mesin (dev/info) setelah penarikan paging selesai untuk perbandingan akurat
+        $dev_info       = self::getDeviceInfo($ip, $port, $sn_query, $comm_key);
+        $expected_count = intval($dev_info['info']['total_user'] ?? 0);
+
+        // 3. Verifikasi & Perbandingan Jumlah Data Ditarik vs Jumlah di Info Mesin
+        if (!empty($master_users_map)) {
+            $is_match = ($expected_count > 0) ? ($actual_count === $expected_count) : true;
+            if ($expected_count > 0) {
+                if ($is_match) {
+                    $msg = "Berhasil menarik seluruh {$actual_count} pengguna dari mesin. Jumlah data SESUAI 100% dengan spesifikasi info mesin ({$expected_count} User).";
+                } else {
+                    $msg = "Berhasil menarik {$actual_count} pengguna dari mesin via EasyLink SDK Paging. (Info Mesin: {$expected_count} User | Selisih: " . abs($expected_count - $actual_count) . " User).";
+                }
+            } else {
+                $msg = "Berhasil menarik seluruh {$actual_count} pengguna dari mesin EasyLink.";
+            }
+
             return [
-                'status'  => true,
-                'message' => 'Berhasil membaca ' . count($all_users) . ' pengguna dari mesin EasyLink.',
-                'users'   => $all_users
+                'status'         => true,
+                'message'        => $msg,
+                'total_read'     => $actual_count,
+                'expected_count' => $expected_count,
+                'is_match'       => $is_match,
+                'device_info'    => $dev_info['info'] ?? [],
+                'users'          => $all_users
             ];
         }
 
-        // Cache lokal file jika socket/service offline atau terlambat
-        if (file_exists($cache_file)) {
-            $json = json_decode(file_get_contents($cache_file), true);
-            if (is_array($json) && !empty($json)) {
+        if ($machine_online) {
+            $is_match = ($expected_count === 0);
+            return [
+                'status'         => true,
+                'message'        => "Terhubung ke mesin EasyLink {$ip}:{$port}. Saat ini belum ada data pengguna terdaftar di dalam mesin (0 User | Info Mesin: {$expected_count} User).",
+                'total_read'     => 0,
+                'expected_count' => $expected_count,
+                'is_match'       => $is_match,
+                'device_info'    => $dev_info['info'] ?? [],
+                'users'          => []
+            ];
+        }
+
+        $error_detail = !empty($last_error_msg) ? " ({$last_error_msg})" : "";
+        return [
+            'status'         => false,
+            'message'        => "Gagal membaca data dari mesin EasyLink {$ip}:{$port}{$error_detail}.",
+            'total_read'     => 0,
+            'expected_count' => $expected_count,
+            'is_match'       => false,
+            'device_info'    => $dev_info['info'] ?? [],
+            'users'          => []
+        ];
+    }
+
+    /**
+     * Menambahkan / Mengunggah User ke Mesin (user/set)
+     */
+    public static function setUser($ip, $port, $sn, $pin, $name, $pwd = '', $rfid = '', $priv = 0, $template_json = '')
+    {
+        $parameter = "sn=" . urlencode($sn) .
+                     "&pin=" . urlencode($pin) .
+                     "&nama=" . urlencode(trim($name)) .
+                     "&pwd=" . urlencode($pwd) .
+                     "&rfid=" . urlencode($rfid) .
+                     "&priv=" . intval($priv);
+
+        if (!empty($template_json)) {
+            $parameter .= "&tmp=" . urlencode($template_json);
+        }
+
+        $res = self::webservice($ip, $port, 'user/set', $parameter, 8);
+        if ($res['status'] && !empty($res['raw'])) {
+            $decoded = json_decode($res['raw'], true);
+            if (isset($decoded['Result']) && $decoded['Result'] === true) {
                 return [
                     'status'  => true,
-                    'message' => 'Membaca ' . count($json) . ' data pengguna dari simpanan cache lokal.',
-                    'users'   => $json
+                    'message' => "Berhasil mengunggah user PIN {$pin} ({$name}) ke mesin."
                 ];
             }
         }
 
         return [
             'status'  => false,
-            'message' => 'Gagal membaca data dari mesin dan tidak ada cache lokal.',
-            'users'   => []
+            'message' => "Gagal mengunggah user ke mesin: " . ($res['message'] ?? 'Response tidak valid')
         ];
     }
 
     /**
-     * Menambahkan / Memperbarui Data Pengguna di Mesin EasyLink
-     * Menggunakan Endpoint /user/set (Sesuai C:\xampp\htdocs\sdkphp\content\user.php)
-     * Parameter: sn=$sn&pin=$pin&nama=$nama&pwd=$pwd&rfid=$rfid&priv=$priv&tmp=$tmp
+     * Menghapus User Single per PIN dari Mesin (user/del)
      */
-    public static function setUser($ip, $port, $sn, $comm_key, $pin, $name, $pwd = '', $rfid = '', $priv = 0)
+    public static function deleteUser($ip, $port, $sn, $pin)
     {
-        $pin  = (int)$pin;
-        $name = trim($name);
-
-        $parameter = "sn=" . urlencode($sn) .
-                     "&pin=" . urlencode($pin) .
-                     "&nama=" . urlencode($name) .
-                     "&pwd=" . urlencode($pwd) .
-                     "&rfid=" . urlencode($rfid) .
-                     "&priv=" . urlencode($priv) .
-                     "&tmp=";
-
-        $res = self::webservice($ip, $port, 'user/set', $parameter, 5);
-
-        // Update local cache
-        $cache_file = __DIR__ . '/../data/machine_users_cache.json';
-        $users      = file_exists($cache_file) ? json_decode(file_get_contents($cache_file), true) : [];
-        if (!is_array($users)) $users = [];
-
-        $found = false;
-        foreach ($users as &$u) {
-            if ($u['pin'] == $pin) {
-                $u['nama'] = $name;
-                $found = true;
-                break;
-            }
-        }
-        if (!$found) {
-            $users[] = ['pin' => $pin, 'nama' => $name];
-        }
-        file_put_contents($cache_file, json_encode($users, JSON_PRETTY_PRINT));
-
-        return [
-            'status'  => true,
-            'message' => "Pengguna [PIN {$pin} - {$name}] berhasil dikirim ke Mesin EasyLink."
-        ];
-    }
-
-    /**
-     * Menghapus Data Pengguna dari Mesin EasyLink
-     * Menggunakan Endpoint /user/del (Sesuai C:\xampp\htdocs\sdkphp\content\user.php)
-     * Parameter: sn=$sn&pin=$pin
-     */
-    public static function deleteUser($ip, $port, $sn, $comm_key, $pin)
-    {
-        $pin = (int)$pin;
         $parameter = "sn=" . urlencode($sn) . "&pin=" . urlencode($pin);
+        $res       = self::webservice($ip, $port, 'user/del', $parameter, 8);
 
-        $res = self::webservice($ip, $port, 'user/del', $parameter, 5);
-
-        // Update local cache
-        $cache_file = __DIR__ . '/../data/machine_users_cache.json';
-        $users      = file_exists($cache_file) ? json_decode(file_get_contents($cache_file), true) : [];
-        if (!is_array($users)) $users = [];
-
-        $new_users = [];
-        foreach ($users as $u) {
-            if ($u['pin'] != $pin) {
-                $new_users[] = $u;
-            }
-        }
-        file_put_contents($cache_file, json_encode($new_users, JSON_PRETTY_PRINT));
-
-        return [
-            'status'  => true,
-            'message' => "Pengguna [PIN {$pin}] berhasil dihapus dari Mesin EasyLink."
-        ];
-    }
-
-    /**
-     * Header Biner ZK/EasyLink
-     */
-    private static function createHeader($command, $chksum, $session_id, $reply_id, $command_string)
-    {
-        $buf = pack('SSSS', $command, $chksum, $session_id, $reply_id) . $command_string;
-        $buf = unpack('C*', $buf);
-        $u_chksum = self::calculateChecksum($buf);
-
-        $reply_id += 1;
-        if ($reply_id >= 65535) {
-            $reply_id -= 65535;
-        }
-
-        return pack('SSSS', $command, $u_chksum, $session_id, $reply_id) . $command_string;
-    }
-
-    private static function calculateChecksum($p)
-    {
-        $l = count($p);
-        $chksum = 0;
-        $i = 1;
-        while ($i < $l) {
-            $chksum += ($p[$i] + ($p[$i + 1] << 8));
-            $i += 2;
-        }
-
-        $chksum = ($chksum >> 16) + ($chksum & 0xffff);
-        return (~$chksum) & 0xffff;
-    }
-
-    private static function parseBinaryLogs($binaryData)
-    {
-        $logs = [];
-        if (empty($binaryData) || strlen($binaryData) < 8) {
-            return $logs;
-        }
-
-        $data = substr($binaryData, 8);
-        $recordSize = 40;
-
-        while (strlen($data) >= $recordSize) {
-            $record = substr($data, 0, $recordSize);
-            $data   = substr($data, $recordSize);
-
-            $arr = unpack('vpin/Cstatus/Cverified/Vtime', substr($record, 0, 8));
-            if (isset($arr['pin']) && isset($arr['time']) && $arr['pin'] > 0) {
-                $logs[] = [
-                    'pin'       => (int) $arr['pin'],
-                    'scan_date' => date('Y-m-d H:i:s', $arr['time'])
+        if ($res['status'] && !empty($res['raw'])) {
+            $decoded = json_decode($res['raw'], true);
+            if (isset($decoded['Result']) && $decoded['Result'] === true) {
+                return [
+                    'status'  => true,
+                    'message' => "Berhasil menghapus user PIN {$pin} dari mesin."
                 ];
             }
         }
 
-        return $logs;
+        return [
+            'status'  => false,
+            'message' => "Gagal menghapus user PIN {$pin} dari mesin."
+        ];
+    }
+
+    /**
+     * Menghapus SELURUH User dari Mesin (user/delall)
+     */
+    public static function deleteAllUsers($ip, $port, $sn)
+    {
+        $parameter = "sn=" . urlencode($sn);
+        $res       = self::webservice($ip, $port, 'user/delall', $parameter, 10);
+
+        if ($res['status'] && !empty($res['raw'])) {
+            $decoded = json_decode($res['raw'], true);
+            if (isset($decoded['Result']) && $decoded['Result'] === true) {
+                return [
+                    'status'  => true,
+                    'message' => "Berhasil menghapus seluruh pengguna di dalam mesin."
+                ];
+            }
+        }
+
+        return [
+            'status'  => false,
+            'message' => "Gagal menghapus seluruh pengguna di mesin."
+        ];
+    }
+
+    /**
+     * Menghapus Hak Akses Admin Mesin (user/deladmin atau dev/deladmin)
+     */
+    public static function deleteAdmin($ip, $port, $sn)
+    {
+        $parameter = "sn=" . urlencode($sn);
+        $res       = self::webservice($ip, $port, 'dev/deladmin', $parameter, 8);
+
+        if (!$res['status'] || empty($res['raw'])) {
+            $res = self::webservice($ip, $port, 'user/deladmin', $parameter, 8);
+        }
+
+        return [
+            'status'  => $res['status'],
+            'message' => $res['status'] ? 'Berhasil menghapus hak akses administrator pada mesin.' : $res['message']
+        ];
+    }
+
+    /**
+     * Menghapus Log Presensi di Mesin (scanlog/del atau log/del)
+     */
+    public static function deleteScanlog($ip, $port, $sn)
+    {
+        $parameter = "sn=" . urlencode($sn);
+        $res       = self::webservice($ip, $port, 'scanlog/del', $parameter, 8);
+
+        if (!$res['status'] || empty($res['raw'])) {
+            $res = self::webservice($ip, $port, 'log/del', $parameter, 8);
+        }
+
+        return [
+            'status'  => $res['status'],
+            'message' => $res['status'] ? 'Berhasil menghapus log presensi pada mesin.' : $res['message']
+        ];
+    }
+
+    /**
+     * Sinkronisasi Jam Mesin (dev/settime)
+     */
+    public static function setTime($ip, $port, $sn)
+    {
+        $parameter = "sn=" . urlencode($sn);
+        $res       = self::webservice($ip, $port, 'dev/settime', $parameter, 8);
+
+        return [
+            'status'  => $res['status'],
+            'message' => $res['status'] ? 'Jam mesin berhasil disinkronkan dengan waktu server.' : $res['message']
+        ];
+    }
+
+    /**
+     * Inisialisasi / Reset Mesin (dev/init)
+     */
+    public static function initDevice($ip, $port, $sn)
+    {
+        $parameter = "sn=" . urlencode($sn);
+        $res       = self::webservice($ip, $port, 'dev/init', $parameter, 10);
+
+        return [
+            'status'  => $res['status'],
+            'message' => $res['status'] ? 'Perintah inisialisasi mesin telah dikirimkan.' : $res['message']
+        ];
     }
 }

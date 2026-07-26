@@ -167,9 +167,15 @@
                                     <span class="badge bg-warning-focus text-warning-main radius-4 px-10 py-6" id="badge-stat-sakit">Sakit: <?php echo $cnt_sakit ?></span>
                                     <span class="badge bg-danger-focus text-danger-main radius-4 px-10 py-6" id="badge-stat-alpa">Tanpa Keterangan: <?php echo $cnt_alpa ?></span>
                                 </div>
-                                <button type="button" class="btn btn-xs btn-outline-primary radius-6 px-10 py-4" id="btn-set-all-hadir">
-                                    <iconify-icon icon="solar:check-read-bold" class="me-1"></iconify-icon> Tandai Semua Hadir
-                                </button>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="form-check form-switch d-inline-flex align-items-center">
+                                        <input class="form-check-input me-2" type="checkbox" id="showMengindukAgenda" <?php echo (isset($_GET['show_menginduk']) && $_GET['show_menginduk'] == '1') ? 'checked' : '' ?> onchange="var url = new URL(window.location.href); url.searchParams.set('show_menginduk', this.checked ? '1' : '0'); window.location.href = url.href;">
+                                        <label class="form-check-label text-xs fw-medium text-secondary-light mb-0" for="showMengindukAgenda">Tampilkan Siswa Menginduk</label>
+                                    </div>
+                                    <button type="button" class="btn btn-xs btn-outline-primary radius-6 px-10 py-4" id="btn-set-all-hadir">
+                                        <iconify-icon icon="solar:check-read-bold" class="me-1"></iconify-icon> Tandai Semua Hadir
+                                    </button>
+                                </div>
                             </div>
 
                             <!-- Table Presensi Siswa -->

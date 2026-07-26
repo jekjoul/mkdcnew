@@ -22,7 +22,15 @@ class Presensi extends CI_Controller
     // Helper: Validasi token
     private function validate_token($token)
     {
-        if (empty($token) || $token !== self::API_TOKEN) {
+        $valid_token = self::API_TOKEN;
+        if ($this->db->table_exists('fingerprint_settings')) {
+            $setting = $this->db->get('fingerprint_settings')->row();
+            if ($setting && !empty($setting->api_token)) {
+                $valid_token = trim($setting->api_token);
+            }
+        }
+
+        if (empty($token) || ($token !== $valid_token && $token !== self::API_TOKEN)) {
             echo json_encode([
                 'status'  => 'error',
                 'message' => 'Unauthorized. Invalid API Token.'
@@ -51,19 +59,12 @@ class Presensi extends CI_Controller
     /**
      * Endpoint 1: Sinkronisasi data scanlog dari mesin ke database online
      * POST /api/presensi/sync
-     *
-     * Format log yang diterima:
-     * { "token": "...", "logs": [ { "pin": 123, "scan_date": "2026-07-20 07:15:00" }, ... ] }
-     *
-     * Aturan penyimpanan:
-     * - Setiap log → 1 baris di presensi_harian (raw data)
-     * - UNIQUE INDEX di (tipe_user, id_user, tanggal, sesi)
-     * - Jika tap ulang di sesi yang sama → OVERWRITE (UPDATE jam_scan)
-     * - Jika tap di sesi berbeda dalam 1 hari → INSERT baris baru
-     * - Klasifikasi sesi otomatis berdasarkan jam: dhuha (06-09), dzuhur (11-16), other
      */
     public function sync()
     {
+        @set_time_limit(300);
+        @ini_set('memory_limit', '256M');
+
         $raw_input = file_get_contents('php://input');
         $data      = json_decode($raw_input, true);
 
@@ -73,89 +74,133 @@ class Presensi extends CI_Controller
         $logs = isset($data['logs']) ? $data['logs'] : [];
         if (empty($logs)) {
             echo json_encode([
-                'status'  => 'success',
-                'message' => 'No logs received.'
+                'status'    => 'success',
+                'message'   => 'No logs received.',
+                'inserted'  => 0,
+                'overwrite' => 0,
+                'ignored'   => 0,
+                'total'     => 0
             ]);
             return;
+        }
+
+        // Cache memory maps untuk siswa & ptk agar pencarian super cepat (O(1))
+        $all_siswa = $this->db->select('id_siswa, nipd, pin_fingerprint')->get('siswa')->result();
+        $siswa_map = [];
+        foreach ($all_siswa as $s) {
+            if (!empty($s->pin_fingerprint)) $siswa_map[(string)$s->pin_fingerprint] = $s->id_siswa;
+            if (!empty($s->nipd))            $siswa_map[(string)$s->nipd]            = $s->id_siswa;
+        }
+
+        $all_ptk = $this->db->select('id_ptk, niy, pin_fingerprint, nik, nip')->get('ptk')->result();
+        $ptk_map = [];
+        foreach ($all_ptk as $p) {
+            if (!empty($p->niy))              $ptk_map[(string)$p->niy]             = $p->id_ptk;
+            if (!empty($p->pin_fingerprint)) $ptk_map[(string)$p->pin_fingerprint] = $p->id_ptk;
+            if (!empty($p->nik))              $ptk_map[(string)$p->nik]             = $p->id_ptk;
+            if (!empty($p->nip))              $ptk_map[(string)$p->nip]             = $p->id_ptk;
+        }
+
+        // Kumpulkan semua tanggal dari batch logs untuk pre-fetch existing records O(1)
+        $dates_in_batch = [];
+        foreach ($logs as $l) {
+            if (!empty($l['scan_date'])) {
+                $dates_in_batch[] = date('Y-m-d', strtotime($l['scan_date']));
+            }
+        }
+        $dates_in_batch = array_unique($dates_in_batch);
+
+        $existing_map = [];
+        if (!empty($dates_in_batch)) {
+            $this->db->select('id_presensi, pin, tanggal, jam_scan');
+            $this->db->where_in('tanggal', $dates_in_batch);
+            $q_exist = $this->db->get('presensi_harian')->result();
+            foreach ($q_exist as $ex) {
+                $key = "{$ex->pin}_{$ex->tanggal}_{$ex->jam_scan}";
+                $existing_map[$key] = $ex->id_presensi;
+            }
         }
 
         $inserted_count  = 0;
         $overwrite_count = 0;
         $ignored_count   = 0;
 
+        $batch_insert = [];
+        $batch_update = [];
+        $batch_seen   = [];
+
         foreach ($logs as $log) {
-            $pin       = isset($log['pin']) ? intval($log['pin']) : 0;
+            $pin_raw   = trim((string)($log['pin'] ?? ''));
             $scan_date = isset($log['scan_date']) ? trim($log['scan_date']) : '';
 
-            // Lewati data tidak valid
-            if ($pin <= 0 || empty($scan_date)) {
+            if (empty($pin_raw) || $pin_raw === '0' || empty($scan_date)) {
                 $ignored_count++;
                 continue;
             }
 
-            // --- Identifikasi user berdasarkan PIN (= NIPD siswa tanpa leading zeros) ---
-            // pin_fingerprint di tabel siswa sudah diisi dengan NIPD sebagai BIGINT
-            // sehingga langsung bisa dicocokkan dengan PIN integer dari mesin
-            $tipe_user = null;
-            $id_user   = null;
+            $pin = $pin_raw;
 
-            // 1. Cari siswa berdasarkan pin_fingerprint = NIPD
-            $siswa = $this->db->get_where('siswa', ['pin_fingerprint' => $pin])->row();
+            $tipe_user = 'siswa';
+            $id_user   = 0;
 
-            if ($siswa) {
+            if (strlen($pin) === 14) {
+                $tipe_user = 'ptk';
+                $id_user   = isset($ptk_map[$pin]) ? $ptk_map[$pin] : 0;
+            } elseif (isset($ptk_map[$pin])) {
+                $tipe_user = 'ptk';
+                $id_user   = $ptk_map[$pin];
+            } elseif (isset($siswa_map[$pin])) {
                 $tipe_user = 'siswa';
-                $id_user   = $siswa->id_siswa;
-            } else {
-                // 2. Cek apakah PIN milik PTK
-                $ptk = $this->db->get_where('ptk', ['pin_fingerprint' => $pin])->row();
-                if ($ptk) {
-                    $tipe_user = 'ptk';
-                    $id_user   = $ptk->id_ptk;
-                } else {
-                    // 3. PIN tidak dikenal → simpan sebagai unidentified (id_user = 0)
-                    // Admin dapat memetakan pin ini nanti lewat halaman manajemen siswa
-                    $tipe_user = 'siswa';
-                    $id_user   = 0;
-                }
+                $id_user   = $siswa_map[$pin];
             }
 
-
-            // --- Parsing tanggal dan jam ---
             $date     = date('Y-m-d', strtotime($scan_date));
             $jam_scan = date('H:i:s', strtotime($scan_date));
+            $sesi     = $this->tentukan_sesi($jam_scan);
 
-            // --- Klasifikasi sesi berdasarkan jam ---
-            $sesi = $this->tentukan_sesi($jam_scan);
+            $exist_key = "{$pin}_{$date}_{$jam_scan}";
 
-            // --- Cek duplikat: SAMA persis = PIN + tanggal + jam_scan identik ---
-            // (bukan per sesi — tap berbeda waktu di sesi yang sama = baris baru)
-            $existing = $this->db->get_where('presensi_harian', [
-                'tipe_user' => $tipe_user,
-                'id_user'   => $id_user,
-                'tanggal'   => $date,
-                'jam_scan'  => $jam_scan
-            ])->row();
-
-            if ($existing) {
-                // OVERWRITE: Tap yang benar-benar identik (jam sama persis)
-                $this->db->where('id_presensi', $existing->id_presensi);
-                $this->db->update('presensi_harian', [
-                    'pin'  => $pin,
-                    'sesi' => $sesi
-                ]);
+            if (isset($existing_map[$exist_key])) {
+                $batch_update[] = [
+                    'id_presensi' => $existing_map[$exist_key],
+                    'tipe_user'   => $tipe_user,
+                    'id_user'     => $id_user,
+                    'pin'         => $pin,
+                    'sesi'        => $sesi,
+                    'updated_at'  => date('Y-m-d H:i:s')
+                ];
+                $overwrite_count++;
+            } elseif (isset($batch_seen[$exist_key])) {
+                $idx_in_insert = $batch_seen[$exist_key];
+                $batch_insert[$idx_in_insert]['tipe_user']  = $tipe_user;
+                $batch_insert[$idx_in_insert]['id_user']    = $id_user;
+                $batch_insert[$idx_in_insert]['sesi']       = $sesi;
+                $batch_insert[$idx_in_insert]['updated_at'] = date('Y-m-d H:i:s');
                 $overwrite_count++;
             } else {
-                // INSERT: Tap baru (jam berbeda = data baru, simpan semua)
-                $this->db->insert('presensi_harian', [
-                    'tipe_user' => $tipe_user,
-                    'id_user'   => $id_user,
-                    'pin'       => $pin,
-                    'tanggal'   => $date,
-                    'jam_scan'  => $jam_scan,
-                    'sesi'      => $sesi
-                ]);
+                $insert_idx = count($batch_insert);
+                $batch_seen[$exist_key] = $insert_idx;
+
+                $batch_insert[] = [
+                    'tipe_user'  => $tipe_user,
+                    'id_user'    => $id_user,
+                    'pin'        => $pin,
+                    'tanggal'    => $date,
+                    'jam_scan'   => $jam_scan,
+                    'sesi'       => $sesi,
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s')
+                ];
                 $inserted_count++;
             }
+        }
+
+        if (!empty($batch_insert)) {
+            $this->db->insert_batch('presensi_harian', $batch_insert);
+        }
+
+        if (!empty($batch_update)) {
+            $this->db->update_batch('presensi_harian', $batch_update, 'id_presensi');
         }
 
         echo json_encode([
@@ -226,7 +271,6 @@ class Presensi extends CI_Controller
             'error_message' => $error_message
         ];
 
-        // Jika gagal dan attempts < 3, kembalikan ke pending agar dicoba lagi
         if ($status === 'failed' && $attempts < 3) {
             $update_data['status'] = 'pending';
         }
@@ -265,7 +309,6 @@ class Presensi extends CI_Controller
         $this->db->order_by('nama_siswa', 'ASC');
         $students = $this->db->get()->result();
 
-        // Convert PIN to int
         foreach ($students as &$s) {
             $s->pin = (int)$s->pin;
         }
@@ -275,5 +318,157 @@ class Presensi extends CI_Controller
             'students' => $students
         ]);
     }
+
+    /**
+     * Endpoint 5: Mengambil daftar PTK / Guru aktif untuk sinkronisasi dengan mesin
+     * GET /api/presensi/active_ptk?token=SECRET_KEY
+     * PIN untuk PTK/Guru adalah NIY guru/ptk!
+     */
+    public function active_ptk()
+    {
+        $raw_input = file_get_contents('php://input');
+        $data      = json_decode($raw_input, true);
+        $token     = $this->input->get('token');
+        if (empty($token) && isset($data['token'])) {
+            $token = $data['token'];
+        }
+        if (empty($token)) {
+            $token = $this->input->post('token');
+        }
+
+        $this->validate_token($token);
+
+        $this->db->select('CAST(niy AS UNSIGNED) as pin, nama_ptk as nama, niy, pin_fingerprint');
+        $this->db->from('ptk');
+        $this->db->where('status_keaktifan', 'Aktif');
+        $this->db->where("niy IS NOT NULL AND niy != ''");
+        $this->db->order_by('nama_ptk', 'ASC');
+        $ptk_list = $this->db->get()->result();
+
+        foreach ($ptk_list as &$p) {
+            $p->pin = (int)$p->pin;
+        }
+
+        echo json_encode([
+            'status' => 'success',
+            'ptk'    => $ptk_list
+        ]);
+    }
+
+    /**
+     * Endpoint 6: Menerima data user & template sidik jari dari mesin ke server MKDC
+     * POST /api/presensi/receive_machine_users
+     */
+    public function receive_machine_users()
+    {
+        $this->load->model('Fingerprint_bridge_model', 'bridge_model');
+        if (method_exists($this->bridge_model, 'ensureTables')) {
+            $this->bridge_model->ensureTables();
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+
+        if (empty($input)) {
+            $input = $_POST;
+            if (isset($input['users']) && is_string($input['users'])) {
+                $input['users'] = json_decode($input['users'], true);
+            }
+        }
+
+        $token = $input['token'] ?? $this->input->get_post('token');
+        $this->validate_token($token);
+
+        $users = $input['users'] ?? [];
+        if (!is_array($users) || empty($users)) {
+            echo json_encode([
+                'status'  => 'error',
+                'message' => 'Data users kosong atau format tidak valid.'
+            ]);
+            return;
+        }
+
+        $inserted       = 0;
+        $updated        = 0;
+        $template_count = 0;
+
+        foreach ($users as $u) {
+            $pin  = trim((string)($u['pin'] ?? $u['PIN'] ?? ''));
+            $nama = trim($u['nama'] ?? $u['Name'] ?? $u['name'] ?? '');
+            $pwd  = trim($u['pwd'] ?? $u['Password'] ?? '');
+            $rfid = trim($u['rfid'] ?? $u['RFID'] ?? '');
+            $priv = intval($u['privilege'] ?? $u['Privilege'] ?? 0);
+            $tmpl = $u['templates'] ?? $u['Template'] ?? [];
+
+            if (empty($pin)) continue;
+
+            $num_tmpl = is_array($tmpl) ? count($tmpl) : 0;
+
+            $check = $this->db->get_where('presensi_machine_users', ['pin' => $pin])->row();
+
+            $user_data = [
+                'pin'             => $pin,
+                'nama'            => $nama,
+                'password'        => $pwd,
+                'rfid'            => $rfid,
+                'privilege'       => $priv,
+                'jumlah_template' => $num_tmpl,
+                'updated_at'      => date('Y-m-d H:i:s')
+            ];
+
+            if ($check) {
+                $this->db->where('pin', $pin);
+                $this->db->update('presensi_machine_users', $user_data);
+                $updated++;
+            } else {
+                $user_data['created_at'] = date('Y-m-d H:i:s');
+                $this->db->insert('presensi_machine_users', $user_data);
+                $inserted++;
+            }
+
+            if (is_array($tmpl) && !empty($tmpl)) {
+                foreach ($tmpl as $t) {
+                    if (is_array($t)) {
+                        $idx     = intval($t['finger_idx'] ?? $t['idx'] ?? $t['finger_id'] ?? 0);
+                        $alg_ver = intval($t['alg_ver'] ?? $t['alg_version'] ?? 10);
+                        $raw_t   = trim($t['template'] ?? $t['tmp'] ?? $t['Template'] ?? '');
+                    } else {
+                        $idx     = 0;
+                        $alg_ver = 10;
+                        $raw_t   = trim((string)$t);
+                    }
+
+                    if (!empty($raw_t)) {
+                        $t_data = [
+                            'pin'        => $pin,
+                            'finger_idx' => $idx,
+                            'alg_ver'    => $alg_ver,
+                            'template'   => $raw_t
+                        ];
+
+                        $t_check = $this->db->get_where('presensi_machine_templates', [
+                            'pin'        => $pin,
+                            'finger_idx' => $idx
+                        ])->row();
+
+                        if ($t_check) {
+                            $this->db->where('id', $t_check->id);
+                            $this->db->update('presensi_machine_templates', $t_data);
+                        } else {
+                            $t_data['created_at'] = date('Y-m-d H:i:s');
+                            $this->db->insert('presensi_machine_templates', $t_data);
+                        }
+                        $template_count++;
+                    }
+                }
+            }
+        }
+
+        echo json_encode([
+            'status'          => 'success',
+            'message'         => "Berhasil menyimpan {$inserted} user baru, {$updated} user diperbarui, dan {$template_count} template sidik jari ke server MKDC.",
+            'total_inserted'  => $inserted,
+            'total_updated'   => $updated,
+            'total_templates' => $template_count
+        ]);
+    }
 }
-?>

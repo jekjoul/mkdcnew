@@ -959,10 +959,24 @@ class Guru extends MY_Controller
 
     private function getSiswaPembelajaran($id_pembelajaran)
     {
+        $show_menginduk = ($this->input->get('show_menginduk') == '1');
+        $menginduk_ids  = [];
+        if (!$show_menginduk && $this->db->table_exists('kelas_jauh_siswa')) {
+            $q_kj = $this->db->select('id_siswa')->get('kelas_jauh_siswa');
+            if ($q_kj && $q_kj->num_rows() > 0) {
+                $menginduk_ids = array_column($q_kj->result_array(), 'id_siswa');
+            }
+        }
+
         $this->db->select('s.id_siswa, s.nama_siswa, s.nisn, s.nipd');
         $this->db->from('pembelajaran_siswa ps');
         $this->db->join('siswa s', 's.id_siswa = ps.peserta_didik_id');
         $this->db->where('ps.id_pembelajaran', (int) $id_pembelajaran);
+
+        if (!empty($menginduk_ids)) {
+            $this->db->where_not_in('s.id_siswa', $menginduk_ids);
+        }
+
         $this->db->order_by('s.nama_siswa', 'ASC');
         return $this->db->get()->result();
     }

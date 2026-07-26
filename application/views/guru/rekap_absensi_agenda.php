@@ -102,6 +102,12 @@
                         <iconify-icon icon="solar:filter-bold" class="me-1"></iconify-icon> Filter
                     </button>
                 </div>
+                <div class="col-12 mt-2">
+                    <div class="form-check form-switch d-inline-flex align-items-center">
+                        <input class="form-check-input me-2" type="checkbox" name="show_menginduk" value="1" id="showMengindukRekapAgenda" <?php echo (isset($_GET['show_menginduk']) && $_GET['show_menginduk'] == '1') ? 'checked' : '' ?> onchange="this.form.submit()">
+                        <label class="form-check-label text-xs text-secondary-light fw-medium" for="showMengindukRekapAgenda">Tampilkan Siswa Menginduk (Kelas Jauh)</label>
+                    </div>
+                </div>
             </form>
         </div>
     </div>
