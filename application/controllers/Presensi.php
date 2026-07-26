@@ -578,8 +578,10 @@ class Presensi extends MY_Controller
             ]);
         }
 
-        // Simpan override ke tabel presensi_override (akan dibuat jika belum ada)
+        // Simpan override ke tabel presensi_override
         $this->_simpan_override($tipe_user, $id_user, $tanggal, $status, $keterangan, $pin);
+
+        $this->activity_model->add(logged('name') . ' Mengubah presensi manual (' . strtoupper($tipe_user) . ' ID #' . $id_user . ') Tanggal: ' . $tanggal . ' Status: ' . $status, logged('id'));
 
         $this->session->set_flashdata('alert-type', 'success');
         $this->session->set_flashdata('alert', 'Presensi berhasil diperbarui secara manual.');
@@ -660,13 +662,25 @@ class Presensi extends MY_Controller
         $machine_users = $this->db->order_by('id', 'DESC')->get('presensi_machine_users')->result();
         $machine_users_by_pin = [];
         foreach ($machine_users as $m) {
-            $machine_users_by_pin[(string)$m->pin] = $m;
+            $raw_m_pin   = trim((string)$m->pin);
+            $clean_m_pin = ltrim($raw_m_pin, '0');
+            if ($clean_m_pin === '') $clean_m_pin = '0';
+
+            $machine_users_by_pin[$raw_m_pin]   = $m;
+            $machine_users_by_pin[$clean_m_pin] = $m;
         }
 
         $templates = $this->db->get('presensi_machine_templates')->result();
         $templates_by_pin = [];
         foreach ($templates as $t) {
-            $templates_by_pin[(string)$t->pin][] = $t;
+            $raw_t_pin   = trim((string)$t->pin);
+            $clean_t_pin = ltrim($raw_t_pin, '0');
+            if ($clean_t_pin === '') $clean_t_pin = '0';
+
+            $templates_by_pin[$raw_t_pin][]   = $t;
+            if ($raw_t_pin !== $clean_t_pin) {
+                $templates_by_pin[$clean_t_pin][] = $t;
+            }
         }
 
         // 2. Data Siswa Aktif (PIN = NIPD atau pin_fingerprint)
@@ -688,14 +702,18 @@ class Presensi extends MY_Controller
 
         // Process Active Siswa
         foreach ($all_siswa as $s) {
-            $pin = !empty($s->pin_fingerprint) ? trim((string)$s->pin_fingerprint) : trim((string)$s->nipd);
-            if (empty($pin)) continue;
+            $pin_raw   = !empty($s->pin_fingerprint) ? trim((string)$s->pin_fingerprint) : trim((string)$s->nipd);
+            if (empty($pin_raw)) continue;
 
-            $m = isset($machine_users_by_pin[$pin]) ? $machine_users_by_pin[$pin] : null;
-            $processed_pins[$pin] = true;
+            $pin_clean = ltrim($pin_raw, '0');
+            if ($pin_clean === '') $pin_clean = '0';
+
+            $m = $machine_users_by_pin[$pin_raw] ?? $machine_users_by_pin[$pin_clean] ?? null;
+            $processed_pins[$pin_raw]   = true;
+            $processed_pins[$pin_clean] = true;
 
             $merged_users[] = (object)[
-                'pin'               => $pin,
+                'pin'               => $pin_raw,
                 'nama'              => $s->nama_siswa,
                 'nama_mesin'        => $m ? $m->nama : null,
                 'tipe_user'         => 'Siswa',
@@ -712,14 +730,18 @@ class Presensi extends MY_Controller
 
         // Process Active PTK
         foreach ($all_ptk as $p) {
-            $pin = !empty($p->pin_fingerprint) ? trim((string)$p->pin_fingerprint) : trim((string)$p->niy);
-            if (empty($pin)) continue;
+            $pin_raw   = !empty($p->pin_fingerprint) ? trim((string)$p->pin_fingerprint) : trim((string)$p->niy);
+            if (empty($pin_raw)) continue;
 
-            $m = isset($machine_users_by_pin[$pin]) ? $machine_users_by_pin[$pin] : null;
-            $processed_pins[$pin] = true;
+            $pin_clean = ltrim($pin_raw, '0');
+            if ($pin_clean === '') $pin_clean = '0';
+
+            $m = $machine_users_by_pin[$pin_raw] ?? $machine_users_by_pin[$pin_clean] ?? null;
+            $processed_pins[$pin_raw]   = true;
+            $processed_pins[$pin_clean] = true;
 
             $merged_users[] = (object)[
-                'pin'               => $pin,
+                'pin'               => $pin_raw,
                 'nama'              => $p->nama_ptk,
                 'nama_mesin'        => $m ? $m->nama : null,
                 'tipe_user'         => 'PTK / Guru',
@@ -736,8 +758,11 @@ class Presensi extends MY_Controller
 
         // Process Machine Users Saja (Tidak Terdaftar di Siswa/PTK Aktif)
         foreach ($machine_users as $m) {
-            $pin = trim((string)$m->pin);
-            if (empty($pin) || isset($processed_pins[$pin])) continue;
+            $pin_raw   = trim((string)$m->pin);
+            $pin_clean = ltrim($pin_raw, '0');
+            if ($pin_clean === '') $pin_clean = '0';
+
+            if (empty($pin_raw) || isset($processed_pins[$pin_raw]) || isset($processed_pins[$pin_clean])) continue;
 
             $merged_users[] = (object)[
                 'pin'               => $pin,

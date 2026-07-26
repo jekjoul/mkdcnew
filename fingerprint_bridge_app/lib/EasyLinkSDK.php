@@ -258,13 +258,13 @@ class EasyLinkSDK
         $last_error_msg   = '';
         $machine_online   = false;
 
-        // Wajib Paging Limit = 1 sesuai permintaan
-        $batch_limit = 1;
+        // Paging Limit (Gunakan limit yang ditentukan atau 1 per HTTP request)
+        $batch_limit = ($limit > 0) ? intval($limit) : 1;
 
-        // Panggil endpoint user/all/paging persis seperti Client_EasyLinkSDK_PHP (download_user_with_timer.php & user.php)
+        // Panggil endpoint user/all/paging dengan max_pages hingga 5000 agar tidak terpotong di 300 user
         $session   = true;
         $page      = 0;
-        $max_pages = 300;
+        $max_pages = 5000;
 
         do {
             @set_time_limit(0);
@@ -332,7 +332,7 @@ class EasyLinkSDK
                 $session = false;
             }
 
-            // Paging loop dikendalikan murni oleh IsSession persis seperti Client_EasyLinkSDK_PHP ($session = $content->IsSession)
+            // Paging loop dikendalikan murni oleh IsSession
             $is_sess_val = $decoded['IsSession'] ?? $decoded['is_session'] ?? null;
             if ($is_sess_val !== null) {
                 $session_bool = is_string($is_sess_val) ? (strtolower($is_sess_val) === 'true' || $is_sess_val === '1') : (bool)$is_sess_val;

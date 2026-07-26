@@ -106,7 +106,7 @@ function siswa_value($row, $field, $default = '')
         <div class="col-sm-6 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Jarak ke Sekolah</label><input type="text" class="form-control radius-8" name="jarak_ke_sekolah" id="jarak_ke_sekolah" value="<?php echo siswa_value($row, 'jarak_ke_sekolah') ?>" readonly></div>
         <div class="col-sm-6 mb-20"><label class="form-label fw-semibold text-primary-light text-sm mb-8">Koordinat</label><input type="text" class="form-control radius-8" name="koordinat" id="koordinat" value="<?php echo siswa_value($row, 'koordinat') ?>" readonly></div>
         <div class="col-sm-12 mb-20">
-            <div id="map-koordinat" class="radius-8 border" style="height: 360px; overflow: hidden;"></div>
+            <div id="map-koordinat" class="radius-8 border" style="height: 380px; min-height: 380px; width: 100%; overflow: hidden; position: relative; z-index: 1;"></div>
         </div>
         <?php foreach (['' => 'Siswa', '_ayah' => 'Ayah', '_ibu' => 'Ibu'] as $suffix => $label): ?>
             <?php if ($suffix): ?>

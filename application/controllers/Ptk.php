@@ -620,12 +620,13 @@ class Ptk extends MY_Controller
 		];
 
 		if ($this->db->insert($this->table, $data)) {
-			// Tambahkan tugas sinkronisasi ke mesin fingerprint jika PIN diisi
-			if (!empty($data['pin_fingerprint'])) {
+			// Tambahkan tugas sinkronisasi ke mesin fingerprint (Gunakan pin_fingerprint atau NIY)
+			$effective_pin = !empty($data['pin_fingerprint']) ? intval($data['pin_fingerprint']) : intval($data['niy']);
+			if ($effective_pin > 0) {
 				$this->db->insert('fingerprint_tasks', [
 					'action' => 'SET_USER',
-					'pin' => intval($data['pin_fingerprint']),
-					'nama' => $data['nama_ptk'],
+					'pin'    => $effective_pin,
+					'nama'   => mb_substr($data['nama_ptk'], 0, 15),
 					'status' => 'pending'
 				]);
 			}
@@ -726,31 +727,34 @@ class Ptk extends MY_Controller
 
 		$this->db->where('id_ptk', $id);
 		if ($this->db->update($this->table, $data)) {
+			$old_pin = !empty($ptk->pin_fingerprint) ? intval($ptk->pin_fingerprint) : intval($ptk->niy);
+			$new_pin = !empty($data['pin_fingerprint']) ? intval($data['pin_fingerprint']) : intval($data['niy']);
+
 			// Logika sinkronisasi fingerprint dua arah
-			if ($ptk->pin_fingerprint != $data['pin_fingerprint']) {
+			if ($old_pin != $new_pin) {
 				// Hapus PIN lama jika terdaftar di mesin
-				if (!empty($ptk->pin_fingerprint)) {
+				if ($old_pin > 0) {
 					$this->db->insert('fingerprint_tasks', [
 						'action' => 'DEL_USER',
-						'pin' => intval($ptk->pin_fingerprint),
+						'pin'    => $old_pin,
 						'status' => 'pending'
 					]);
 				}
 				// Daftarkan PIN baru ke mesin
-				if (!empty($data['pin_fingerprint'])) {
+				if ($new_pin > 0) {
 					$this->db->insert('fingerprint_tasks', [
 						'action' => 'SET_USER',
-						'pin' => intval($data['pin_fingerprint']),
-						'nama' => $data['nama_ptk'],
+						'pin'    => $new_pin,
+						'nama'   => mb_substr($data['nama_ptk'], 0, 15),
 						'status' => 'pending'
 					]);
 				}
-			} else if (!empty($data['pin_fingerprint']) && $ptk->nama_ptk != $data['nama_ptk']) {
+			} else if ($new_pin > 0 && $ptk->nama_ptk != $data['nama_ptk']) {
 				// Jika PIN sama tetapi nama berubah, update di mesin
 				$this->db->insert('fingerprint_tasks', [
 					'action' => 'SET_USER',
-					'pin' => intval($data['pin_fingerprint']),
-					'nama' => $data['nama_ptk'],
+					'pin'    => $new_pin,
+					'nama'   => mb_substr($data['nama_ptk'], 0, 15),
 					'status' => 'pending'
 				]);
 			}

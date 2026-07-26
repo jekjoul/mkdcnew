@@ -187,77 +187,139 @@ switch ($action) {
         break;
 
     case 'fetch_sync_diff':
-        // LANGKAH 1: Get all user dulu dari mesin dengan paging limit 1
+        // LANGKAH 1: Get all user dari mesin dengan paging limit 1
         $m_res         = EasyLinkSDK::getUsers($dev_cfg['server_IP'], $dev_cfg['server_port'], $dev_cfg['device_sn'], '0', 1);
         $machine_users = $m_res['users'] ?? [];
 
-        // LANGKAH 2: Ambil data siswa dari server web API
-        $api_url = "http://localhost/mkdcnew/api/presensi/sync";
-        $ch      = curl_init($api_url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 45);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        $active_key = $dev_cfg['active_api_key'] ?? $dev_cfg['active_key'] ?? 'MKDC_FINGERPRINT_SECRET_KEY_2026';
+        $active_api = $dev_cfg['active_api'] ?? '';
+
+        if (strpos($active_api, 'token=') === false) {
+            $active_api .= (strpos($active_api, '?') === false ? '?' : '&') . 'token=' . urlencode($active_key);
+        }
+
+        // LANGKAH 2: Ambil data Siswa Aktif (PIN = NIPD) dari Server Web API
+        $students_url = $active_api;
+        if (strpos($students_url, 'active_students') === false) {
+            $parsed = parse_url($active_api);
+            $scheme = $parsed['scheme'] ?? 'http';
+            $host   = $parsed['host'] ?? 'localhost';
+            $port   = isset($parsed['port']) ? ':' . $parsed['port'] : '';
+            $path   = preg_replace('#/(sync|active_ptk|receive_machine_users).*$#', '', $parsed['path'] ?? '');
+            $students_url = "{$scheme}://{$host}{$port}" . rtrim($path, '/') . '/active_students?token=' . urlencode($active_key);
+        }
+
+        $ch = curl_init($students_url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT        => 30,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => false
+        ]);
         $resp = curl_exec($ch);
         curl_close($ch);
 
-        $server_students = [];
+        $server_users = [];
         if ($resp) {
             $json = json_decode($resp, true);
-            if (isset($json['students']) && is_array($json['students'])) {
-                $server_students = $json['students'];
-            }
-        }
-
-        // LANGKAH 3: Bandingkan datanya berdasarkan PIN di mesin sama dengan NIPD di server
-        $machine_map = [];
-        foreach ($machine_users as $m) {
-            $m_pin = intval($m['pin'] ?? 0);
-            if ($m_pin > 0) {
-                $machine_map[$m_pin] = trim($m['nama'] ?? '');
-            }
-        }
-
-        $server_map = [];
-        foreach ($server_students as $s) {
-            $nipd_pin = intval($s['nipd'] ?? $s['pin'] ?? 0);
-            $s_nama   = trim($s['nama_siswa'] ?? $s['nama'] ?? $s['name'] ?? '');
-            if ($nipd_pin > 0 && !empty($s_nama)) {
-                // Ambil maksimal 15 karakter TANPA menambah spasi jika kurang dari 15 karakter
-                $nama_15 = trim(mb_substr($s_nama, 0, 15));
-                $server_map[$nipd_pin] = $nama_15;
-            }
-        }
-
-        $matched_data  = [];
-        $machine_only  = [];
-        $server_only   = [];
-        $name_mismatch = [];
-
-        // Check user mesin vs server
-        foreach ($machine_map as $pin => $m_nama) {
-            $m_nama_clean = trim($m_nama);
-            if (!isset($server_map[$pin])) {
-                $machine_only[] = ['pin' => $pin, 'nama' => $m_nama_clean, 'opt' => 'hapus_mesin'];
-            } else {
-                $s_nama_15 = $server_map[$pin];
-                if (strcasecmp($m_nama_clean, $s_nama_15) === 0) {
-                    $matched_data[] = ['pin' => $pin, 'nama' => $m_nama_clean, 'nama_server' => $s_nama_15];
-                } else {
-                    $name_mismatch[] = ['pin' => $pin, 'nama_mesin' => $m_nama_clean, 'nama_server' => $s_nama_15, 'opt' => 'ubah_nama_mesin'];
+            $raw_st = $json['students'] ?? $json['data'] ?? [];
+            if (is_array($raw_st)) {
+                foreach ($raw_st as $st) {
+                    $pin  = trim((string)($st['nipd'] ?? $st['pin'] ?? ''));
+                    $nama = trim((string)($st['nama_siswa'] ?? $st['nama'] ?? ''));
+                    if (!empty($pin) && !empty($nama)) {
+                        $server_users[$pin] = trim(mb_substr($nama, 0, 15));
+                    }
                 }
             }
         }
 
-        // Check siswa server vs mesin
-        foreach ($server_map as $pin => $s_nama_15) {
-            if (!isset($machine_map[$pin])) {
-                $server_only[] = ['pin' => $pin, 'nama' => $s_nama_15, 'opt' => 'tambah_mesin'];
+        // LANGKAH 3: Ambil data PTK / Guru Aktif (PIN = NIY) dari Server Web API
+        $ptk_url = str_replace('active_students', 'active_ptk', $students_url);
+        $ch2 = curl_init($ptk_url);
+        curl_setopt_array($ch2, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT        => 30,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => false
+        ]);
+        $resp2 = curl_exec($ch2);
+        curl_close($ch2);
+
+        if ($resp2) {
+            $json2 = json_decode($resp2, true);
+            $raw_ptk = $json2['ptk'] ?? $json2['data'] ?? [];
+            if (is_array($raw_ptk)) {
+                foreach ($raw_ptk as $ptk) {
+                    $pin  = trim((string)($ptk['niy'] ?? $ptk['pin'] ?? ''));
+                    $nama = trim((string)($ptk['nama_ptk'] ?? $ptk['nama'] ?? ''));
+                    if (!empty($pin) && !empty($nama)) {
+                        $server_users[$pin] = trim(mb_substr($nama, 0, 15));
+                    }
+                }
+            }
+        }
+
+        // LANGKAH 4: Bandingkan datanya berdasarkan PIN di mesin vs PIN di server (NIPD & NIY)
+        $machine_map = [];
+        foreach ($machine_users as $m) {
+            $raw_m_pin   = trim((string)($m['pin'] ?? ''));
+            $clean_m_pin = ltrim($raw_m_pin, '0');
+            if ($clean_m_pin === '') $clean_m_pin = '0';
+
+            if (!empty($raw_m_pin) && $raw_m_pin !== '0') {
+                $machine_map[$raw_m_pin]   = trim($m['nama'] ?? '');
+                $machine_map[$clean_m_pin] = trim($m['nama'] ?? '');
+            }
+        }
+
+        $matched_data   = [];
+        $machine_only   = [];
+        $server_only    = [];
+        $name_mismatch  = [];
+        $processed_pins = [];
+
+        // Check user mesin vs server
+        foreach ($machine_users as $m) {
+            $raw_pin   = trim((string)($m['pin'] ?? ''));
+            $clean_pin = ltrim($raw_pin, '0');
+            if ($clean_pin === '') $clean_pin = '0';
+
+            if (empty($raw_pin) || $raw_pin === '0' || isset($processed_pins[$raw_pin])) continue;
+            $processed_pins[$raw_pin]   = true;
+            $processed_pins[$clean_pin] = true;
+
+            $m_nama_clean = trim($m['nama'] ?? '');
+            $s_nama_15    = $server_users[$raw_pin] ?? $server_users[$clean_pin] ?? null;
+
+            if ($s_nama_15 === null) {
+                $machine_only[] = ['pin' => $raw_pin, 'nama' => $m_nama_clean, 'opt' => 'hapus_mesin'];
+            } else {
+                if (strcasecmp($m_nama_clean, $s_nama_15) === 0) {
+                    $matched_data[] = ['pin' => $raw_pin, 'nama' => $m_nama_clean, 'nama_server' => $s_nama_15];
+                } else {
+                    $name_mismatch[] = ['pin' => $raw_pin, 'nama_mesin' => $m_nama_clean, 'nama_server' => $s_nama_15, 'opt' => 'ubah_nama_mesin'];
+                }
+            }
+        }
+
+        // Check siswa & PTK server vs mesin
+        foreach ($server_users as $raw_pin => $s_nama_15) {
+            $clean_pin = ltrim($raw_pin, '0');
+            if ($clean_pin === '') $clean_pin = '0';
+
+            if (isset($processed_pins[$raw_pin]) || isset($processed_pins[$clean_pin])) continue;
+            $processed_pins[$raw_pin]   = true;
+            $processed_pins[$clean_pin] = true;
+
+            if (!isset($machine_map[$raw_pin]) && !isset($machine_map[$clean_pin])) {
+                $server_only[] = ['pin' => $raw_pin, 'nama' => $s_nama_15, 'opt' => 'tambah_mesin'];
             }
         }
 
         echo json_encode([
             'status'         => 'success',
-            'total_server'   => count($server_map),
+            'total_server'   => count($server_users),
             'total_machine'  => count($machine_map),
             'matched_data'   => $matched_data,
             'name_mismatch'  => $name_mismatch,

@@ -760,14 +760,24 @@
     <?php endif; ?>
 <?php endif; ?>
 
-<?php if (hasPermissions('general_settings') || hasPermissions('company_settings') || hasPermissions('email_templates')): ?>
+<?php if (hasPermissions('general_settings') || hasPermissions('company_settings') || hasPermissions('email_templates') || hasPermissions('activity_log_list') || logged('role') == 1): ?>
     <li class="sidebar-menu-group-title">Pengaturan</li>
+    <?php if (hasPermissions('general_settings') || hasPermissions('company_settings')): ?>
     <li>
         <a href="<?php echo url('settings/general') ?>">
             <iconify-icon icon="solar:settings-linear" class="menu-icon"></iconify-icon>
             <span>Pengaturan</span>
         </a>
     </li>
+    <?php endif; ?>
+    <?php if (hasPermissions('activity_log_list') || logged('role') == 1): ?>
+    <li>
+        <a href="<?php echo url('activity_logs') ?>">
+            <iconify-icon icon="solar:history-bold-duotone" class="menu-icon text-primary"></iconify-icon>
+            <span>Log Aktivitas</span>
+        </a>
+    </li>
+    <?php endif; ?>
 <?php endif; ?>
 
 <li class="sidebar-menu-group-title">Aplikasi Tambahan</li>

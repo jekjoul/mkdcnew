@@ -42,9 +42,9 @@ class Settings extends MY_Controller {
 		$this->settings_model->updateByKey('default_lang', post('default_lang'));
 
 		$this->session->set_flashdata('alert-type', 'success');
-		$this->session->set_flashdata('alert', 'Settings has been Updated Successfully');
+		$this->session->set_flashdata('alert', 'Pengaturan Umum berhasil diperbarui.');
 
-		$this->activity_model->add("Company Settings Updated by User: #".logged('id'));
+		$this->activity_model->add(logged('name') . ' Memperbarui Pengaturan Umum Sistem', logged('id'));
 		
 		redirect('settings/general');
 	}
@@ -67,9 +67,9 @@ class Settings extends MY_Controller {
 		$this->settings_model->updateByKey('company_email', post('company_email'));
 
 		$this->session->set_flashdata('alert-type', 'success');
-		$this->session->set_flashdata('alert', 'Settings has been Updated Successfully');
+		$this->session->set_flashdata('alert', 'Pengaturan Instansi berhasil diperbarui.');
 
-		$this->activity_model->add("Company Settings Updated by User: #".logged('id'));
+		$this->activity_model->add(logged('name') . ' Memperbarui Pengaturan Instansi/Sekolah', logged('id'));
 		
 		redirect('settings/company');
 	}
