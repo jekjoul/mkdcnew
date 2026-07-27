@@ -96,11 +96,33 @@ class MY_Controller extends CI_Controller {
 		}
 
 		// Redirect paksa untuk seluruh pengguna non-Admin (Guru, Guru BK, Wakasek, dll) ke Dashboard Guru, 
-		// kecualikan segment menu guru, profile, ekstrakurikuler, kedisiplinan, pencetakan, dan aksi penyimpanan profil PTK mandiri.
+		// kecualikan segment portal guru, profile, modul berizin (seperti jadwal_pelajaran, kedisiplinan, dll), dan aksi PTK mandiri.
 		if (!$is_admin_user) {
 			$segment1 = $this->uri->segment(1);
 			$segment2 = $this->uri->segment(2);
-			$allowed_segments = ['guru', 'profile', 'ekstrakurikuler', 'kedisiplinan', 'pencetakan'];
+
+			$allowed_segments = [
+				'guru', 
+				'profile', 
+				'ekstrakurikuler', 
+				'kedisiplinan', 
+				'pencetakan', 
+				'jadwal_pelajaran', 
+				'alumni', 
+				'buku_induk_siswa', 
+				'surat',
+				'siswa',
+				'ptk',
+				'pembelajaran',
+				'perangkat_pembelajaran',
+				'nilai_siswa',
+				'tugas_tambahan_ptk',
+				'tahun_pelajaran',
+				'master',
+				'master_tugas_tambahan',
+				'sarpras'
+			];
+
 			$allowed_ptk_methods = [
 				'ptkUpdate',
 				'ptkPendidikanSimpan',
@@ -115,7 +137,20 @@ class MY_Controller extends CI_Controller {
 				'getKelurahan',
 				'ptkJenisDokumenSimpan'
 			];
-			$is_allowed = in_array($segment1, $allowed_segments, true) || ($segment1 === 'ptk' && in_array($segment2, $allowed_ptk_methods, true));
+
+			$has_dynamic_permission = false;
+			if (!empty($segment1)) {
+				$has_dynamic_permission = hasPermissions($segment1) 
+					|| hasPermissions('menu_' . $segment1) 
+					|| hasPermissions($segment1 . '_list') 
+					|| hasPermissions($segment1 . '_view') 
+					|| hasPermissions($segment1 . '_edit');
+			}
+
+			$is_allowed = in_array($segment1, $allowed_segments, true) 
+				|| $has_dynamic_permission 
+				|| ($segment1 === 'ptk' && in_array($segment2, $allowed_ptk_methods, true));
+
 			if (!$is_allowed) {
 				redirect('guru', 'refresh');
 			}
