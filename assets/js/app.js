@@ -96,9 +96,6 @@ function calculateSettingAsThemeString({ localStorageTheme }) {
   if (htmlTheme) {
     return htmlTheme;
   }
-  if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
-    return "dark";
-  }
   return "light";
 }
 
