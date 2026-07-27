@@ -756,10 +756,20 @@ class Presensi extends MY_Controller
         }
 
         // 2. Data Siswa Aktif (PIN = NIPD atau pin_fingerprint)
-        $all_siswa = $this->db->select('id_siswa, nipd, pin_fingerprint, nama_siswa')
-                              ->from('siswa')
-                              ->where('status_keaktifan', 'Aktif')
-                              ->order_by('nama_siswa', 'ASC')
+        $all_siswa = $this->db->select('s.id_siswa, s.nipd, s.pin_fingerprint, s.nama_siswa, s.rombel as raw_rombel, r.nama_rombel, t.nama_tingkat')
+                              ->from('siswa s')
+                              ->join('pembelajaran_siswa ps', 's.id_siswa = ps.peserta_didik_id AND ps.id_pembelajaran IN (
+                                  SELECT p_active.id_pembelajaran 
+                                  FROM pembelajaran p_active 
+                                  JOIN pembelajaran_tahun_pelajaran tp_active ON tp_active.id_tahun_pelajaran = p_active.id_tahun_pelajaran
+                                  WHERE tp_active.status = "Aktif"
+                              )', 'left', FALSE)
+                              ->join('pembelajaran p', 'p.id_pembelajaran = ps.id_pembelajaran', 'left')
+                              ->join('rombel r', 'r.id_rombel = p.id_rombel', 'left')
+                              ->join('master_tingkat_sekolah t', 't.id_tingkat_sekolah = p.id_tingkat_sekolah', 'left')
+                              ->where('s.status_keaktifan', 'Aktif')
+                              ->group_by('s.id_siswa')
+                              ->order_by('s.nama_siswa', 'ASC')
                               ->get()->result();
 
         // 3. Data PTK / Guru Aktif (PIN = NIY atau pin_fingerprint)
@@ -784,11 +794,26 @@ class Presensi extends MY_Controller
             $processed_pins[$pin_raw]   = true;
             $processed_pins[$pin_clean] = true;
 
+            // Formulasi Nama Rombel & Tingkat
+            $rombel_tingkat = '-';
+            if (!empty($s->nama_rombel) && !empty($s->nama_tingkat)) {
+                if (stripos($s->nama_rombel, $s->nama_tingkat) !== false) {
+                    $rombel_tingkat = $s->nama_rombel;
+                } else {
+                    $rombel_tingkat = $s->nama_tingkat . ' - ' . $s->nama_rombel;
+                }
+            } elseif (!empty($s->nama_rombel)) {
+                $rombel_tingkat = $s->nama_rombel;
+            } elseif (!empty($s->raw_rombel)) {
+                $rombel_tingkat = $s->raw_rombel;
+            }
+
             $merged_users[] = (object)[
                 'pin'               => $pin_raw,
                 'nama'              => $s->nama_siswa,
                 'nama_mesin'        => $m ? $m->nama : null,
                 'tipe_user'         => 'Siswa',
+                'rombel_tingkat'    => $rombel_tingkat,
                 'ref_id'            => $s->id_siswa,
                 'in_server'         => true,
                 'in_machine'        => ($m !== null),
@@ -817,6 +842,7 @@ class Presensi extends MY_Controller
                 'nama'              => $p->nama_ptk,
                 'nama_mesin'        => $m ? $m->nama : null,
                 'tipe_user'         => 'PTK / Guru',
+                'rombel_tingkat'    => 'PTK',
                 'ref_id'            => $p->id_ptk,
                 'in_server'         => true,
                 'in_machine'        => ($m !== null),
@@ -841,6 +867,7 @@ class Presensi extends MY_Controller
                 'nama'              => $m->nama,
                 'nama_mesin'        => $m->nama,
                 'tipe_user'         => 'User Mesin Saja',
+                'rombel_tingkat'    => 'Mesin Saja',
                 'ref_id'            => null,
                 'in_server'         => false,
                 'in_machine'        => true,

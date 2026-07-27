@@ -110,7 +110,7 @@ if (!empty($tren_pendaftaran)) {
                     <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between mb-20">
                         <h6 class="mb-2 fw-bold text-lg mb-0">Distribusi Siswa per Lembaga</h6>
                     </div>
-                    <div id="userOverviewDonutChart" class="margin-16-minus y-value-left apexcharts-tooltip-z-none">
+                    <div id="userOverviewDonutChart" class="apexcharts-tooltip-z-none d-flex justify-content-center align-items-center mx-auto w-100" style="min-height: 200px;">
                     </div>
 
                     <ul class="d-flex flex-wrap align-items-center justify-content-between mt-3 gap-3">
@@ -651,21 +651,10 @@ if (!empty($tren_pendaftaran)) {
         },
         chart: {
             type: 'donut',
-            height: 270,
+            height: 260,
+            width: '100%',
             sparkline: {
-                enabled: true // Remove whitespace
-            },
-            margin: {
-                top: 0,
-                right: 0,
-                bottom: 0,
-                left: 0
-            },
-            padding: {
-                top: 0,
-                right: 0,
-                bottom: 0,
-                left: 0
+                enabled: true
             }
         },
         stroke: {
@@ -678,7 +667,8 @@ if (!empty($tren_pendaftaran)) {
             breakpoint: 480,
             options: {
                 chart: {
-                    width: 200
+                    height: 200,
+                    width: '100%'
                 },
                 legend: {
                     position: 'bottom'

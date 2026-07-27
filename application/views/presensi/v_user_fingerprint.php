@@ -141,13 +141,13 @@
             </div>
 
             <div class="table-responsive">
-                <table id="tbl_user_fp" class="table table-bordered table-striped table-hover align-middle">
+                <table id="tbl_user_fp" class="table table-bordered table-striped table-hover align-middle" data-page-length="25">
                     <thead class="bg-light">
                         <tr>
                             <th width="45" class="text-center">No</th>
                             <th width="150">PIN (NIPD / NIY)</th>
                             <th>Nama Pengguna</th>
-                            <th width="120" class="text-center">Kategori</th>
+                            <th width="180" class="text-center">Nama Rombel &amp; Tingkat</th>
                             <th width="180" class="text-center">Status Registrasi Mesin</th>
                             <th width="180" class="text-center">Jumlah Sidik Jari</th>
                             <th width="110" class="text-center">Privilege</th>
@@ -201,11 +201,11 @@
                                     <td class="text-center">
                                         <?php if ($u->tipe_user === 'Siswa'): ?>
                                             <span class="badge px-10 py-6 radius-4 text-xs font-semibold" style="background-color: #e0f2fe; color: #0369a1 !important; border: 1px solid #bae6fd;">
-                                                <i class="fas fa-user-graduate mr-1"></i> Siswa
+                                                <i class="fas fa-user-graduate mr-1"></i> <?php echo htmlspecialchars($u->rombel_tingkat ?? '-'); ?>
                                             </span>
                                         <?php elseif ($u->tipe_user === 'PTK / Guru'): ?>
                                             <span class="badge px-10 py-6 radius-4 text-xs font-semibold" style="background-color: #f3e8ff; color: #6b21a8 !important; border: 1px solid #e9d5ff;">
-                                                <i class="fas fa-chalkboard-teacher mr-1"></i> PTK / Guru
+                                                <i class="fas fa-chalkboard-teacher mr-1"></i> PTK
                                             </span>
                                         <?php else: ?>
                                             <span class="badge px-10 py-6 radius-4 text-xs font-semibold" style="background-color: #f1f5f9; color: #334155 !important; border: 1px solid #e2e8f0;">
@@ -354,7 +354,65 @@
     </div>
 </div>
 
+<?php include viewPath('includes/footer'); ?>
+
 <script>
+var activeFilterType = 'all';
+var userFpTable = null;
+
+$(document).ready(function() {
+    if (typeof $.fn !== 'undefined' && $.fn.dataTable) {
+        $.fn.dataTable.ext.search.push(
+            function(settings, data, dataIndex) {
+                if (settings.nTable.id !== 'tbl_user_fp') {
+                    return true;
+                }
+                if (activeFilterType === 'all') {
+                    return true;
+                }
+                
+                var rowNode = settings.aoData[dataIndex].nTr;
+                if (!rowNode) return true;
+
+                if (activeFilterType === 'Siswa') {
+                    return rowNode.classList.contains('tag-Siswa');
+                } else if (activeFilterType === 'PTK / Guru') {
+                    return rowNode.classList.contains('tag-PTK');
+                } else if (activeFilterType === 'terdaftar') {
+                    return rowNode.classList.contains('tag-terdaftar');
+                } else if (activeFilterType === 'belum_reg') {
+                    return rowNode.classList.contains('tag-belum_reg');
+                } else if (activeFilterType === 'belum_isi_fp') {
+                    return rowNode.classList.contains('tag-belum_isi_fp');
+                }
+                return true;
+            }
+        );
+    }
+
+    if ($('#tbl_user_fp').length) {
+        userFpTable = $('#tbl_user_fp').DataTable({
+            pageLength: 25,
+            lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Semua"]],
+            order: [[0, 'asc']],
+            language: {
+                search: "Cari:",
+                lengthMenu: "Tampilkan _MENU_ data",
+                info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
+                infoFiltered: "(disaring dari _MAX_ total data)",
+                zeroRecords: "Tidak ada data yang cocok ditemukan",
+                paginate: {
+                    first: "Pertama",
+                    last: "Terakhir",
+                    next: "Selanjutnya",
+                    previous: "Sebelumnya"
+                }
+            }
+        });
+    }
+});
+
 function filterUserTable(type, btn) {
     var buttons = document.querySelectorAll('.filter-btn');
     buttons.forEach(b => b.classList.remove('active', 'btn-primary', 'btn-info', 'btn-secondary', 'btn-success', 'btn-warning', 'btn-danger'));
@@ -363,23 +421,26 @@ function filterUserTable(type, btn) {
     btn.classList.remove('btn-outline-secondary');
     btn.classList.add('active', 'btn-primary');
 
-    var rows = document.querySelectorAll('.user-row');
-    rows.forEach(r => {
-        if (type === 'all') {
-            r.style.display = '';
-        } else if (type === 'Siswa') {
-            r.style.display = r.classList.contains('tag-Siswa') ? '' : 'none';
-        } else if (type === 'PTK / Guru') {
-            r.style.display = r.classList.contains('tag-PTK') ? '' : 'none';
-        } else if (type === 'terdaftar') {
-            r.style.display = r.classList.contains('tag-terdaftar') ? '' : 'none';
-        } else if (type === 'belum_reg') {
-            r.style.display = r.classList.contains('tag-belum_reg') ? '' : 'none';
-        } else if (type === 'belum_isi_fp') {
-            r.style.display = r.classList.contains('tag-belum_isi_fp') ? '' : 'none';
-        }
-    });
+    activeFilterType = type;
+    if (userFpTable) {
+        userFpTable.draw();
+    } else {
+        var rows = document.querySelectorAll('.user-row');
+        rows.forEach(r => {
+            if (type === 'all') {
+                r.style.display = '';
+            } else if (type === 'Siswa') {
+                r.style.display = r.classList.contains('tag-Siswa') ? '' : 'none';
+            } else if (type === 'PTK / Guru') {
+                r.style.display = r.classList.contains('tag-PTK') ? '' : 'none';
+            } else if (type === 'terdaftar') {
+                r.style.display = r.classList.contains('tag-terdaftar') ? '' : 'none';
+            } else if (type === 'belum_reg') {
+                r.style.display = r.classList.contains('tag-belum_reg') ? '' : 'none';
+            } else if (type === 'belum_isi_fp') {
+                r.style.display = r.classList.contains('tag-belum_isi_fp') ? '' : 'none';
+            }
+        });
+    }
 }
 </script>
-
-<?php include viewPath('includes/footer'); ?>
