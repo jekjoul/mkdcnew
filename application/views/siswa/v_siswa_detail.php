@@ -489,7 +489,9 @@ $is_admin_or_staff = (hasPermissions('siswa_edit') || hasPermissions('menu_buku_
                     </div>
                     <div class="mb-16">
                         <label class="form-label fw-semibold text-primary-light text-sm mb-8">Pilih Berkas / File Pendukung</label>
-                        <input type="file" class="form-control radius-8" name="berkas" accept=".pdf,.jpg,.jpeg,.png,.docx,.doc,.zip,.rar">
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="file" class="form-control radius-8 scan-enabled" name="berkas" accept=".pdf,.jpg,.jpeg,.png,.docx,.doc,.zip,.rar">
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer py-16 px-24">
