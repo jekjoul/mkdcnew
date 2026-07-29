@@ -1003,18 +1003,26 @@ class Siswa extends MY_Controller
     {
         ifPermissions('siswa_list');
 
-        $this->page_data['page']->title    = 'Siswa';
-        $this->page_data['page']->titleUrl = 'siswa/all';
-        $this->page_data['page']->subtitle = 'Verifikasi Kelengkapan Dokumen';
+        $this->page_data['page']->title      = 'Siswa';
+        $this->page_data['page']->titleUrl   = 'siswa/all';
+        $this->page_data['page']->subtitle   = 'Verifikasi Kelengkapan Dokumen';
         $this->page_data['page']->subtitleUrl = 'siswa/verifikasiDokumen';
-        $this->page_data['page']->icon     = 'solar:checklist-minimalistic-bold';
+        $this->page_data['page']->icon       = 'solar:checklist-minimalistic-bold';
 
         // Ambil semua jenis dokumen aktif
         $this->db->order_by('nama_jenis_dokumen', 'ASC');
         $jenis_dokumen = $this->db->get_where('master_jenis_dokumen_siswa', ['status' => 'Aktif'])->result();
 
-        // Ambil daftar pembelajaran aktif (rombel bukan menginduk)
-        // Rombel menginduk = siswa yang ada di kelas_jauh_siswa
+        // Ambil ID siswa yang menginduk (semua kelas jauh)
+        $menginduk_ids = [];
+        if ($this->db->table_exists('kelas_jauh_siswa')) {
+            $q_kj = $this->db->select('id_siswa')->get('kelas_jauh_siswa');
+            if ($q_kj->num_rows() > 0) {
+                $menginduk_ids = array_column($q_kj->result_array(), 'id_siswa');
+            }
+        }
+
+        // Ambil daftar pembelajaran aktif (rombel reguler)
         $this->db->select('p.id_pembelajaran, l.nama_lembaga, l.nama_lembaga_singkat, t.nama_tingkat, r.nama_rombel, tp.tahun_pelajaran, tp.semester');
         $this->db->from('pembelajaran p');
         $this->db->join('lembaga l', 'p.id_lembaga = l.id_lembaga');
@@ -1028,44 +1036,86 @@ class Siswa extends MY_Controller
         $this->db->order_by('r.nama_rombel', 'ASC');
         $daftar_rombel = $this->db->get()->result();
 
-        // Filter yang dipilih admin
-        $selected_pembelajaran = $this->input->get('id_pembelajaran');
-        $selected_dokumen_ids  = $this->input->get('jenis_dokumen') ?: [];
+        // Ambil daftar kelas jauh aktif (rombel menginduk)
+        $daftar_kelas_jauh = [];
+        if ($this->db->table_exists('kelas_jauh')) {
+            $this->db->select('kj.id_kelas_jauh, kj.nama_kelas_jauh, tp.tahun_pelajaran, tp.semester');
+            $this->db->from('kelas_jauh kj');
+            $this->db->join('pembelajaran_tahun_pelajaran tp', 'tp.id_tahun_pelajaran = kj.id_tahun_pelajaran', 'left');
+            $this->db->where('(tp.status = \'Aktif\' OR kj.id_tahun_pelajaran IS NULL)');
+            $this->db->order_by('kj.nama_kelas_jauh', 'ASC');
+            $daftar_kelas_jauh = $this->db->get()->result();
+        }
+
+        // Filter yang dipilih
+        $selected_value       = $this->input->get('id_rombel');   // bisa "p_123" atau "kj_456"
+        $selected_dokumen_ids = $this->input->get('jenis_dokumen') ?: [];
         if (!is_array($selected_dokumen_ids)) {
             $selected_dokumen_ids = [$selected_dokumen_ids];
         }
         $selected_dokumen_ids = array_filter(array_map('intval', $selected_dokumen_ids));
 
-        $siswa_list     = [];
-        $filtered_jenis = [];
+        $siswa_list      = [];
+        $filtered_jenis  = [];
+        $selected_label  = '';
+        $is_kelas_jauh   = false;
 
-        if ($selected_pembelajaran && !empty($selected_dokumen_ids)) {
+        if ($selected_value && !empty($selected_dokumen_ids)) {
             // Ambil jenis dokumen yang dipilih
             $this->db->where_in('id_jenis_dokumen', $selected_dokumen_ids);
             $this->db->order_by('nama_jenis_dokumen', 'ASC');
             $filtered_jenis = $this->db->get('master_jenis_dokumen_siswa')->result();
 
-            // Ambil siswa dalam rombel ini, kecualikan yang menginduk (kelas_jauh_siswa)
-            $menginduk_ids = [];
-            if ($this->db->table_exists('kelas_jauh_siswa')) {
-                $q_kj = $this->db->select('id_siswa')->get('kelas_jauh_siswa');
-                if ($q_kj->num_rows() > 0) {
-                    $menginduk_ids = array_column($q_kj->result_array(), 'id_siswa');
+            // Tentukan tipe rombel: pembelajaran reguler (prefix p_) atau kelas jauh (prefix kj_)
+            if (strpos($selected_value, 'kj_') === 0) {
+                $is_kelas_jauh  = true;
+                $id_kelas_jauh  = (int) substr($selected_value, 3);
+
+                // Cari label kelas jauh
+                foreach ($daftar_kelas_jauh as $kj) {
+                    if ($kj->id_kelas_jauh == $id_kelas_jauh) {
+                        $selected_label = 'Kelas Jauh — ' . $kj->nama_kelas_jauh .
+                            ($kj->tahun_pelajaran ? ' (' . $kj->tahun_pelajaran . ' Sem.' . $kj->semester . ')' : '');
+                        break;
+                    }
                 }
+
+                // Ambil siswa anggota kelas jauh ini
+                $this->db->select('s.id_siswa, s.nama_siswa, s.nisn, s.nipd');
+                $this->db->from('kelas_jauh_siswa kjs');
+                $this->db->join('siswa s', 's.id_siswa = kjs.id_siswa');
+                $this->db->where('kjs.id_kelas_jauh', $id_kelas_jauh);
+                $this->db->where('s.status_keaktifan', 'Aktif');
+                $this->db->order_by('s.nama_siswa', 'ASC');
+                $raw_siswa = $this->db->get()->result();
+
+            } else {
+                // Rombel reguler
+                $id_pembelajaran = (int) substr($selected_value, 2); // strip "p_"
+
+                // Cari label rombel reguler
+                foreach ($daftar_rombel as $r) {
+                    if ($r->id_pembelajaran == $id_pembelajaran) {
+                        $selected_label = $r->nama_lembaga_singkat . ' — ' . $r->nama_tingkat . ' ' . $r->nama_rombel .
+                            ' (' . $r->tahun_pelajaran . ' Sem.' . $r->semester . ')';
+                        break;
+                    }
+                }
+
+                // Ambil siswa reguler, KECUALIKAN yang menginduk
+                $this->db->select('s.id_siswa, s.nama_siswa, s.nisn, s.nipd');
+                $this->db->from('pembelajaran_siswa ps');
+                $this->db->join('siswa s', 's.id_siswa = ps.peserta_didik_id');
+                $this->db->where('ps.id_pembelajaran', $id_pembelajaran);
+                $this->db->where('s.status_keaktifan', 'Aktif');
+                if (!empty($menginduk_ids)) {
+                    $this->db->where_not_in('s.id_siswa', $menginduk_ids);
+                }
+                $this->db->order_by('s.nama_siswa', 'ASC');
+                $raw_siswa = $this->db->get()->result();
             }
 
-            $this->db->select('s.id_siswa, s.nama_siswa, s.nisn, s.nipd');
-            $this->db->from('pembelajaran_siswa ps');
-            $this->db->join('siswa s', 's.id_siswa = ps.peserta_didik_id');
-            $this->db->where('ps.id_pembelajaran', $selected_pembelajaran);
-            $this->db->where('s.status_keaktifan', 'Aktif');
-            if (!empty($menginduk_ids)) {
-                $this->db->where_not_in('s.id_siswa', $menginduk_ids);
-            }
-            $this->db->order_by('s.nama_siswa', 'ASC');
-            $raw_siswa = $this->db->get()->result();
-
-            // Ambil semua dokumen yang telah diupload untuk siswa-siswa ini
+            // Ambil dokumen siswa
             if (!empty($raw_siswa)) {
                 $all_ids = array_column($raw_siswa, 'id_siswa');
 
@@ -1075,13 +1125,11 @@ class Siswa extends MY_Controller
                 $this->db->where_in('sd.id_jenis_dokumen', $selected_dokumen_ids);
                 $raw_docs = $this->db->get()->result();
 
-                // Susun index: [id_siswa][id_jenis_dokumen] => true
                 $doc_index = [];
                 foreach ($raw_docs as $doc) {
                     $doc_index[$doc->id_siswa][$doc->id_jenis_dokumen] = true;
                 }
 
-                // Gabungkan data siswa + status dokumen
                 foreach ($raw_siswa as $s) {
                     $s->dokumen_status = [];
                     foreach ($filtered_jenis as $jd) {
@@ -1092,12 +1140,15 @@ class Siswa extends MY_Controller
             }
         }
 
-        $this->page_data['jenis_dokumen']          = $jenis_dokumen;
-        $this->page_data['daftar_rombel']          = $daftar_rombel;
-        $this->page_data['selected_pembelajaran']  = $selected_pembelajaran;
-        $this->page_data['selected_dokumen_ids']   = $selected_dokumen_ids;
-        $this->page_data['filtered_jenis']         = $filtered_jenis;
-        $this->page_data['siswa_list']             = $siswa_list;
+        $this->page_data['jenis_dokumen']       = $jenis_dokumen;
+        $this->page_data['daftar_rombel']       = $daftar_rombel;
+        $this->page_data['daftar_kelas_jauh']   = $daftar_kelas_jauh;
+        $this->page_data['selected_value']      = $selected_value;
+        $this->page_data['selected_dokumen_ids'] = $selected_dokumen_ids;
+        $this->page_data['filtered_jenis']      = $filtered_jenis;
+        $this->page_data['siswa_list']           = $siswa_list;
+        $this->page_data['selected_label']       = $selected_label;
+        $this->page_data['is_kelas_jauh']        = $is_kelas_jauh;
 
         $this->load->view('siswa/v_siswa_verifikasi_dokumen', $this->page_data);
     }

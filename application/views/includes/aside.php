@@ -345,12 +345,6 @@
                 <span>Data Siswa Tidak Aktif</span>
             </a>
         </li>
-        <li>
-            <a href="<?php echo url('siswa/verifikasiDokumen') ?>">
-                <iconify-icon icon="solar:checklist-minimalistic-bold" class="menu-icon"></iconify-icon>
-                <span>Verifikasi Dokumen Siswa</span>
-            </a>
-        </li>
 
     <!-- <li>
         <a href="<?php echo url('siswa/kelulusan') ?>">
@@ -752,12 +746,20 @@
     <?php endif; ?>
 <?php endif; ?>
 
-<?php if (hasPermissions('menu_alat_khusus')): ?>
+<?php if (hasPermissions('menu_alat_khusus') || hasPermissions('menu_verifikasi_dokumen_siswa')): ?>
     <li class="sidebar-menu-group-title"
         style="background: #bdd3b1;
                background: linear-gradient(90deg, rgb(255, 220, 185) 0%, rgba(255, 255, 255, 0) 100%);">
         Alat Khusus
     </li>
+    <?php if (hasPermissions('menu_verifikasi_dokumen_siswa')): ?>
+        <li>
+            <a href="<?php echo url('siswa/verifikasiDokumen') ?>">
+                <iconify-icon icon="solar:checklist-minimalistic-bold" class="menu-icon"></iconify-icon>
+                <span>Cek Berkas Siswa</span>
+            </a>
+        </li>
+    <?php endif; ?>
     <?php if (hasPermissions('menu_edit_inline_ptk')): ?>
         <li>
             <a href="<?php echo url('edit_inline_ptk') ?>">
@@ -780,6 +782,7 @@
             </a>
         </li>
     <?php endif; ?>
+   
     <?php if (hasPermissions('menu_export_siswa')): ?>
         <li>
             <a href="<?php echo url('export_siswa') ?>">

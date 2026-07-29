@@ -76,6 +76,59 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
         .card-hover:hover {
             opacity: 70% !important;
         }
+
+        /* ── Scroll Glitch Fix ────────────────────────────────────────────────
+         * Masalah: elemen position:sticky / position:fixed yang berada dalam
+         * stacking context yang sama dengan konten scroll bisa menyebabkan
+         * "glitch" (jitter / flicker) karena browser harus melakukan repaint
+         * setiap frame scroll.
+         *
+         * Solusi:
+         * 1. Paksa elemen fixed/sticky ke GPU layer tersendiri (translateZ/will-change)
+         * 2. Gunakan contain:layout style agar browser tidak perlu recalc layout global
+         * 3. Hindari backdrop-filter pada elemen yang bergerak atau menempel di sisi layar
+         * ─────────────────────────────────────────────────────────────────── */
+
+        /* Navbar header — selalu sticky di atas */
+        .navbar-header {
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            will-change: transform;
+            contain: layout style;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
+        /* Sidebar — fixed di sisi kiri */
+        .sidebar {
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            will-change: transform;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
+        /* Konten utama — isolasi scroll context agar tidak terpengaruh layer fixed */
+        .dashboard-main-body {
+            isolation: isolate;
+        }
+
+        /* Smooth scroll di seluruh app */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Hindari sub-pixel rendering artifact pada tabel saat scroll */
+        table {
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+        }
+
+        /* Animasi card hover — gunakan opacity bukan transform untuk performa lebih baik */
+        .card-hover:hover {
+            opacity: 0.72 !important;
+            transition: opacity 0.18s ease;
+        }
     </style>
 </head>
 

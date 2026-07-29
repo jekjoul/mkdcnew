@@ -10,18 +10,23 @@
     left: 0;
     right: 0;
     height: 65px;
-    background: rgba(255, 255, 255, 0.94);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-top: 1px solid rgba(226, 232, 240, 0.9);
+    /* Gunakan background solid — backdrop-filter:blur dihapus karena
+       menyebabkan scroll glitch (browser harus re-composite setiap frame) */
+    background: rgba(255, 255, 255, 0.97);
+    border-top: 1px solid #e2e8f0;
     z-index: 1040;
     padding: 6px 8px;
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+    /* Paksa GPU layer tersendiri agar tidak men-trigger layout ulang saat scroll */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    will-change: transform;
+    contain: layout style;
 }
 
 html[data-theme="dark"] .mobile-bottom-nav {
-    background: rgba(39, 49, 66, 0.96);
-    border-top-color: rgba(50, 61, 78, 0.9);
+    background: rgb(35, 45, 61);
+    border-top-color: #323d4e;
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.35);
 }
 
@@ -438,22 +443,25 @@ html[data-theme="light"] .navbar-header .dropdown-menu .dropdown-item.hover-text
         bottom: 0;
         width: 100vw;
         height: 100vh;
-        background: rgba(255, 255, 255, 0.94);
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
+        /* Solid background — backdrop-filter dihapus untuk menghindari compositing issue */
+        background: rgba(255, 255, 255, 0.97);
         z-index: 999999;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-direction: column;
-        transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: opacity 0.28s ease, visibility 0.28s ease;
         opacity: 1;
         visibility: visible;
         pointer-events: auto;
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+        will-change: opacity;
+        contain: strict;
     }
 
     html[data-theme="dark"] .mobile-page-loader {
-        background: rgba(27, 36, 49, 0.95);
+        background: rgb(27, 36, 49);
     }
 
     .mobile-page-loader.loaded {
