@@ -116,60 +116,74 @@ $(document).ready(function () {
             return;
         }
 
-        // 3. Tampilkan form pilih scanner
-        let deviceOptionsHtml = '';
+        // 3. Tampilkan form pilih scanner (radio button menghindari masalah z-index SweetAlert2)
+        let deviceRadioHtml = '';
         devices.forEach((dev, idx) => {
             const id   = dev.id   || '';
             const name = dev.name || 'Scanner ' + (idx + 1);
             const desc = dev.description || 'WIA Scanner';
-            deviceOptionsHtml += `<option value="${id}" ${idx === 0 ? 'selected' : ''}>${name} (${desc})</option>`;
+            const bg   = idx === 0 ? '#e8f4fd' : '#fff';
+            deviceRadioHtml += `<label style="display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid #dee2e6;border-radius:8px;margin-bottom:6px;cursor:pointer;background:${bg};" class="swal-device-label"><input type="radio" name="swal_device" value="${id}" ${idx === 0 ? 'checked' : ''} style="accent-color:#0d6efd;"><span style="font-size:13px;"><strong>${name}</strong><br><small style="color:#6c757d;">${desc}</small></span></label>`;
         });
 
         const { value: params, isConfirmed } = await Swal.fire({
             title: 'Mulai Memindai (Scan)',
+            width: 480,
             html: `
-                <div class="text-start mb-3">
-                    <label class="form-label fw-semibold mb-1">Pilih Alat Scanner:</label>
-                    <select id="swal-scanner-device" class="form-select">
-                        ${deviceOptionsHtml}
-                    </select>
+                <div style="text-align:left;margin-bottom:16px;">
+                    <div style="font-weight:600;margin-bottom:8px;font-size:13px;">&#128222; Pilih Alat Scanner:</div>
+                    ${deviceRadioHtml}
                 </div>
-                <div class="text-start mb-3">
-                    <label class="form-label fw-semibold mb-1">Format &amp; Metode Scan:</label>
-                    <select id="swal-scanner-format" class="form-select">
-                        <option value="jpg" selected>JPEG (Gambar Tunggal)</option>
-                        <option value="png">PNG (Gambar Tunggal - Kualitas Tinggi)</option>
-                        <option value="pdf">PDF (Dokumen 1 Halaman)</option>
-                        <option value="pdf_multi">PDF Multi Halaman (Scan Berturut-turut)</option>
-                    </select>
+                <div style="text-align:left;margin-bottom:16px;">
+                    <div style="font-weight:600;margin-bottom:8px;font-size:13px;">&#128196; Format &amp; Metode Scan:</div>
+                    <label style="display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid #dee2e6;border-radius:8px;margin-bottom:6px;cursor:pointer;background:#e8f4fd;" class="swal-format-label">
+                        <input type="radio" name="swal_format" value="pdf" checked style="accent-color:#0d6efd;">
+                        <span style="font-size:13px;"><strong>PDF</strong> &mdash; Dokumen 1 Halaman</span>
+                    </label>
+                    <label style="display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid #dee2e6;border-radius:8px;margin-bottom:6px;cursor:pointer;background:#fff;" class="swal-format-label">
+                        <input type="radio" name="swal_format" value="pdf_multi" style="accent-color:#0d6efd;">
+                        <span style="font-size:13px;"><strong>PDF Multi Halaman</strong> &mdash; Scan Berturut-turut</span>
+                    </label>
                 </div>
-                <div class="alert alert-info text-start text-xs px-3 py-2 mb-0">
-                    <strong>Info:</strong> Ukuran diatur otomatis ke A4. Kontras &amp; Gamma ditingkatkan +10% untuk mencerahkan dokumen.
+                <div style="background:#e7f3ff;border:1px solid #b6d4fe;border-radius:8px;padding:8px 12px;font-size:12px;text-align:left;color:#0c63e4;">
+                    &#8505;&#65039; Ukuran diatur otomatis ke <strong>A4</strong>. Kontras &amp; Gamma ditingkatkan +10%.
                 </div>
             `,
             showCancelButton: true,
             confirmButtonText: 'Mulai Scan',
             cancelButtonText: 'Batal',
             didOpen: () => {
-                // Paksa render elemen setelah SweetAlert2 membuka popup
-                const selDevice = document.getElementById('swal-scanner-device');
-                const selFormat = document.getElementById('swal-scanner-format');
-                if (selDevice) selDevice.dispatchEvent(new Event('change'));
-                if (selFormat) selFormat.dispatchEvent(new Event('change'));
+                // Highlight label aktif saat radio berubah
+                document.querySelectorAll('input[name="swal_device"]').forEach(r => {
+                    r.addEventListener('change', () => {
+                        document.querySelectorAll('.swal-device-label').forEach(l => l.style.background = '#fff');
+                        r.closest('.swal-device-label').style.background = '#e8f4fd';
+                    });
+                });
+                document.querySelectorAll('input[name="swal_format"]').forEach(r => {
+                    r.addEventListener('change', () => {
+                        document.querySelectorAll('.swal-format-label').forEach(l => l.style.background = '#fff');
+                        r.closest('.swal-format-label').style.background = '#e8f4fd';
+                    });
+                });
             },
             preConfirm: () => {
-                const selDevice = document.getElementById('swal-scanner-device');
-                const selFormat = document.getElementById('swal-scanner-format');
-                if (!selDevice || !selFormat) {
-                    Swal.showValidationMessage('Gagal membaca form pilihan scanner.');
+                const deviceRadio = document.querySelector('input[name="swal_device"]:checked');
+                const formatRadio = document.querySelector('input[name="swal_format"]:checked');
+                if (!deviceRadio) {
+                    Swal.showValidationMessage('Pilih alat scanner terlebih dahulu.');
                     return false;
                 }
-                const formatVal = selFormat.value;
+                if (!formatRadio) {
+                    Swal.showValidationMessage('Pilih format scan terlebih dahulu.');
+                    return false;
+                }
+                const formatVal = formatRadio.value;
                 return {
-                    deviceId:      selDevice.value,
-                    format:        formatVal,
-                    convertToPdf:  formatVal === 'pdf' || formatVal === 'pdf_multi',
-                    isMultiPage:   formatVal === 'pdf_multi'
+                    deviceId:     deviceRadio.value,
+                    format:       formatVal,
+                    convertToPdf: true,
+                    isMultiPage:  formatVal === 'pdf_multi'
                 };
             }
         });
@@ -243,7 +257,7 @@ $(document).ready(function () {
     }
 
     // -----------------------------------------------------------------------
-    // Penyesuaian kontras (+10%) & gamma (+10%) menggunakan Canvas
+    // Penyesuaian kontras (+10%) & gamma (+15%) menggunakan Canvas
     // -----------------------------------------------------------------------
     function adjustContrastAndGamma(dataUrl) {
         return new Promise((resolve) => {
@@ -261,7 +275,7 @@ $(document).ready(function () {
 
                 const contrast = 25.5;
                 const factor   = (259 * (contrast + 255)) / (255 * (259 - contrast));
-                const gammaCorr = 1 / 1.1;
+                const gammaCorr = 1 / 1.15;
 
                 for (let i = 0; i < data.length; i += 4) {
                     let r = factor * (data[i]   - 128) + 128;

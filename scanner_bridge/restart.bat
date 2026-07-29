@@ -1,9 +1,17 @@
 @echo off
-title MKDC Scanner Bridge v2.0
+title MKDC Scanner Bridge - Restart
 echo =========================================
-echo  MKDC Scanner Bridge
-echo  http://localhost:7999
+echo  Menghentikan proses Node.js lama...
 echo =========================================
+
+taskkill /F /IM node.exe /T 2>nul
+if %errorlevel% equ 0 (
+    echo [OK] Proses lama dihentikan.
+) else (
+    echo [--] Tidak ada proses node.exe sebelumnya.
+)
+
+timeout /t 2 /nobreak >nul
 echo.
 
 :: ---- Cari node.exe ----
@@ -25,22 +33,21 @@ if "%NODE_EXE%"=="" (
 if "%NODE_EXE%"=="" (
     echo [ERROR] Node.js tidak ditemukan!
     echo         Pastikan Node.js terinstal di C:\Program Files\nodejs\
-    echo         atau download dari https://nodejs.org
     pause
     exit /b 1
 )
 
 echo [OK] Node.js  : %NODE_EXE%
 
-:: ---- Cek PowerShell ----
 if exist "%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" (
-    echo [OK] PowerShell: %SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe
+    echo [OK] PowerShell tersedia.
 ) else (
-    echo [!]  PowerShell tidak ditemukan - scan tidak akan berfungsi.
+    echo [!]  PowerShell tidak ditemukan.
 )
 
 echo.
-echo Tekan Ctrl+C untuk menghentikan.
+echo [INFO] Bridge berjalan di http://localhost:7999
+echo [INFO] Tekan Ctrl+C untuk menghentikan.
 echo.
 
 "%NODE_EXE%" "%~dp0index.js"
