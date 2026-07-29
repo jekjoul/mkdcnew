@@ -345,6 +345,12 @@
                 <span>Data Siswa Tidak Aktif</span>
             </a>
         </li>
+        <li>
+            <a href="<?php echo url('siswa/verifikasiDokumen') ?>">
+                <iconify-icon icon="solar:checklist-minimalistic-bold" class="menu-icon"></iconify-icon>
+                <span>Verifikasi Dokumen Siswa</span>
+            </a>
+        </li>
 
     <!-- <li>
         <a href="<?php echo url('siswa/kelulusan') ?>">
