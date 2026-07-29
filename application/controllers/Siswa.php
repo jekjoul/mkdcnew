@@ -717,7 +717,7 @@ class Siswa extends MY_Controller
         $this->upload->initialize([
             'upload_path' => $path,
             'allowed_types' => 'pdf|jpg|jpeg|png',
-            'max_size' => 5120,
+            'max_size' => 25120,
             'file_name' => 'siswa-' . $id_siswa . '-' . time(),
             'overwrite' => false,
         ]);

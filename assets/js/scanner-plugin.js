@@ -273,9 +273,9 @@ $(document).ready(function () {
                 const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
                 const data = imgData.data;
 
-                const contrast = 35.5;
+                const contrast = 55.5;
                 const factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
-                const gammaCorr = 1 / 1.9;
+                const gammaCorr = 1 / 1.7;
 
                 for (let i = 0; i < data.length; i += 4) {
                     let r = factor * (data[i] - 128) + 128;
