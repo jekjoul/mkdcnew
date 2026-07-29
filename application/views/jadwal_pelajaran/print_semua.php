@@ -296,10 +296,10 @@ foreach ($hari as $h) {
                                     $selected_id = isset($items[$kelas->id_pembelajaran][$h][$row['slot']]) ? $items[$kelas->id_pembelajaran][$h][$row['slot']] : 0;
                                     $selected = $selected_id && isset($mapel_by_id[$selected_id]) ? $mapel_by_id[$selected_id] : null;
                                     ?>
-                                    <td class="text-center align-middle" style="padding: 2px 1px !important;">
+                                    <td class="text-center align-middle" style="padding: 0px 0px !important;">
                                         <?php if ($selected): ?>
                                             <?php $color_style = ptk_color_style($selected->id_ptk); ?>
-                                            <div class="scheduled-token" style="<?php echo $color_style ?>">
+                                            <div class="scheduled-token" style="<?php echo $color_style ?>; min-height: 16px !important;">
                                                 <?php echo ($selected->mapel_singkat ?: $selected->nama_mapel) . ' (' . get_ptk_code($selected) . ')' ?>
                                             </div>
                                         <?php endif; ?>

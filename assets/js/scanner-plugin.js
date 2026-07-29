@@ -119,10 +119,10 @@ $(document).ready(function () {
         // 3. Tampilkan form pilih scanner (radio button menghindari masalah z-index SweetAlert2)
         let deviceRadioHtml = '';
         devices.forEach((dev, idx) => {
-            const id   = dev.id   || '';
+            const id = dev.id || '';
             const name = dev.name || 'Scanner ' + (idx + 1);
             const desc = dev.description || 'WIA Scanner';
-            const bg   = idx === 0 ? '#e8f4fd' : '#fff';
+            const bg = idx === 0 ? '#e8f4fd' : '#fff';
             deviceRadioHtml += `<label style="display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid #dee2e6;border-radius:8px;margin-bottom:6px;cursor:pointer;background:${bg};" class="swal-device-label"><input type="radio" name="swal_device" value="${id}" ${idx === 0 ? 'checked' : ''} style="accent-color:#0d6efd;"><span style="font-size:13px;"><strong>${name}</strong><br><small style="color:#6c757d;">${desc}</small></span></label>`;
         });
 
@@ -180,10 +180,10 @@ $(document).ready(function () {
                 }
                 const formatVal = formatRadio.value;
                 return {
-                    deviceId:     deviceRadio.value,
-                    format:       formatVal,
+                    deviceId: deviceRadio.value,
+                    format: formatVal,
                     convertToPdf: true,
-                    isMultiPage:  formatVal === 'pdf_multi'
+                    isMultiPage: formatVal === 'pdf_multi'
                 };
             }
         });
@@ -193,7 +193,7 @@ $(document).ready(function () {
         // 4. Loop scan (support multi-halaman)
         const scannedPages = [];
         let scanMore = true;
-        let pageNum  = 1;
+        let pageNum = 1;
 
         while (scanMore) {
             Swal.fire({
@@ -265,30 +265,30 @@ $(document).ready(function () {
             img.src = dataUrl;
             img.onload = function () {
                 const canvas = document.createElement('canvas');
-                canvas.width  = img.width;
+                canvas.width = img.width;
                 canvas.height = img.height;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0);
 
                 const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                const data    = imgData.data;
+                const data = imgData.data;
 
-                const contrast = 25.5;
-                const factor   = (259 * (contrast + 255)) / (255 * (259 - contrast));
-                const gammaCorr = 1 / 1.15;
+                const contrast = 35.5;
+                const factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
+                const gammaCorr = 1 / 1.9;
 
                 for (let i = 0; i < data.length; i += 4) {
-                    let r = factor * (data[i]   - 128) + 128;
-                    let g = factor * (data[i+1] - 128) + 128;
-                    let b = factor * (data[i+2] - 128) + 128;
+                    let r = factor * (data[i] - 128) + 128;
+                    let g = factor * (data[i + 1] - 128) + 128;
+                    let b = factor * (data[i + 2] - 128) + 128;
 
                     r = 255 * Math.pow(Math.max(0, r) / 255, gammaCorr);
                     g = 255 * Math.pow(Math.max(0, g) / 255, gammaCorr);
                     b = 255 * Math.pow(Math.max(0, b) / 255, gammaCorr);
 
-                    data[i]   = Math.min(255, Math.max(0, r));
-                    data[i+1] = Math.min(255, Math.max(0, g));
-                    data[i+2] = Math.min(255, Math.max(0, b));
+                    data[i] = Math.min(255, Math.max(0, r));
+                    data[i + 1] = Math.min(255, Math.max(0, g));
+                    data[i + 2] = Math.min(255, Math.max(0, b));
                 }
 
                 ctx.putImageData(imgData, 0, 0);
@@ -388,10 +388,10 @@ $(document).ready(function () {
     function loadJsPDF() {
         return new Promise((resolve, reject) => {
             if (window.jspdf) { resolve(); return; }
-            const script    = document.createElement('script');
-            script.src      = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-            script.onload   = () => resolve();
-            script.onerror  = () => reject(new Error('Gagal memuat pustaka jsPDF'));
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+            script.onload = () => resolve();
+            script.onerror = () => reject(new Error('Gagal memuat pustaka jsPDF'));
             document.head.appendChild(script);
         });
     }
@@ -403,7 +403,7 @@ $(document).ready(function () {
             let pdf = null;
 
             for (let i = 0; i < pages.length; i++) {
-                const imgData    = pages[i];
+                const imgData = pages[i];
                 const dimensions = await getImageDimensions(imgData);
 
                 if (i === 0) {
@@ -433,9 +433,9 @@ $(document).ready(function () {
 
     // Konversi dataURL ke objek File
     function dataURLtoFile(dataurl, filename, mimeType) {
-        const arr   = dataurl.split(',');
-        const bstr  = atob(arr[1]);
-        let n       = bstr.length;
+        const arr = dataurl.split(',');
+        const bstr = atob(arr[1]);
+        let n = bstr.length;
         const u8arr = new Uint8Array(n);
         while (n--) { u8arr[n] = bstr.charCodeAt(n); }
         return new File([u8arr], filename, { type: mimeType });
