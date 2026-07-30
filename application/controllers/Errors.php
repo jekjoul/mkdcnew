@@ -13,6 +13,13 @@ class Errors extends MY_Controller {
 		$this->load->view('errors/html/error_403_permission', $this->page_data);
 	}
 
+	/**
+	 * Halaman ditampilkan ketika tidak ada koneksi internet
+	 */
+	public function offline()
+	{
+		$this->load->view('errors/offline');
+	}
 
 }
 

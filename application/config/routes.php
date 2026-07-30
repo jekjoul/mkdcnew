@@ -55,5 +55,8 @@ $route['default_controller'] = 'login';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
+// Halaman Offline (Tidak Ada Koneksi Internet)
+$route['offline'] = 'errors/offline';
+
 // [AdminLTE]
 // $route['adminlte/(:any)'] = 'adminlte/main/$1';

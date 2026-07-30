@@ -56,6 +56,53 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
     <link rel="stylesheet" href="<?php echo $url->assets ?>css/mobile-app.css">
     <link href=" https://cdn.jsdelivr.net/npm/sweetalert2@11.26.2/dist/sweetalert2.min.css " rel="stylesheet">
 
+    <!-- Offline Detector Style -->
+    <style>
+        #mkdc-offline-banner {
+            position: fixed;
+            top: -60px;
+            left: 0;
+            right: 0;
+            z-index: 99999;
+            background: linear-gradient(90deg, #dc2626, #ef4444);
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.84rem;
+            font-weight: 600;
+            box-shadow: 0 4px 20px rgba(220,38,38,0.35);
+            transition: top 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        #mkdc-offline-banner.show { top: 0; }
+        #mkdc-offline-banner .offline-banner-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        #mkdc-offline-banner .offline-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.9);
+            animation: mkdcDotBlink 1s ease-in-out infinite;
+        }
+        @keyframes mkdcDotBlink {
+            0%, 100% { opacity: 1; } 50% { opacity: 0.2; }
+        }
+        #mkdc-offline-banner a.offline-retry-link {
+            color: white;
+            text-decoration: underline;
+            cursor: pointer;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        #mkdc-offline-banner a.offline-retry-link:hover { opacity: 0.85; }
+    </style>
+
     <style>
         @media screen {
             html {
@@ -130,9 +177,58 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
             transition: opacity 0.18s ease;
         }
     </style>
+
+    <!-- ── Service Worker: Cache halaman offline agar tampil saat server mati ── -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker
+                    .register('/mkdcnew/service-worker.js', { scope: '/mkdcnew/' })
+                    .catch(function(err) {
+                        console.warn('[MKDC SW] Registrasi gagal:', err);
+                    });
+            });
+        }
+    </script>
 </head>
 
 <body>
+    <!-- ── Offline Banner (muncul otomatis jika internet terputus saat di halaman ini) ── -->
+    <div id="mkdc-offline-banner" role="alert" aria-live="assertive" style="display:none;">
+        <div class="offline-banner-left">
+            <span class="offline-dot"></span>
+            <span>&#128683; Tidak ada koneksi internet &mdash; beberapa fitur mungkin tidak berfungsi.</span>
+        </div>
+        <a class="offline-retry-link" onclick="window.location.reload()">Muat Ulang</a>
+    </div>
+    <script>
+        // ── MKDC Offline Detector ──────────────────────────────────────────────
+        (function() {
+            var banner = document.getElementById('mkdc-offline-banner');
+            if (!banner) return;
+
+            function showBanner() {
+                banner.style.display = 'flex';
+                setTimeout(function() { banner.classList.add('show'); }, 10);
+            }
+
+            function hideBanner() {
+                banner.classList.remove('show');
+                setTimeout(function() { banner.style.display = 'none'; }, 450);
+            }
+
+            if (!navigator.onLine) { showBanner(); }
+
+            window.addEventListener('offline', showBanner);
+            window.addEventListener('online', function() {
+                // Verifikasi koneksi nyata sebelum sembunyikan banner
+                fetch('/mkdcnew/favicon.ico?_=' + Date.now(), {
+                    method: 'HEAD', cache: 'no-store', mode: 'no-cors'
+                }).then(hideBanner).catch(showBanner);
+            });
+        })();
+    </script>
+
     <!-- Mobile Page Loading Spinner / Preloader -->
     <div id="mobile-page-loader" class="mobile-page-loader">
         <div class="mobile-loader-container">
