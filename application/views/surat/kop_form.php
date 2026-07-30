@@ -146,7 +146,7 @@
                         </h6>
                     </div>
                     <div class="card-body bg-light" style="min-height: 250px;">
-                        <div class="bg-white p-4 shadow-sm border rounded" id="kopContainer" style="font-family: Arial, sans-serif; color: #000;">
+                        <div class="bg-white p-4 shadow-sm border rounded" id="kopContainer" style="font-family: 'Times New Roman', Times, serif; color: #000;">
                             
                             <!-- Area render dynamic via JS -->
                             <div id="liveKopRender">

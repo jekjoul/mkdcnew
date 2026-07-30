@@ -313,6 +313,31 @@ class Surat extends MY_Controller
         $this->load->view('surat/keluar_list', $this->page_data);
     }
 
+    public function buat()
+    {
+        $this->setPage('Buat Surat', 'surat/buat', 'solar:document-add-linear');
+        $this->db->order_by('nama_lembaga', 'ASC');
+        $this->page_data['lembaga'] = $this->db->get('lembaga')->result();
+        $this->load->view('surat/pilih_tipe', $this->page_data);
+    }
+
+    public function buat_otomatis()
+    {
+        $this->setPage('Buat Surat Otomatis', 'surat/buat_otomatis', 'solar:document-text-linear');
+        $id_lembaga = (int)$this->input->get('id_lembaga');
+        
+        $selected_lembaga = null;
+        if ($id_lembaga > 0) {
+            $selected_lembaga = $this->db->get_where('lembaga', ['id_lembaga' => $id_lembaga])->row();
+        }
+        
+        $this->page_data['id_lembaga'] = $id_lembaga;
+        $this->page_data['selected_lembaga'] = $selected_lembaga;
+        $this->db->order_by('nama_lembaga', 'ASC');
+        $this->page_data['lembaga_list'] = $this->db->get('lembaga')->result();
+        $this->load->view('surat/buat_otomatis', $this->page_data);
+    }
+
     public function keluar_tambah_manual()
     {
         $this->setPage('Buat Surat Keluar Manual', 'surat/keluar_tambah_manual', 'solar:inbox-out-linear');
@@ -399,6 +424,83 @@ class Surat extends MY_Controller
         ]));
     }
 
+    public function keterangan_siswa_aktif()
+    {
+        $this->setPage('Buat Surat Keterangan Siswa Aktif SMP', 'surat/keterangan_siswa_aktif', 'solar:document-bold-linear');
+        $this->setKeluarOptions();
+
+        $this->db->like('nama_lembaga', 'SMP', 'both');
+        $lembaga_smp = $this->db->get('lembaga')->row();
+        if ($lembaga_smp && !empty($lembaga_smp->kabupaten) && is_numeric($lembaga_smp->kabupaten)) {
+            $reg_k = $this->db->get_where('reg_kabupaten', ['id_kab' => $lembaga_smp->kabupaten])->row();
+            if ($reg_k && !empty($reg_k->nama)) {
+                $lembaga_smp->kabupaten = $reg_k->nama;
+            }
+        }
+        $id_lembaga = $lembaga_smp ? $lembaga_smp->id_lembaga : 1;
+
+        $this->db->where('id_lembaga', $id_lembaga);
+        $this->db->where('status', 'Aktif');
+        $this->db->order_by('id_kode_surat', 'ASC');
+        $kode_surat_smp = $this->db->get('surat_kode')->row();
+
+        if (!$kode_surat_smp) {
+            $kode_surat_smp = $this->db->get_where('surat_kode', ['status' => 'Aktif'])->row();
+        }
+
+        $this->db->like('nama_kop', 'SMP', 'both');
+        $this->db->where('status', 'Aktif');
+        $kop_smp = $this->db->get('surat_kop')->row();
+        if (!$kop_smp) {
+            $kop_smp = $this->db->get_where('surat_kop', ['status' => 'Aktif'])->row();
+        }
+
+        $this->db->select('id_siswa, nama_siswa, nisn, nipd, rombel, tempat_lahir, tanggal_lahir');
+        $this->db->from('siswa');
+        $this->db->where('status_keaktifan', 'Aktif');
+        $this->db->order_by('nama_siswa', 'ASC');
+        $siswa_list = $this->db->get()->result();
+
+        $this->page_data['row'] = null;
+        $this->page_data['lembaga_smp'] = $lembaga_smp;
+        $this->page_data['id_lembaga_smp'] = $id_lembaga;
+        $this->page_data['kode_surat_smp'] = $kode_surat_smp;
+        $this->page_data['kop_smp'] = $kop_smp;
+        $this->page_data['siswa_list'] = $siswa_list;
+        $this->page_data['selected_penandatangan'] = [];
+        $this->page_data['penandatangan_jabatan_map'] = [];
+
+        $this->load->view('surat/form_keterangan_siswa_aktif', $this->page_data);
+    }
+
+    public function get_siswa_detail_ajax()
+    {
+        $id_siswa = (int) $this->input->get('id_siswa');
+        $siswa = $this->db->get_where('siswa', ['id_siswa' => $id_siswa])->row();
+        if ($siswa) {
+            $months = [1 => 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            $tgl_str = '-';
+            if ($siswa->tanggal_lahir) {
+                $t = strtotime($siswa->tanggal_lahir);
+                $m = (int)date('n', $t);
+                $tgl_str = date('d', $t) . ' ' . (isset($months[$m]) ? $months[$m] : date('F', $t)) . ' ' . date('Y', $t);
+            }
+            $ttl_formatted = ($siswa->tempat_lahir ?: '-') . ', ' . $tgl_str;
+
+            $this->output->set_content_type('application/json')->set_output(json_encode([
+                'success' => true,
+                'nama_siswa' => $siswa->nama_siswa,
+                'nisn' => $siswa->nisn ?: '-',
+                'rombel' => $siswa->rombel ?: '-',
+                'tempat_lahir' => $siswa->tempat_lahir ?: '-',
+                'tanggal_lahir' => $siswa->tanggal_lahir,
+                'ttl_formatted' => $ttl_formatted
+            ]));
+        } else {
+            $this->output->set_content_type('application/json')->set_output(json_encode(['success' => false]));
+        }
+    }
+
     public function keluar_simpan()
     {
         postAllowed();
@@ -418,22 +520,44 @@ class Surat extends MY_Controller
         $nomor_surat = post('nomor_surat') ?: ($nomor_custom ?: $this->formatNomorSurat($kode, $nomor_urut, $tahun));
         $token = post('token_validasi') ?: bin2hex(random_bytes(16));
         $metode = post('metode_pembuatan') ?: 'Manual';
+        $jenis_template = post('jenis_template') ?: null;
+
+        // Process Upload File TTD Digital jika ada
+        $file_ttd_digital = post('file_ttd_digital_existing');
+        if (isset($_FILES['file_ttd_digital']) && $_FILES['file_ttd_digital']['error'] === UPLOAD_ERR_OK) {
+            $upload_path = FCPATH . 'uploads/ttd/';
+            if (!is_dir($upload_path)) {
+                @mkdir($upload_path, 0777, true);
+            }
+            $ext = pathinfo($_FILES['file_ttd_digital']['name'], PATHINFO_EXTENSION);
+            $new_filename = 'ttd_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . strtolower($ext);
+            if (move_uploaded_file($_FILES['file_ttd_digital']['tmp_name'], $upload_path . $new_filename)) {
+                $file_ttd_digital = $new_filename;
+            }
+        }
+
+        $tujuan = post('tujuan_surat') ?: 'Siswa Bersangkutan';
+        $perihal = post('perihal') ?: ($jenis_template === 'keterangan_siswa_aktif' ? 'Surat Keterangan Siswa Aktif' : 'Surat Keluar');
 
         $data = [
             'id_lembaga' => $kode->id_lembaga,
             'id_kode_surat' => $kode->id_kode_surat,
             'metode_pembuatan' => $metode,
+            'jenis_template' => $jenis_template,
             'id_template_surat' => ($metode === 'Otomatis') ? (post('id_template_surat') ?: null) : null,
-            'id_kop_surat' => ($metode === 'Otomatis') ? (post('id_kop_surat') ?: null) : null,
+            'id_kop_surat' => post('id_kop_surat') ?: null,
+            'id_siswa' => post('id_siswa') ? (int) post('id_siswa') : null,
             'tanggal_surat' => $tanggal,
             'nomor_urut' => $nomor_urut,
             'nomor_surat' => $nomor_surat,
             'nomor_custom' => $nomor_custom ?: null,
-            'tujuan_surat' => post('tujuan_surat'),
-            'perihal' => post('perihal'),
+            'tujuan_surat' => $tujuan,
+            'perihal' => $perihal,
             'isi_surat' => ($metode === 'Otomatis') ? post('isi_surat') : null,
             'keterangan' => ($metode === 'Manual') ? post('keterangan') : null,
-            'status' => ($metode === 'Otomatis') ? (post('status') ?: 'Draft') : 'Manual',
+            'tipe_ttd' => post('tipe_ttd') ?: 'manual',
+            'file_ttd_digital' => $file_ttd_digital ?: null,
+            'status' => ($metode === 'Otomatis') ? (post('status') ?: 'Final') : 'Manual',
             'token_validasi' => $token,
         ];
 
@@ -537,17 +661,25 @@ class Surat extends MY_Controller
 
     private function getSuratKeluar($id)
     {
-        $this->db->select('skel.*, l.nama_lembaga, l.alamat, l.telepon, l.email, l.logo, l.id_ptk_kepsek, ptk.nama_ptk AS nama_kepsek, sk.kode_jenis, sk.nama_jenis, sk.kode_lembaga, sk.lokasi, kp.nama_kop, kp.logo as kop_logo, kp.logo_kanan, kp.naungan, kp.naungan_2, kp.nama_lembaga as kop_nama_lembaga, kp.sub_nama, kp.alamat as alamat_kop, kp.kontak, kp.font_size_naungan, kp.font_size_naungan_2, kp.font_size_lembaga, kp.font_size_sub, kp.font_size_alamat, kp.layout_style, kp.case_style');
+        $this->db->select('skel.*, l.nama_lembaga, l.alamat, l.kabupaten as kabupaten_lembaga, l.telepon, l.email, l.logo, l.id_ptk_kepsek, ptk.nama_ptk AS nama_kepsek, ptk.gelar_depan AS kepsek_gelar_depan, ptk.gelar_belakang AS kepsek_gelar_belakang, sk.kode_jenis, sk.nama_jenis, sk.kode_lembaga, sk.lokasi, kp.nama_kop, kp.logo as kop_logo, kp.logo_kanan, kp.naungan, kp.naungan_2, kp.nama_lembaga as kop_nama_lembaga, kp.sub_nama, kp.alamat as alamat_kop, kp.kontak, kp.font_size_naungan, kp.font_size_naungan_2, kp.font_size_lembaga, kp.font_size_sub, kp.font_size_alamat, kp.layout_style, kp.case_style, sis.nama_siswa, sis.nisn, sis.nipd, sis.rombel, sis.tempat_lahir, sis.tanggal_lahir');
         $this->db->from('surat_keluar skel');
         $this->db->join('lembaga l', 'l.id_lembaga = skel.id_lembaga', 'left');
         $this->db->join('ptk', 'ptk.id_ptk = l.id_ptk_kepsek', 'left');
         $this->db->join('surat_kode sk', 'sk.id_kode_surat = skel.id_kode_surat', 'left');
         $this->db->join('surat_kop kp', 'kp.id_kop_surat = skel.id_kop_surat', 'left');
+        $this->db->join('siswa sis', 'sis.id_siswa = skel.id_siswa', 'left');
         $this->db->where('skel.id_surat_keluar', $id);
         $surat = $this->db->get()->row();
 
         if ($surat) {
-            $this->db->select('ptk.nama_ptk, ptk.nik, ptk.id_ptk, ptk.niy, skp.jabatan');
+            if (!empty($surat->kabupaten_lembaga) && is_numeric($surat->kabupaten_lembaga)) {
+                $reg = $this->db->get_where('reg_kabupaten', ['id_kab' => $surat->kabupaten_lembaga])->row();
+                if ($reg && !empty($reg->nama)) {
+                    $surat->kabupaten_lembaga = $reg->nama;
+                }
+            }
+
+            $this->db->select('ptk.nama_ptk, ptk.gelar_depan, ptk.gelar_belakang, ptk.nik, ptk.id_ptk, ptk.niy, skp.jabatan');
             $this->db->from('surat_keluar_penandatangan skp');
             $this->db->join('ptk', 'ptk.id_ptk = skp.id_ptk', 'left');
             $this->db->where('skp.id_surat_keluar', $id);
@@ -724,6 +856,30 @@ class Surat extends MY_Controller
             if (!$this->db->field_exists('keterangan', 'surat_keluar')) {
                 $this->dbforge->add_column('surat_keluar', [
                     'keterangan' => ['type' => 'TEXT', 'null' => true, 'after' => 'isi_surat']
+                ]);
+            }
+            // Cek jika kolom id_siswa belum ada di table surat_keluar
+            if (!$this->db->field_exists('id_siswa', 'surat_keluar')) {
+                $this->dbforge->add_column('surat_keluar', [
+                    'id_siswa' => ['type' => 'INT', 'constraint' => 11, 'null' => true, 'after' => 'id_kop_surat']
+                ]);
+            }
+            // Cek jika kolom jenis_template belum ada di table surat_keluar
+            if (!$this->db->field_exists('jenis_template', 'surat_keluar')) {
+                $this->dbforge->add_column('surat_keluar', [
+                    'jenis_template' => ['type' => 'VARCHAR', 'constraint' => 50, 'null' => true, 'after' => 'metode_pembuatan']
+                ]);
+            }
+            // Cek jika kolom tipe_ttd belum ada di table surat_keluar
+            if (!$this->db->field_exists('tipe_ttd', 'surat_keluar')) {
+                $this->dbforge->add_column('surat_keluar', [
+                    'tipe_ttd' => ['type' => 'VARCHAR', 'constraint' => 20, 'default' => 'manual', 'after' => 'penandatangan_jabatan']
+                ]);
+            }
+            // Cek jika kolom file_ttd_digital belum ada di table surat_keluar
+            if (!$this->db->field_exists('file_ttd_digital', 'surat_keluar')) {
+                $this->dbforge->add_column('surat_keluar', [
+                    'file_ttd_digital' => ['type' => 'VARCHAR', 'constraint' => 180, 'null' => true, 'after' => 'tipe_ttd']
                 ]);
             }
             // Jadikan kolom isi_surat nullable

@@ -519,6 +519,12 @@
                 </a>
             </li>
             <li>
+                <a href="<?php echo url('surat/buat') ?>">
+                    <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
+                    Buat Surat
+                </a>
+            </li>
+            <li>
                 <a href="<?php echo url('surat/kode') ?>">
                     <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
                     Kode Surat
