@@ -153,6 +153,7 @@
             ?>
             <a href="<?php echo $edit_url ?>">Edit</a>
             <button type="button" onclick="window.print()">Cetak / Simpan PDF</button>
+            <button type="button" onclick="showDeleteModal()" style="background: #dc2626; border-color: #dc2626; color: #fff; cursor: pointer;">Hapus Surat</button>
         </div>
     </div>
     <main class="paper">
@@ -279,7 +280,7 @@
                                 </td>
                             </tr>
                         </table>
-                    <?php elseif ($surat->layout_style === 'double_logo'): ?>
+                    <?php elseif ($surat->layout_style === 'left_logo_center_text'): ?>
                         <table style="width: 100%; border-collapse: collapse; border: 0;">
                             <tr>
                                 <td style="width: 75px; vertical-align: middle; text-align: left; padding-right: 10px; border: 0;">
@@ -303,8 +304,34 @@
                                         <div style="font-size: <?php echo $sz_alamat ?>px; color: #4b5563;"><?php echo html_escape($surat->kontak) ?></div>
                                     <?php endif; ?>
                                 </td>
-                                <td style="width: 75px; vertical-align: middle; text-align: right; padding-left: 10px; border: 0;">
-                                    <img src="<?php echo $logo_kop_kanan ?>" alt="Logo Kanan" style="max-width: 90px; max-height: 90px;">
+                            </tr>
+                        </table>
+                    <?php elseif ($surat->layout_style === 'double_logo'): ?>
+                        <table style="width: 100%; border-collapse: collapse; border: 0;">
+                            <tr>
+                                <td style="width: 65px; vertical-align: middle; text-align: left; padding-right: 10px; border: 0;">
+                                    <img src="<?php echo $logo_kop ?>" alt="Logo Kiri" style="max-width: 85px; max-height: 85px;">
+                                </td>
+                                <td style="vertical-align: middle; text-align: center; border: 0;">
+                                    <?php if (!empty($surat->naungan)): ?>
+                                        <div style="font-size: <?php echo $sz_naungan ?>px; font-weight: 550; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($surat->naungan) ?></div>
+                                    <?php endif; ?>
+                                    <?php if (!empty($surat->naungan_2)): ?>
+                                        <div style="font-size: <?php echo $sz_naungan_2 ?>px; font-weight: 550; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($surat->naungan_2) ?></div>
+                                    <?php endif; ?>
+                                    <div style="font-size: <?php echo $sz_lembaga ?>px; font-weight: bold; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($surat->kop_nama_lembaga ?: $surat->nama_lembaga) ?></div>
+                                    <?php if (!empty($surat->sub_nama)): ?>
+                                        <div style="font-size: <?php echo $sz_sub ?>px; font-weight: bold; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($surat->sub_nama) ?></div>
+                                    <?php endif; ?>
+                                    <?php if (!empty($surat->alamat_kop)): ?>
+                                        <div style="font-size: <?php echo $sz_alamat ?>px; color: #4b5563;"><?php echo html_escape($surat->alamat_kop) ?></div>
+                                    <?php endif; ?>
+                                    <?php if (!empty($surat->kontak)): ?>
+                                        <div style="font-size: <?php echo $sz_alamat ?>px; color: #4b5563;"><?php echo html_escape($surat->kontak) ?></div>
+                                    <?php endif; ?>
+                                </td>
+                                <td style="width: 65px; vertical-align: middle; text-align: right; padding-left: 10px; border: 0;">
+                                    <img src="<?php echo $logo_kop_kanan ?>" alt="Logo Kanan" style="max-width: 85px; max-height: 85px;">
                                 </td>
                             </tr>
                         </table>
@@ -365,6 +392,13 @@
                 }
             }
             $nama_lembaga_formatted = implode(' ', $formatted_words_l);
+
+            $ptk_first = (!empty($surat->penandatangan) && isset($surat->penandatangan[0])) ? $surat->penandatangan[0] : null;
+            $jabatan_ptk = $ptk_first ? ($ptk_first->jabatan ?: 'Kepala Sekolah,') : 'Kepala Sekolah,';
+            $jabatan_clean = trim(rtrim($jabatan_ptk, ','));
+            if (empty($jabatan_clean)) {
+                $jabatan_clean = 'Kepala Sekolah';
+            }
             ?>
 
             <div style="text-align: center; margin-top: 24px; margin-bottom: 50px;">
@@ -373,10 +407,10 @@
             </div>
             
             <div style="font-size: 12pt; line-height: 1.6; text-align: justify; text-indent: 36pt; margin-bottom: 16px;">
-                Yang bertanda tangan dibawah ini, <?php echo html_escape($nama_lembaga_formatted) ?> menerangkan bahwa :
+                Yang bertanda tangan dibawah ini, <?php echo html_escape($jabatan_clean) ?> <?php echo html_escape($nama_lembaga_formatted) ?> menerangkan bahwa :
             </div>
 
-            <table style="width: 90%; margin-left: 30px; margin-bottom: 20px; font-size: 16px; line-height: 1.8; border-collapse: collapse;">
+            <table style="width: 90%; margin-left: 50px; margin-bottom: 20px; font-size: 16px; line-height: 1.8; border-collapse: collapse;">
                 <tr>
                     <td style="width: 170px; vertical-align: top;">Nama</td>
                     <td style="width: 15px; vertical-align: top;">:</td>
@@ -411,8 +445,30 @@
                 </tr>
             </table>
 
+            <?php 
+            $kec_text = !empty($surat->kecamatan_lembaga) ? trim($surat->kecamatan_lembaga) : (!empty($surat->lokasi) ? trim($surat->lokasi) : 'Panjalu');
+            if (is_numeric($kec_text)) {
+                $reg_k_row = $this->db->get_where('reg_kecamatan', ['id_kec' => $kec_text])->row();
+                if ($reg_k_row && !empty($reg_k_row->nama)) {
+                    $kec_text = $reg_k_row->nama;
+                }
+            }
+            $clean_kec = preg_replace('/^(KEC\.?|KECAMATAN)\s+/i', '', trim($kec_text));
+            $formatted_kec = ucwords(strtolower($clean_kec ?: 'Panjalu'));
+
+            $kab_text = !empty($surat->kabupaten_lembaga) ? trim($surat->kabupaten_lembaga) : 'Ciamis';
+            if (is_numeric($kab_text)) {
+                $reg_k_row2 = $this->db->get_where('reg_kabupaten', ['id_kab' => $kab_text])->row();
+                if ($reg_k_row2 && !empty($reg_k_row2->nama)) {
+                    $kab_text = $reg_k_row2->nama;
+                }
+            }
+            $clean_kab = preg_replace('/^(KAB\.?|KABUPATEN|KOTA)\s+/i', '', trim($kab_text));
+            $formatted_kab = ucwords(strtolower($clean_kab ?: 'Ciamis'));
+            ?>
+
             <div style="font-size: 12pt; line-height: 1.6; text-align: justify; text-indent: 36pt; margin-bottom: 16px;">
-                Yang bersangkutan adalah benar-benar Siswa <?php echo html_escape($nama_lembaga_formatted) ?> Panjalu Ciamis.
+                Yang bersangkutan adalah benar-benar Siswa <?php echo html_escape($nama_lembaga_formatted) ?> Kecamatan <?php echo html_escape($formatted_kec) ?> Kabupaten <?php echo html_escape($formatted_kab) ?>.
             </div>
             <div style="font-size: 12pt; line-height: 1.6; text-align: justify; text-indent: 36pt; margin-bottom: 35px;">
                 Demikian Surat Keterangan ini kami buat dengan sebenarnya, dan diberikan kepada yang bersangkutan dipergunakan sebaik-baiknya.
@@ -431,35 +487,27 @@
             if ($ptk_first) {
                 $g_depan = !empty($ptk_first->gelar_depan) ? trim($ptk_first->gelar_depan) . ' ' : '';
                 $g_belakang = !empty($ptk_first->gelar_belakang) ? ', ' . trim($ptk_first->gelar_belakang) : '';
-                $nama_ptk_full = $g_depan . $ptk_first->nama_ptk . $g_belakang;
+                $nama_ptk_only = mb_strtoupper(trim($ptk_first->nama_ptk), 'UTF-8');
+                $nama_ptk_full = $g_depan . $nama_ptk_only . $g_belakang;
             } else {
                 $g_depan = !empty($surat->kepsek_gelar_depan) ? trim($surat->kepsek_gelar_depan) . ' ' : '';
                 $g_belakang = !empty($surat->kepsek_gelar_belakang) ? ', ' . trim($surat->kepsek_gelar_belakang) : '';
-                $nama_ptk_full = $g_depan . ($surat->nama_kepsek ?: 'Kepala Sekolah') . $g_belakang;
+                $nama_ptk_only = mb_strtoupper(trim($surat->nama_kepsek ?: 'Kepala Sekolah'), 'UTF-8');
+                $nama_ptk_full = $g_depan . $nama_ptk_only . $g_belakang;
             }
 
             $niy_ptk = $ptk_first ? ($ptk_first->niy ?: ($ptk_first->nik ?: '-')) : '-';
-            
-            // Nama Pejabat Huruf Kapital Semua
-            $nama_ptk_uppercase = mb_strtoupper($nama_ptk_full, 'UTF-8');
 
-            // Ambil data kolom kabupaten langsung dari tabel lembaga database tanpa membersihkan imbuhannya
-            $raw_kab = !empty($surat->kabupaten_lembaga) ? $surat->kabupaten_lembaga : '';
-            if (empty($raw_kab) && !empty($surat->alamat)) {
-                if (preg_match('/((?:Kab\.|Kabupaten|Kota)\s+[A-Za-z\s]+?)(?:[\.,\d]|$)/i', $surat->alamat, $m)) {
-                    $raw_kab = $m[1];
+            // Ambil data kabupaten lembaga, atau fallback ke Ciamis (tanpa menggunakan lokasi kecamatan)
+            $raw_kab = !empty($surat->kabupaten_lembaga) ? trim($surat->kabupaten_lembaga) : 'Ciamis';
+            if (is_numeric($raw_kab)) {
+                $reg_k = $this->db->get_where('reg_kabupaten', ['id_kab' => $raw_kab])->row();
+                if ($reg_k && !empty($reg_k->nama)) {
+                    $raw_kab = $reg_k->nama;
                 }
             }
-            if (empty($raw_kab) && !empty($surat->alamat_kop)) {
-                if (preg_match('/((?:Kab\.|Kabupaten|Kota)\s+[A-Za-z\s]+?)(?:[\.,\d]|$)/i', $surat->alamat_kop, $m)) {
-                    $raw_kab = $m[1];
-                }
-            }
-            if (empty($raw_kab)) {
-                $raw_kab = !empty($surat->lokasi) ? $surat->lokasi : 'Kab. Ciamis';
-            }
-
-            $formatted_loc = ucwords(strtolower(trim($raw_kab)));
+            $clean_kab = preg_replace('/^(KAB\.?|KABUPATEN|KOTA)\s+/i', '', trim($raw_kab));
+            $formatted_loc = ucwords(strtolower($clean_kab ?: 'Ciamis'));
             ?>
 
             <div style="float: right; width: 280px; text-align: left; font-size: 11pt; line-height: 1.4; margin-bottom: 30px; position: relative;">
@@ -476,7 +524,7 @@
                     
                     <div style="height: 65px;"></div>
 
-                    <div style="font-weight: bold; text-decoration: underline; text-transform: uppercase;"><?php echo html_escape($nama_ptk_uppercase) ?></div>
+                    <div style="font-weight: bold; text-decoration: underline;"><?php echo html_escape($nama_ptk_full) ?></div>
                     <div>NIY. <?php echo html_escape($niy_ptk) ?></div>
                 </div>
             </div>
@@ -485,8 +533,8 @@
 
             <!-- Footer Dokumen (Fixed di Paling Bawah Kertas, Tanpa Garis, Teks Abu-abu, plus Nomor Surat) -->
             <div class="qr-footer-fixed" style="position: absolute; bottom: 15mm; left: 22mm; right: 22mm; border-top: none; padding-top: 0; display: flex; align-items: center; gap: 14px;">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=<?php echo rawurlencode($validasi_url) ?>" style="width: 58px; height: 58px;" alt="QR Validasi">
-                <div style="font-size: 8.5pt; color: #6b7280; line-height: 1.45; font-family: Arial, sans-serif;">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=<?php echo rawurlencode($validasi_url) ?>" style="width: 48px; height: 48px;" alt="QR Validasi">
+                <div style="font-size: 7pt; color: #8f95a0ff; line-height: 1.2; font-family: Arial, sans-serif;">
                     <div><strong>Dokumen ini dikeluarkan dan diarsipkan melalui Aplikasi Miftahul Khoer Data Center.</strong></div>
                     <div>Validasi surat melalui Scan QR Code disamping.</div>
                     <div>Nomor: <?php echo html_escape($surat->nomor_surat) ?></div>
@@ -516,6 +564,32 @@
                                     <img src="<?php echo $logo_kop ?>" alt="Logo" style="max-width: 80px; max-height: 80px;">
                                 </td>
                                 <td style="vertical-align: middle; text-align: left; border: 0;">
+                                    <?php if (!empty($surat->naungan)): ?>
+                                        <div class="kop-title-naungan" style="font-size: <?php echo $sz_naungan ?>px; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($surat->naungan) ?></div>
+                                    <?php endif; ?>
+                                    <?php if (!empty($surat->naungan_2)): ?>
+                                        <div class="kop-title-naungan" style="font-size: <?php echo $sz_naungan_2 ?>px; margin-top: 1px; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($surat->naungan_2) ?></div>
+                                    <?php endif; ?>
+                                    <div class="kop-title-lembaga" style="font-size: <?php echo $sz_lembaga ?>px; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($surat->nama_lembaga) ?></div>
+                                    <?php if (!empty($surat->sub_nama)): ?>
+                                        <div class="kop-title-sub" style="font-size: <?php echo $sz_sub ?>px; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($surat->sub_nama) ?></div>
+                                    <?php endif; ?>
+                                    <?php if (!empty($surat->alamat_kop)): ?>
+                                        <div class="kop-text-alamat" style="font-size: <?php echo $sz_alamat ?>px;"><?php echo html_escape($surat->alamat_kop) ?></div>
+                                    <?php endif; ?>
+                                    <?php if (!empty($surat->kontak)): ?>
+                                        <div class="kop-text-alamat" style="font-size: <?php echo $sz_alamat ?>px; margin-top: 0;"><?php echo html_escape($surat->kontak) ?></div>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                        </table>
+                    <?php elseif ($surat->layout_style === 'left_logo_center_text'): ?>
+                        <table style="width: 100%; border-collapse: collapse; border: 0;">
+                            <tr>
+                                <td style="width: 70px; vertical-align: middle; text-align: left; padding-right: 10px; border: 0;">
+                                    <img src="<?php echo $logo_kop ?>" alt="Logo Kiri" style="max-width: 70px; max-height: 70px;">
+                                </td>
+                                <td style="vertical-align: middle; text-align: center; border: 0;">
                                     <?php if (!empty($surat->naungan)): ?>
                                         <div class="kop-title-naungan" style="font-size: <?php echo $sz_naungan ?>px; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($surat->naungan) ?></div>
                                     <?php endif; ?>
@@ -672,5 +746,31 @@
             </section>
         <?php endif; ?>
     </main>
+
+    <!-- Modal Konfirmasi Hapus Surat -->
+    <div id="previewDeleteModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.55); z-index: 9999; align-items: center; justify-content: center; font-family: Arial, sans-serif;">
+        <div style="background: #fff; border-radius: 16px; max-width: 420px; width: 90%; padding: 24px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);">
+            <div style="width: 56px; height: 56px; background: #fee2e2; color: #dc2626; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 26px; font-weight: bold; margin-bottom: 16px;">
+                !
+            </div>
+            <h3 style="margin: 0 0 8px 0; font-size: 18px; color: #111827; font-weight: bold;">Konfirmasi Hapus Surat</h3>
+            <p style="margin: 0 0 20px 0; font-size: 14px; color: #4b5563; line-height: 1.5;">
+                Apakah Anda yakin ingin menghapus <strong>Surat Keluar Nomor: <?php echo html_escape($surat->nomor_surat) ?></strong>?<br>
+                <span style="color: #dc2626; font-weight: 600;">Tindakan ini tidak dapat dibatalkan.</span>
+            </p>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button type="button" onclick="hideDeleteModal()" style="padding: 9px 18px; border: 1px solid #d1d5db; background: #fff; color: #374151; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px;">Batal</button>
+                <a href="<?php echo url('surat/keluar_hapus/' . $surat->id_surat_keluar) ?>" style="padding: 9px 18px; background: #dc2626; border: 1px solid #dc2626; color: #fff; border-radius: 8px; font-weight: 600; text-decoration: none; font-size: 14px;">Ya, Hapus Sekarang</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        function showDeleteModal() {
+            document.getElementById('previewDeleteModal').style.display = 'flex';
+        }
+        function hideDeleteModal() {
+            document.getElementById('previewDeleteModal').style.display = 'none';
+        }
+    </script>
 </body>
 </html>

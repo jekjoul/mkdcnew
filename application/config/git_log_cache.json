@@ -1,5 +1,215 @@
 [
     {
+        "step": "2005225",
+        "date": "2026-07-30",
+        "author": "jekjoul",
+        "message": "Perbaikan surat keluar, template keterangan aktif siswa"
+    },
+    {
+        "step": "fce6c21",
+        "date": "2026-07-30",
+        "author": "jekjoul",
+        "message": "Perbaikan jika tidak terhubung ke internet"
+    },
+    {
+        "step": "a085eee",
+        "date": "2026-07-29",
+        "author": "jekjoul",
+        "message": "Perbaikan menu cek siswa"
+    },
+    {
+        "step": "9cb09a0",
+        "date": "2026-07-29",
+        "author": "jekjoul",
+        "message": "Tambah fitur verifikasi berkas siswa"
+    },
+    {
+        "step": "8f45258",
+        "date": "2026-07-29",
+        "author": "jekjoul",
+        "message": "perbaikan scanner plugin"
+    },
+    {
+        "step": "e2f21f7",
+        "date": "2026-07-29",
+        "author": "jekjoul",
+        "message": "Perbaikan scanner & tampilan print jadwal"
+    },
+    {
+        "step": "339cb87",
+        "date": "2026-07-29",
+        "author": "jekjoul",
+        "message": "Perbaikan scanner bridge"
+    },
+    {
+        "step": "1031fa0",
+        "date": "2026-07-29",
+        "author": "jekjoul",
+        "message": "Perbaikan scanner bridge"
+    },
+    {
+        "step": "dd33978",
+        "date": "2026-07-28",
+        "author": "jekjoul",
+        "message": "Perbaikan form upload berkas siswa"
+    },
+    {
+        "step": "c62711b",
+        "date": "2026-07-28",
+        "author": "jekjoul",
+        "message": "Update form setting siswa"
+    },
+    {
+        "step": "bd757a9",
+        "date": "2026-07-27",
+        "author": "jekjoul",
+        "message": "Perbaikan halaman data user presensi dan dashboard admin"
+    },
+    {
+        "step": "2b9146d",
+        "date": "2026-07-27",
+        "author": "jekjoul",
+        "message": "Perbaikan role access"
+    },
+    {
+        "step": "3d37d13",
+        "date": "2026-07-27",
+        "author": "jekjoul",
+        "message": "Update light mode"
+    },
+    {
+        "step": "e6690cb",
+        "date": "2026-07-27",
+        "author": "jekjoul",
+        "message": "Update dashboard guru & spinner"
+    },
+    {
+        "step": "58883e7",
+        "date": "2026-07-27",
+        "author": "jekjoul",
+        "message": "Perbaikan tampilan mobile"
+    },
+    {
+        "step": "cf15394",
+        "date": "2026-07-26",
+        "author": "jekjoul",
+        "message": "Update Bug Presensi 7"
+    },
+    {
+        "step": "733d025",
+        "date": "2026-07-26",
+        "author": "jekjoul",
+        "message": "Update bug presensi 6"
+    },
+    {
+        "step": "554c62c",
+        "date": "2026-07-26",
+        "author": "jekjoul",
+        "message": "update presensi 5"
+    },
+    {
+        "step": "b5d433b",
+        "date": "2026-07-26",
+        "author": "jekjoul",
+        "message": "Update bug presensi 4"
+    },
+    {
+        "step": "6705424",
+        "date": "2026-07-26",
+        "author": "jekjoul",
+        "message": "Update bug presensi 3"
+    },
+    {
+        "step": "9efc8f5",
+        "date": "2026-07-26",
+        "author": "jekjoul",
+        "message": "Update bug presensi"
+    },
+    {
+        "step": "c786cec",
+        "date": "2026-07-26",
+        "author": "jekjoul",
+        "message": "Update bug presensi"
+    },
+    {
+        "step": "cf616b4",
+        "date": "2026-07-26",
+        "author": "jekjoul",
+        "message": "Perbaikan bug ambil data presensi"
+    },
+    {
+        "step": "fe39e3a",
+        "date": "2026-07-26",
+        "author": "jekjoul",
+        "message": "Perbaikan log activity dan form setting siswa"
+    },
+    {
+        "step": "f37a030",
+        "date": "2026-07-26",
+        "author": "jekjoul",
+        "message": "Integrasi ke mesin fingerprint"
+    },
+    {
+        "step": "458529f",
+        "date": "2026-07-24",
+        "author": "jekjoul",
+        "message": "Merge branch 'main' of https:\/\/github.com\/jekjoul\/mkdcnew"
+    },
+    {
+        "step": "1bb015d",
+        "date": "2026-07-24",
+        "author": "jekjoul",
+        "message": "pembuatan aplikasi penghubung fingerprint"
+    },
+    {
+        "step": "b870640",
+        "date": "2026-07-23",
+        "author": "jekjoul",
+        "message": "Perbaikan tampilan mobile"
+    },
+    {
+        "step": "14d720d",
+        "date": "2026-07-23",
+        "author": "jekjoul",
+        "message": "Update tampilan pembelajaran mobile"
+    },
+    {
+        "step": "66e5ad9",
+        "date": "2026-07-23",
+        "author": "jekjoul",
+        "message": "Update tampilan mobile"
+    },
+    {
+        "step": "20e8358",
+        "date": "2026-07-23",
+        "author": "jekjoul",
+        "message": "Perbaikan bug jadwal dan penambahan selamat datang di dashboard"
+    },
+    {
+        "step": "47ad0fd",
+        "date": "2026-07-23",
+        "author": "jekjoul",
+        "message": "Perbaikan error dashboard"
+    },
+    {
+        "step": "bfdd906",
+        "date": "2026-07-22",
+        "author": "jekjoul",
+        "message": "Tambah menu absensi agenda"
+    },
+    {
+        "step": "5534e36",
+        "date": "2026-07-22",
+        "author": "jekjoul",
+        "message": "Penambahan fitur generate media pembelajaran dengan Gemini AI di bagian materi pembelajaran"
+    },
+    {
+        "step": "16e4046",
+        "date": "2026-07-22",
+        "author": "jekjoul",
+        "message": "Penambahan fitur generate media pembelajaran dengan Gemini AI di bagian materi pembelajaran"
+    },
+    {
         "step": "2bf69fc",
         "date": "2026-07-21",
         "author": "jekjoul",
@@ -88,1781 +298,5 @@
         "date": "2026-07-18",
         "author": "jekjoul",
         "message": "Perbaikan download berkas pembelajaran langsung dari google drive"
-    },
-    {
-        "step": "5993657",
-        "date": "2026-07-18",
-        "author": "jekjoul",
-        "message": "Merge pull request #34 from jekjoul\/Dev-Rumah"
-    },
-    {
-        "step": "032a3b7",
-        "date": "2026-07-18",
-        "author": "jekjoul",
-        "message": "Perbaikan tampilan pembelajaran dan Print Absensi"
-    },
-    {
-        "step": "f836375",
-        "date": "2026-07-18",
-        "author": "jekjoul",
-        "message": "Merge pull request #33 from jekjoul\/Dev-Rumah"
-    },
-    {
-        "step": "a3ff43f",
-        "date": "2026-07-18",
-        "author": "jekjoul",
-        "message": "Update : Perbaikanan tampilan profil guru dan perbaikan bug di halaman berkas pembelajaran"
-    },
-    {
-        "step": "c232dce",
-        "date": "2026-07-17",
-        "author": "jekjoul",
-        "message": "Merge pull request #32 from jekjoul\/Dev-Rumah"
-    },
-    {
-        "step": "3bba4ef",
-        "date": "2026-07-17",
-        "author": "jekjoul",
-        "message": "Update : Perbaikan bug perbedaan data jadwal di admin dan di guru"
-    },
-    {
-        "step": "247b3d5",
-        "date": "2026-07-17",
-        "author": "jekjoul",
-        "message": "Merge pull request #31 from jekjoul\/Dev-Rumah"
-    },
-    {
-        "step": "53e5e1f",
-        "date": "2026-07-17",
-        "author": "jekjoul",
-        "message": "Add : Fitur rekam medis siswa"
-    },
-    {
-        "step": "aa7e3ac",
-        "date": "2026-07-17",
-        "author": "jekjoul",
-        "message": "Merge pull request #30 from jekjoul\/Dev-Rumah"
-    },
-    {
-        "step": "21dff7e",
-        "date": "2026-07-17",
-        "author": "jekjoul",
-        "message": "Update : Perbaikan ignore tanggal pendaftaran ketika siswa dikembalikan dari alumni ke siswa aktif"
-    },
-    {
-        "step": "8f88395",
-        "date": "2026-07-17",
-        "author": "jekjoul",
-        "message": "Merge pull request #29 from jekjoul\/Dev-Rumah"
-    },
-    {
-        "step": "6f48c28",
-        "date": "2026-07-17",
-        "author": "jekjoul",
-        "message": "Update : Persentasi perangkat pembelajaran, perbaikan fitur mutasi siswa"
-    },
-    {
-        "step": "2c63f63",
-        "date": "2026-07-17",
-        "author": "jekjoul",
-        "message": "Merge pull request #28 from jekjoul\/Dev-Rumah"
-    },
-    {
-        "step": "b7285c8",
-        "date": "2026-07-17",
-        "author": "jekjoul",
-        "message": "Add : Fitur Kelas Jauh"
-    },
-    {
-        "step": "f808be5",
-        "date": "2026-07-17",
-        "author": "jekjoul",
-        "message": "Update : Perbaikan tampilan portal guru, font dikecilkan, profil guru diperbaiki layoutnya"
-    },
-    {
-        "step": "6b08511",
-        "date": "2026-07-17",
-        "author": "jekjoul",
-        "message": "Merge pull request #27 from jekjoul\/main"
-    },
-    {
-        "step": "fe5690a",
-        "date": "2026-07-17",
-        "author": "jekjoul",
-        "message": "Merge pull request #26 from jekjoul\/Dev-Rumah"
-    },
-    {
-        "step": "76bcdb0",
-        "date": "2026-07-17",
-        "author": "jekjoul",
-        "message": "Update : Kode guru di jadwal pelajaran"
-    },
-    {
-        "step": "df63740",
-        "date": "2026-07-17",
-        "author": "jekjoul",
-        "message": "Merge pull request #25 from jekjoul\/Dev-Rumah"
-    },
-    {
-        "step": "14f23f1",
-        "date": "2026-07-17",
-        "author": "jekjoul",
-        "message": "Update : Perbaikan pembeda warna ptk dan printout jadwal"
-    },
-    {
-        "step": "73b54e6",
-        "date": "2026-07-16",
-        "author": "jekjoul",
-        "message": "Merge pull request #24 from jekjoul\/Dev-Rumah"
-    },
-    {
-        "step": "6f10272",
-        "date": "2026-07-16",
-        "author": "jekjoul",
-        "message": "Update : Alert dialog untuk generate dan hapus jadwal pelajaran"
-    },
-    {
-        "step": "5d266b7",
-        "date": "2026-07-16",
-        "author": "jekjoul",
-        "message": "Merge pull request #23 from jekjoul\/Dev-Rumah"
-    },
-    {
-        "step": "f11cea3",
-        "date": "2026-07-16",
-        "author": "jekjoul",
-        "message": "Update : Perbaikan tampilan Profil, dan update promt AI untuk generate Berkas Pembelajaran"
-    },
-    {
-        "step": "c07e430",
-        "date": "2026-07-16",
-        "author": "jekjoul",
-        "message": "Update perbaikan halaman profil guru"
-    },
-    {
-        "step": "cb0dccf",
-        "date": "2026-07-16",
-        "author": "jekjoul",
-        "message": "Merge pull request #22 from jekjoul\/Dev-Rumah"
-    },
-    {
-        "step": "d1123fc",
-        "date": "2026-07-16",
-        "author": "jekjoul",
-        "message": "Update : Bug menu pembelajaran tidak tampil"
-    },
-    {
-        "step": "c563e2c",
-        "date": "2026-07-16",
-        "author": "jekjoul",
-        "message": "Merge pull request #21 from jekjoul\/main"
-    },
-    {
-        "step": "142931a",
-        "date": "2026-07-16",
-        "author": "jekjoul",
-        "message": "Merge pull request #20 from jekjoul\/Dev-Rumah"
-    },
-    {
-        "step": "034f3b8",
-        "date": "2026-07-16",
-        "author": "jekjoul",
-        "message": "Update : perbaikan teks dasboard"
-    },
-    {
-        "step": "6eb3c81",
-        "date": "2026-07-16",
-        "author": "jekjoul",
-        "message": "Update : Perbaikan tampilan portal guru"
-    },
-    {
-        "step": "f2f7637",
-        "date": "2026-07-16",
-        "author": "jekjoul",
-        "message": "Update : Bug tombol scan langsung"
-    },
-    {
-        "step": "ed28b2b",
-        "date": "2026-07-16",
-        "author": "jekjoul",
-        "message": "Merge pull request #19 from jekjoul\/Dev-Rumah"
-    },
-    {
-        "step": "9cb6207",
-        "date": "2026-07-16",
-        "author": "jekjoul",
-        "message": "Update : perbaikan upload dan delete berkas di google drive"
-    },
-    {
-        "step": "df204a8",
-        "date": "2026-07-16",
-        "author": "jekjoul",
-        "message": "Merge pull request #18 from jekjoul\/Dev-Rumah"
-    },
-    {
-        "step": "dd97380",
-        "date": "2026-07-16",
-        "author": "jekjoul",
-        "message": "Update : Perbaikan hak akses perangkat pembelajaran"
-    },
-    {
-        "step": "b837334",
-        "date": "2026-07-16",
-        "author": "jekjoul",
-        "message": "Update : perbaikan upload perangkat pembelajaran"
-    },
-    {
-        "step": "4c0793d",
-        "date": "2026-07-16",
-        "author": "jekjoul",
-        "message": "Merge pull request #17 from jekjoul\/Dev-Rumah"
-    },
-    {
-        "step": "a6251a5",
-        "date": "2026-07-16",
-        "author": "jekjoul",
-        "message": "Update : Perbaikan generate perangkat pembelajaran"
-    },
-    {
-        "step": "3ca06e7",
-        "date": "2026-07-16",
-        "author": "jekjoul",
-        "message": "Merge pull request #16 from jekjoul\/Dev-Rumah"
-    },
-    {
-        "step": "127caf6",
-        "date": "2026-07-16",
-        "author": "jekjoul",
-        "message": "Update : Perbaikan menu dashboard admin"
-    },
-    {
-        "step": "8eaf7a9",
-        "date": "2026-07-16",
-        "author": "jekjoul",
-        "message": "Cleanup : pembersihan file sql update"
-    },
-    {
-        "step": "5f7c404",
-        "date": "2026-07-16",
-        "author": "jekjoul",
-        "message": "Merge pull request #15 from jekjoul\/Dev-Rumah"
-    },
-    {
-        "step": "e8e08f0",
-        "date": "2026-07-16",
-        "author": "jekjoul",
-        "message": "Data : Update data siswa dari mkdc lama"
-    },
-    {
-        "step": "190e51a",
-        "date": "2026-07-15",
-        "author": "jekjoul",
-        "message": "Merge pull request #14 from jekjoul\/Dev-Rumah"
-    },
-    {
-        "step": "9c3d019",
-        "date": "2026-07-15",
-        "author": "jekjoul",
-        "message": "Merge branch 'Dev-Rumah' of https:\/\/github.com\/jekjoul\/mkdcnew into Dev-Rumah"
-    },
-    {
-        "step": "5d2c987",
-        "date": "2026-07-15",
-        "author": "jekjoul",
-        "message": "Update : Surat Keluar Manual dan otomatis"
-    },
-    {
-        "step": "3db8926",
-        "date": "2026-07-15",
-        "author": "jekjoul",
-        "message": "Merge pull request #13 from jekjoul\/main"
-    },
-    {
-        "step": "e61c9d8",
-        "date": "2026-07-15",
-        "author": "jekjoul",
-        "message": "Merge pull request #12 from jekjoul\/Dev-Rumah"
-    },
-    {
-        "step": "deb6916",
-        "date": "2026-07-15",
-        "author": "jekjoul",
-        "message": "Add : Fitur Print dan download PDF Absensi"
-    },
-    {
-        "step": "1ba795c",
-        "date": "2026-07-15",
-        "author": "jekjoul",
-        "message": "Merge branch 'Dev-Rumah' of https:\/\/github.com\/jekjoul\/mkdcnew into Dev-Rumah"
-    },
-    {
-        "step": "aae09cd",
-        "date": "2026-07-15",
-        "author": "jekjoul",
-        "message": "Merge pull request #11 from jekjoul\/main"
-    },
-    {
-        "step": "e79c2bc",
-        "date": "2026-07-15",
-        "author": "jekjoul",
-        "message": "Merge branch 'Dev-Rumah' of https:\/\/github.com\/jekjoul\/mkdcnew into Dev-Rumah"
-    },
-    {
-        "step": "68668e5",
-        "date": "2026-07-15",
-        "author": "jekjoul",
-        "message": "Merge pull request #10 from jekjoul\/Dev-Rumah"
-    },
-    {
-        "step": "a261775",
-        "date": "2026-07-15",
-        "author": "jekjoul",
-        "message": "Add : Edit Inline PTK dan Siswa"
-    },
-    {
-        "step": "92ed36c",
-        "date": "2026-07-15",
-        "author": "jekjoul",
-        "message": "Update : Tambah fitur Generate NIY dan NIPD"
-    },
-    {
-        "step": "94f448c",
-        "date": "2026-07-15",
-        "author": "jekjoul",
-        "message": "Fix: Memasukkan sub-permissions perangkat_pembelajaran_list dan perangkat_pembelajaran_edit di bawah menu_perangkat_pembelajaran serta memetakan hak aksesnya pada role Admin, Wakasek Kurikulum, dan Kepala Sekolah agar dapat dioperasikan secara penuh."
-    },
-    {
-        "step": "88e8e90",
-        "date": "2026-07-15",
-        "author": "jekjoul",
-        "message": "Merge pull request #9 from jekjoul\/Dev-Rumah"
-    },
-    {
-        "step": "60c2c72",
-        "date": "2026-07-15",
-        "author": "jekjoul",
-        "message": "Migration: Menambahkan berkas SQL baru database_migration_tree_permissions.sql untuk migrasi database tree permissions di server production"
-    },
-    {
-        "step": "fdb6951",
-        "date": "2026-07-15",
-        "author": "jekjoul",
-        "message": "Refactor: Menambahkan pilihan dropdown Parent Permission (parent_id) dan perhitungan otomatis Level ke form tambah\/ubah permission, serta menampilkan data parent & level pada halaman list."
-    },
-    {
-        "step": "bccf3fb",
-        "date": "2026-07-15",
-        "author": "jekjoul",
-        "message": "Refactor: Menyisir seluruh menu dan fitur sistem MKDC (Calon Siswa, Siswa Aktif, Kurikulum, Surat Menyurat, Log & Backup, Pengaturan) secara komprehensif 100% lengkap dan memasukkannya ke database-driven tree permissions."
-    },
-    {
-        "step": "05f3110",
-        "date": "2026-07-15",
-        "author": "jekjoul",
-        "message": "Refactor: Memigrasikan permissions menjadi fully database-driven menggunakan kolom parent_id dan level. Memperbarui berkas add.php & edit.php serta database_changes.sql agar terkonstruksi secara dinamis dari database."
-    },
-    {
-        "step": "08e6fd6",
-        "date": "2026-07-15",
-        "author": "jekjoul",
-        "message": "Revisi: Menghapus ikon checklist dekoratif (ri-checkbox-circle-line) pada Level 2 agar murni menyisakan visual checklist bawaan browser di sebelah kiri label."
-    },
-    {
-        "step": "02a62bd",
-        "date": "2026-07-15",
-        "author": "jekjoul",
-        "message": "Revisi: Memindahkan posisi checkbox checklist ke sebelah kiri judul label teks pada Level 1 (Grup) dan Level 2 (Submenu) di antarmuka Tree Role Permissions."
-    },
-    {
-        "step": "ff5feb2",
-        "date": "2026-07-15",
-        "author": "jekjoul",
-        "message": "Fitur: Sukses menyusun antarmuka Hierarchy Tree 3 Level yang interaktif dan modern untuk konfigurasi permissions pada halaman tambah & edit roles."
-    },
-    {
-        "step": "f6f3db5",
-        "date": "2026-07-15",
-        "author": "jekjoul",
-        "message": "Revisi: Menghapus bypass menu sidebar hardcoded & beralih sepenuhnya ke permission-based dinamis database untuk menu Ekstrakurikuler dan Kedisiplinan. Menyinkronkan mapping role & permissions baru secara utuh di database lokal serta database_changes.sql."
-    },
-    {
-        "step": "3f66bf1",
-        "date": "2026-07-15",
-        "author": "jekjoul",
-        "message": "Merge pull request #8 from jekjoul\/Dev-Rumah"
-    },
-    {
-        "step": "53e0669",
-        "date": "2026-07-15",
-        "author": "jekjoul",
-        "message": "Fitur: Mempercantik konfirmasi generator AI menggunakan SweetAlert2 (SWAL) dan menampilkan modal peringatan telaah ulang hasil dokumen otomatis pasca reload."
-    },
-    {
-        "step": "e1f054f",
-        "date": "2026-07-15",
-        "author": "jekjoul",
-        "message": "Fitur: Sukses mengintegrasikan sebaran tugas mandiri (min 3 tugas) dan penilaian harian (min 2 ujian) secara proporsional ke dalam agenda harian manual & AI."
-    },
-    {
-        "step": "448e3c7",
-        "date": "2026-07-15",
-        "author": "jekjoul",
-        "message": "Fitur: Meng-override pertemuan pertama pada agenda mengajar (manual & AI) agar otomatis terisi agenda perkenalan guru, pelajaran, kontrak belajar, & pembahasan materi satu semester."
-    },
-    {
-        "step": "dcc2f51",
-        "date": "2026-07-15",
-        "author": "jekjoul",
-        "message": "Merge pull request #7 from jekjoul\/Dev-Rumah"
-    },
-    {
-        "step": "5554768",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "Fitur: Memperketat generator agenda mengajar (manual & AI). Hanya memasukkan hari berstatus 'Efektif' saja. Hari libur, luar kelas, atau daring otomatis disaring\/diabaikan dari agenda kelas harian."
-    },
-    {
-        "step": "4b2086a",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "Merge branch 'Dev-Rumah' of https:\/\/github.com\/jekjoul\/mkdcnew into Dev-Rumah"
-    },
-    {
-        "step": "2d2f1f7",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "Dokumentasi: Memperbarui database_changes.sql untuk menyertakan skema pembuatan tabel ekstrakurikuler & ekstrakurikuler_siswa."
-    },
-    {
-        "step": "7c0e4f2",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "Dokumentasi: Membuat database_changes.sql berisi skema SQL DDL & DML untuk update server production (Multi-Role, Kedisiplinan & BK)."
-    },
-    {
-        "step": "b3f20c8",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "Fitur: Menyelaraskan form input multiple roles pada add & edit akun dengan form pembina ekskul (tag di baris bawah), serta meng-update daftar akun agar dapat menampilkan daftar multi-role secara lengkap."
-    },
-    {
-        "step": "16db518",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "Fitur: Menyesuaikan form pelaporan kedisiplinan guru. Menyembunyikan pilihan kategori & rencana tindak lanjut awal bagi guru biasa, serta menambahkan dropdown search siswa (Select2) dan verifikasi kategori manual oleh Guru BK."
-    },
-    {
-        "step": "c3daa0f",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "Fix: Memindahkan menu Kedisiplinan & BK keluar dari blok kondisional group Kesiswaan di sidebar agar dapat dirender secara mandiri bagi guru biasa."
-    },
-    {
-        "step": "387dfcd",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "Fix: Menampilkan menu Kedisiplinan & BK di sidebar secara otomatis untuk seluruh guru biasa, serta mengecualikan segmen URI 'kedisiplinan' dari redirect paksa guru di MY_Controller."
-    },
-    {
-        "step": "5c9835e",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "Fitur: Memisahkan peran pelaporan kedisiplinan. Seluruh guru dapat melaporkan kenakalan murid, namun penentuan bobot poin kategori, edit tindak lanjut konseling BK, dan hapus laporan dibatasi khusus untuk Guru BK dan Admin."
-    },
-    {
-        "step": "46c34e7",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "Fix: Memperbaiki kesalahan fatal pemanggilan method num_row() (seharusnya num_rows()) serta menambahkan pengecekan table_exists('user_roles') di checkPembinaAccess."
-    },
-    {
-        "step": "1bd3280",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "Fix: Menghapus seluruh dependensi keras ifPermissions('menu_dashboard_guru') di index() dan simpan_siswa() agar Guru Pembina murni yang tidak memiliki role khusus di DB tetap dapat masuk dan menyimpan data."
-    },
-    {
-        "step": "ce3dc9f",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "Fix: Mengecualikan segmen URI 'ekstrakurikuler' dari redirect paksa guru di MY_Controller agar Guru Pembina dapat mengakses modul tanpa dialihkan ke dashboard guru."
-    },
-    {
-        "step": "5ec8e04",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "Fitur: Memperketat otorisasi hak akses Ekstrakurikuler. Guru Pembina non-admin hanya diizinkan mengelola anggota (daftar_siswa) dan menginput nilai (detail), sementara operasi CRUD konfigurasi dasar dibatasi mutlak untuk Admin."
-    },
-    {
-        "step": "3fb9da0",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "Fitur: Menampilkan menu navigasi Ekstrakurikuler secara otomatis pada sidebar akun guru yang ditugaskan sebagai pembina ekskul tanpa perlu set permission manual."
-    },
-    {
-        "step": "25bb379",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "UI: Membagi tabel centang permission menjadi 2 kolom terpisah (Menu Sidebar vs Fitur & Aksi) pada halaman Tambah dan Edit Role agar lebih user-friendly."
-    },
-    {
-        "step": "28dde3f",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "Fix: Memodifikasi tipe kolom id_ptk_pembina menjadi TEXT agar penyimpanan format array JSON guru pembina tidak terpotong (truncated) ke angka 0 saat disubmit."
-    },
-    {
-        "step": "aaa8069",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "UI: Menambahkan style CSS kustom untuk Select2 multiple agar kotak input pencarian dan daftar guru pembina terpilih (tag) dirender di baris terpisah secara vertikal."
-    },
-    {
-        "step": "cf86f86",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "Fix: Memindahkan pemuatan JS Select2 ke bawah footer untuk mencegah konflik multi-versi jQuery di Firefox."
-    },
-    {
-        "step": "3efb3b1",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "Fix: Memuat Select2 secara mandiri dari CDN resmi di form.php ekstrakurikuler guna menjamin rendering tag pil ganda berjalan sempurna di Firefox."
-    },
-    {
-        "step": "7e68478",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "UI: Menginisialisasi JavaScript Select2 secara eksplisit pada form ekstrakurikuler agar pill tags guru pembina yang dipilih langsung dirender secara interaktif."
-    },
-    {
-        "step": "e7b0adf",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "Fitur: Mengimplementasikan sistem Multi-Pembina (guru pembina ganda) pada Ekstrakurikuler menggunakan penyimpanan format JSON array. Menyesuaikan form input multiselect, parser kueri filter pembina non-admin, dan output render di list utama."
-    },
-    {
-        "step": "1e06819",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "Fitur: Menyinkronkan fungsionalitas Ekstrakurikuler setara Pembelajaran Formal. Menyertakan upload logo ekskul, filter Tahun Pelajaran, transfer anggota model dual-listbox sortable, serta penilaian deskriptif predikat (Sangat Baik, Baik, Cukup, Kurang) yang terarsip otomatis bagi alumni."
-    },
-    {
-        "step": "51a8d83",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "Fix: Menambahkan pengecekan table_exists('user_roles') di Ekstrakurikuler.php sebelum memanggil result() untuk mencegah error boolean."
-    },
-    {
-        "step": "5db0cd2",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "UI: Memindahkan posisi menu navigasi Ekstrakurikuler ke dalam kelompok menu Pembelajaran pada sidebar."
-    },
-    {
-        "step": "f6465cd",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "Fitur: Memisahkan data Perangkat Pembelajaran aktif dan tidak aktif dengan tombol switcher (Data Tidak Aktif) di list views."
-    },
-    {
-        "step": "fed9f02",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "Revert: Mengembalikan data Master Rombel agar murni berisi Nama Rombel saja. Input Wali Kelas ditiadakan di master dan tetap dipertahankan pada menu Pembelajaran."
-    },
-    {
-        "step": "21fc032",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "UI: Menyisipkan pintasan menu navigasi Kedisiplinan & BK serta Ekstrakurikuler pada sidebar aside.php."
-    },
-    {
-        "step": "f9c62bf",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "Fitur: Menyelesaikan modul Kedisiplinan Poin Pelanggaran Siswa (BK) dan modul Penilaian Anggota Ekstrakurikuler secara utuh termasuk model database schema auto-seeders."
-    },
-    {
-        "step": "ee1c52d",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "Fitur: Menghubungkan Guru (Wali Kelas) dengan Rombongan Belajar (Rombel) di data Master Rombel. Menambahkan kolom id_ptk_walikelas secara dinamis ke tabel rombel, form dropdown wali kelas saat tambah\/edit rombel, dan menampilkan kolom Wali Kelas di tabel list Rombel."
-    },
-    {
-        "step": "25c34c8",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "Fitur: Mengimplementasikan basis data sistem Multi-Role (peran ganda) untuk pengguna, dengan tabel user_roles dan sinkronisasi data dinamis. Menambahkan checkbox multi-select role pada form Tambah\/Sunting Akun, memodifikasi bypass redirection login di MY_Controller, memodifikasi otorisasi hasPermissions() agar menggabungkan seluruh role pengguna, serta menyensor data sensitif (No KK, Ijazah, NIK) dan membatasi tab mutasi\/arsip pada detail siswa bagi guru yang bukan admin\/staf."
-    },
-    {
-        "step": "9bc755c",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "Update : Autosave Jadwal Pelajaran"
-    },
-    {
-        "step": "e76a076",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "Merge pull request #5 from jekjoul\/main"
-    },
-    {
-        "step": "4cd8e01",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "Fitur: Menyimpan jadwal pelajaran secara otomatis (Auto-Save) sesaat setelah drag & drop token baru, memindahkan token, menghapus token (double click), mengosongkan jadwal (clear), maupun setelah proses auto-generate otomatis. Tombol simpan manual dinonaktifkan."
-    },
-    {
-        "step": "7da3617",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "Revisi: Membatalkan hak akses guru ke menu jadwal pelajaran, alumni, buku induk, surat menyurat, dan pencetakan. Sidebar dikembalikan ke bentuk semula."
-    },
-    {
-        "step": "69a85d1",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "Fitur: Mengizinkan akses dan menambahkan menu Jadwal Pelajaran, Alumni, Buku Induk, Surat Menyurat, dan Pencetakan agar dapat diakses oleh user Guru pada sidebar portal Guru"
-    },
-    {
-        "step": "dff5a03",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "Merge pull request #4 from jekjoul\/Dev-Rumah"
-    },
-    {
-        "step": "efbec85",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "Merge pull request #3 from jekjoul\/main"
-    },
-    {
-        "step": "fb25779",
-        "date": "2026-07-14",
-        "author": "jekjoul",
-        "message": "Fitur: Menambahkan tombol dan sistem generator jadwal pelajaran otomatis. Menghindari bentrok guru di jam\/slot yang sama, menampilkan nama guru di kolom jadwal, dan mengelompokkan jam mengajar (blok 2-3 JP per mapel) agar tidak acak."
-    },
-    {
-        "step": "9ad17c9",
-        "date": "2026-07-13",
-        "author": "jekjoul",
-        "message": "Fitur: Menambahkan pengaturan kapitalisasi teks (UPPERCASE vs Custom Case) pada Kop Surat dinamis beserta live preview"
-    },
-    {
-        "step": "123e96e",
-        "date": "2026-07-13",
-        "author": "jekjoul",
-        "message": "Fitur: Menambahkan baris ke-2 untuk Lembaga Naungan beserta kontrol ukuran font dinamis pada Kop Surat"
-    },
-    {
-        "step": "5701750",
-        "date": "2026-07-13",
-        "author": "jekjoul",
-        "message": "Fitur: Menambahkan dukungan upload file logo terpisah (Kiri & Kanan) untuk opsi tata letak Kop Surat Ganda (double_logo), lengkap dengan live preview di form kop"
-    },
-    {
-        "step": "cc78d48",
-        "date": "2026-07-13",
-        "author": "jekjoul",
-        "message": "Fitur: Menambahkan modul baru Pengaturan Kop Surat dinamis yang mendukung kustomisasi logo, naungan, nama lembaga, sub-instansi, alamat, kontak, gaya layout (Tengah\/Logo Kiri\/Logo Ganda), dan ukuran font khusus per baris (Dilengkapi dengan Live Preview)"
-    },
-    {
-        "step": "11bef7a",
-        "date": "2026-07-10",
-        "author": "jekjoul",
-        "message": "Merge pull request #2 from jekjoul\/Dev-Rumah"
-    },
-    {
-        "step": "16fe99b",
-        "date": "2026-07-10",
-        "author": "jekjoul",
-        "message": "Fitur: Menyatukan profil PTK dan Akun Guru dalam satu halaman bersistem navigasi tab yang sinkron dengan detail PTK admin, serta memperbarui nama menu sidebar menjadi Profil Saya"
-    },
-    {
-        "step": "872afff",
-        "date": "2026-07-10",
-        "author": "jekjoul",
-        "message": "Merge branch 'Dev-Rumah' of https:\/\/github.com\/jekjoul\/mkdcnew into Dev-Rumah"
-    },
-    {
-        "step": "83a2e99",
-        "date": "2026-07-10",
-        "author": "jekjoul",
-        "message": "Perbaikan Bahasa di Tabel Nilai"
-    },
-    {
-        "step": "845e74f",
-        "date": "2026-07-10",
-        "author": "jekjoul",
-        "message": "Merge pull request #1 from jekjoul\/main"
-    },
-    {
-        "step": "3496704",
-        "date": "2026-07-10",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "32e186e",
-        "date": "2026-07-10",
-        "author": "jekjoul",
-        "message": "Perbaikan: Menghilangkan sensor masking NISN\/NIPD untuk guru, serta menerapkan CSS sticky headers (vertikal) dan sticky columns untuk No dan Nama Siswa (horizontal) pada form input nilai Admin & Guru"
-    },
-    {
-        "step": "626e805",
-        "date": "2026-07-10",
-        "author": "jekjoul",
-        "message": "Fitur: Menambahkan kolom tugas dan ujian harian dinamis yang dapat ditambah, dikurangi, dan diedit namanya secara inline di input nilai (Admin & Guru)"
-    },
-    {
-        "step": "605320c",
-        "date": "2026-07-10",
-        "author": "jekjoul",
-        "message": "Perbaikan: Menambahkan inisialisasi query data modul_ajar_list dan endpoint URL AI generator pada detail perangkat pembelajaran untuk portal guru"
-    },
-    {
-        "step": "24f4ae5",
-        "date": "2026-07-10",
-        "author": "jekjoul",
-        "message": "Perbaikan: Memperbaiki kesalahan pemeriksaan hak akses pada index portal guru untuk menghindari putaran loops redirection"
-    },
-    {
-        "step": "f3308cf",
-        "date": "2026-07-10",
-        "author": "jekjoul",
-        "message": "Perbaikan: Menghindari pencocokan parsial startsWith pada tautan root dashboard agar tidak ikut menyala saat halaman sub-fitur lain dimuat"
-    },
-    {
-        "step": "c566894",
-        "date": "2026-07-10",
-        "author": "jekjoul",
-        "message": "Perbaikan: Menyesuaikan algoritma deteksi active-page menu sidebar agar membedakan URL secara spesifik untuk Calon Siswa dan Validasi Daftar Ulang"
-    },
-    {
-        "step": "7b2810f",
-        "date": "2026-07-10",
-        "author": "jekjoul",
-        "message": "Fitur: Menggabungkan menu sidebar 'Jadwal Pelajaran' dan 'Jadwal Tidak Aktif' menjadi satu sub-dropdown terpadu"
-    },
-    {
-        "step": "9a41eb1",
-        "date": "2026-07-10",
-        "author": "jekjoul",
-        "message": "Perbaikan: Menambahkan paksaan styling width 100% dan class w-100 pada modulAjarTable serta agendaTable untuk performa full width"
-    },
-    {
-        "step": "c135c00",
-        "date": "2026-07-09",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "bca7850",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Perbaikan: Mengubah target tabel query modul ajar menjadi perangkat_pembelajaran_modul_ajar pada generate_agenda_ai untuk mengatasi error result() on bool"
-    },
-    {
-        "step": "a2a6768",
-        "date": "2026-07-09",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "045d700",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Fitur: Menyinkronkan agenda harian AI secara dinamis dengan daftar Modul Ajar (RPP) yang telah disusun sebelumnya"
-    },
-    {
-        "step": "a501824",
-        "date": "2026-07-09",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "5e47ffe",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Perbaikan: Mengganti colspan pada baris kosong modulAjarTable dengan tag td terpisah agar tidak memicu DataTables warning parameter"
-    },
-    {
-        "step": "cb910cb",
-        "date": "2026-07-09",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "322f56b",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Perbaikan: Mengubah tabel daftar modul ajar menjadi DataTable interaktif lengkap dengan fitur paginasi dan pencarian"
-    },
-    {
-        "step": "dba15b6",
-        "date": "2026-07-09",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "f70e0d9",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Perbaikan: Mengaktifkan selector class preview doc di list modul ajar dan merapikan layout lebar kolom tabel agar tidak overflow-x"
-    },
-    {
-        "step": "49be877",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Fitur: Mengonfigurasi prompt agenda AI agar menyajikan materi interaktif, penerapan dunia nyata murid, dan menyematkan contoh referensi video YouTube"
-    },
-    {
-        "step": "cacbc76",
-        "date": "2026-07-09",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "cd87500",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Fitur: Menjamin pembuatan naskah soal AI lengkap (misal 1-20 tanpa lompat\/potong) yang mengacu pada data tabel kisi-kisi sebelumnya"
-    },
-    {
-        "step": "9ea054e",
-        "date": "2026-07-09",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "d047dd4",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Fitur: Mengintegrasikan judul penulisan kisi-kisi dinamis dan format teks biasa untuk metadata profil (tanpa tabel) pada output AI"
-    },
-    {
-        "step": "aee0b6c",
-        "date": "2026-07-09",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "0fb0f8c",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Fitur: Menambahkan modal konfigurasi parameter kisi-kisi (jumlah soal, bentuk soal, alokasi waktu) dan format landscape HTML-to-Word dengan tabel 10 kolom persis"
-    },
-    {
-        "step": "d0084d1",
-        "date": "2026-07-09",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "2019400",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Fitur: Mengintegrasikan pembuatan folder otomatis 'MKDC - Berkas Pembelajaran' di Google Drive dan menaruh semua berkas ke dalamnya"
-    },
-    {
-        "step": "4a4f7ef",
-        "date": "2026-07-09",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "fbcbc3e",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Fitur: Menambahkan aturan pembatasan istilah AI agar menggunakan kata 'murid' dan melarang keras kata 'peserta didik'"
-    },
-    {
-        "step": "72b7bcf",
-        "date": "2026-07-09",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "e998e94",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Perbaikan: Menambahkan notifikasi peringatan rinci jika database SQL gagal menyimpan data hasil generate AI"
-    },
-    {
-        "step": "af0529a",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Perbaikan: Menyatukan pembaruan nama berkas lokal dan drive_id dalam satu query saveBerkas demi mencegah data hilang saat record baru di-insert"
-    },
-    {
-        "step": "735ea09",
-        "date": "2026-07-09",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "c4fe767",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Perbaikan: Menghilangkan properti disabled pada tombol submit AI untuk menjamin form data terkirim seutuhnya"
-    },
-    {
-        "step": "1701ce2",
-        "date": "2026-07-09",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "3d40d33",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Perbaikan: Mengganti modal spinner menjadi inline button spinner di detail.php untuk memulihkan alur submit form & penyimpanan database"
-    },
-    {
-        "step": "2d018eb",
-        "date": "2026-07-09",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "b18e325",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Perbaikan: Menggunakan submit native DOM form[0].submit() di Javascript untuk memastikan form terkirim bypass jQuery handlers"
-    },
-    {
-        "step": "946b4b8",
-        "date": "2026-07-09",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "7d92422",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Perbaikan: Memperbaiki aksi submit form trigger-ai pasca penampilan modal loading spinner"
-    },
-    {
-        "step": "511c7a9",
-        "date": "2026-07-09",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "8bd568a",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Fitur: Menambahkan modal loading spinner progress AI interaktif dan implementasi prompt AI berkesinambungan (Tujuan Pembelajaran mengacu pada Capaian Pembelajaran sebelumnya)"
-    },
-    {
-        "step": "e41ed12",
-        "date": "2026-07-09",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "8e9348a",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Perbaikan: Menghindari fatal error Call to a member function row() on bool di getPembelajaranMapel() model"
-    },
-    {
-        "step": "36d1195",
-        "date": "2026-07-09",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "63cac4c",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Perbaikan: Menambahkan notifikasi penanganan kegagalan unggah Google Drive pada generator AI perangkat dan modul ajar"
-    },
-    {
-        "step": "c3060cd",
-        "date": "2026-07-09",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "437962c",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Fitur: Menambahkan tombol generator AI berurutan (CP -> TP -> ATP -> Kisi\/Soal STS\/SAS) yang terintegrasi dengan Google Drive dan menyertakan context Kurikulum, Mapel, Kelas, dan Semester"
-    },
-    {
-        "step": "1477e32",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Perbaikan: Menambahkan pilihan & penampilan kolom kurikulum pada halaman utama menu Tahun Pelajaran (tahun_pelajaran controller, list, & form)"
-    },
-    {
-        "step": "62327db",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Fitur: Menambahkan kolom kurikulum (K-13 & Kurikulum Merdeka) di master tahun pelajaran list & form, lengkap dengan sql migrasi"
-    },
-    {
-        "step": "ec46555",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Fitur: Menambahkan tab khusus Modul Ajar\/RPP multifile lengkap dengan upload manual, unduh, hapus, dan generator AI Gemini terintegrasi ke Google Drive (DOCX)"
-    },
-    {
-        "step": "d1464b7",
-        "date": "2026-07-09",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "3667d67",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Perbaikan: Memuat text helper CodeIgniter di controller Perangkat_pembelajaran agar fungsi character_limiter() tersedia"
-    },
-    {
-        "step": "fcbbdc7",
-        "date": "2026-07-09",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "a1e65a3",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Keamanan: Mengamankan pencetakan materi agenda menggunakan html_escape untuk mencegah eksekusi kode pemrograman (mitigasi XSS)"
-    },
-    {
-        "step": "4bb7835",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Perbaikan: Menyelaraskan pembacaan key JSON waktu istirahat (after & duration) agar kalkulasi jam mulai\/selesai berjalan lancar tanpa mengalami kemacetan rendering"
-    },
-    {
-        "step": "cf4b5ad",
-        "date": "2026-07-09",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "310a41d",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Perbaikan: Memperbaiki pencarian jadwal pelajaran khusus mata pelajaran terkait di model generateAgendaAI agar data jam mulai\/selesai terisi otomatis"
-    },
-    {
-        "step": "2e3b2dc",
-        "date": "2026-07-09",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "067dbca",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Fitur: Menambahkan model Gemini 2.5, 3, 3.1, dan 3.5 ke daftar opsi dropdown konfigurasi API"
-    },
-    {
-        "step": "c7c390d",
-        "date": "2026-07-09",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "d75ba26",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Fitur: Menambahkan pengaturan pilihan dropdown versi model Gemini AI serta menyertakan script SQL pembaruannya"
-    },
-    {
-        "step": "2dae7c1",
-        "date": "2026-07-09",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "058646f",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Dokumentasi: Memperbarui update_production.sql dengan perubahan migrasi DB Google Drive & Google AI"
-    },
-    {
-        "step": "1e001d9",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Perbaikan: Menyesuaikan nama model Gemini ke 'gemini-2.0-flash' untuk kompatibilitas endpoint v1beta Free Tier"
-    },
-    {
-        "step": "1694ed0",
-        "date": "2026-07-09",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "c65711b",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Perbaikan: Menyesuaikan nama model Gemini ke 'gemini-1.5-flash-latest' agar kompatibel dengan API v1beta & Gemini Free Tier"
-    },
-    {
-        "step": "c041375",
-        "date": "2026-07-09",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "d4e0994",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Fitur: Mengintegrasikan Google AI (Gemini Flash) untuk merumuskan agenda harian otomatis berbasis Kurikulum Merdeka serta membuat halaman pengaturan API Key-nya"
-    },
-    {
-        "step": "8e780c6",
-        "date": "2026-07-09",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "d231da5",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Fitur: Menyaring data rombel pada halaman susun jadwal pelajaran mingguan agar hanya memuat rombel yang pembelajarannya aktif (memiliki mata pelajaran)"
-    },
-    {
-        "step": "90597ad",
-        "date": "2026-07-09",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "889f155",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Fitur: Memisahkan tombol unduh dengan pratinjau (view) berkas serta mengimplementasikan Ajax Iframe Google Drive Preview Modal"
-    },
-    {
-        "step": "05a8382",
-        "date": "2026-07-09",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "ccf5441",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Fitur: Menambahkan penarikan (export\/download) berkas otomatis dari Google Drive sebelum berkas diunduh agar editan online ikut ter-update"
-    },
-    {
-        "step": "1b04052",
-        "date": "2026-07-09",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "9af44ae",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Perbaikan: Mengubah format tautan tombol edit online agar dinamis mendeteksi berkas Word (.docx) atau Excel (.xlsx) untuk menghindari error 404 dari Google"
-    },
-    {
-        "step": "e024c1c",
-        "date": "2026-07-09",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "9e004f9",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Fitur: Membuat Welcome landing page publik di rute utama untuk verifikasi Google OAuth Branding"
-    },
-    {
-        "step": "4d7f62d",
-        "date": "2026-07-09",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "bb422df",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Perbaikan: Menambahkan scope Google Drive (drive.file) ke alur login utama Google di Login.php"
-    },
-    {
-        "step": "32e3250",
-        "date": "2026-07-09",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "870f784",
-        "date": "2026-07-09",
-        "author": "jekjoul",
-        "message": "Perbaikan: Menyesuaikan redirect_uri Google OAuth profil ke HTTPS domain produksi untuk menghindari redirect_uri_mismatch"
-    },
-    {
-        "step": "df1027e",
-        "date": "2026-07-09",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "181b7be",
-        "date": "2026-07-08",
-        "author": "jekjoul",
-        "message": "Fitur: Mengubah upload berkas pembelajaran menjadi per-item dengan form mandiri dan tombol upload terpisah serta feedback error Google Drive API"
-    },
-    {
-        "step": "ba0ddb4",
-        "date": "2026-07-08",
-        "author": "jekjoul",
-        "message": "Fitur: Menampilkan indikator status koneksi Google di bilah navigasi navbar atas"
-    },
-    {
-        "step": "24e7b09",
-        "date": "2026-07-08",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "7a34015",
-        "date": "2026-07-08",
-        "author": "jekjoul",
-        "message": "Perbaikan: Menambahkan link publik Kebijakan Privasi dan Syarat Layanan di halaman Login"
-    },
-    {
-        "step": "49f5bce",
-        "date": "2026-07-08",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "83b05c3",
-        "date": "2026-07-08",
-        "author": "jekjoul",
-        "message": "Fitur: Menambahkan halaman Privacy Policy dan Terms of Service di footer aplikasi"
-    },
-    {
-        "step": "7f87c41",
-        "date": "2026-07-08",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "e3be5af",
-        "date": "2026-07-08",
-        "author": "jekjoul",
-        "message": "Perbaikan: Izinkan Guru mengakses halaman profil tanpa redirect ke dashboard guru"
-    },
-    {
-        "step": "03261fe",
-        "date": "2026-07-08",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "ee02930",
-        "date": "2026-07-08",
-        "author": "jekjoul",
-        "message": "Fitur: Integrasi Google Drive API untuk berkas pembelajaran, batasan ekstensi docx\/xlsx, dan Hubungkan Google Profil ke Audience Console"
-    },
-    {
-        "step": "35cd0b0",
-        "date": "2026-07-08",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "73dc19e",
-        "date": "2026-07-08",
-        "author": "jekjoul",
-        "message": "integrasi google drive"
-    },
-    {
-        "step": "1d886ba",
-        "date": "2026-07-08",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "ef46b72",
-        "date": "2026-07-08",
-        "author": "jekjoul",
-        "message": "perbaikan agenda pembelajaran dan integrasi google drive untuk upload perangkat pembelajaran"
-    },
-    {
-        "step": "55c9e05",
-        "date": "2026-07-02",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "b47208b",
-        "date": "2026-07-02",
-        "author": "jekjoul",
-        "message": "perbaikan form input maps pick koordinat"
-    },
-    {
-        "step": "c677245",
-        "date": "2026-07-02",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "a1316a3",
-        "date": "2026-07-02",
-        "author": "jekjoul",
-        "message": "perbaikan oauth google"
-    },
-    {
-        "step": "0da6901",
-        "date": "2026-07-02",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "00e1cda",
-        "date": "2026-07-02",
-        "author": "jekjoul",
-        "message": "Perbaikan Fitur Pembelajaran dan Alumni"
-    },
-    {
-        "step": "dc554c5",
-        "date": "2026-07-01",
-        "author": "jekjoul",
-        "message": "update tampilan maps"
-    },
-    {
-        "step": "d866741",
-        "date": "2026-07-01",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "a311d9a",
-        "date": "2026-07-01",
-        "author": "jekjoul",
-        "message": "update bug scanner"
-    },
-    {
-        "step": "e182159",
-        "date": "2026-07-01",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "d69b5ec",
-        "date": "2026-07-01",
-        "author": "jekjoul",
-        "message": "update scanner preview"
-    },
-    {
-        "step": "0c40fb8",
-        "date": "2026-07-01",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "97435a4",
-        "date": "2026-07-01",
-        "author": "jekjoul",
-        "message": "update bug upload"
-    },
-    {
-        "step": "098df53",
-        "date": "2026-07-01",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "b58b7f8",
-        "date": "2026-07-01",
-        "author": "jekjoul",
-        "message": "test database"
-    },
-    {
-        "step": "193377b",
-        "date": "2026-07-01",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "7bd037c",
-        "date": "2026-07-01",
-        "author": "jekjoul",
-        "message": "perbaikan scanner"
-    },
-    {
-        "step": "0b79682",
-        "date": "2026-06-30",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "04ecd40",
-        "date": "2026-07-01",
-        "author": "jekjoul",
-        "message": "Edit Profil"
-    },
-    {
-        "step": "f499517",
-        "date": "2026-06-30",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "82c5353",
-        "date": "2026-07-01",
-        "author": "jekjoul",
-        "message": "fix database"
-    },
-    {
-        "step": "85571ff",
-        "date": "2026-06-30",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "0717d8e",
-        "date": "2026-07-01",
-        "author": "jekjoul",
-        "message": "add scanner plugin"
-    },
-    {
-        "step": "411943a",
-        "date": "2026-07-01",
-        "author": "jekjoul",
-        "message": "gitignore database"
-    },
-    {
-        "step": "972714c",
-        "date": "2026-07-01",
-        "author": "jekjoul",
-        "message": "add gitignore"
-    },
-    {
-        "step": "fd6d306",
-        "date": "2026-07-01",
-        "author": "jekjoul",
-        "message": "gitignore database"
-    },
-    {
-        "step": "0c4ac0d",
-        "date": "2026-06-30",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "c005b5b",
-        "date": "2026-07-01",
-        "author": "jekjoul",
-        "message": "update db server"
-    },
-    {
-        "step": "bf22459",
-        "date": "2026-06-30",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "3d63a8f",
-        "date": "2026-07-01",
-        "author": "jekjoul",
-        "message": "Update besar"
-    },
-    {
-        "step": "a37d6e5",
-        "date": "2026-05-19",
-        "author": "jekjoul",
-        "message": "Minor edit dashboard list lembaga"
-    },
-    {
-        "step": "aeb2603",
-        "date": "2026-05-19",
-        "author": "jekjoul",
-        "message": "Update Databse"
-    },
-    {
-        "step": "422ca92",
-        "date": "2026-05-19",
-        "author": "jekjoul",
-        "message": "add fitru perangkat pembelajaran dan alumi"
-    },
-    {
-        "step": "83d5567",
-        "date": "2026-05-07",
-        "author": "jekjoul",
-        "message": "update database"
-    },
-    {
-        "step": "e01df19",
-        "date": "2026-05-07",
-        "author": "jekjoul",
-        "message": "add halaman khusus guru & google oauth"
-    },
-    {
-        "step": "0dcb7fc",
-        "date": "2026-05-07",
-        "author": "jekjoul",
-        "message": "update sql"
-    },
-    {
-        "step": "c5815a2",
-        "date": "2026-05-07",
-        "author": "jekjoul",
-        "message": "Add jadwal pelajaran & surat"
-    },
-    {
-        "step": "858de37",
-        "date": "2026-05-05",
-        "author": "jekjoul",
-        "message": "add fitur pembelajaran"
-    },
-    {
-        "step": "1556b67",
-        "date": "2026-05-05",
-        "author": "jekjoul",
-        "message": "Add master tahun pelajarn dan pembelajaran"
-    },
-    {
-        "step": "f3a5bf5",
-        "date": "2026-05-04",
-        "author": "jekjoul",
-        "message": "create master mapel dan master rombel"
-    },
-    {
-        "step": "990685a",
-        "date": "2026-05-04",
-        "author": "jekjoul",
-        "message": "create cruds lembaga"
-    },
-    {
-        "step": "c5a45f3",
-        "date": "2026-05-03",
-        "author": "jekjoul",
-        "message": "update cruds PTK"
-    },
-    {
-        "step": "05920e6",
-        "date": "2025-11-20",
-        "author": "jekjoul",
-        "message": "add : ruangan sarana"
-    },
-    {
-        "step": "4f832fe",
-        "date": "2025-11-09",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "cf5cb87",
-        "date": "2025-11-09",
-        "author": "jekjoul",
-        "message": "add : User, Role, Permission"
-    },
-    {
-        "step": "7b82ef6",
-        "date": "2025-11-06",
-        "author": "jekjoul",
-        "message": "update : Master - Jenis Sarana List"
-    },
-    {
-        "step": "bc76d23",
-        "date": "2025-11-06",
-        "author": "jekjoul",
-        "message": "update : database"
-    },
-    {
-        "step": "5b6fa76",
-        "date": "2025-11-06",
-        "author": "jekjoul",
-        "message": "add : Master - Jenis Ruangan"
-    },
-    {
-        "step": "4eb91d7",
-        "date": "2025-11-04",
-        "author": "jekjoul",
-        "message": "add : Sarpras Sarana"
-    },
-    {
-        "step": "390811c",
-        "date": "2025-11-03",
-        "author": "jekjoul",
-        "message": "add : Sarpras - Bangunan & Tanah"
-    },
-    {
-        "step": "fa710a3",
-        "date": "2025-10-19",
-        "author": "jekjoul",
-        "message": "Add : Sarpras - List Bangunan"
-    },
-    {
-        "step": "0512036",
-        "date": "2025-10-16",
-        "author": "jekjoul",
-        "message": "update : view list tanah dark mode"
-    },
-    {
-        "step": "f0f3690",
-        "date": "2025-10-16",
-        "author": "jekjoul",
-        "message": "fixing gitignore uploads"
-    },
-    {
-        "step": "dfe3845",
-        "date": "2025-10-16",
-        "author": "jekjoul",
-        "message": "add : gitignore"
-    },
-    {
-        "step": "deb877d",
-        "date": "2025-10-15",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "66613d6",
-        "date": "2025-10-15",
-        "author": "jekjoul",
-        "message": "update : Tanah update data & upload file"
-    },
-    {
-        "step": "699ea09",
-        "date": "2025-10-15",
-        "author": "jekjoul",
-        "message": "update list tanah detail"
-    },
-    {
-        "step": "88520b1",
-        "date": "2025-10-14",
-        "author": "jekjoul",
-        "message": "update list tanah"
-    },
-    {
-        "step": "bc49513",
-        "date": "2025-10-07",
-        "author": "jekjoul",
-        "message": "Merge branch 'Dev-Rumah' of https:\/\/gitlab.com\/jekjoul\/mkdcnew into Dev-Rumah"
-    },
-    {
-        "step": "40e0989",
-        "date": "2025-10-07",
-        "author": "jekjoul",
-        "message": "detail siswa"
-    },
-    {
-        "step": "6681b08",
-        "date": "2025-10-06",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "e53f0a6",
-        "date": "2025-10-06",
-        "author": "jekjoul",
-        "message": "Merge branch 'Dev-Rumah' of https:\/\/gitlab.com\/jekjoul\/mkdcnew into Dev-Rumah"
-    },
-    {
-        "step": "74fb92c",
-        "date": "2025-10-06",
-        "author": "jekjoul",
-        "message": "Perubahan database, tambah fitur list detail lembaga, add list tanah"
-    },
-    {
-        "step": "1c69a5c",
-        "date": "2025-09-11",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "09fcbc3",
-        "date": "2025-09-11",
-        "author": "jekjoul",
-        "message": "add Modal Ajax detail siswa tambah catatan"
-    },
-    {
-        "step": "6e03513",
-        "date": "2025-09-11",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "fc48cf5",
-        "date": "2025-09-11",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'main' into 'Dev-Rumah'"
-    },
-    {
-        "step": "1d059e2",
-        "date": "2025-09-11",
-        "author": "Zakaria Zulkarnain",
-        "message": "Update .gitlab-ci.yml file"
-    },
-    {
-        "step": "106ccc1",
-        "date": "2025-09-09",
-        "author": "jekjoul",
-        "message": "Perbaikan nav dashboard"
-    },
-    {
-        "step": "3712716",
-        "date": "2025-09-04",
-        "author": "jekjoul",
-        "message": "add input catatan"
-    },
-    {
-        "step": "e4dbf46",
-        "date": "2025-09-03",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "9a489cd",
-        "date": "2025-08-31",
-        "author": "jekjoul",
-        "message": "Add template rekam didik"
-    },
-    {
-        "step": "24783eb",
-        "date": "2025-08-28",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "e954309",
-        "date": "2025-08-28",
-        "author": "jekjoul",
-        "message": "Add Template Siswa & PTK"
-    },
-    {
-        "step": "702d680",
-        "date": "2025-08-03",
-        "author": "jekjoul",
-        "message": "Tambah UI Sarpras"
-    },
-    {
-        "step": "2cba26e",
-        "date": "2025-07-18",
-        "author": "Zakaria Zulkarnain",
-        "message": "Merge branch 'Dev-Rumah' into 'main'"
-    },
-    {
-        "step": "542fa99",
-        "date": "2025-07-18",
-        "author": "jekjoul",
-        "message": "Rubah Theme"
-    },
-    {
-        "step": "a2d502e",
-        "date": "2025-07-15",
-        "author": "Zakaria Zulkarnain",
-        "message": "edit v_lembaga_view tanah & bangunan"
-    },
-    {
-        "step": "ae70988",
-        "date": "2025-07-13",
-        "author": "Zakaria Zulkarnain",
-        "message": "Initial commit"
     }
 ]

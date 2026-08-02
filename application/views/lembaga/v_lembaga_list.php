@@ -29,7 +29,8 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                                 <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                                                     <div>
                                                         <p class="fw-medium text-primary-light mb-1"><?= $row->nama_lembaga ?></p>
-                                                        <h5 class="mb-0"><?= number_format($row->total_siswa) ?> Siswa</h5>
+                                                        <h5 class="mb-1"><?= number_format($row->total_siswa) ?> Siswa</h5>
+                                                        <span class="badge bg-primary-50 text-primary-600 border border-primary-200 radius-4 text-xs"><?= htmlspecialchars($row->jenis_lembaga ?: 'Sekolah Formal') ?></span>
                                                     </div>
                                                     <div
                                                         class="rounded-circle d-flex justify-content-center align-items-center">

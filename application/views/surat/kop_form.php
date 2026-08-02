@@ -83,6 +83,7 @@
                                 <select name="layout_style" id="in_layout" class="form-select">
                                     <option value="center" <?php echo @$row->layout_style === 'center' ? 'selected' : '' ?>>Tengah (Logo Kiri di Atas)</option>
                                     <option value="left_logo" <?php echo @$row->layout_style === 'left_logo' ? 'selected' : '' ?>>Logo Kiri, Teks Kanan</option>
+                                    <option value="left_logo_center_text" <?php echo @$row->layout_style === 'left_logo_center_text' ? 'selected' : '' ?>>Logo Kiri, Teks Tengah</option>
                                     <option value="double_logo" <?php echo @$row->layout_style === 'double_logo' ? 'selected' : '' ?>>Logo Kiri & Kanan (Teks Tengah)</option>
                                 </select>
                             </div>
@@ -213,6 +214,24 @@
                             <img src="${logoKiriSrc}" style="max-width: 75px; max-height: 75px; display: block;" id="previewLogoImage">
                         </td>
                         <td style="vertical-align: middle; text-align: left;">
+                            ${naungan ? `<div style="font-size: ${szNaungan}px; font-weight: 550; text-transform: ${transformText}; line-height: 1.2;">${naungan}</div>` : ''}
+                            ${naungan2 ? `<div style="font-size: ${szNaungan2}px; font-weight: 550; text-transform: ${transformText}; line-height: 1.2; margin-top: 1px;">${naungan2}</div>` : ''}
+                            <div style="font-size: ${szLembaga}px; font-weight: bold; text-transform: ${transformText}; line-height: 1.2; margin-top: 2px;">${lembaga}</div>
+                            ${sub ? `<div style="font-size: ${szSub}px; font-weight: bold; text-transform: ${transformText}; line-height: 1.2; margin-top: 2px; color:#333;">${sub}</div>` : ''}
+                            ${alamat ? `<div style="font-size: ${szAlamat}px; line-height: 1.3; margin-top: 4px; color:#555;">${alamat}</div>` : ''}
+                            ${kontak ? `<div style="font-size: ${szAlamat}px; line-height: 1.3; color:#555;">${kontak}</div>` : ''}
+                        </td>
+                    </tr>
+                </table>
+            `;
+        } else if (layout === 'left_logo_center_text') {
+            contentHtml = `
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="width: 70px; vertical-align: middle; text-align: left; padding-right: 10px;">
+                            <img src="${logoKiriSrc}" style="max-width: 65px; max-height: 65px; display: block;" id="previewLogoImageLeft">
+                        </td>
+                        <td style="vertical-align: middle; text-align: center;">
                             ${naungan ? `<div style="font-size: ${szNaungan}px; font-weight: 550; text-transform: ${transformText}; line-height: 1.2;">${naungan}</div>` : ''}
                             ${naungan2 ? `<div style="font-size: ${szNaungan2}px; font-weight: 550; text-transform: ${transformText}; line-height: 1.2; margin-top: 1px;">${naungan2}</div>` : ''}
                             <div style="font-size: ${szLembaga}px; font-weight: bold; text-transform: ${transformText}; line-height: 1.2; margin-top: 2px;">${lembaga}</div>

@@ -215,10 +215,7 @@
                                                 $cell_tip   = date('d-m-Y', strtotime($tgl));
                                                 $is_libur   = (isset($t->status) && $t->status == 'Libur');
 
-                                                if ($is_libur) {
-                                                    $cell_class = 'cell-libur';
-                                                    $cell_text  = 'L';
-                                                } elseif ($po) {
+                                                if ($po) {
                                                     if ($po->keterangan === 'Hanya Dhuha') {
                                                         $cell_class = 'cell-dhuha'; $cell_text = 'D'; $h_c++;
                                                     } elseif ($po->keterangan === 'Hanya Dzuhur') {
@@ -235,10 +232,14 @@
                                                     if ($po->keterangan) $cell_tip .= ' – ' . $po->keterangan;
                                                     if ($po->jam_dhuha)  $cell_tip .= ' | Dhuha: ' . $po->jam_dhuha;
                                                     if ($po->jam_dzuhur) $cell_tip .= ' | Dzuhur: ' . $po->jam_dzuhur;
+                                                    if ($is_libur)       $cell_tip .= ' (Absensi Hari Libur)';
+                                                } elseif ($is_libur) {
+                                                    $cell_class = 'cell-libur';
+                                                    $cell_text  = 'L';
                                                 }
                                             ?>
                                                 <td>
-                                                    <?php if ($is_libur): ?>
+                                                    <?php if ($is_libur && !$po): ?>
                                                         <span class="cell-btn cell-libur"
                                                             title="Libur<?php echo $t->keterangan ? ': '.$t->keterangan : '' ?>">L</span>
                                                     <?php else: ?>

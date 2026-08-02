@@ -86,6 +86,11 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                         <div class="accordion-body">
                                             <table>
                                                 <tr>
+                                                    <td style="min-width: 150px;">Jenis Lembaga</td>
+                                                    <td style="min-width: 15px;">:</td>
+                                                    <td><span class="badge bg-primary-100 text-primary-700 px-12 py-6 radius-6 text-xs fw-bold"><?= htmlspecialchars($lembaga->jenis_lembaga ?: 'Sekolah Formal') ?></span></td>
+                                                </tr>
+                                                <tr>
                                                     <td style="min-width: 150px;">NPSN</td>
                                                     <td style="min-width: 15px;">:</td>
                                                     <td><?= $lembaga->npsn ?></td>
@@ -698,6 +703,18 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                             <div class="col-sm-6 mb-20">
                                                 <label class="form-label fw-semibold text-primary-light text-sm mb-8">Nama Singkat Lembaga</label>
                                                 <input type="text" class="form-control radius-8" name="nama_lembaga_singkat" value="<?= htmlspecialchars($lembaga->nama_lembaga_singkat) ?>">
+                                            </div>
+                                            <div class="col-sm-6 mb-20">
+                                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">Jenis Lembaga <span class="text-danger-600">*</span></label>
+                                                <select class="form-control radius-8 form-select" name="jenis_lembaga" required>
+                                                    <option value="">-- Pilih Jenis Lembaga --</option>
+                                                    <?php 
+                                                    $opts = !empty($jenis_lembaga_options) ? $jenis_lembaga_options : ['Sekolah Formal', 'Sekolah Kesetaraan', 'Pondok Pesantren', 'Madrasah Diniyah', 'Yayasan', 'Majelis Ta\'lim'];
+                                                    foreach ($opts as $opt): 
+                                                    ?>
+                                                        <option value="<?= $opt ?>" <?= ($lembaga->jenis_lembaga ?: 'Sekolah Formal') === $opt ? 'selected' : '' ?>><?= $opt ?></option>
+                                                    <?php endforeach; ?>
+                                                </select>
                                             </div>
                                             <div class="col-sm-4 mb-20">
                                                 <label class="form-label fw-semibold text-primary-light text-sm mb-8">NPSN</label>

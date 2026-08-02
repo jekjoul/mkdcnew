@@ -316,7 +316,7 @@ if (!empty($kop)) {
             <div class="kop" style="width: 100%; border-bottom: 3px double #000; padding-bottom: 5px; margin-bottom: 15px; position: relative;">
                 <table style="width: 100%; border-collapse: collapse;">
                     <tr>
-                        <?php if ($layout_style === 'double_logo' || $layout_style === 'left_logo'): ?>
+                        <?php if ($layout_style === 'double_logo' || $layout_style === 'left_logo' || $layout_style === 'left_logo_center_text'): ?>
                             <td style="width: 10%; text-align: left; vertical-align: middle;">
                                 <?php if ($logo_kop): ?>
                                     <img src="<?php echo $logo_kop ?>" alt="Logo Kiri" style="max-width: 65px; max-height: 65px; height: auto;">
@@ -324,7 +324,7 @@ if (!empty($kop)) {
                             </td>
                         <?php endif; ?>
                         
-                        <td style="text-align: center; vertical-align: middle;">
+                        <td style="<?php echo $layout_style === 'left_logo' ? 'text-align: left;' : 'text-align: center;' ?> vertical-align: middle;">
                             <?php if ($naungan): ?>
                                 <div class="kop-title-naungan" style="font-size: <?php echo $sz_naungan ?>pt; font-weight: bold; text-transform: uppercase;"><?php echo htmlspecialchars($naungan) ?></div>
                             <?php endif; ?>

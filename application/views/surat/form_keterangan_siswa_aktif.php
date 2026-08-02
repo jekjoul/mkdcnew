@@ -5,7 +5,15 @@
 <div class="dashboard-main-body">
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-24">
         <div>
-            <h5 class="fw-bold text-neutral-900 mb-4">Buat Surat Keterangan Siswa Aktif SMP</h5>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <h5 class="fw-bold text-neutral-900 mb-0">Buat Surat Keterangan Siswa Aktif</h5>
+                <?php if (!empty($selected_lembaga)): ?>
+                    <span class="badge bg-warning-100 text-warning-700 px-12 py-6 radius-6 text-xs fw-bold d-inline-flex align-items-center gap-1">
+                        <iconify-icon icon="solar:building-2-bold" class="text-sm"></iconify-icon>
+                        <?php echo htmlspecialchars($selected_lembaga->nama_lembaga) ?>
+                    </span>
+                <?php endif; ?>
+            </div>
             <p class="text-secondary-light text-sm mb-0">Isi formulir di bawah ini untuk menerbitkan Surat Keterangan Siswa Aktif resmi.</p>
         </div>
         <div>
@@ -18,6 +26,7 @@
 
     <form action="<?php echo url('surat/keluar_simpan') ?>" method="post" enctype="multipart/form-data" id="formSiswaAktif">
         <input type="hidden" name="id_surat_keluar" value="<?php echo @$row->id_surat_keluar ?>">
+        <input type="hidden" name="id_lembaga" value="<?php echo @$id_lembaga_smp ?>">
         <input type="hidden" name="token_validasi" value="<?php echo @$row->token_validasi ?>">
         <input type="hidden" name="metode_pembuatan" value="Otomatis">
         <input type="hidden" name="jenis_template" value="keterangan_siswa_aktif">
@@ -27,7 +36,7 @@
 
         <div class="card border-0 shadow-xs radius-16 mb-4">
             <div class="card-header bg-warning-900 py-16 px-24">
-                <h6 class="mb-0 text-light fw-bold">Formulir Surat Keterangan Siswa Aktif SMP</h6>
+                <h6 class="mb-0 text-light fw-bold">Formulir Surat Keterangan Siswa Aktif</h6>
             </div>
             <div class="card-body p-24">
                 <div class="row gy-4">
@@ -36,19 +45,20 @@
                         <label class="form-label fw-semibold text-neutral-900">Pilih Kop Surat <span class="text-danger">*</span></label>
                         <select name="id_kop_surat" id="kopSelect" class="form-select radius-8 py-10" required>
                             <?php foreach ($kop_list as $kp): 
-                                $isSmpDefault = (strpos(strtolower($kp->nama_kop), 'smp') !== false || $kp->id_kop_surat == @$kop_smp->id_kop_surat);
+                                $isSelected = ($kp->id_kop_surat == @$row->id_kop_surat) || ($kp->id_kop_surat == @$kop_smp->id_kop_surat);
                             ?>
                                 <option value="<?php echo $kp->id_kop_surat ?>" 
                                         data-nama="<?php echo htmlspecialchars($kp->nama_kop) ?>"
-                                        data-naungan="<?php echo htmlspecialchars($kp->naungan ?: 'PEMERINTAH KABUPATEN CIAMIS') ?>"
-                                        data-naungan2="<?php echo htmlspecialchars($kp->naungan_2 ?: 'DINAS PENDIDIKAN') ?>"
-                                        data-lembaga="<?php echo htmlspecialchars($kp->nama_lembaga ?: 'SMP MIFTAHUL KHOER BOARDING SCHOOL') ?>"
+                                        data-naungan="<?php echo htmlspecialchars($kp->naungan ?: '') ?>"
+                                        data-naungan2="<?php echo htmlspecialchars($kp->naungan_2 ?: '') ?>"
+                                        data-lembaga="<?php echo htmlspecialchars($kp->nama_lembaga ?: ($selected_lembaga ? $selected_lembaga->nama_lembaga : '')) ?>"
                                         data-sub="<?php echo htmlspecialchars($kp->sub_nama ?: '') ?>"
                                         data-alamat="<?php echo htmlspecialchars($kp->alamat ?: '') ?>"
                                         data-kontak="<?php echo htmlspecialchars($kp->kontak ?: '') ?>"
                                         data-logo="<?php echo !empty($kp->logo) ? url('uploads/kop_logo/' . $kp->logo) : url('assets/images/logodc_round.png') ?>"
                                         data-logo-kanan="<?php echo !empty($kp->logo_kanan) ? url('uploads/kop_logo/' . $kp->logo_kanan) : (!empty($kp->logo) ? url('uploads/kop_logo/' . $kp->logo) : url('assets/images/logodc_round.png')) ?>"
-                                        <?php echo $isSmpDefault ? 'selected' : '' ?>>
+                                        data-layout="<?php echo htmlspecialchars($kp->layout_style ?: 'center') ?>"
+                                        <?php echo $isSelected ? 'selected' : '' ?>>
                                     <?php echo htmlspecialchars($kp->nama_kop) ?>
                                 </option>
                             <?php endforeach; ?>
@@ -157,8 +167,9 @@
                                 $gDepan = !empty($p->gelar_depan) ? trim($p->gelar_depan) . ' ' : '';
                                 $gBelakang = !empty($p->gelar_belakang) ? ', ' . trim($p->gelar_belakang) : '';
                                 $namaPtkLengkap = $gDepan . $p->nama_ptk . $gBelakang;
+                                $namaPtkKapitalNama = $gDepan . mb_strtoupper($p->nama_ptk, 'UTF-8') . $gBelakang;
                             ?>
-                                <option value="<?php echo $p->id_ptk ?>" data-nama="<?php echo htmlspecialchars($namaPtkLengkap) ?>" data-niy="<?php echo htmlspecialchars($p->niy ?: ($p->nik ?: '-')) ?>" data-jabatan="<?php echo htmlspecialchars($jabatanVal) ?>" <?php echo $isSelected ? 'selected' : '' ?>>
+                                <option value="<?php echo $p->id_ptk ?>" data-nama="<?php echo htmlspecialchars($namaPtkKapitalNama) ?>" data-niy="<?php echo htmlspecialchars($p->niy ?: ($p->nik ?: '-')) ?>" data-jabatan="<?php echo htmlspecialchars($jabatanVal) ?>" <?php echo $isSelected ? 'selected' : '' ?>>
                                     <?php echo htmlspecialchars($namaPtkLengkap) ?> (NIY/NIK: <?php echo $p->niy ?: ($p->nik ?: '-') ?>)
                                 </option>
                             <?php endforeach; ?>
@@ -207,43 +218,43 @@
             </div>
             <div class="modal-body p-0 bg-neutral-200" style="min-height: 500px;">
                 <!-- KERTAS VIRTUAL A4 -->
-                <div class="paper-preview mx-auto my-4 bg-white p-4 shadow-sm" style="position: relative; width: 210mm; min-height: 297mm; padding: 18mm 20mm 30mm 20mm; box-sizing: border-box; font-family: 'Times New Roman', Times, serif; color: #000;">
+                <div class="paper-preview mx-auto my-4 bg-white p-4 shadow-sm" style="position: relative; width: 210mm; min-height: 297mm; padding: 15mm 22mm 30mm 22mm !important; box-sizing: border-box; font-family: 'Times New Roman', Times, serif; color: #111827;">
                     
                     <!-- KOP SURAT DINAMIS -->
-                    <div class="kop-header pb-12 mb-20 text-center" style="border-bottom: 3px double #000;">
-                        <table style="width: 100%; border-collapse: collapse;">
+                    <header class="kop" style="border-bottom: 3px double #111827; padding-bottom: 10px; margin-bottom: 24px;">
+                        <table style="width: 100%; border-collapse: collapse; border: 0;">
                             <tr>
-                                <td style="width: 75px; vertical-align: middle; text-align: left;">
-                                    <img src="<?php echo url('assets/images/logodc_round.png') ?>" id="pvKopLogoLeft" style="max-width: 75px; max-height: 75px;">
+                                <td style="width: 75px; vertical-align: middle; text-align: left; padding-right: 10px; border: 0;">
+                                    <img src="<?php echo !empty($kop_smp->logo) ? url('uploads/kop_logo/' . $kop_smp->logo) : url('assets/images/logodc_round.png') ?>" id="pvKopLogoLeft" style="max-width: 80px; max-height: 80px;">
                                 </td>
-                                <td style="text-align: center; vertical-align: middle;">
-                                    <div style="font-size: 11pt; font-weight: bold; text-transform: uppercase;" id="pvKopNaungan">PEMERINTAH KABUPATEN CIAMIS</div>
-                                    <div style="font-size: 12pt; font-weight: bold; text-transform: uppercase;" id="pvKopNaungan2">DINAS PENDIDIKAN</div>
-                                    <div style="font-size: 14pt; font-weight: bold; text-transform: uppercase; color: #000; margin-top: 2px;" id="pvKopLembaga">SMP MIFTAHUL KHOER BOARDING SCHOOL</div>
-                                    <div style="font-size: 9pt; font-weight: normal; margin-top: 2px;" id="pvKopSub"></div>
-                                    <div style="font-size: 8.5pt; font-weight: normal;" id="pvKopAlamat">Dusun Mandala No. 59 RT 017 RW 006 Desa Kertamandala Kec. Panjalu Kab. Ciamis</div>
-                                    <div style="font-size: 8.5pt; font-weight: normal;" id="pvKopKontak">Tlp. 082120073033 Email : smpemka@gmail.com</div>
+                                <td style="vertical-align: middle; text-align: center; border: 0; line-height: 1.2;">
+                                    <div style="font-size: 11pt; font-weight: bold; text-transform: uppercase;" id="pvKopNaungan"><?php echo htmlspecialchars(@$kop_smp->naungan ?: '') ?></div>
+                                    <div style="font-size: 12pt; font-weight: bold; text-transform: uppercase;" id="pvKopNaungan2"><?php echo htmlspecialchars(@$kop_smp->naungan_2 ?: '') ?></div>
+                                    <div style="font-size: 14pt; font-weight: bold; text-transform: uppercase; margin-top: 2px;" id="pvKopLembaga"><?php echo htmlspecialchars(@$kop_smp->nama_lembaga ?: ($selected_lembaga ? $selected_lembaga->nama_lembaga : '')) ?></div>
+                                    <div style="font-size: 8.5pt; font-weight: normal; margin-top: 2px;" id="pvKopSub"><?php echo htmlspecialchars(@$kop_smp->sub_nama ?: '') ?></div>
+                                    <div style="font-size: 7pt; font-weight: normal;" id="pvKopAlamat"><?php echo htmlspecialchars(@$kop_smp->alamat ?: '') ?></div>
+                                    <div style="font-size: 7pt; font-weight: normal;" id="pvKopKontak"><?php echo htmlspecialchars(@$kop_smp->kontak ?: '') ?></div>
                                 </td>
-                                <td style="width: 75px; vertical-align: middle; text-align: right;">
-                                    <img src="<?php echo url('assets/images/logodc_round.png') ?>" id="pvKopLogoRight" style="max-width: 75px; max-height: 75px;">
+                                <td style="width: 75px; vertical-align: middle; text-align: right; padding-left: 10px; border: 0;">
+                                    <img src="<?php echo !empty($kop_smp->logo_kanan) ? url('uploads/kop_logo/' . $kop_smp->logo_kanan) : (!empty($kop_smp->logo) ? url('uploads/kop_logo/' . $kop_smp->logo) : url('assets/images/logodc_round.png')) ?>" id="pvKopLogoRight" style="max-width: 75px; max-height: 75px;">
                                 </td>
                             </tr>
                         </table>
-                    </div>
+                    </header>
 
                     <!-- JUDUL & NOMOR SURAT -->
-                    <div class="text-center mb-24" style="margin-top: 25px;">
-                        <h4 style="margin: 0; font-size: 14pt; font-weight: bold; text-decoration: underline; text-transform: uppercase; font-family: 'Times New Roman', serif;">SURAT KETERANGAN</h4>
-                        <div style="font-size: 12px; margin-top: 4px;" id="pvNomorSurat">Nomor : -</div>
+                    <div style="text-align: center; margin-top: 24px; margin-bottom: 40px;">
+                        <h3 style="margin: 0; font-size: 14pt !important; font-weight: bold; text-decoration: underline; text-transform: uppercase; font-family: 'Times New Roman', serif;">SURAT KETERANGAN</h3>
+                        <div style="font-size: 12pt; margin-top: 4px;" id="pvNomorSurat">Nomor : -</div>
                     </div>
 
                     <!-- REDAKSI PEMBUKA DENGAN INDENTASI 1 TAB -->
-                    <div style="font-size: 12px; line-height: 1.6; text-align: justify; text-indent: 36pt; margin-bottom: 16px;">
-                        Yang bertanda tangan dibawah ini, <span class="pvLembagaText">SMP Miftahul Khoer Boarding School</span> menerangkan bahwa :
+                    <div style="font-size: 12pt; line-height: 1.6; text-align: justify; text-indent: 36pt; margin-bottom: 16px;">
+                        Yang bertanda tangan dibawah ini, Kepala Sekolah<?php echo htmlspecialchars($selected_lembaga ? $selected_lembaga->nama_lembaga : '') ?> menerangkan bahwa :
                     </div>
 
                     <!-- TABEL DATA SISWA -->
-                    <table style="width: 90%; margin-left: 30px; margin-bottom: 20px; font-size: 12px; line-height: 1.8; border-collapse: collapse;">
+                    <table style="width: 90%; margin-left: 30px; margin-bottom: 20px; font-size: 16px; line-height: 1.8; border-collapse: collapse;">
                         <tr>
                             <td style="width: 170px; vertical-align: top;">Nama</td>
                             <td style="width: 15px; vertical-align: top;">:</td>
@@ -267,24 +278,36 @@
                     </table>
 
                     <!-- REDAKSI PENUTUP DENGAN INDENTASI 1 TAB -->
-                    <div style="font-size: 12px; line-height: 1.6; text-align: justify; text-indent: 36pt; margin-bottom: 16px;">
-                        Yang bersangkutan adalah benar-benar Siswa <span class="pvLembagaText">SMP Miftahul Khoer Boarding School</span> Panjalu Ciamis.
-                    </div>
-                    <div style="font-size: 12px; line-height: 1.6; text-align: justify; text-indent: 36pt; margin-bottom: 35px;">
-                        Demikian Surat Keterangan ini kami buat dengan sebenarnya, dan diberikan kepada yang bersangkutan dipergunakan sebaik-baiknya.
-                    </div>
-
-                    <!-- BLOK TANDA TANGAN DENGAN OVERLAY STEMPEL / TTD DIGITAL (BEHIND / OVER TEXT) & NAMA HURUF KAPITAL -->
                     <?php 
-                    $default_kab = !empty($lembaga_smp->kabupaten) ? $lembaga_smp->kabupaten : '';
-                    if (empty($default_kab) && !empty($lembaga_smp->alamat)) {
-                        if (preg_match('/((?:Kab\.|Kabupaten|Kota)\s+[A-Za-z\s]+?)(?:[\.,\d]|$)/i', $lembaga_smp->alamat, $m)) {
-                            $default_kab = $m[1];
+                    $raw_kec = !empty($selected_lembaga->kecamatan) ? trim($selected_lembaga->kecamatan) : '';
+                    if (is_numeric($raw_kec)) {
+                        $reg_kec_row = $this->db->get_where('reg_kecamatan', ['id_kec' => $raw_kec])->row();
+                        if ($reg_kec_row && !empty($reg_kec_row->nama)) {
+                            $raw_kec = $reg_kec_row->nama;
                         }
                     }
-                    $default_kab_formatted = ucwords(strtolower(trim($default_kab ?: 'Kab. Ciamis')));
+                    $clean_kec = preg_replace('/^(KEC\.?|KECAMATAN)\s+/i', '', trim($raw_kec));
+                    $formatted_kec = ucwords(strtolower($clean_kec ?: 'Panjalu'));
+
+                    $raw_kab = !empty($selected_lembaga->kabupaten) ? trim($selected_lembaga->kabupaten) : '';
+                    if (is_numeric($raw_kab)) {
+                        $reg_k = $this->db->get_where('reg_kabupaten', ['id_kab' => $raw_kab])->row();
+                        if ($reg_k && !empty($reg_k->nama)) {
+                            $raw_kab = $reg_k->nama;
+                        }
+                    }
+                    $clean_kab = preg_replace('/^(KAB\.?|KABUPATEN|KOTA)\s+/i', '', trim($raw_kab));
+                    $default_kab_formatted = ucwords(strtolower($clean_kab ?: 'Ciamis'));
                     ?>
-                    <div style="float: right; width: 280px; text-align: left; font-size: 12px; line-height: 1.4; margin-bottom: 30px; position: relative;">
+                    <div style="font-size: 12pt; line-height: 1.6; text-align: justify; text-indent: 36pt; margin-bottom: 16px;">
+                        Yang bersangkutan adalah benar-benar Siswa <?php echo htmlspecialchars($selected_lembaga ? $selected_lembaga->nama_lembaga : '') ?> Kecamatan <?php echo htmlspecialchars($formatted_kec) ?> Kabupaten <?php echo htmlspecialchars($default_kab_formatted) ?>.
+                    </div>
+                    <div style="font-size: 12pt; line-height: 1.6; text-align: justify; text-indent: 36pt; margin-bottom: 35px;">
+                        Demikian Surat Keterangan ini kami buat dengan sebenarnya dan diberikan kepada yang bersangkutan dipergunakan sebaik-baiknya.
+                    </div>
+
+                    <!-- BLOK TANDA TANGAN DENGAN OVERLAY STEMPEL / TTD DIGITAL & NAMA HURUF KAPITAL -->
+                    <div style="float: right; width: 280px; text-align: left; font-size: 11pt; line-height: 1.4; margin-bottom: 30px; position: relative;">
                         <!-- Image TTD Digital Overlay Behind / Over Text (Presisi Seperti Stempel Asli) -->
                         <img src="" id="pvImgTtdDigital" style="position: absolute; left: -35px; top: 15px; width: 190px; max-height: 120px; object-fit: contain; pointer-events: none; z-index: 1; opacity: 0.92; display: none;" alt="TTD Digital">
 
@@ -294,7 +317,7 @@
                             
                             <div style="height: 65px;"></div>
 
-                            <div style="font-weight: bold; text-decoration: underline; text-transform: uppercase;" id="pvNamaPenandatangan">-</div>
+                            <div style="font-weight: bold; text-decoration: underline;" id="pvNamaPenandatangan">-</div>
                             <div id="pvNiyPenandatangan">NIY. -</div>
                         </div>
                     </div>
@@ -302,10 +325,10 @@
                     <div style="clear: both;"></div>
 
                     <!-- FOOTER VALIDASI FIXED DI PALING BAWAH KERTAS A4 -->
-                    <div style="position: absolute; bottom: 15mm; left: 20mm; right: 20mm; border-top: none; padding-top: 0; display: flex; align-items: center; gap: 14px;">
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=MiftahulKhoerDataCenter" style="width: 58px; height: 58px;" alt="QR Code">
-                        <div style="font-size: 8.5pt; color: #6b7280; line-height: 1.45; font-family: Arial, sans-serif;">
-                            <div><strong>Dokumen ini dikeluarkan dan disahkan melalui aplikasi Miftahul Khoer Data Center.</strong></div>
+                    <div class="qr-footer-fixed" style="position: absolute; bottom: 15mm; left: 22mm; right: 22mm; border-top: none; padding-top: 0; display: flex; align-items: center; gap: 14px;">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=MiftahulKhoerDataCenter" style="width: 48px; height: 48px;" alt="QR Code">
+                        <div style="font-size: 8pt; color: #969ca8ff; line-height: 1.3; font-family: Arial, sans-serif;">
+                            <div><strong>Dokumen ini dikeluarkan dan diarsipkan melalui Aplikasi Miftahul Khoer Data Center.</strong></div>
                             <div>Validasi surat melalui Scan QR Code disamping.</div>
                             <div id="pvFooterNomorSurat">Nomor: -</div>
                         </div>
@@ -470,18 +493,6 @@
                 }).join(' ');
             }
 
-            // Extract Kabupaten (Title Case) dari Teks Alamat tanpa membuang imbuhan
-            function getKabupatenFromAddress(alamat) {
-                if (alamat) {
-                    let match = alamat.match(/((?:Kab\.|Kabupaten|Kota)\s+[A-Za-z\s]+?)(?:[\.,\d]|$)/i);
-                    if (match && match[1]) {
-                        let kab = match[1].trim();
-                        return kab.split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
-                    }
-                }
-                return $('#pvLokasiTtd').data('default-kab') || 'Kab. Ciamis';
-            }
-
             // Kop Surat Info dari Option Terpilih
             const kopOpt = $('#kopSelect option:selected');
             if (kopOpt.length) {
@@ -493,8 +504,26 @@
                 $('#pvKopKontak').text(kopOpt.data('kontak') || '');
                 $('#pvKopLogoLeft').attr('src', kopOpt.data('logo'));
                 $('#pvKopLogoRight').attr('src', kopOpt.data('logo-kanan'));
+                const kopLayout = kopOpt.data('layout') || 'center';
+                if (kopLayout === 'double_logo') {
+                    $('#pvKopLogoRight').closest('td').show();
+                    $('#pvKopLogoRight').css('visibility', 'visible');
+                    $('#pvKopLogoLeft').closest('td').show();
+                    $('#pvKopLogoLeft').closest('td').next('td').css('text-align', 'center');
+                } else if (kopLayout === 'left_logo_center_text') {
+                    $('#pvKopLogoRight').closest('td').hide();
+                    $('#pvKopLogoLeft').closest('td').show();
+                    $('#pvKopLogoLeft').closest('td').next('td').css('text-align', 'center');
+                } else if (kopLayout === 'left_logo') {
+                    $('#pvKopLogoRight').closest('td').hide();
+                    $('#pvKopLogoLeft').closest('td').show();
+                    $('#pvKopLogoLeft').closest('td').next('td').css('text-align', 'left');
+                } else {
+                    $('#pvKopLogoRight').closest('td').hide();
+                    $('#pvKopLogoLeft').closest('td').show();
+                    $('#pvKopLogoLeft').closest('td').next('td').css('text-align', 'center');
+                }
                 $('.pvLembagaText').text(formatNamaLembaga(kopOpt.data('lembaga')));
-                $('#pvLokasiTtd').text(getKabupatenFromAddress(kopOpt.data('alamat')));
             }
 
             // Populate Live Modal Data
@@ -517,16 +546,18 @@
                 }
             }
 
-            // Penandatangan (Format Nama Huruf Besar Semua)
+            // Penandatangan (Format Nama Huruf Besar Hanya Pada Nama Utama)
             const ptkId = ptkVals[0];
             const ptkOpt = $('#penandatanganSelect option[value="' + ptkId + '"]');
-            const namaPtk = (ptkOpt.data('nama') || '-').toUpperCase();
+            const namaPtk = ptkOpt.data('nama') || '-';
             const niyPtk = ptkOpt.data('niy') || '-';
-            const jabatanInput = $('input[name="jabatan_penandatangan[' + ptkId + ']"]').val() || 'Kepala Sekolah,';
+            const jabatanInput = $('input[name="jabatan_penandatangan[' + ptkId + ']"]').val() || 'Kepala Sekolah';
+            const jabatanClean = jabatanInput.replace(/,\s*$/, '').trim() || 'Kepala Sekolah';
 
+            $('#pvJabatanText').text(jabatanClean);
             $('#pvNamaPenandatangan').text(namaPtk);
             $('#pvNiyPenandatangan').text('NIY. ' + niyPtk);
-            $('#pvJabatanPenandatangan').text(jabatanInput.endsWith(',') ? jabatanInput : jabatanInput + ',');
+            $('#pvJabatanPenandatangan').text(jabatanClean + ',');
 
             // Image TTD Digital Preview (Overlay Behind Text)
             if ($('input[name="tipe_ttd"]:checked').val() === 'digital') {

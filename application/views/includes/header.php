@@ -1,5 +1,26 @@
 <?php
-defined('BASEPATH') or exit('No direct script access allowed'); ?>
+defined('BASEPATH') or exit('No direct script access allowed'); 
+
+if (!isset($page) || !is_object($page)) {
+    $page = new stdClass();
+}
+if (!isset($page->title)) {
+    $page->title = 'Dashboard';
+}
+if (!isset($page->titleUrl)) {
+    $page->titleUrl = 'dashboard';
+}
+if (!isset($page->subtitleUrl)) {
+    $page->subtitleUrl = 'dashboard';
+}
+if (!isset($page->icon)) {
+    $page->icon = 'solar:home-angle-bold';
+}
+
+if (!isset($url) || !is_object($url)) {
+    $url = (object) ['assets' => assets_url() . '/'];
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
@@ -257,15 +278,15 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                         </button>
                         <ul class="d-flex align-items-center gap-2 mobile-hide">
                             <li class="fw-medium">
-                                <a href="<?php echo url($page->titleUrl) ?>" class="d-flex align-items-center gap-1 hover-text-primary">
-                                    <iconify-icon icon="<?php echo $page->icon; ?>" class="icon text-lg"></iconify-icon>
-                                    <?php echo $page->title; ?>
+                                <a href="<?php echo url(!empty($page->titleUrl) ? $page->titleUrl : 'dashboard') ?>" class="d-flex align-items-center gap-1 hover-text-primary">
+                                    <iconify-icon icon="<?php echo !empty($page->icon) ? $page->icon : 'solar:home-angle-bold'; ?>" class="icon text-lg"></iconify-icon>
+                                    <?php echo !empty($page->title) ? $page->title : 'Dashboard'; ?>
                                 </a>
                             </li>
                             <?php if (isset($page->subtitle)) { ?>
                                 <li>/</li>
                                 <li class="fw-medium">
-                                    <a href="<?php echo url($page->subtitleUrl) ?>" class="d-flex align-items-center gap-1 hover-text-primary"> <?php echo $page->subtitle; ?></a>
+                                    <a href="<?php echo url(!empty($page->subtitleUrl) ? $page->subtitleUrl : 'dashboard') ?>" class="d-flex align-items-center gap-1 hover-text-primary"> <?php echo $page->subtitle; ?></a>
                                 </li>
                             <?php } ?>
                             <?php if (isset($page->subsubtitle)) { ?>
