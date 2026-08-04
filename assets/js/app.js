@@ -62,6 +62,44 @@
         } else if (currentUrl.startsWith(menuUrl + "/") && menuUrl.length > maxMatchLen) {
           bestMatch = $(this);
           maxMatchLen = menuUrl.length;
+        } else if (menuUrl.endsWith("/surat/buat")) {
+          // Khusus alur Buat Surat (surat/buat_otomatis, surat/keterangan_siswa_aktif, surat/sk_pengangkatan, surat/keluar_tambah_*)
+          if (
+            currentUrl.indexOf("/surat/buat_otomatis") !== -1 ||
+            currentUrl.indexOf("/surat/keterangan_siswa_aktif") !== -1 ||
+            currentUrl.indexOf("/surat/sk_pengangkatan") !== -1 ||
+            currentUrl.indexOf("/surat/keluar_tambah") !== -1
+          ) {
+            bestMatch = $(this);
+            maxMatchLen = 9999;
+          }
+        } else if (menuUrl.endsWith("/surat/template")) {
+          // Khusus kelola template (surat/template_tambah, surat/template_edit)
+          if (
+            currentUrl.indexOf("/surat/template_tambah") !== -1 ||
+            currentUrl.indexOf("/surat/template_edit") !== -1
+          ) {
+            bestMatch = $(this);
+            maxMatchLen = 9999;
+          }
+        } else if (menuUrl.endsWith("/surat/kop")) {
+          // Khusus kelola kop (surat/kop_tambah, surat/kop_edit)
+          if (
+            currentUrl.indexOf("/surat/kop_tambah") !== -1 ||
+            currentUrl.indexOf("/surat/kop_edit") !== -1
+          ) {
+            bestMatch = $(this);
+            maxMatchLen = 9999;
+          }
+        } else if (menuUrl.endsWith("/surat/kode")) {
+          // Khusus kelola kode (surat/kode_tambah, surat/kode_edit)
+          if (
+            currentUrl.indexOf("/surat/kode_tambah") !== -1 ||
+            currentUrl.indexOf("/surat/kode_edit") !== -1
+          ) {
+            bestMatch = $(this);
+            maxMatchLen = 9999;
+          }
         }
       }
     });

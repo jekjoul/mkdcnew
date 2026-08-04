@@ -418,6 +418,34 @@ if (!empty($kop)) {
                             </td>
                         </tr>
                     </table>
+                <?php elseif ($layout_style === 'left_logo_center_text'): ?>
+                    <table style="width: 100%; border-collapse: collapse; border: 0;">
+                        <tr>
+                            <td style="width: 90px; vertical-align: middle; text-align: left; padding-right: 10px; border: 0;">
+                                <?php if (!empty($logo_kop)): ?>
+                                    <img src="<?php echo $logo_kop ?>" alt="Logo Kiri">
+                                <?php endif; ?>
+                            </td>
+                            <td style="vertical-align: middle; text-align: center; border: 0;">
+                                <?php if (!empty($naungan)): ?>
+                                    <div class="kop-title-naungan" style="font-size: <?php echo $sz_naungan ?>px; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($naungan) ?></div>
+                                <?php endif; ?>
+                                <?php if (!empty($naungan_2)): ?>
+                                    <div class="kop-title-naungan" style="font-size: <?php echo $sz_naungan_2 ?>px; margin-top: 1px; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($naungan_2) ?></div>
+                                <?php endif; ?>
+                                <div class="kop-title-lembaga" style="font-size: <?php echo $sz_lembaga ?>px; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($nama_lembaga) ?></div>
+                                <?php if (!empty($sub_nama)): ?>
+                                    <div class="kop-title-sub" style="font-size: <?php echo $sz_sub ?>px; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($sub_nama) ?></div>
+                                <?php endif; ?>
+                                <?php if (!empty($alamat_kop)): ?>
+                                    <div class="kop-text-alamat" style="font-size: <?php echo $sz_alamat ?>px;"><?php echo html_escape($alamat_kop) ?></div>
+                                <?php endif; ?>
+                                <?php if (!empty($kontak)): ?>
+                                    <div class="kop-text-alamat" style="font-size: <?php echo $sz_alamat ?>px; margin-top: 0;"><?php echo html_escape($kontak) ?></div>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                    </table>
                 <?php elseif ($layout_style === 'double_logo'): ?>
                     <table style="width: 100%; border-collapse: collapse; border: 0;">
                         <tr>

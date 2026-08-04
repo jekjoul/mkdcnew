@@ -9,8 +9,11 @@ class Master_model extends MY_Model
     public $mapel = 'mapel';
     public $tingkat_sekolah = 'master_tingkat_sekolah';
 
-    public function getAllLembaga()
+    public function getAllLembaga($include_yayasan = false)
     {
+        if (!$include_yayasan) {
+            $this->db->where("TRIM(UPPER(nama_lembaga_singkat)) !=", "YAYASAN");
+        }
         $query = $this->db->get($this->lembaga);
         return $query ? $query->result() : [];
     }

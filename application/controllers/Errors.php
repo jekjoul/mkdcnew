@@ -10,6 +10,13 @@ class Errors extends MY_Controller {
 
 	public function permission_denied()
 	{
+		$this->page_data['page'] = (object) [
+			'title' => 'Akses Ditolak',
+			'titleUrl' => 'dashboard',
+			'subtitle' => 'Peringatan Hak Akses',
+			'subtitleUrl' => 'errors/permission_denied',
+			'icon' => 'solar:shield-warning-bold'
+		];
 		$this->load->view('errors/html/error_403_permission', $this->page_data);
 	}
 

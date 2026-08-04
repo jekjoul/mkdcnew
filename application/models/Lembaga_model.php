@@ -11,12 +11,15 @@ class Lembaga_model extends MY_Model
         parent::__construct();
     }
 
-    public function getAllLembaga()
+    public function getAllLembaga($include_yayasan = false)
     {
         $this->db->select('*');
         $this->db->from($this->table);
+        if (!$include_yayasan) {
+            $this->db->where("TRIM(UPPER(nama_lembaga_singkat)) !=", "YAYASAN");
+        }
         $query = $this->db->get();
-        return $query->result();
+        return $query ? $query->result() : [];
     }
 
     public function getDetailLembaga($id)

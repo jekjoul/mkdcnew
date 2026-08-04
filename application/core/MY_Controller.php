@@ -175,13 +175,12 @@ class MY_Controller extends CI_Controller {
 
 
 		$this->page_data['page'] = (object) [
-
 			'title' => 'Dashboard',
-
+			'titleUrl' => 'dashboard',
+			'subtitleUrl' => 'dashboard',
+			'icon' => 'solar:home-angle-bold',
 			'menu' => 'dashboard',
-
 			'submenu' => '',
-
 		];
 
 

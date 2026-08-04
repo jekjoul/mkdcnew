@@ -230,7 +230,7 @@ class Siswa extends MY_Controller
         $this->page_data['pekerjaan_options'] = $this->pekerjaan_options;
         $this->page_data['jenis_tempat_tinggal_options'] = $this->jenis_tempat_tinggal_options;
         $this->page_data['alat_transportasi_options'] = $this->alat_transportasi_options;
-        $this->page_data['lembaga'] = $this->db->order_by('nama_lembaga', 'ASC')->get('lembaga')->result();
+        $this->page_data['lembaga'] = $this->db->where("TRIM(UPPER(nama_lembaga_singkat)) !=", "YAYASAN")->order_by('nama_lembaga', 'ASC')->get('lembaga')->result();
         $this->load->view('siswa/v_siswa_detail', $this->page_data);
     }
 
@@ -259,7 +259,7 @@ class Siswa extends MY_Controller
         $this->page_data['pekerjaan_options'] = $this->pekerjaan_options;
         $this->page_data['jenis_tempat_tinggal_options'] = $this->jenis_tempat_tinggal_options;
         $this->page_data['alat_transportasi_options'] = $this->alat_transportasi_options;
-        $this->page_data['lembaga'] = $this->db->order_by('nama_lembaga', 'ASC')->get('lembaga')->result();
+        $this->page_data['lembaga'] = $this->db->where("TRIM(UPPER(nama_lembaga_singkat)) !=", "YAYASAN")->order_by('nama_lembaga', 'ASC')->get('lembaga')->result();
         $this->load->view('siswa/v_siswa_form', $this->page_data);
     }
 
