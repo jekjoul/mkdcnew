@@ -260,12 +260,13 @@ try {
 
 server.listen(PORT, '127.0.0.1', () => {
     const psPath = findPowerShell();
-    console.log(`=========================================`);
-    console.log(` MKDC Scanner Bridge Server berjalan!`);
-    console.log(` URL: http://localhost:${PORT}`);
-    console.log(` PowerShell: ${psPath || 'TIDAK DITEMUKAN!'}`);
-    console.log(`=========================================`);
+    const timeStr = new Date().toLocaleTimeString();
+    console.log(`[${timeStr}] =========================================`);
+    console.log(`[${timeStr}] MKDC Scanner Bridge Server Berjalan!`);
+    console.log(`[${timeStr}] URL: http://localhost:${PORT}`);
+    console.log(`[${timeStr}] PowerShell: ${psPath || 'TIDAK DITEMUKAN!'}`);
+    console.log(`[${timeStr}] =========================================`);
     if (!psPath) {
-        console.warn('[PERINGATAN] PowerShell tidak ditemukan. Fitur scan tidak akan berfungsi.');
+        console.warn(`[${timeStr}] [PERINGATAN] PowerShell tidak ditemukan. Fitur scan tidak akan berfungsi.`);
     }
 });

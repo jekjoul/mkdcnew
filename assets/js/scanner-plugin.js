@@ -57,8 +57,8 @@ $(document).ready(function () {
             Swal.fire({
                 icon: 'error',
                 title: 'Koneksi Gagal',
-                html: `Aplikasi bridge scanner belum dijalankan atau tidak terdeteksi.<br><br>
-                       Silakan buka folder <strong>scanner_bridge</strong> di komputer Anda dan jalankan file <strong>start.bat</strong> terlebih dahulu.`
+                html: `Aplikasi Desktop MKDC Scanner Bridge belum dijalankan.<br><br>
+                       Silakan buka <strong>Aplikasi Desktop MKDC Scanner Bridge</strong> atau jalankan file <strong>start.bat</strong> di folder scanner_bridge.`
             });
             return;
         }

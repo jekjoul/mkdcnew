@@ -1,47 +1,34 @@
 @echo off
-title MKDC Scanner Bridge v2.0
+title MKDC Scanner Bridge v2.0 - Desktop Launcher
 echo =========================================
-echo  MKDC Scanner Bridge
-echo  http://localhost:7999
+echo  MKDC Scanner Bridge - Desktop Control
 echo =========================================
 echo.
 
-:: ---- Cari node.exe ----
-set "NODE_EXE="
+set "APP_DIR=%~dp0"
+cd /d "%APP_DIR%"
 
-if exist "C:\Program Files\nodejs\node.exe"           set "NODE_EXE=C:\Program Files\nodejs\node.exe"
-if exist "C:\Program Files (x86)\nodejs\node.exe"     set "NODE_EXE=C:\Program Files (x86)\nodejs\node.exe"
-if exist "%LOCALAPPDATA%\Programs\nodejs\node.exe"    set "NODE_EXE=%LOCALAPPDATA%\Programs\nodejs\node.exe"
-if exist "%APPDATA%\nvm\node.exe"                     set "NODE_EXE=%APPDATA%\nvm\node.exe"
-
-if "%NODE_EXE%"=="" (
-    for /f "delims=" %%N in ('where node.exe 2^>nul') do (
-        set "NODE_EXE=%%N"
-        goto :done_find
-    )
-)
-:done_find
-
-if "%NODE_EXE%"=="" (
-    echo [ERROR] Node.js tidak ditemukan!
-    echo         Pastikan Node.js terinstal di C:\Program Files\nodejs\
-    echo         atau download dari https://nodejs.org
-    pause
-    exit /b 1
+:: 1. Jika file .exe belum ada, coba kompilasi otomatis
+if not exist "%APP_DIR%MKDC_Scanner_Bridge.exe" (
+    echo [INFO] Menyiapkan aplikasi desktop MKDC_Scanner_Bridge.exe...
+    call "%APP_DIR%build_app.bat"
 )
 
-echo [OK] Node.js  : %NODE_EXE%
-
-:: ---- Cek PowerShell ----
-if exist "%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" (
-    echo [OK] PowerShell: %SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe
-) else (
-    echo [!]  PowerShell tidak ditemukan - scan tidak akan berfungsi.
+:: 2. Jalankan aplikasi GUI desktop
+if exist "%APP_DIR%MKDC_Scanner_Bridge.exe" (
+    echo [OK] Membuka Aplikasi Desktop MKDC Scanner Bridge...
+    start "" "%APP_DIR%MKDC_Scanner_Bridge.exe"
+    exit /b 0
 )
 
-echo.
-echo Tekan Ctrl+C untuk menghentikan.
-echo.
+:: 3. Fallback jika .exe tidak ada: Jalankan via PowerShell GUI
+if exist "%APP_DIR%scanner_gui.ps1" (
+    echo [OK] Membuka Aplikasi Desktop Scanner Bridge via PowerShell GUI...
+    powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "%APP_DIR%scanner_gui.ps1"
+    exit /b 0
+)
 
-"%NODE_EXE%" "%~dp0index.js"
+:: 4. Fallback terakhir: Jalankan CLI index.js
+echo [!] Fallback: Menjalankan mode console...
+node index.js
 pause
