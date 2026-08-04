@@ -63,10 +63,11 @@
           bestMatch = $(this);
           maxMatchLen = menuUrl.length;
         } else if (menuUrl.endsWith("/surat/buat")) {
-          // Khusus alur Buat Surat (surat/buat_otomatis, surat/keterangan_siswa_aktif, surat/keluar_tambah_*)
+          // Khusus alur Buat Surat (surat/buat_otomatis, surat/keterangan_siswa_aktif, surat/sk_pengangkatan, surat/keluar_tambah_*)
           if (
             currentUrl.indexOf("/surat/buat_otomatis") !== -1 ||
             currentUrl.indexOf("/surat/keterangan_siswa_aktif") !== -1 ||
+            currentUrl.indexOf("/surat/sk_pengangkatan") !== -1 ||
             currentUrl.indexOf("/surat/keluar_tambah") !== -1
           ) {
             bestMatch = $(this);

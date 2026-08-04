@@ -82,7 +82,7 @@
                     <!-- Tanggal Surat -->
                     <div class="col-md-6">
                         <label class="form-label fw-semibold text-neutral-900">Tanggal Surat <span class="text-danger">*</span></label>
-                        <input type="date" name="tanggal_surat" id="tanggalSurat" class="form-control radius-8" value="<?php echo date('Y-m-d') ?>" required>
+                        <input type="date" name="tanggal_surat" id="tanggalSurat" class="form-control radius-8" value="<?php echo !empty($row->tanggal_surat) ? date('Y-m-d', strtotime($row->tanggal_surat)) : date('Y-m-d') ?>" required>
                     </div>
 
                     <!-- Pilih Siswa (Select2) -->
@@ -90,13 +90,16 @@
                         <label class="form-label fw-semibold text-neutral-900">Pilih Siswa <span class="text-danger">*</span></label>
                         <select name="id_siswa" id="siswaSelect" class="form-control select2" required style="width: 100%;">
                             <option value="">-- Cari & Pilih Nama Siswa --</option>
-                            <?php foreach ($siswa_list as $s): ?>
+                            <?php foreach ($siswa_list as $s): 
+                                $isSelectedSiswa = ($s->id_siswa == @$row->id_siswa);
+                            ?>
                                 <option value="<?php echo $s->id_siswa ?>"
                                         data-nama="<?php echo htmlspecialchars($s->nama_siswa) ?>"
                                         data-nisn="<?php echo htmlspecialchars($s->nisn ?: '-') ?>"
                                         data-rombel="<?php echo htmlspecialchars($s->rombel ?: '-') ?>"
                                         data-tempat="<?php echo htmlspecialchars($s->tempat_lahir ?: '-') ?>"
-                                        data-tanggal="<?php echo $s->tanggal_lahir ?>">
+                                        data-tanggal="<?php echo $s->tanggal_lahir ?>"
+                                        <?php echo $isSelectedSiswa ? 'selected' : '' ?>>
                                     <?php echo htmlspecialchars($s->nama_siswa) ?> (NISN: <?php echo $s->nisn ?: '-' ?> - Rombel: <?php echo $s->rombel ?: '-' ?>)
                                 </option>
                             <?php endforeach; ?>
@@ -132,17 +135,18 @@
                     </div>
 
                     <!-- Opsi Tanda Tangan -->
+                    <?php $tipeTtdVal = strtolower(@$row->tipe_ttd ?: 'manual'); ?>
                     <div class="col-md-6">
                         <label class="form-label fw-semibold text-neutral-900 d-block mb-12">Metode Tanda Tangan <span class="text-danger">*</span></label>
                         <div class="d-flex align-items-center gap-24">
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="tipe_ttd" id="ttdManual" value="manual" checked>
+                                <input class="form-check-input" type="radio" name="tipe_ttd" id="ttdManual" value="manual" <?php echo ($tipeTtdVal === 'manual') ? 'checked' : '' ?>>
                                 <label class="form-check-label fw-medium text-neutral-800" for="ttdManual">
                                     Tanda Tangan Manual (Cetak Tangan)
                                 </label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="tipe_ttd" id="ttdDigital" value="digital">
+                                <input class="form-check-input" type="radio" name="tipe_ttd" id="ttdDigital" value="digital" <?php echo ($tipeTtdVal === 'digital') ? 'checked' : '' ?>>
                                 <label class="form-check-label fw-medium text-neutral-800" for="ttdDigital">
                                     Tanda Tangan Digital (Upload Berkas)
                                 </label>
@@ -250,7 +254,7 @@
 
                     <!-- REDAKSI PEMBUKA DENGAN INDENTASI 1 TAB -->
                     <div style="font-size: 12pt; line-height: 1.6; text-align: justify; text-indent: 36pt; margin-bottom: 16px;">
-                        Yang bertanda tangan dibawah ini, Kepala Sekolah<?php echo htmlspecialchars($selected_lembaga ? $selected_lembaga->nama_lembaga : '') ?> menerangkan bahwa :
+                        Yang bertanda tangan dibawah ini, Kepala Sekolah <?php echo htmlspecialchars($selected_lembaga ? $selected_lembaga->nama_lembaga : '') ?></span> menerangkan bahwa :
                     </div>
 
                     <!-- TABEL DATA SISWA -->
@@ -467,6 +471,11 @@
             });
         });
 
+        if ($('#siswaSelect').val()) {
+            $('#siswaSelect').trigger('change');
+        }
+        $('input[name="tipe_ttd"]:checked').trigger('change');
+
         // Trigger live preview modal
         $('#btnLivePreview').on('click', function() {
             const id_siswa = $('#siswaSelect').val();
@@ -555,6 +564,7 @@
             const jabatanClean = jabatanInput.replace(/,\s*$/, '').trim() || 'Kepala Sekolah';
 
             $('#pvJabatanText').text(jabatanClean);
+            $('#pvJabatanPembuka').text(jabatanClean);
             $('#pvNamaPenandatangan').text(namaPtk);
             $('#pvNiyPenandatangan').text('NIY. ' + niyPtk);
             $('#pvJabatanPenandatangan').text(jabatanClean + ',');

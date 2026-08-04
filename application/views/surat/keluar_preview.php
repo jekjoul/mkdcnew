@@ -128,7 +128,7 @@
             }
             @page {
                 size: A4;
-                margin: 20mm 22mm 15mm 22mm;
+                margin: 12mm 22mm 15mm 22mm;
             }
             .qr-footer-fixed {
                 position: fixed !important;
@@ -237,6 +237,279 @@
                     Nomor: <?php echo $surat->nomor_surat ?>
                 </div>
             </section>
+
+        <?php elseif ($surat->jenis_template === 'sk_pengangkatan'): ?>
+            <!-- TAMPILAN CETAK SURAT KEPUTUSAN (SK) PENGANGKATAN PEGAWAI / GURU YAYASAN -->
+            <?php
+            $payload = json_decode($surat->isi_surat, true) ?: [];
+            $tentang = isset($payload['tentang']) ? $payload['tentang'] : 'PENGANGKATAN PEGAWAI / GURU TETAP YAYASAN';
+            $menimbang = isset($payload['menimbang']) ? $payload['menimbang'] : '';
+            $mengingat = isset($payload['mengingat']) && is_array($payload['mengingat']) ? $payload['mengingat'] : [];
+            $memperhatikan = isset($payload['memperhatikan']) ? $payload['memperhatikan'] : '';
+            $nama_lembaga_target = isset($payload['nama_lembaga_target']) ? $payload['nama_lembaga_target'] : '';
+            $nama_ptk_target = isset($payload['nama_ptk_target']) ? $payload['nama_ptk_target'] : '';
+            $ttl_ptk_target = isset($payload['ttl_ptk_target']) ? $payload['ttl_ptk_target'] : '';
+            $alamat_ptk_target = isset($payload['alamat_ptk_target']) ? $payload['alamat_ptk_target'] : '';
+            $jk_ptk_target = isset($payload['jk_ptk_target']) ? $payload['jk_ptk_target'] : '';
+            $tmt_raw = isset($payload['tmt']) ? $payload['tmt'] : '';
+            $tmt_fmt = (!empty($tmt_raw) && $tmt_raw !== '-') ? date('d F Y', strtotime($tmt_raw)) : '-';
+            $poin_kedua = isset($payload['poin_kedua']) ? $payload['poin_kedua'] : '';
+            $poin_ketiga = isset($payload['poin_ketiga']) ? $payload['poin_ketiga'] : '';
+            $poin_keempat = isset($payload['poin_keempat']) ? $payload['poin_keempat'] : '';
+            $poin_kelima = isset($payload['poin_kelima']) ? $payload['poin_kelima'] : '';
+
+            // Lokasi Kabupaten Yayasan
+            $kab_penutup = 'Ciamis';
+            if (!empty($surat->kabupaten)) {
+                $raw_k = preg_replace('/^(KAB\.?|KABUPATEN|KOTA)\s+/i', '', trim($surat->kabupaten));
+                $kab_penutup = ucwords(strtolower($raw_k ?: 'Ciamis'));
+            }
+            ?>
+
+            <!-- KOP SURAT YAYASAN -->
+            <header class="kop" style="border-bottom: 3px double #111827; padding-bottom: 10px; margin-bottom: 20px;">
+                <?php if (!empty($surat->nama_kop)): ?>
+                    <?php 
+                    $logo_kop = !empty($surat->kop_logo) ? url('uploads/kop_logo/' . $surat->kop_logo) : url('assets/images/logodc_round.png');
+                    $logo_kop_kanan = !empty($surat->logo_kanan) ? url('uploads/kop_logo/' . $surat->logo_kanan) : url('assets/images/logodc_round.png');
+                    $sz_naungan = $surat->font_size_naungan ?: 12;
+                    $sz_naungan_2 = $surat->font_size_naungan_2 ?: 12;
+                    $sz_lembaga = $surat->font_size_lembaga ?: 18;
+                    $sz_sub = $surat->font_size_sub ?: 13;
+                    $sz_alamat = $surat->font_size_alamat ?: 9;
+                    $transform_text = ($surat->case_style === 'custom') ? 'none' : 'uppercase';
+                    ?>
+                    <?php if ($surat->layout_style === 'left_logo_center_text' || $surat->layout_style === 'center'): ?>
+                        <table style="width: 100%; border-collapse: collapse; border: 0;">
+                            <tr>
+                                <td style="width: 80px; vertical-align: middle; text-align: left; padding-right: 10px; border: 0;">
+                                    <img src="<?php echo $logo_kop ?>" alt="Logo Kiri" style="max-width: 85px; max-height: 85px;">
+                                </td>
+                                <td style="width: 100% ; vertical-align: middle; text-align: center; border: 0;">
+                                    <?php if (!empty($surat->naungan)): ?>
+                                        <div style="font-size: <?php echo $sz_naungan ?>px; font-weight: 550; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($surat->naungan) ?></div>
+                                    <?php endif; ?>
+                                    <?php if (!empty($surat->naungan_2)): ?>
+                                        <div style="font-size: <?php echo $sz_naungan_2 ?>px; font-weight: 550; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($surat->naungan_2) ?></div>
+                                    <?php endif; ?>
+                                    <div style="font-size: <?php echo $sz_lembaga ?>px; font-weight: bold; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($surat->kop_nama_lembaga ?: $surat->nama_lembaga) ?></div>
+                                    <?php if (!empty($surat->sub_nama)): ?>
+                                        <div style="font-size: <?php echo $sz_sub ?>px; font-weight: bold; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($surat->sub_nama) ?></div>
+                                    <?php endif; ?>
+                                    <?php if (!empty($surat->alamat_kop)): ?>
+                                        <div style="font-size: <?php echo $sz_alamat ?>px; color: #374151; margin-top: 2px;"><?php echo html_escape($surat->alamat_kop) ?></div>
+                                    <?php endif; ?>
+                                    <?php if (!empty($surat->kontak)): ?>
+                                        <div style="font-size: <?php echo $sz_alamat ?>px; color: #374151;"><?php echo html_escape($surat->kontak) ?></div>
+                                    <?php endif; ?>
+                                </td>
+                                <td style="width: 80px; vertical-align: middle; text-align: right; padding-left: 10px; border: 0;">
+                                    <?php if (!empty($surat->logo_kanan)): ?>
+                                        <img src="<?php echo $logo_kop_kanan ?>" alt="Logo Kanan" style="max-width: 90px; max-height: 90px;">
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                        </table>
+                    <?php else: ?>
+                        <table style="width: 100%; border-collapse: collapse; border: 0;">
+                            <tr>
+                                <td style="width: 80px; vertical-align: middle; text-align: left; padding-right: 15px; border: 0;">
+                                    <img src="<?php echo $logo_kop ?>" alt="Logo" style="max-width: 85px; max-height: 85px;">
+                                </td>
+                                <td style="width:100% !important; vertical-align: middle; text-align: left; border: 0;">
+                                    <?php if (!empty($surat->naungan)): ?>
+                                        <div style="font-size: <?php echo $sz_naungan ?>px; font-weight: 550; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($surat->naungan) ?></div>
+                                    <?php endif; ?>
+                                    <?php if (!empty($surat->naungan_2)): ?>
+                                        <div style="font-size: <?php echo $sz_naungan_2 ?>px; font-weight: 550; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($surat->naungan_2) ?></div>
+                                    <?php endif; ?>
+                                    <div style="font-size: <?php echo $sz_lembaga ?>px; font-weight: bold; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($surat->kop_nama_lembaga ?: $surat->nama_lembaga) ?></div>
+                                    <?php if (!empty($surat->sub_nama)): ?>
+                                        <div style="font-size: <?php echo $sz_sub ?>px; font-weight: bold; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($surat->sub_nama) ?></div>
+                                    <?php endif; ?>
+                                    <?php if (!empty($surat->alamat_kop)): ?>
+                                        <div style="font-size: <?php echo $sz_alamat ?>px; color: #374151;"><?php echo html_escape($surat->alamat_kop) ?></div>
+                                    <?php endif; ?>
+                                    <?php if (!empty($surat->kontak)): ?>
+                                        <div style="font-size: <?php echo $sz_alamat ?>px; color: #374151;"><?php echo html_escape($surat->kontak) ?></div>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                        </table>
+                    <?php endif; ?>
+                <?php else: ?>
+                    <div style="text-align: center;">
+                        <h4 style="margin:0; text-transform:uppercase; font-size:16px;">YAYASAN MIFTAHUL KHOER EL-ISTOHARY</h4>
+                        <p style="margin:0; font-size:10px; color:#4b5563;">Kecamatan Panjalu Kabupaten Ciamis Provinsi Jawa Barat</p>
+                    </div>
+                <?php endif; ?>
+            </header>
+
+            <!-- JUDUL SK -->
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h3 style="margin: 0; text-transform: uppercase; font-size: 15px; font-weight: bold; text-decoration: underline;">SURAT KEPUTUSAN</h3>
+                <h4 style="margin: 2px 0 0 0; text-transform: uppercase; font-size: 13px; font-weight: bold;">KETUA YAYASAN MIFTAHUL KHOER EL-ISTOHARY</h4>
+                <div style="font-size: 12px; font-weight: bold; margin-top: 4px;">Nomor : <?php echo htmlspecialchars($surat->nomor_surat) ?></div>
+                <div style="font-size: 12px; font-weight: bold; margin-top: 8px; text-transform: uppercase;">TENTANG</div>
+                <div style="font-size: 13px; font-weight: bold; margin-top: 2px; text-transform: uppercase; padding: 0 20px;">
+                    <?php echo htmlspecialchars($tentang) ?> <br> <?php echo htmlspecialchars($nama_lembaga_target) ?>
+                </div>
+            </div>
+
+            <!-- KONSIDERAN (MENIMBANG, MENGINGAT, MEMPERHATIKAN) -->
+            <?php
+            $menimbang_list = [];
+            if (is_array($menimbang)) {
+                $menimbang_list = $menimbang;
+            } elseif (is_string($menimbang) && !empty($menimbang)) {
+                $decoded_m = json_decode($menimbang, true);
+                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded_m)) {
+                    $menimbang_list = $decoded_m;
+                } else {
+                    $menimbang_list = [$menimbang];
+                }
+            }
+            ?>
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 12px; line-height: 1.4;">
+                <tr>
+                    <td style="width: 130px; vertical-align: top; font-weight: bold;">MENIMBANG</td>
+                    <td style="width: 15px; vertical-align: top;">:</td>
+                    <td style="vertical-align: top;">
+                        <?php if (!empty($menimbang_list) && count($menimbang_list) > 1): ?>
+                            <table style="width: 100%; border-collapse: collapse; margin: 0; ">
+                                <?php foreach ($menimbang_list as $idx => $m_item): 
+                                    $m_text = str_replace('{nama_lembaga}', $nama_lembaga_target, $m_item);
+                                    $letter = chr(97 + ($idx % 26)) . '.';
+                                ?>
+                                    <tr>
+                                        <td style="width: 22px; vertical-align: top; padding-bottom: 4px;"><?php echo $letter ?></td>
+                                        <td style="line-height: 1 !important; vertical-align: top; text-align: justify; padding-bottom: 4px;"><?php echo htmlspecialchars($m_text) ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </table>
+                        <?php elseif (!empty($menimbang_list)): ?>
+                            <div style="text-align: justify; line-height: 1.1 !important;"><?php echo nl2br(htmlspecialchars(str_replace('{nama_lembaga}', $nama_lembaga_target, $menimbang_list[0]))) ?></div>
+                        <?php else: ?>
+                            -
+                        <?php endif; ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="vertical-align: top; font-weight: bold; padding-top: 6px;">MENGINGAT</td>
+                    <td style="vertical-align: top; padding-top: 6px;">:</td>
+                    <td style="vertical-align: top; padding-top: 6px;">
+                        <?php if (!empty($mengingat)): ?>
+                            <table style="width: 100%; border-collapse: collapse; margin: 0;">
+                                <?php 
+                                $total_mg = count($mengingat);
+                                foreach ($mengingat as $idx => $mg): 
+                                    $clean_mg = rtrim(trim($mg), ';.');
+                                    $punc = ($idx === $total_mg - 1) ? '.' : ';';
+                                    $final_mg = $clean_mg . $punc;
+                                ?>
+                                    <tr>
+                                        <td style="width: 22px; vertical-align: top; padding-bottom: 4px;"><?php echo ($idx + 1) ?>.</td>
+                                        <td style="line-height: 1.1 !important; vertical-align: top; text-align: justify; padding-bottom: 4px;"><?php echo htmlspecialchars($final_mg) ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </table>
+                        <?php else: ?>
+                            -
+                        <?php endif; ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="vertical-align: top; font-weight: bold; padding-top: 6px;">MEMPERHATIKAN</td>
+                    <td style="vertical-align: top; padding-top: 6px;">:</td>
+                    <td style="line-height: 1.1 !important;vertical-align: top; text-align: justify; padding-top: 6px;"><?php echo nl2br(htmlspecialchars($memperhatikan)) ?></td>
+                </tr>
+            </table>
+
+            <!-- MEMUTUSKAN / MENETAPKAN -->
+            <div style="text-align: center; font-weight: bold; font-size: 13px; margin-bottom: 2px;">MEMUTUSKAN</div>
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 4px; font-size: 12px; line-height: 1.3;">
+                <tr>
+                    <td style="width: 130px; vertical-align: top; font-weight: bold;">MENETAPKAN</td>
+                    <td style="width: 15px; vertical-align: top;">:</td>
+                    <td style="vertical-align: top;"></td>
+                </tr>
+                <tr>
+                    <td style="vertical-align: top; font-weight: bold;">Pertama</td>
+                    <td style="vertical-align: top;">:</td>
+                    <td style="vertical-align: top;">
+                        <div style="margin-bottom: 6px; line-height: 1.1 !important;">Mengangkat dan menugaskan Pegawai / Guru Tetap Yayasan <?php echo htmlspecialchars($nama_lembaga_target) ?> :</div>
+                        <table style="width: 100%; border-collapse: collapse; margin-left: 10px; margin-bottom: 8px;">
+                            <tr><td style="width: 140px; padding: 0px 0; vertical-align: top;">Nama</td><td style="width: 15px; padding: 0px 0; vertical-align: top;">:</td><td style="padding: 0px 0; font-weight: bold; vertical-align: top;"><?php echo htmlspecialchars($nama_ptk_target) ?></td></tr>
+                            <tr><td style="padding: 0px 0; vertical-align: top;">Tempat, Tanggal lahir</td><td style="padding: 0px 0; vertical-align: top;">:</td><td style="padding: 0px 0; vertical-align: top;"><?php echo htmlspecialchars($ttl_ptk_target) ?></td></tr>
+                            <tr><td style="padding: 0px 0; vertical-align: top;">Alamat</td><td style="padding: 0px 0; vertical-align: top;">:</td><td style="padding: 0px 0; vertical-align: top;"><?php echo $alamat_ptk_target ?></td></tr>
+                            <tr><td style="padding: 0px 0; vertical-align: top;">Jenis Kelamin</td><td style="padding: 0px 0; vertical-align: top;">:</td><td style="padding: 0px 0; vertical-align: top;"><?php echo htmlspecialchars($jk_ptk_target) ?></td></tr>
+                            <tr><td style="padding: 0px 0; vertical-align: top;">Unit Kerja</td><td style="padding: 0px 0; vertical-align: top;">:</td><td style="padding: 0px 0; vertical-align: top;"><?php echo htmlspecialchars($nama_lembaga_target) ?></td></tr>
+                            <tr><td style="padding: 0px 0; vertical-align: top;">TMT</td><td style="padding: 0px 0; vertical-align: top;">:</td><td style="padding: 0px 0; font-weight: bold; vertical-align: top;"><?php echo $tmt_fmt ?></td></tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="vertical-align: top; font-weight: bold; padding-top: 2px;">Kedua</td>
+                    <td style="vertical-align: top; padding-top: 2px;">:</td>
+                    <td style="vertical-align: top; text-align: justify; padding-top: 2px; line-height: 1.1 !important;"><?php echo nl2br(htmlspecialchars(str_replace('{nama_lembaga}', $nama_lembaga_target, $poin_kedua))) ?></td>
+                </tr>
+                <tr>
+                    <td style="vertical-align: top; font-weight: bold; padding-top: 2px;">Ketiga</td>
+                    <td style="vertical-align: top; padding-top: 2px;">:</td>
+                    <td style="vertical-align: top; text-align: justify; padding-top: 2px; line-height: 1.1 !important;"><?php echo nl2br(htmlspecialchars(str_replace('{nama_lembaga}', $nama_lembaga_target, $poin_ketiga))) ?></td>
+                </tr>
+                <tr>
+                    <td style="vertical-align: top; font-weight: bold; padding-top: 2px; line-height: 1.1 !important;">Keempat</td>
+                    <td style="vertical-align: top; padding-top: 2px;">:</td>
+                    <td style="vertical-align: top; text-align: justify; padding-top: 2px;"><?php echo nl2br(htmlspecialchars(str_replace('{nama_lembaga}', $nama_lembaga_target, $poin_keempat))) ?></td>
+                </tr>
+                <tr>
+                    <td style="vertical-align: top; font-weight: bold; padding-top: 2px;">Kelima</td>
+                    <td style="vertical-align: top; padding-top: 2px;">:</td>
+                    <td style="vertical-align: top; text-align: justify; padding-top: 2px; line-height: 1.1 !important;"><?php echo nl2br(htmlspecialchars(str_replace('{nama_lembaga}', $nama_lembaga_target, $poin_kelima))) ?></td>
+                </tr>
+            </table>
+
+            <!-- FOOTER TTD PEJABAT -->
+            <div style="display: flex; justify-content: flex-end; margin-top: 13px;">
+                <div style="width: 250px; text-align: left; font-size: 12px;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr><td style="width: 95px; padding: 1px 0;">Ditetapkan di</td><td style="width: 10px; padding: 1px 0;">:</td><td style="padding: 1px 0;"><?php echo htmlspecialchars($kab_penutup) ?></td></tr>
+                        <tr><td style="padding: 1px 0;">Pada Tanggal</td><td style="padding: 1px 0;">:</td><td style="padding: 1px 0;"><?php echo date('d F Y', strtotime($surat->tanggal_surat)) ?></td></tr>
+                    </table>
+                    <div style="margin-top: 10px; font-weight: bold; text-transform: uppercase;">
+                        <?php echo htmlspecialchars($surat->penandatangan_jabatan ?: 'Ketua Yayasan') ?>
+                    </div>
+                    
+                    <div style="height: 65px; display: flex; align-items: center; position: relative;">
+                        <?php if ($surat->tipe_ttd === 'digital'): ?>
+                            <div style="font-size: 10px; color: #059669; font-style: italic; border: 1px dashed #059669; padding: 4px 8px; border-radius: 4px; display: inline-block;">
+                                [ TTD Digital & Stempel Sah ]
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <div style="font-weight: bold; text-transform: uppercase; text-decoration: underline;">
+                        <?php 
+                        if (!empty($surat->penandatangan) && isset($surat->penandatangan[0])) {
+                            echo htmlspecialchars($surat->penandatangan[0]->nama_ptk);
+                        } else {
+                            echo "HJ. SITI ROBI’AH";
+                        }
+                        ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Dokumen (Fixed di Paling Bawah Kertas, Tanpa Garis, Teks Abu-abu, plus Nomor Surat) -->
+            <div class="qr-footer-fixed" style="position: absolute; bottom: 15mm; left: 22mm; right: 22mm; border-top: none; padding-top: 0; display: flex; align-items: center; gap: 14px;">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=<?php echo rawurlencode($validasi_url) ?>" style="width: 48px; height: 48px;" alt="QR Validasi">
+                <div style="font-size: 7pt; color: #8f95a0ff; line-height: 1.2; font-family: Arial, sans-serif;">
+                    <div><strong>Dokumen ini dikeluarkan dan diarsipkan melalui Aplikasi Miftahul Khoer Data Center.</strong></div>
+                    <div>Validasi surat melalui Scan QR Code disamping.</div>
+                    <div>Nomor: <?php echo html_escape($surat->nomor_surat) ?></div>
+                </div>
+            </div>
 
         <?php elseif ($surat->jenis_template === 'keterangan_siswa_aktif'): ?>
             <!-- TAMPILAN PRATINJAU SURAT KETERANGAN SISWA AKTIF SMP -->

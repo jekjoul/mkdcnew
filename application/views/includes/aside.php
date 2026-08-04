@@ -542,6 +542,12 @@
                     Kop Surat
                 </a>
             </li>
+            <li>
+                <a href="<?php echo url('surat/dasar_hukum') ?>">
+                    <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
+                    Dasar Hukum SK
+                </a>
+            </li>
         </ul>
     </li>
     <?php endif; ?>

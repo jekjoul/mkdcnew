@@ -1,5 +1,11 @@
 [
     {
+        "step": "47834aa",
+        "date": "2026-08-02",
+        "author": "jekjoul",
+        "message": "Tambah template Surat Keterangan Siswa Aktif dan perbaikan absensi ptk"
+    },
+    {
         "step": "2005225",
         "date": "2026-07-30",
         "author": "jekjoul",
@@ -292,11 +298,5 @@
         "date": "2026-07-18",
         "author": "jekjoul",
         "message": "Merge pull request #35 from jekjoul\/Dev-Rumah"
-    },
-    {
-        "step": "ca73e63",
-        "date": "2026-07-18",
-        "author": "jekjoul",
-        "message": "Perbaikan download berkas pembelajaran langsung dari google drive"
     }
 ]
