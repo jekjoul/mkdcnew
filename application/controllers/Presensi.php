@@ -127,6 +127,61 @@ class Presensi extends MY_Controller
             }
         }
 
+        // Ambil dan gabungkan data dari presensi_override agar status manual (Sakit, Izin, Alfa) ter-render dengan benar
+        if ($this->db->table_exists('presensi_override')) {
+            $this->db->where('tipe_user', $tipe_user);
+            if (!empty($id_user_list)) {
+                $this->db->where_in('id_user', $id_user_list);
+            }
+            $this->db->where('YEAR(tanggal)', $year);
+            $this->db->where('MONTH(tanggal)', $month);
+            $overrides = $this->db->get('presensi_override')->result();
+            
+            foreach ($overrides as $ov) {
+                if (isset($matrix_by_id[$ov->id_user][$ov->tanggal])) {
+                    $matrix_by_id[$ov->id_user][$ov->tanggal]->status = $ov->status;
+                    $matrix_by_id[$ov->id_user][$ov->tanggal]->keterangan = $ov->keterangan;
+                } else {
+                    $row = new stdClass();
+                    $row->id_user = $ov->id_user;
+                    $row->pin = $ov->pin;
+                    $row->tanggal = $ov->tanggal;
+                    $row->status = $ov->status;
+                    $row->keterangan = $ov->keterangan;
+                    $row->jam_dhuha = null;
+                    $row->jam_dzuhur = null;
+                    $matrix_by_id[$ov->id_user][$ov->tanggal] = $row;
+                }
+                
+                if (!empty($ov->pin)) {
+                    $pin_val = (string)$ov->pin;
+                    
+                    $pins_to_update = [
+                        $pin_val,
+                        ltrim($pin_val, '0') === '' ? '0' : ltrim($pin_val, '0'),
+                        (string)intval($pin_val)
+                    ];
+                    
+                    foreach ($pins_to_update as $p_val) {
+                        if (isset($matrix_by_pin[$p_val][$ov->tanggal])) {
+                            $matrix_by_pin[$p_val][$ov->tanggal]->status = $ov->status;
+                            $matrix_by_pin[$p_val][$ov->tanggal]->keterangan = $ov->keterangan;
+                        } else {
+                            $row = new stdClass();
+                            $row->id_user = $ov->id_user;
+                            $row->pin = $ov->pin;
+                            $row->tanggal = $ov->tanggal;
+                            $row->status = $ov->status;
+                            $row->keterangan = $ov->keterangan;
+                            $row->jam_dhuha = null;
+                            $row->jam_dzuhur = null;
+                            $matrix_by_pin[$p_val][$ov->tanggal] = $row;
+                        }
+                    }
+                }
+            }
+        }
+
         return [
             'by_id'  => $matrix_by_id,
             'by_pin' => $matrix_by_pin
@@ -885,4 +940,173 @@ class Presensi extends MY_Controller
 
         $this->load->view('presensi/v_user_fingerprint', $this->page_data);
     }
+
+    /**
+     * Aksi Masal: Mengisi otomatis kolom presensi kosong siswa dalam rentang tanggal tertentu
+     */
+    public function override_masal()
+    {
+        ifPermissions('menu_presensi');
+        postAllowed();
+
+        $rombel       = $this->input->post('rombel');
+        $start_date   = $this->input->post('start_date');
+        $end_date     = $this->input->post('end_date');
+        $status       = $this->input->post('status'); // Hadir, Tanpa Keterangan, Sakit, Izin
+        $bulan_tahun  = $this->input->post('bulan_tahun');
+
+        if (empty($rombel) || empty($start_date) || empty($end_date) || empty($status)) {
+            $this->session->set_flashdata('alert-type', 'danger');
+            $this->session->set_flashdata('alert', 'Semua form input aksi masal wajib diisi.');
+            redirect('presensi/siswa?rombel=' . urlencode($rombel) . '&bulan_tahun=' . urlencode($bulan_tahun));
+            return;
+        }
+
+        // Ambil daftar siswa di rombel tersebut
+        $siswa_list = $this->db->get_where('siswa', ['rombel' => $rombel, 'status_keaktifan' => 'Aktif'])->result();
+        if (empty($siswa_list)) {
+            $this->session->set_flashdata('alert-type', 'warning');
+            $this->session->set_flashdata('alert', 'Tidak ditemukan siswa aktif di rombel terpilih.');
+            redirect('presensi/siswa?rombel=' . urlencode($rombel) . '&bulan_tahun=' . urlencode($bulan_tahun));
+            return;
+        }
+
+        // Ambil hari libur dalam rentang tanggal
+        $holidays = [];
+        if ($this->db->table_exists('pembelajaran_hari_efektif')) {
+            $q_libur = $this->db->select('tanggal')
+                ->where('tanggal >=', $start_date)
+                ->where('tanggal <=', $end_date)
+                ->where('status', 'Libur')
+                ->get('pembelajaran_hari_efektif')
+                ->result();
+            foreach ($q_libur as $l) {
+                $holidays[$l->tanggal] = true;
+            }
+        }
+        if ($this->db->table_exists('absensi_tanggal')) {
+            $q_libur2 = $this->db->select('tanggal_absensi')
+                ->where('tanggal_absensi >=', $start_date)
+                ->where('tanggal_absensi <=', $end_date)
+                ->where('status', 'Libur')
+                ->get('absensi_tanggal')
+                ->result();
+            foreach ($q_libur2 as $l) {
+                $holidays[$l->tanggal_absensi] = true;
+            }
+        }
+
+        // Terjemahkan opsi status "Tanpa Keterangan" menjadi "Alfa" di database
+        $db_status = ($status === 'Tanpa Keterangan') ? 'Alfa' : $status;
+
+        // Ambil data presensi yang sudah ada (baik raw maupun override) untuk menghindari menimpa data yang sudah terisi
+        // Query presensi_harian
+        $existing_harian = [];
+        $q_harian = $this->db->select('id_user, pin, tanggal')
+            ->where('tanggal >=', $start_date)
+            ->where('tanggal <=', $end_date)
+            ->where('tipe_user', 'siswa')
+            ->get('presensi_harian')
+            ->result();
+        foreach ($q_harian as $eh) {
+            $existing_harian[$eh->id_user][$eh->tanggal] = true;
+            if (!empty($eh->pin)) {
+                $existing_harian[(string)$eh->pin][$eh->tanggal] = true;
+            }
+        }
+
+        // Query presensi_override
+        $existing_override = [];
+        if ($this->db->table_exists('presensi_override')) {
+            $q_override = $this->db->select('id_user, pin, tanggal')
+                ->where('tanggal >=', $start_date)
+                ->where('tanggal <=', $end_date)
+                ->where('tipe_user', 'siswa')
+                ->get('presensi_override')
+                ->result();
+            foreach ($q_override as $eo) {
+                $existing_override[$eo->id_user][$eo->tanggal] = true;
+                if (!empty($eo->pin)) {
+                    $existing_override[(string)$eo->pin][$eo->tanggal] = true;
+                }
+            }
+        }
+
+        $inserted_count = 0;
+
+        // Mulai perulangan proses per siswa dan per tanggal
+        foreach ($siswa_list as $s) {
+            $id_user = intval($s->id_siswa);
+            $pin = !empty($s->pin_fingerprint) ? intval($s->pin_fingerprint) : (!empty($s->nipd) ? intval($s->nipd) : 0);
+
+            $curr = strtotime($start_date);
+            $last = strtotime($end_date);
+
+            while ($curr <= $last) {
+                $tgl = date('Y-m-d', $curr);
+                $day_of_week = date('N', $curr);
+
+                // Lewati hari Minggu atau hari Libur nasional/sekolah
+                if ($day_of_week == 7 || isset($holidays[$tgl])) {
+                    $curr = strtotime("+1 day", $curr);
+                    continue;
+                }
+
+                // Cek apakah sudah terisi di presensi_harian atau presensi_override
+                $is_filled = false;
+                if (isset($existing_harian[$id_user][$tgl]) || isset($existing_override[$id_user][$tgl])) {
+                    $is_filled = true;
+                } elseif ($pin > 0 && (isset($existing_harian[(string)$pin][$tgl]) || isset($existing_override[(string)$pin][$tgl]))) {
+                    $is_filled = true;
+                }
+
+                // Jika kolom/sel masih kosong, lakukan override masal
+                if (!$is_filled) {
+                    if ($db_status === 'Hadir') {
+                        // Insert raw dhuha & dzuhur
+                        $this->db->insert('presensi_harian', [
+                            'tipe_user' => 'siswa',
+                            'id_user'   => $id_user,
+                            'pin'       => $pin,
+                            'tanggal'   => $tgl,
+                            'jam_scan'  => '07:00:00',
+                            'sesi'      => 'dhuha'
+                        ]);
+                        $this->db->insert('presensi_harian', [
+                            'tipe_user' => 'siswa',
+                            'id_user'   => $id_user,
+                            'pin'       => $pin,
+                            'tanggal'   => $tgl,
+                            'jam_scan'  => '12:00:00',
+                            'sesi'      => 'dzuhur'
+                        ]);
+                    } else {
+                        // Insert raw other
+                        $this->db->insert('presensi_harian', [
+                            'tipe_user' => 'siswa',
+                            'id_user'   => $id_user,
+                            'pin'       => $pin,
+                            'tanggal'   => $tgl,
+                            'jam_scan'  => '00:00:00',
+                            'sesi'      => 'other'
+                        ]);
+                    }
+
+                    // Simpan data override ke tabel presensi_override
+                    $this->_simpan_override('siswa', $id_user, $tgl, $db_status, 'Aksi masal auto-override', $pin);
+                    $inserted_count++;
+                }
+
+                $curr = strtotime("+1 day", $curr);
+            }
+        }
+
+        $this->activity_model->add(logged('name') . ' Melakukan override presensi masal Rombel ' . $rombel . ' dari ' . $start_date . ' s/d ' . $end_date . ' dengan status ' . $status, logged('id'));
+
+        $this->session->set_flashdata('alert-type', 'success');
+        $this->session->set_flashdata('alert', 'Aksi masal selesai. Berhasil mengisi ' . $inserted_count . ' data presensi yang kosong.');
+
+        redirect('presensi/siswa?rombel=' . urlencode($rombel) . '&bulan_tahun=' . urlencode($bulan_tahun));
+    }
 }
+

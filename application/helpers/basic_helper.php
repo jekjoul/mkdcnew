@@ -976,6 +976,30 @@ if (!function_exists('hasPermissions')) {
 			return false;
 		}
 
+		// Auto-create tabel user_permissions jika belum ada
+		if (!$CI->db->table_exists('user_permissions')) {
+			$CI->load->dbforge();
+			$CI->dbforge->add_field([
+				'id' => ['type' => 'INT', 'constraint' => 11, 'auto_increment' => true],
+				'user_id' => ['type' => 'INT', 'constraint' => 11],
+				'permission' => ['type' => 'VARCHAR', 'constraint' => 255],
+				'created_at' => ['type' => 'DATETIME', 'null' => true],
+			]);
+			$CI->dbforge->add_key('id', true);
+			$CI->dbforge->add_key(['user_id', 'permission']);
+			$CI->dbforge->create_table('user_permissions', true);
+		}
+
+		// 1. Cek hak akses individual di tabel user_permissions
+		$userPerm = $CI->db->get_where('user_permissions', [
+			'user_id' => $userId,
+			'permission' => $code,
+		])->row();
+		if ($userPerm) {
+			return true;
+		}
+
+		// 2. Fallback: Cek hak akses dari role (role_permissions)
 		// Ambil semua role dari user_roles
 		$roles = [];
 		if ($CI->db->table_exists('user_roles')) {

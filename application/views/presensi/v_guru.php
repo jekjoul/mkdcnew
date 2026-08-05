@@ -89,6 +89,48 @@
 
 .legend-box { display: inline-flex; align-items: center; gap: 6px; margin-right: 12px; font-size: 12px; }
 .legend-color { width: 18px; height: 18px; border-radius: 3px; display: inline-block; }
+
+@media print {
+    .sidebar-menu, .navbar, .card-header, .legend-box, .legend-title, .breadcrumb, footer, .btn, .d-flex.flex-wrap.gap-2, .form-check-input, .form-check-label {
+        display: none !important;
+    }
+    body {
+        background: #fff !important;
+        color: #000 !important;
+        padding: 0;
+        margin: 0;
+    }
+    .dashboard-main-body {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    .card {
+        border: none !important;
+        box-shadow: none !important;
+    }
+    .table-grid {
+        max-height: none !important;
+        overflow: visible !important;
+        border: none !important;
+    }
+    .table-grid table {
+        width: 100% !important;
+        border: 1px solid #000 !important;
+    }
+    .table-grid th, .table-grid td {
+        border: 1px solid #000 !important;
+        color: #000 !important;
+        background: transparent !important;
+        font-size: 10px !important;
+    }
+    .sticky-col-1, .sticky-col-2 {
+        position: static !important;
+        background: transparent !important;
+    }
+    .cell-btn {
+        pointer-events: none;
+    }
+}
 </style>
 
 <div class="dashboard-main-body">
@@ -118,9 +160,15 @@
                                 <?php endforeach; ?>
                             </select>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-5 d-flex align-items-end gap-2">
                             <button type="submit" class="btn btn-primary-600 text-sm radius-8 px-20">
-                                <iconify-icon icon="solar:filter-linear" class="me-1"></iconify-icon> Tampilkan Rekap
+                                <iconify-icon icon="solar:filter-linear" class="me-1"></iconify-icon> Tampilkan
+                            </button>
+                            <button type="button" onclick="printRekap()" class="btn btn-warning-600 text-sm radius-8 px-20">
+                                <iconify-icon icon="solar:printer-linear" class="me-1"></iconify-icon> Cetak
+                            </button>
+                            <button type="button" onclick="exportExcel()" class="btn btn-success-600 text-sm radius-8 px-20">
+                                <iconify-icon icon="solar:document-text-linear" class="me-1"></iconify-icon> Excel
                             </button>
                         </div>
                     </form>
@@ -239,24 +287,19 @@
                                                 }
                                             ?>
                                                 <td>
-                                                    <?php if ($is_libur && !$po): ?>
-                                                        <span class="cell-btn cell-libur"
-                                                            title="Libur<?php echo $t->keterangan ? ': '.$t->keterangan : '' ?>">L</span>
-                                                    <?php else: ?>
-                                                        <button type="button"
-                                                            class="cell-btn <?php echo $cell_class ?>"
-                                                            title="<?php echo htmlspecialchars($cell_tip) ?>"
-                                                            onclick="openEditModal(
-                                                                'ptk',
-                                                                '<?php echo $g->id_ptk ?>',
-                                                                '<?php echo htmlspecialchars($g->nama_ptk, ENT_QUOTES) ?>',
-                                                                '<?php echo $tgl ?>',
-                                                                '<?php echo $po ? $po->status : '' ?>',
-                                                                '<?php echo $po ? htmlspecialchars($po->keterangan ?? '', ENT_QUOTES) : '' ?>'
-                                                            )">
-                                                            <?php echo $cell_text ?>
-                                                        </button>
-                                                    <?php endif; ?>
+                                                    <button type="button"
+                                                        class="cell-btn <?php echo $cell_class ?>"
+                                                        title="<?php echo htmlspecialchars($cell_tip) ?>"
+                                                        onclick="openEditModal(
+                                                            'ptk',
+                                                            '<?php echo $g->id_ptk ?>',
+                                                            '<?php echo htmlspecialchars($g->nama_ptk, ENT_QUOTES) ?>',
+                                                            '<?php echo $tgl ?>',
+                                                            '<?php echo $po ? $po->status : '' ?>',
+                                                            '<?php echo $po ? htmlspecialchars($po->keterangan ?? '', ENT_QUOTES) : '' ?>'
+                                                        )">
+                                                        <?php echo $cell_text ?>
+                                                    </button>
                                                 </td>
                                             <?php endforeach; ?>
 
@@ -368,5 +411,41 @@ function confirmHapusPresensiGuru() {
         form.action = '<?php echo url('presensi/hapus_manual') ?>';
         form.submit();
     }
+}
+
+function printRekap() {
+    window.print();
+}
+
+function exportExcel() {
+    var table = document.querySelector(".table-grid table");
+    if (!table) return;
+    
+    // Duplikasi tabel untuk modifikasi sebelum diekspor
+    var clonedTable = table.cloneNode(true);
+    
+    // Ganti element button di dalam cell dengan teks biasa agar tidak ikut diekspor sebagai button code
+    clonedTable.querySelectorAll('.cell-btn').forEach(function(btn) {
+        var txt = btn.textContent.trim();
+        var parent = btn.parentNode;
+        parent.textContent = txt;
+    });
+
+    var html = clonedTable.outerHTML;
+    
+    // Tambahkan style dasar agar border dan format sel terlihat rapi di Excel
+    var style = "<style>table { border-collapse: collapse; } th, td { border: 1px solid #999; text-align: center; padding: 4px; } .sticky-col-2 { text-align: left; } th { background-color: #f2f2f2; }</style>";
+    
+    var blob = new Blob([style + html], {
+        type: "application/vnd.ms-excel"
+    });
+    
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    
+    var fileName = "Rekap_Presensi_Guru_<?php echo isset($selected_month) ? $selected_month : '' ?>.xls";
+    a.download = fileName;
+    a.click();
 }
 </script>

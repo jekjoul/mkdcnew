@@ -95,6 +95,48 @@
 /* Legenda */
 .legend-box { display: inline-flex; align-items: center; gap: 6px; margin-right: 12px; font-size: 12px; }
 .legend-color { width: 18px; height: 18px; border-radius: 3px; display: inline-block; }
+
+@media print {
+    .sidebar-menu, .navbar, .card-header, .legend-box, .legend-title, .breadcrumb, footer, .btn, .d-flex.flex-wrap.gap-2, .form-check-input, .form-check-label {
+        display: none !important;
+    }
+    body {
+        background: #fff !important;
+        color: #000 !important;
+        padding: 0;
+        margin: 0;
+    }
+    .dashboard-main-body {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    .card {
+        border: none !important;
+        box-shadow: none !important;
+    }
+    .table-grid {
+        max-height: none !important;
+        overflow: visible !important;
+        border: none !important;
+    }
+    .table-grid table {
+        width: 100% !important;
+        border: 1px solid #000 !important;
+    }
+    .table-grid th, .table-grid td {
+        border: 1px solid #000 !important;
+        color: #000 !important;
+        background: transparent !important;
+        font-size: 10px !important;
+    }
+    .sticky-col-1, .sticky-col-2 {
+        position: static !important;
+        background: transparent !important;
+    }
+    .cell-btn {
+        pointer-events: none;
+    }
+}
 </style>
 
 <div class="dashboard-main-body">
@@ -131,10 +173,21 @@
                                 <?php endforeach; ?>
                             </select>
                         </div>
-                        <div class="col-md-4 d-flex align-items-end">
+                        <div class="col-md-4 d-flex align-items-end gap-2">
                             <button type="submit" class="btn btn-primary-600 text-sm radius-8 px-20">
-                                <iconify-icon icon="solar:filter-linear" class="me-1"></iconify-icon> Tampilkan Rekap
+                                <iconify-icon icon="solar:filter-linear" class="me-1"></iconify-icon> Tampilkan
                             </button>
+                            <button type="button" onclick="printRekap()" class="btn btn-warning-600 text-sm radius-8 px-20">
+                                <iconify-icon icon="solar:printer-linear" class="me-1"></iconify-icon> Cetak
+                            </button>
+                            <button type="button" onclick="exportExcel()" class="btn btn-success-600 text-sm radius-8 px-20">
+                                <iconify-icon icon="solar:document-text-linear" class="me-1"></iconify-icon> Excel
+                            </button>
+                            <?php if (!empty($selected_rombel)): ?>
+                                <button type="button" data-bs-toggle="modal" data-bs-target="#modalAksiMasal" class="btn btn-danger-600 text-sm radius-8 px-20">
+                                    <iconify-icon icon="solar:users-group-rounded-bold" class="me-1"></iconify-icon> Aksi Masal
+                                </button>
+                            <?php endif; ?>
                         </div>
                         <div class="col-12 mt-2">
                             <div class="form-check form-switch d-inline-flex align-items-center">
@@ -373,6 +426,54 @@
     </div>
 </div>
 
+<!-- Modal Aksi Masal Override Presensi -->
+<div class="modal fade" id="modalAksiMasal" tabindex="-1" aria-labelledby="modalAksiMasalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="post" action="<?php echo url('presensi/override_masal') ?>" class="modal-content">
+            <div class="modal-header bg-danger-600">
+                <h6 class="modal-title text-light" id="modalAksiMasalLabel">Aksi Masal: Isi Kolom Kosong</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="rombel"      value="<?php echo html_escape($selected_rombel ?? '') ?>">
+                <input type="hidden" name="bulan_tahun" value="<?php echo html_escape($selected_month  ?? '') ?>">
+
+                <div class="alert alert-warning-600 text-sm p-12 radius-8 mb-16">
+                    <iconify-icon icon="solar:info-circle-bold" class="me-1"></iconify-icon>
+                    Aksi ini akan mendeteksi seluruh tanggal & siswa pada Rombel <strong><?php echo html_escape($selected_rombel ?? '') ?></strong> yang datanya <strong>masih kosong (belum ada riwayat presensi)</strong>, lalu mengisinya secara otomatis sesuai opsi status di bawah. Hari Minggu dan Hari Libur yang terdaftar akan dilewati secara otomatis.
+                </div>
+
+                <div class="row mb-16">
+                    <div class="col-6">
+                        <label class="form-label text-sm fw-bold">Dari Tanggal</label>
+                        <input type="date" class="form-control text-sm" name="start_date" required 
+                               value="<?php echo isset($selected_month) ? $selected_month . '-01' : date('Y-m-01') ?>">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label text-sm fw-bold">Sampai Tanggal</label>
+                        <input type="date" class="form-control text-sm" name="end_date" required 
+                               value="<?php echo isset($selected_month) ? date('Y-m-t', strtotime($selected_month . '-01')) : date('Y-m-t') ?>">
+                    </div>
+                </div>
+
+                <div class="mb-0">
+                    <label class="form-label text-sm fw-bold">Status untuk Kolom Kosong</label>
+                    <select class="form-select text-sm" name="status" required>
+                        <option value="Hadir">Hadir</option>
+                        <option value="Tanpa Keterangan">Tanpa Keterangan (Alfa)</option>
+                        <option value="Sakit">Sakit</option>
+                        <option value="Izin">Izin</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-secondary text-sm" data-bs-dismiss="modal">Batal</button>
+                <button type="submit" class="btn btn-danger text-sm" onclick="return confirm('Apakah Anda yakin ingin memproses aksi masal ini? Data kosong pada rentang tanggal terpilih akan otomatis terisi.')">Proses Aksi Masal</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <?php include viewPath('includes/footer'); ?>
 <script>
 function openEditModal(tipeUser, idUser, nama, tanggal, currentStatus, currentKet) {
@@ -399,5 +500,41 @@ function confirmHapusPresensiSiswa() {
         form.action = '<?php echo url('presensi/hapus_manual') ?>';
         form.submit();
     }
+}
+
+function printRekap() {
+    window.print();
+}
+
+function exportExcel() {
+    var table = document.querySelector(".table-grid table");
+    if (!table) return;
+    
+    // Duplikasi tabel untuk modifikasi sebelum diekspor
+    var clonedTable = table.cloneNode(true);
+    
+    // Ganti element button di dalam cell dengan teks biasa agar tidak ikut diekspor sebagai button code
+    clonedTable.querySelectorAll('.cell-btn').forEach(function(btn) {
+        var txt = btn.textContent.trim();
+        var parent = btn.parentNode;
+        parent.textContent = txt;
+    });
+
+    var html = clonedTable.outerHTML;
+    
+    // Tambahkan style dasar agar border dan format sel terlihat rapi di Excel
+    var style = "<style>table { border-collapse: collapse; } th, td { border: 1px solid #999; text-align: center; padding: 4px; } .sticky-col-2 { text-align: left; } th { background-color: #f2f2f2; }</style>";
+    
+    var blob = new Blob([style + html], {
+        type: "application/vnd.ms-excel"
+    });
+    
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    
+    var fileName = "Rekap_Presensi_Siswa_<?php echo isset($selected_rombel) ? $selected_rombel : '' ?>_<?php echo isset($selected_month) ? $selected_month : '' ?>.xls";
+    a.download = fileName;
+    a.click();
 }
 </script>

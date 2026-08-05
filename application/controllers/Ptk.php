@@ -869,7 +869,125 @@ class Ptk extends MY_Controller
 		$this->page_data['ptk'] = $this->db->get_where($this->table, ['status_keaktifan' => 'Nonaktif'])->result();
 		$this->load->view('ptk/v_ptk_nonaktif_list', $this->page_data);
 	}
+
+	/**
+	 * Halaman pengaturan hak akses individual PTK
+	 */
+	public function hak_akses($id_ptk)
+	{
+		ifPermissions('users_edit');
+
+		$ptk = $this->db->get_where($this->table, ['id_ptk' => $id_ptk])->row();
+		if (!$ptk) {
+			show_404();
+		}
+
+		// Cari akun user yang terhubung ke PTK ini
+		$user = $this->db->get_where('users', ['id_ptk' => $id_ptk])->row();
+		if (!$user) {
+			$this->session->set_flashdata('alert-type', 'warning');
+			$this->session->set_flashdata('alert', 'PTK ini belum memiliki akun MKDC. Buatkan akun terlebih dahulu.');
+			redirect('ptk/ptk');
+		}
+
+		$this->page_data['page']->title = 'PTK';
+		$this->page_data['page']->titleUrl = 'ptk/ptk';
+		$this->page_data['page']->subtitle = 'Hak Akses Individual';
+		$this->page_data['page']->subtitleUrl = 'ptk/hak_akses/' . $id_ptk;
+		$this->page_data['page']->icon = 'icon-park-outline:user-business';
+
+		// Ambil nama role user
+		$user_roles = [];
+		$role_names = [];
+		if ($this->db->table_exists('user_roles')) {
+			$ur_list = $this->db->get_where('user_roles', ['user_id' => $user->id])->result();
+			foreach ($ur_list as $ur) {
+				$user_roles[] = (int) $ur->role_id;
+				$role_row = $this->db->get_where('roles', ['id' => $ur->role_id])->row();
+				if ($role_row) {
+					$role_names[] = $role_row->title;
+				}
+			}
+		}
+		if (empty($user_roles)) {
+			$user_roles[] = (int) $user->role;
+			$role_row = $this->db->get_where('roles', ['id' => $user->role])->row();
+			if ($role_row) {
+				$role_names[] = $role_row->title;
+			}
+		}
+
+		// Ambil permission bawaan role
+		$this->db->where_in('role', $user_roles);
+		$role_perms_result = $this->db->get('role_permissions')->result();
+		$role_permissions = array_map(function ($rp) {
+			return $rp->permission;
+		}, $role_perms_result);
+
+		// Ambil permission individual user
+		$user_perms_result = $this->db->get_where('user_permissions', ['user_id' => $user->id])->result();
+		$user_permissions = array_map(function ($up) {
+			return $up->permission;
+		}, $user_perms_result);
+
+		$this->page_data['ptk_data'] = $ptk;
+		$this->page_data['user_data'] = $user;
+		$this->page_data['role_names'] = $role_names;
+		$this->page_data['role_permissions'] = $role_permissions;
+		$this->page_data['user_permissions'] = $user_permissions;
+
+		$this->load->view('ptk/v_ptk_hak_akses', $this->page_data);
+	}
+
+	/**
+	 * Simpan pengaturan hak akses individual PTK
+	 */
+	public function save_hak_akses($id_ptk)
+	{
+		ifPermissions('users_edit');
+		postAllowed();
+
+		$ptk = $this->db->get_where($this->table, ['id_ptk' => $id_ptk])->row();
+		if (!$ptk) {
+			show_404();
+		}
+
+		$user = $this->db->get_where('users', ['id_ptk' => $id_ptk])->row();
+		if (!$user) {
+			$this->session->set_flashdata('alert-type', 'warning');
+			$this->session->set_flashdata('alert', 'PTK ini belum memiliki akun MKDC.');
+			redirect('ptk/ptk');
+		}
+
+		// Hapus permission individual lama
+		$this->db->delete('user_permissions', ['user_id' => $user->id]);
+
+		// Simpan permission individual baru
+		$permissions = $this->input->post('permission');
+		if (is_array($permissions) && !empty($permissions)) {
+			$batch = [];
+			foreach ($permissions as $perm) {
+				$batch[] = [
+					'user_id' => $user->id,
+					'permission' => $perm,
+					'created_at' => date('Y-m-d H:i:s'),
+				];
+			}
+			$this->db->insert_batch('user_permissions', $batch);
+		}
+
+		$this->activity_model->add(
+			logged('name') . ' mengatur hak akses individual PTK: ' . $ptk->nama_ptk,
+			logged('id')
+		);
+
+		$this->session->set_flashdata('alert-type', 'success');
+		$this->session->set_flashdata('alert', 'Hak akses individual untuk ' . $ptk->nama_ptk . ' berhasil disimpan.');
+
+		redirect('ptk/hak_akses/' . $id_ptk);
+	}
 }
 
 /* End of file Dashboard.php */
 /* Location: ./application/controllers/Dashboard.php */
+
