@@ -1,6 +1,43 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
 <?php include viewPath('includes/header'); ?>
 
+<?php
+if (!function_exists('get_sanksi_badge')) {
+    function get_sanksi_badge($total_poin, $aturan_sanksi) {
+        $poin = (int) $total_poin;
+        $matched = null;
+        if (!empty($aturan_sanksi)) {
+            foreach ($aturan_sanksi as $s) {
+                if ($poin >= (int)$s->min_poin && $poin <= (int)$s->max_poin) {
+                    $matched = $s;
+                    break;
+                }
+            }
+        }
+
+        if ($matched) {
+            $color = $matched->warna_badge ?: 'warning';
+            return '<span class="badge bg-' . $color . '-100 text-' . $color . '-800 px-12 py-6 text-xs fw-semibold">' . html_escape($matched->nama_sanksi) . '</span>';
+        } else {
+            if ($poin <= 0) {
+                return '<span class="badge bg-success-100 text-success-800 px-12 py-6 text-xs fw-semibold">Normal / Tanpa Sanksi</span>';
+            } else {
+                return '<span class="badge bg-danger-100 text-danger-800 px-12 py-6 text-xs fw-semibold">Pembinaan / Sanksi Kedisiplinan</span>';
+            }
+        }
+    }
+}
+?>
+
+<style>
+.modal-backdrop {
+    z-index: 1040 !important;
+}
+.modal {
+    z-index: 1050 !important;
+}
+</style>
+
 <div class="dashboard-main-body">
 
     <!-- Nav Tabs Bootstrap 5 -->
@@ -25,7 +62,7 @@
                 <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-3 bg-danger-600 text-white">
                     <h6 class="text-light mb-0">Daftar Pelanggaran & Poin Kedisiplinan Siswa</h6>
                     <div class="d-flex flex-wrap align-items-center gap-2">
-                        <?php if (hasPermissions('master_list')): ?>
+                        <?php if (hasPermissions('kedisiplinan_kategori')): ?>
                             <a href="<?php echo url('kedisiplinan/kategori') ?>" class="btn btn-sm btn-dark text-light radius-8 px-12 py-8 d-flex align-items-center gap-2">
                                 <iconify-icon icon="solar:settings-linear" class="text-lg"></iconify-icon> Atur Kategori Poin
                             </a>
@@ -52,16 +89,12 @@
                         <table class="table bordered-table mb-0" id="dataTable">
                             <thead>
                                 <tr>
-                                    <th scope="col" class="text-center">No</th>
-                                    <th scope="col">Nama Siswa</th>
-                                    <th scope="col">Rombel</th>
-                                    <th scope="col">Pelanggaran</th>
-                                    <th scope="col" class="text-center">Bobot Poin</th>
-                                    <th scope="col" class="text-center">Tanggal</th>
-                                    <th scope="col">Catatan Laporan</th>
-                                    <th scope="col">Pelapor</th>
-                                    <th scope="col">Tindak Lanjut BK</th>
-                                    <th scope="col" class="text-center">Aksi</th>
+                                    <th scope="col" class="text-center" width="50">No</th>
+                                    <th scope="col" width="180">Siswa</th>
+                                    <th scope="col" width="280">Pelanggaran & Catatan</th>
+                                    <th scope="col" class="text-center" width="130">Tanggal & Pelapor</th>
+                                    <th scope="col" width="220">Tindak Lanjut BK</th>
+                                    <th scope="col" class="text-center" width="100">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -70,29 +103,31 @@
                                     <?php foreach ($pelanggaran as $p): ?>
                                         <tr>
                                             <td class="text-center"><?php echo $no++; ?></td>
-                                            <td class="fw-semibold text-secondary-light"><?php echo html_escape($p->nama_siswa); ?></td>
-                                            <td><?php echo html_escape($p->rombel ?: '-'); ?></td>
                                             <td>
-                                                <?php if (empty($p->nama_pelanggaran) || $p->id_kategori == 0): ?>
-                                                    <span class="badge bg-warning-100 text-warning-800">Belum Diklasifikasi BK</span>
-                                                <?php else: ?>
-                                                    <span class="badge bg-danger-100 text-danger-800"><?php echo html_escape($p->nama_pelanggaran); ?></span>
-                                                <?php endif; ?>
+                                                <div class="fw-semibold text-secondary-light"><?php echo html_escape($p->nama_siswa); ?></div>
+                                                <div class="text-xs text-muted">Kelas: <?php echo html_escape($p->rombel ?: '-'); ?></div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center gap-2 mb-4">
+                                                    <?php if (empty($p->nama_pelanggaran) || $p->id_kategori == 0): ?>
+                                                        <span class="badge bg-warning-100 text-warning-800 text-xs">Belum Diklasifikasi BK</span>
+                                                    <?php else: ?>
+                                                        <span class="badge bg-danger-100 text-danger-800 text-xs"><?php echo html_escape($p->nama_pelanggaran); ?></span>
+                                                        <span class="badge bg-danger-600 text-light text-xs font-bold"><?php echo (int) $p->bobot_poin; ?> Poin</span>
+                                                    <?php endif; ?>
+                                                </div>
+                                                <div class="text-xs text-secondary-light text-wrap" style="max-width: 260px; word-break: break-word;">
+                                                    <?php echo html_escape($p->catatan ?: '-'); ?>
+                                                </div>
                                             </td>
                                             <td class="text-center">
-                                                <?php if (empty($p->nama_pelanggaran) || $p->id_kategori == 0): ?>
-                                                    <span class="badge bg-neutral-200 text-neutral-800">- Poin</span>
-                                                <?php else: ?>
-                                                    <span class="badge bg-danger-600 text-light px-12 py-6"><?php echo (int) $p->bobot_poin; ?> Poin</span>
-                                                <?php endif; ?>
-                                            </td>
-                                            <td class="text-center"><?php echo date('d-m-Y', strtotime($p->tanggal_pelanggaran)); ?></td>
-                                            <td><?php echo html_escape($p->catatan ?: '-'); ?></td>
-                                            <td>
-                                                <span class="badge bg-info-100 text-info-800 px-10 py-6"><?php echo html_escape($p->pelapor ?: '-'); ?></span>
+                                                <div class="fw-medium text-xs"><?php echo date('d-m-Y', strtotime($p->tanggal_pelanggaran)); ?></div>
+                                                <div class="text-xxs text-muted mt-4">Oleh: <?php echo html_escape($p->pelapor ?: '-'); ?></div>
                                             </td>
                                             <td>
-                                                <span class="fw-medium text-warning-main"><?php echo html_escape($p->tindak_lanjut ?: '-'); ?></span>
+                                                <div class="text-xs text-warning-main text-wrap" style="max-width: 200px; word-break: break-word;">
+                                                    <?php echo html_escape($p->tindak_lanjut ?: '-'); ?>
+                                                </div>
                                             </td>
                                             <td class="text-center">
                                                 <div class="d-flex align-items-center gap-2 justify-content-center">
@@ -111,50 +146,7 @@
                                                      <?php endif; ?>
                                                 </div>
 
-                                                <!-- Modal Tindak Lanjut BK -->
-                                                <div class="modal fade" id="modalTindakLanjut<?php echo $p->id_pelanggaran_siswa ?>" tabindex="-1" aria-hidden="true">
-                                                    <div class="modal-dialog modal-dialog-centered">
-                                                        <div class="modal-content bg-base">
-                                                            <form action="<?php echo url('kedisiplinan/edit_tindak_lanjut/' . $p->id_pelanggaran_siswa) ?>" method="post">
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title">Tindak Lanjut / Konseling Guru BK</h5>
-                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                                                </div>
-                                                                <div class="modal-body text-start">
-                                                                    <p>Siswa: <strong><?php echo html_escape($p->nama_siswa) ?></strong></p>
-                                                                    
-                                                                    <?php if (empty($p->nama_pelanggaran) || $p->id_kategori == 0): ?>
-                                                                        <div class="mb-3">
-                                                                            <label class="form-label fw-bold text-danger">Tentukan Kategori Pelanggaran (Menentukan Poin) <span class="text-danger">*</span></label>
-                                                                            <?php 
-                                                                            $all_kategori = $this->db->order_by('nama_pelanggaran', 'ASC')->get('kedisiplinan_pelanggaran_kategori')->result();
-                                                                            ?>
-                                                                            <select name="id_kategori" class="form-select" required>
-                                                                                <option value="">Pilih kategori pelanggaran...</option>
-                                                                                <?php foreach ($all_kategori as $kat): ?>
-                                                                                    <option value="<?php echo $kat->id_kategori ?>">
-                                                                                        <?php echo html_escape($kat->nama_pelanggaran) ?> (<?php echo $kat->bobot_poin ?> Poin)
-                                                                                    </option>
-                                                                                <?php endforeach; ?>
-                                                                            </select>
-                                                                        </div>
-                                                                    <?php else: ?>
-                                                                        <p>Pelanggaran: <span class="badge bg-danger-100 text-danger-800"><?php echo html_escape($p->nama_pelanggaran) ?></span></p>
-                                                                        <input type="hidden" name="id_kategori" value="<?php echo $p->id_kategori ?>">
-                                                                    <?php endif; ?>
 
-                                                                    <div class="mb-3">
-                                                                        <label class="form-label fw-semibold">Tindak Lanjut & Keputusan Konseling BK</label>
-                                                                        <textarea name="tindak_lanjut" class="form-control" rows="4" required placeholder="Tuliskan hasil konseling siswa..."><?php echo html_escape($p->tindak_lanjut !== 'Menunggu verifikasi dan konseling BK' ? $p->tindak_lanjut : '') ?></textarea>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="modal-footer">
-                                                                    <button type="submit" class="btn btn-success text-light">Simpan Keputusan</button>
-                                                                </div>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
 
                                             </td>
                                         </tr>
@@ -292,20 +284,7 @@
                                                 <span class="badge bg-danger-600 text-light px-16 py-8 font-bold text-xs"><?php echo (int) $r->total_poin; ?> Poin</span>
                                             </td>
                                             <td class="text-center">
-                                                <?php 
-                                                $poin = (int) $r->total_poin;
-                                                if ($poin <= 15) {
-                                                    echo '<span class="badge bg-success-100 text-success-800 px-12 py-6">Pembinaan Ringan</span>';
-                                                } elseif ($poin <= 30) {
-                                                    echo '<span class="badge bg-warning-100 text-warning-800 px-12 py-6">Peringatan I</span>';
-                                                } elseif ($poin <= 50) {
-                                                    echo '<span class="badge bg-warning-200 text-warning-900 px-12 py-6">Peringatan II</span>';
-                                                } elseif ($poin <= 75) {
-                                                    echo '<span class="badge bg-danger-100 text-danger-800 px-12 py-6">Peringatan Keras (Panggil Ortu)</span>';
-                                                } else {
-                                                    echo '<span class="badge bg-danger-600 text-light px-12 py-6">Skorsing / Drop Out</span>';
-                                                }
-                                                ?>
+                                                <?php echo get_sanksi_badge($r->total_poin, $aturan_sanksi); ?>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -358,20 +337,7 @@
                                                     <div class="d-flex justify-content-between align-items-center pt-4">
                                                         <span class="text-secondary-light">Status Pembinaan / Sanksi:</span>
                                                         <div>
-                                                            <?php 
-                                                            $poin = (int) $r->total_poin;
-                                                            if ($poin <= 15) {
-                                                                echo '<span class="badge bg-success-100 text-success-800 px-10 py-4 text-xs">Pembinaan Ringan</span>';
-                                                            } elseif ($poin <= 30) {
-                                                                echo '<span class="badge bg-warning-100 text-warning-800 px-10 py-4 text-xs">Peringatan I</span>';
-                                                            } elseif ($poin <= 50) {
-                                                                echo '<span class="badge bg-warning-200 text-warning-900 px-10 py-4 text-xs">Peringatan II</span>';
-                                                            } elseif ($poin <= 75) {
-                                                                echo '<span class="badge bg-danger-100 text-danger-800 px-10 py-4 text-xs">Peringatan Keras (Panggil Ortu)</span>';
-                                                            } else {
-                                                                echo '<span class="badge bg-danger-600 text-light px-10 py-4 text-xs">Skorsing / Drop Out</span>';
-                                                            }
-                                                            ?>
+                                                            <?php echo get_sanksi_badge($r->total_poin, $aturan_sanksi); ?>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -394,10 +360,77 @@
 
 </div>
 
+<!-- Modals Tindak Lanjut BK (Rendered Outside Dashboard Body for Clean Z-Index Stacking) -->
+<?php if (!empty($pelanggaran) && hasPermissions('kedisiplinan_bk')): ?>
+    <?php foreach ($pelanggaran as $p): ?>
+        <div class="modal fade" id="modalTindakLanjut<?php echo $p->id_pelanggaran_siswa ?>" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content bg-base">
+                    <form action="<?php echo url('kedisiplinan/edit_tindak_lanjut/' . $p->id_pelanggaran_siswa) ?>" method="post">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Tindak Lanjut / Konseling Guru BK</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body text-start">
+                            <div class="bg-neutral-100 p-12 radius-8 mb-16 border">
+                                <div class="d-flex justify-content-between align-items-center mb-6">
+                                    <span class="text-xs text-secondary-light">Siswa Pelanggar:</span>
+                                    <span class="fw-bold text-primary-600"><?php echo html_escape($p->nama_siswa); ?> (<?php echo html_escape($p->rombel ?: '-'); ?>)</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-8">
+                                    <span class="text-xs text-secondary-light">Dilaporkan Oleh:</span>
+                                    <span class="badge bg-info-100 text-info-800 text-xs"><?php echo html_escape($p->pelapor ?: '-'); ?></span>
+                                </div>
+                                <div class="border-top pt-8 mt-4">
+                                    <span class="text-xs text-secondary-light d-block mb-4">Catatan Laporan dari Pelapor:</span>
+                                    <div class="text-sm fw-medium text-dark bg-base p-10 radius-6 border" style="max-height: 120px; overflow-y: auto;">
+                                        <?php echo nl2br(html_escape($p->catatan ?: 'Tidak ada catatan laporan.')); ?>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-dark">Kategori Pelanggaran (Poin) <span class="text-danger">*</span></label>
+                                <?php 
+                                $all_kategori = $this->db->order_by('nama_pelanggaran', 'ASC')->get('kedisiplinan_pelanggaran_kategori')->result();
+                                ?>
+                                <select name="id_kategori" class="form-select" required>
+                                    <option value="">Pilih kategori pelanggaran...</option>
+                                    <?php foreach ($all_kategori as $kat): ?>
+                                        <option value="<?php echo $kat->id_kategori ?>" <?php echo ($kat->id_kategori == $p->id_kategori) ? 'selected' : '' ?>>
+                                            <?php echo html_escape($kat->nama_pelanggaran) ?> (<?php echo $kat->bobot_poin ?> Poin)
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Tindak Lanjut & Keputusan Konseling BK</label>
+                                <?php
+                                $tl = html_escape($p->tindak_lanjut ?: '');
+                                if ($tl === 'Belum ditentukan' || $tl === 'Menunggu verifikasi dan konseling BK') {
+                                    $tl = '';
+                                }
+                                ?>
+                                <textarea name="tindak_lanjut" class="form-control" rows="4" required placeholder="Tuliskan hasil konseling siswa..."><?php echo $tl ?></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success text-light">Simpan Keputusan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    <?php endforeach; ?>
+<?php endif; ?>
+
 <?php include viewPath('includes/footer'); ?>
 <script>
     $(document).ready(function() {
-        let table = new DataTable('#dataTable');
+        let table = new DataTable('#dataTable', {
+            order: []
+        });
         let rekapTable = new DataTable('#rekapTable');
 
         $('#mobilePelanggaranSearch').on('keyup', function() {

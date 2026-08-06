@@ -70,7 +70,7 @@ $panelHeader.Controls.Add($lblServerBadge)
 # 2. Scanner Card Panel
 $panelScannerCard = New-Object System.Windows.Forms.Panel
 $panelScannerCard.Location = New-Object System.Drawing.Point(20, 100)
-$panelScannerCard.Size = New-Object System.Drawing.Size(624, 60)
+$panelScannerCard.Size = New-Object System.Drawing.Size(624, 85)
 $panelScannerCard.Anchor = "Top, Left, Right"
 $panelScannerCard.BackColor = [System.Drawing.Color]::White
 $panelScannerCard.BorderStyle = "FixedSingle"
@@ -89,6 +89,12 @@ $lblScannerStatus.ForeColor = [System.Drawing.Color]::FromArgb(217, 119, 6)
 $lblScannerStatus.AutoSize = $true
 $lblScannerStatus.Location = New-Object System.Drawing.Point(12, 30)
 
+$cmbScanners = New-Object System.Windows.Forms.ComboBox
+$cmbScanners.Location = New-Object System.Drawing.Point(14, 52)
+$cmbScanners.Size = New-Object System.Drawing.Size(460, 25)
+$cmbScanners.DropDownStyle = "DropDownList"
+$cmbScanners.Enabled = $false
+
 $btnRefreshScanner = New-Object System.Windows.Forms.Button
 $btnRefreshScanner.Text = "🔄 Cek Scanner"
 $btnRefreshScanner.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
@@ -96,17 +102,18 @@ $btnRefreshScanner.BackColor = [System.Drawing.Color]::FromArgb(241, 245, 249)
 $btnRefreshScanner.ForeColor = [System.Drawing.Color]::FromArgb(51, 65, 85)
 $btnRefreshScanner.FlatStyle = "Flat"
 $btnRefreshScanner.Size = New-Object System.Drawing.Size(120, 36)
-$btnRefreshScanner.Location = New-Object System.Drawing.Point(488, 12)
+$btnRefreshScanner.Location = New-Object System.Drawing.Point(488, 24)
 $btnRefreshScanner.Anchor = "Top, Right"
 $btnRefreshScanner.Cursor = [System.Windows.Forms.Cursors]::Hand
 
 $panelScannerCard.Controls.Add($lblScannerTitle)
 $panelScannerCard.Controls.Add($lblScannerStatus)
+$panelScannerCard.Controls.Add($cmbScanners)
 $panelScannerCard.Controls.Add($btnRefreshScanner)
 
 # 3. Control Panel Buttons
 $panelControl = New-Object System.Windows.Forms.Panel
-$panelControl.Location = New-Object System.Drawing.Point(20, 170)
+$panelControl.Location = New-Object System.Drawing.Point(20, 195)
 $panelControl.Size = New-Object System.Drawing.Size(624, 45)
 $panelControl.Anchor = "Top, Left, Right"
 
@@ -161,21 +168,21 @@ $chkAutoStart = New-Object System.Windows.Forms.CheckBox
 $chkAutoStart.Text = "Mulai service otomatis saat aplikasi dibuka"
 $chkAutoStart.Checked = $true
 $chkAutoStart.AutoSize = $true
-$chkAutoStart.Location = New-Object System.Drawing.Point(22, 224)
+$chkAutoStart.Location = New-Object System.Drawing.Point(22, 248)
 
 $chkMinimizeToTray = New-Object System.Windows.Forms.CheckBox
 $chkMinimizeToTray.Text = "Minimize ke System Tray secara otomatis saat aplikasi dibuka"
 $chkMinimizeToTray.Checked = $true
 $chkMinimizeToTray.AutoSize = $true
-$chkMinimizeToTray.Location = New-Object System.Drawing.Point(300, 224)
+$chkMinimizeToTray.Location = New-Object System.Drawing.Point(300, 248)
 
 # 5. GroupBox Activity Log
 $grpLog = New-Object System.Windows.Forms.GroupBox
 $grpLog.Text = " Aktivitas & Log Service "
 $grpLog.Font = New-Object System.Drawing.Font("Segoe UI", 9.5, [System.Drawing.FontStyle]::Bold)
 $grpLog.ForeColor = [System.Drawing.Color]::FromArgb(51, 65, 85)
-$grpLog.Location = New-Object System.Drawing.Point(20, 255)
-$grpLog.Size = New-Object System.Drawing.Size(624, 260)
+$grpLog.Location = New-Object System.Drawing.Point(20, 278)
+$grpLog.Size = New-Object System.Drawing.Size(624, 237)
 $grpLog.Anchor = "Top, Bottom, Left, Right"
 
 $txtLog = New-Object System.Windows.Forms.RichTextBox
@@ -346,26 +353,101 @@ function Restart-BridgeService {
     Start-BridgeService
 }
 
+function Save-DefaultScanner($id, $name) {
+    try {
+        $configPath = Join-Path $scriptDir "config.json"
+        $json = @{
+            defaultDeviceId = $id
+            defaultDeviceName = $name
+        } | ConvertTo-Json
+        [System.IO.File]::WriteAllText($configPath, $json)
+    } catch {
+        Log-Err "Gagal menyimpan default scanner: $_"
+    }
+}
+
+function Load-DefaultScannerId {
+    try {
+        $configPath = Join-Path $scriptDir "config.json"
+        if (Test-Path $configPath) {
+            $conf = Get-Content $configPath -Raw | ConvertFrom-Json
+            return $conf.defaultDeviceId
+        }
+    } catch {}
+    return ""
+}
+
+$cmbScanners.Add_SelectedIndexChanged({
+    if ($cmbScanners.SelectedItem -ne $null) {
+        $selected = $cmbScanners.SelectedItem
+        $savedDefaultId = Load-DefaultScannerId
+        if ($selected.Id -ne $savedDefaultId) {
+            Save-DefaultScanner $selected.Id $selected.Name
+            Log-Info "Scanner default diubah ke: $($selected.Name)"
+        }
+    }
+})
+
 function Refresh-ScannerDevices {
-    if (-not $global:isServerRunning) { return }
-    $lblScannerStatus.Text = "⏳ Memeriksa perangkat scanner..."
+    $lblScannerStatus.Text = "⏳ Memeriksa perangkat scanner lokal..."
     $lblScannerStatus.ForeColor = [System.Drawing.Color]::FromArgb(217, 119, 6)
 
     try {
-        $res = Invoke-RestMethod -Uri "$API_URL/devices" -TimeoutSec 4 -ErrorAction Stop
-        if ($res -and ($res.name -or ($res -is [array] -and $res.Count -gt 0))) {
-            $name = if ($res.name) { $res.name } else { $res[0].name }
-            $lblScannerStatus.Text = "🟢 TERHUBUNG: $name"
+        $cmbScanners.Items.Clear()
+        $savedDefaultId = Load-DefaultScannerId
+        $selectedIndex = -1
+
+        $deviceManager = New-Object -ComObject WIA.DeviceManager
+        $devices = @()
+        
+        foreach ($info in $deviceManager.DeviceInfos) {
+            # Type 1 = Scanner
+            if ($info.Type -eq 1) {
+                $devId = $info.DeviceID
+                $devName = "Scanner Tidak Diketahui"
+                try { $devName = $info.Properties.Item('Name').Value } catch {}
+                
+                $item = [PSCustomObject]@{
+                    Id = $devId
+                    Name = $devName
+                }
+                # Custom ToString method for ComboBox display
+                $item | Add-Member -MemberType ScriptMethod -Name ToString -Value { return $this.Name } -Force
+                $devices += $item
+            }
+        }
+
+        for ($i = 0; $i -lt $devices.Count; $i++) {
+            $dev = $devices[$i]
+            $null = $cmbScanners.Items.Add($dev)
+            if ($dev.Id -eq $savedDefaultId) {
+                $selectedIndex = $i
+            }
+        }
+
+        if ($cmbScanners.Items.Count -gt 0) {
+            $cmbScanners.Enabled = $true
+            if ($selectedIndex -ge 0) {
+                $cmbScanners.SelectedIndex = $selectedIndex
+                $lblScannerStatus.Text = "🟢 AKTIF (DEFAULT): $($cmbScanners.SelectedItem.Name)"
+            } else {
+                $cmbScanners.SelectedIndex = 0
+                $lblScannerStatus.Text = "🟢 TERHUBUNG: $($cmbScanners.SelectedItem.Name)"
+                # Simpan otomatis default scanner pertama jika belum ada
+                Save-DefaultScanner $cmbScanners.SelectedItem.Id $cmbScanners.SelectedItem.Name
+            }
             $lblScannerStatus.ForeColor = [System.Drawing.Color]::FromArgb(22, 163, 74)
-            Log-Success "Perangkat scanner terdeteksi: $name"
         } else {
+            $cmbScanners.Enabled = $false
             $lblScannerStatus.Text = "🔴 Tidak ada scanner terhubung"
             $lblScannerStatus.ForeColor = [System.Drawing.Color]::FromArgb(220, 38, 38)
-            Log-Warn "Tidak ada perangkat scanner WIA terhubung."
+            Log-Warn "Tidak ada perangkat scanner WIA lokal terhubung."
         }
     } catch {
-        $lblScannerStatus.Text = "🟡 Gagal memeriksa status scanner"
-        $lblScannerStatus.ForeColor = [System.Drawing.Color]::FromArgb(217, 119, 6)
+        $cmbScanners.Enabled = $false
+        $lblScannerStatus.Text = "🔴 Gagal deteksi scanner lokal"
+        $lblScannerStatus.ForeColor = [System.Drawing.Color]::FromArgb(220, 38, 38)
+        Log-Err "Gagal mendeteksi scanner lokal: $_"
     }
 }
 

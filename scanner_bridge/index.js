@@ -81,12 +81,25 @@ const server = http.createServer(async (req, res) => {
     // GET / — Cek status bridge
     if (req.url === '/' && req.method === 'GET') {
         const psPath = findPowerShell();
+        let defaultDeviceId = '';
+        let defaultDeviceName = '';
+        try {
+            const configPath = path.join(__dirname, 'config.json');
+            if (fs.existsSync(configPath)) {
+                const conf = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+                defaultDeviceId = conf.defaultDeviceId || '';
+                defaultDeviceName = conf.defaultDeviceName || '';
+            }
+        } catch (e) {}
+
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({
             status: 'running',
             service: 'MKDC Scanner Bridge',
             version: '2.0.0',
-            powershell: psPath || 'NOT_FOUND'
+            powershell: psPath || 'NOT_FOUND',
+            defaultDeviceId,
+            defaultDeviceName
         }));
         return;
     }
@@ -157,7 +170,16 @@ try {
             let params = {};
             try { if (body) params = JSON.parse(body); } catch (e) {}
 
-            const deviceId = params.deviceId || '';
+            let defaultDeviceId = '';
+            try {
+                const configPath = path.join(__dirname, 'config.json');
+                if (fs.existsSync(configPath)) {
+                    const conf = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+                    defaultDeviceId = conf.defaultDeviceId || '';
+                }
+            } catch (e) {}
+
+            const deviceId = params.deviceId || defaultDeviceId || '';
             const format   = params.format === 'png' ? 'png' : 'jpg';
 
             // GUID Format WIA:

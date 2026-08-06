@@ -2,13 +2,18 @@
 $(document).ready(function () {
     const SCANNER_API_URL = 'http://127.0.0.1:7999';
 
-    // -----------------------------------------------------------------------
-    // Cek apakah scanner bridge berjalan
-    // -----------------------------------------------------------------------
+    let bridgeInfo = null;
+
     function checkScannerBridge() {
         return fetch(SCANNER_API_URL, { signal: AbortSignal.timeout(3000) })
             .then(res => res.json())
-            .then(data => data.status === 'running')
+            .then(data => {
+                if (data && data.status === 'running') {
+                    bridgeInfo = data;
+                    return true;
+                }
+                return false;
+            })
             .catch(() => false);
     }
 
@@ -118,12 +123,24 @@ $(document).ready(function () {
 
         // 3. Tampilkan form pilih scanner (radio button menghindari masalah z-index SweetAlert2)
         let deviceRadioHtml = '';
+        const defaultId = (bridgeInfo && bridgeInfo.defaultDeviceId) ? bridgeInfo.defaultDeviceId : '';
+
+        // Tentukan index default yang harus dicentang
+        let defaultIdx = 0;
+        if (defaultId) {
+            const foundIdx = devices.findIndex(d => d.id === defaultId);
+            if (foundIdx >= 0) {
+                defaultIdx = foundIdx;
+            }
+        }
+
         devices.forEach((dev, idx) => {
             const id = dev.id || '';
             const name = dev.name || 'Scanner ' + (idx + 1);
             const desc = dev.description || 'WIA Scanner';
-            const bg = idx === 0 ? '#e8f4fd' : '#fff';
-            deviceRadioHtml += `<label style="display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid #dee2e6;border-radius:8px;margin-bottom:6px;cursor:pointer;background:${bg};" class="swal-device-label"><input type="radio" name="swal_device" value="${id}" ${idx === 0 ? 'checked' : ''} style="accent-color:#0d6efd;"><span style="font-size:13px;"><strong>${name}</strong><br><small style="color:#6c757d;">${desc}</small></span></label>`;
+            const isChecked = idx === defaultIdx;
+            const bg = isChecked ? '#e8f4fd' : '#fff';
+            deviceRadioHtml += `<label style="display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid #dee2e6;border-radius:8px;margin-bottom:6px;cursor:pointer;background:${bg};" class="swal-device-label"><input type="radio" name="swal_device" value="${id}" ${isChecked ? 'checked' : ''} style="accent-color:#0d6efd;"><span style="font-size:13px;"><strong>${name}</strong><br><small style="color:#6c757d;">${desc}</small></span></label>`;
         });
 
         const { value: params, isConfirmed } = await Swal.fire({

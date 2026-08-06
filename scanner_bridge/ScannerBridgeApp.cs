@@ -23,6 +23,7 @@ namespace MKDCScannerBridge
         private Panel panelScannerCard;
         private Label lblScannerTitle;
         private Label lblScannerStatus;
+        private ComboBox cmbScanners;
         private Button btnRefreshScanner;
 
         private Panel panelControl;
@@ -165,7 +166,7 @@ namespace MKDCScannerBridge
             // 2. Card Status Scanner
             panelScannerCard = new Panel();
             panelScannerCard.Location = new Point(20, 100);
-            panelScannerCard.Size = new Size(624, 60);
+            panelScannerCard.Size = new Size(624, 85);
             panelScannerCard.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             panelScannerCard.BackColor = Color.White;
             panelScannerCard.BorderStyle = BorderStyle.FixedSingle;
@@ -184,6 +185,13 @@ namespace MKDCScannerBridge
             lblScannerStatus.AutoSize = true;
             lblScannerStatus.Location = new Point(12, 30);
 
+            cmbScanners = new ComboBox();
+            cmbScanners.Location = new Point(14, 52);
+            cmbScanners.Size = new Size(460, 25);
+            cmbScanners.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbScanners.Enabled = false;
+            cmbScanners.SelectedIndexChanged += CmbScanners_SelectedIndexChanged;
+
             btnRefreshScanner = new Button();
             btnRefreshScanner.Text = "🔄 Cek Scanner";
             btnRefreshScanner.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
@@ -193,18 +201,19 @@ namespace MKDCScannerBridge
             btnRefreshScanner.FlatAppearance.BorderSize = 1;
             btnRefreshScanner.FlatAppearance.BorderColor = Color.FromArgb(203, 213, 225);
             btnRefreshScanner.Size = new Size(120, 36);
-            btnRefreshScanner.Location = new Point(488, 12);
+            btnRefreshScanner.Location = new Point(488, 24);
             btnRefreshScanner.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnRefreshScanner.Cursor = Cursors.Hand;
             btnRefreshScanner.Click += (s, e) => { RefreshScannerDevices(); };
 
             panelScannerCard.Controls.Add(lblScannerTitle);
             panelScannerCard.Controls.Add(lblScannerStatus);
+            panelScannerCard.Controls.Add(cmbScanners);
             panelScannerCard.Controls.Add(btnRefreshScanner);
 
             // 3. Panel Tombol Kontrol
             panelControl = new Panel();
-            panelControl.Location = new Point(20, 170);
+            panelControl.Location = new Point(20, 195);
             panelControl.Size = new Size(624, 45);
             panelControl.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 
@@ -268,21 +277,21 @@ namespace MKDCScannerBridge
             chkAutoStart.Text = "Mulai service otomatis saat aplikasi dibuka";
             chkAutoStart.Checked = true;
             chkAutoStart.AutoSize = true;
-            chkAutoStart.Location = new Point(22, 224);
+            chkAutoStart.Location = new Point(22, 248);
 
             chkMinimizeToTray = new CheckBox();
             chkMinimizeToTray.Text = "Minimize ke System Tray secara otomatis saat aplikasi dibuka";
             chkMinimizeToTray.Checked = true;
             chkMinimizeToTray.AutoSize = true;
-            chkMinimizeToTray.Location = new Point(300, 224);
+            chkMinimizeToTray.Location = new Point(300, 248);
 
             // 5. Activity Log Box
             grpLog = new GroupBox();
             grpLog.Text = " Aktivitas & Log Service ";
             grpLog.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
             grpLog.ForeColor = Color.FromArgb(51, 65, 85);
-            grpLog.Location = new Point(20, 255);
-            grpLog.Size = new Size(624, 260);
+            grpLog.Location = new Point(20, 278);
+            grpLog.Size = new Size(624, 237);
             grpLog.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 
             txtLog = new RichTextBox();
@@ -655,55 +664,161 @@ namespace MKDCScannerBridge
             });
         }
 
+        private void CmbScanners_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cmbScanners.SelectedItem == null) return;
+            ScannerItem selected = (ScannerItem)cmbScanners.SelectedItem;
+            string savedDefaultId = LoadDefaultScannerId();
+            if (selected.Id != savedDefaultId)
+            {
+                SaveDefaultScanner(selected.Id, selected.Name);
+                LogInfo("Scanner default diubah ke: " + selected.Name);
+            }
+        }
+
+        public class ScannerItem
+        {
+            public string Id { get; set; }
+            public string Name { get; set; }
+            public override string ToString()
+            {
+                return Name;
+            }
+        }
+
+        private void SaveDefaultScanner(string id, string name)
+        {
+            try
+            {
+                string configPath = Path.Combine(currentAppDir, "config.json");
+                string json = string.Format(
+                    "{{\r\n  \"defaultDeviceId\": \"{0}\",\r\n  \"defaultDeviceName\": \"{1}\"\r\n}}",
+                    id.Replace("\\", "\\\\").Replace("\"", "\\\""),
+                    name.Replace("\\", "\\\\").Replace("\"", "\\\"")
+                );
+                File.WriteAllText(configPath, json, System.Text.Encoding.UTF8);
+            }
+            catch (Exception ex)
+            {
+                LogError("Gagal menyimpan default scanner: " + ex.Message);
+            }
+        }
+
+        private string LoadDefaultScannerId()
+        {
+            try
+            {
+                string configPath = Path.Combine(currentAppDir, "config.json");
+                if (File.Exists(configPath))
+                {
+                    string json = File.ReadAllText(configPath);
+                    Match m = Regex.Match(json, @"""defaultDeviceId""\s*:\s*""([^""]+)""");
+                    if (m.Success)
+                    {
+                        return m.Groups[1].Value.Replace("\\\\", "\\").Replace("\\\"", "\"");
+                    }
+                }
+            }
+            catch {}
+            return "";
+        }
+
         private void RefreshScannerDevices()
         {
-            lblScannerStatus.Text = "⏳ Memeriksa perangkat scanner...";
+            lblScannerStatus.Text = "⏳ Memeriksa perangkat scanner lokal...";
             lblScannerStatus.ForeColor = Color.FromArgb(217, 119, 6);
 
             Task.Factory.StartNew(() => {
                 try
                 {
-                    HttpWebRequest req = (HttpWebRequest)WebRequest.Create(API_URL + "/devices");
-                    req.Timeout = 5000;
-                    req.Method = "GET";
-
-                    using (HttpWebResponse resp = (HttpWebResponse)req.GetResponse())
-                    using (StreamReader reader = new StreamReader(resp.GetResponseStream()))
+                    Type deviceManagerType = Type.GetTypeFromProgID("WIA.DeviceManager");
+                    if (deviceManagerType == null)
                     {
-                        string json = reader.ReadToEnd();
+                        throw new Exception("WIA DeviceManager tidak ditemukan di Windows ini.");
+                    }
 
-                        this.Invoke((Action)(() => {
-                            if (!string.IsNullOrEmpty(json) && json.Contains("name"))
+                    object deviceManager = Activator.CreateInstance(deviceManagerType);
+                    object deviceInfos = deviceManagerType.InvokeMember("DeviceInfos", 
+                        System.Reflection.BindingFlags.GetProperty, null, deviceManager, null);
+
+                    int count = (int)deviceInfos.GetType().InvokeMember("Count", 
+                        System.Reflection.BindingFlags.GetProperty, null, deviceInfos, null);
+
+                    var items = new System.Collections.Generic.List<ScannerItem>();
+                    string savedDefaultId = LoadDefaultScannerId();
+                    int selectedIndex = -1;
+
+                    for (int i = 1; i <= count; i++)
+                    {
+                        object info = deviceInfos.GetType().InvokeMember("Item", 
+                            System.Reflection.BindingFlags.GetProperty, null, deviceInfos, new object[] { i });
+
+                        int type = (int)info.GetType().InvokeMember("Type", 
+                            System.Reflection.BindingFlags.GetProperty, null, info, null);
+
+                        if (type == 1) // 1 = Scanner
+                        {
+                            string devId = (string)info.GetType().InvokeMember("DeviceID", 
+                                System.Reflection.BindingFlags.GetProperty, null, info, null);
+                            
+                            object properties = info.GetType().InvokeMember("Properties", 
+                                System.Reflection.BindingFlags.GetProperty, null, info, null);
+
+                            // Dapatkan Name
+                            object propName = properties.GetType().InvokeMember("Item", 
+                                System.Reflection.BindingFlags.GetProperty, null, properties, new object[] { "Name" });
+                            string devName = (string)propName.GetType().InvokeMember("Value", 
+                                System.Reflection.BindingFlags.GetProperty, null, propName, null);
+
+                            items.Add(new ScannerItem { Id = devId, Name = devName });
+                            
+                            if (devId == savedDefaultId)
                             {
-                                Match m = Regex.Match(json, @"""name""\s*:\s*""([^""]+)""");
-                                string devName = m.Success ? m.Groups[1].Value : "WIA Scanner";
+                                selectedIndex = items.Count - 1;
+                            }
+                        }
+                    }
 
-                                lblScannerStatus.Text = "🟢 TERHUBUNG: " + devName;
-                                lblScannerStatus.ForeColor = Color.FromArgb(22, 163, 74);
-                                LogSuccess("Perangkat scanner terdeteksi: " + devName);
+                    this.Invoke((Action)(() => {
+                        cmbScanners.Items.Clear();
+                        foreach (var item in items)
+                        {
+                            cmbScanners.Items.Add(item);
+                        }
+
+                        if (cmbScanners.Items.Count > 0)
+                        {
+                            cmbScanners.Enabled = true;
+                            if (selectedIndex >= 0)
+                            {
+                                cmbScanners.SelectedIndex = selectedIndex;
+                                lblScannerStatus.Text = "🟢 AKTIF (DEFAULT): " + ((ScannerItem)cmbScanners.SelectedItem).Name;
                             }
                             else
                             {
-                                lblScannerStatus.Text = "🔴 Tidak ada scanner terhubung";
-                                lblScannerStatus.ForeColor = Color.FromArgb(220, 38, 38);
-                                LogWarning("Tidak ada perangkat scanner WIA yang terhubung.");
+                                cmbScanners.SelectedIndex = 0;
+                                lblScannerStatus.Text = "🟢 TERHUBUNG: " + ((ScannerItem)cmbScanners.SelectedItem).Name;
+                                ScannerItem first = (ScannerItem)cmbScanners.SelectedItem;
+                                SaveDefaultScanner(first.Id, first.Name);
                             }
-                        }));
-                    }
-                }
-                catch
-                {
-                    this.Invoke((Action)(() => {
-                        if (isServerRunning)
-                        {
-                            lblScannerStatus.Text = "🟡 Gagal memeriksa scanner WIA";
-                            lblScannerStatus.ForeColor = Color.FromArgb(217, 119, 6);
+                            lblScannerStatus.ForeColor = Color.FromArgb(22, 163, 74);
                         }
                         else
                         {
-                            lblScannerStatus.Text = "🔴 Service Bridge belum berjalan";
-                            lblScannerStatus.ForeColor = Color.FromArgb(100, 116, 139);
+                            cmbScanners.Enabled = false;
+                            lblScannerStatus.Text = "🔴 Tidak ada scanner terhubung";
+                            lblScannerStatus.ForeColor = Color.FromArgb(220, 38, 38);
+                            LogWarning("Tidak ada perangkat scanner WIA lokal yang terdeteksi.");
                         }
+                    }));
+                }
+                catch (Exception ex)
+                {
+                    this.Invoke((Action)(() => {
+                        cmbScanners.Enabled = false;
+                        lblScannerStatus.Text = "🔴 Gagal deteksi scanner lokal";
+                        lblScannerStatus.ForeColor = Color.FromArgb(220, 38, 38);
+                        LogError("Gagal mendeteksi scanner lokal: " + ex.Message);
                     }));
                 }
             });
