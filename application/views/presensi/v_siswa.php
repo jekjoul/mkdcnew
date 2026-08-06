@@ -97,7 +97,7 @@
 .legend-color { width: 18px; height: 18px; border-radius: 3px; display: inline-block; }
 
 @media print {
-    .sidebar-menu, .navbar, .card-header, .legend-box, .legend-title, .breadcrumb, footer, .btn, .d-flex.flex-wrap.gap-2, .form-check-input, .form-check-label {
+    .sidebar-menu, .navbar, .navbar-header, .card-header, .legend-box, .legend-title, .breadcrumb, footer, .btn, .d-flex.flex-wrap.gap-2, .form-check-input, .form-check-label {
         display: none !important;
     }
     body {

@@ -90,8 +90,17 @@
 .legend-box { display: inline-flex; align-items: center; gap: 6px; margin-right: 12px; font-size: 12px; }
 .legend-color { width: 18px; height: 18px; border-radius: 3px; display: inline-block; }
 
+.print-header {
+    display: none;
+}
+
 @media print {
-    .sidebar-menu, .navbar, .card-header, .legend-box, .legend-title, .breadcrumb, footer, .btn, .d-flex.flex-wrap.gap-2, .form-check-input, .form-check-label {
+    .print-header {
+        display: block !important;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .sidebar-menu, .navbar, .navbar-header, .card-header, .legend-box, .legend-title, .breadcrumb, footer, .btn, .d-flex.flex-wrap.gap-2, .form-check-input, .form-check-label {
         display: none !important;
     }
     body {
@@ -209,6 +218,20 @@
                             }
                         }
                         ?>
+                        <!-- Judul Cetak Khusus (Hanya tampil saat dicetak) -->
+                        <div class="print-header">
+                            <h4 style="margin: 0 0 5px 0; font-size: 16px; font-weight: bold;">Rekap Presensi PTK (<?php 
+                                if (!empty($selected_month)) {
+                                    $by = substr($selected_month, 0, 4);
+                                    $bm = substr($selected_month, 5, 2);
+                                    echo ($b_names[$bm] ?? $bm) . ' ' . $by;
+                                } else {
+                                    echo 'Semua Bulan';
+                                }
+                            ?>)</h4>
+                            <p style="margin: 0; font-size: 11px; color: #555;">Dicetak oleh: <?php echo html_escape(logged('name')) ?> pada <?php echo date('d-m-Y H:i:s') ?></p>
+                        </div>
+
                         <div class="table-grid">
                             <table>
                                 <thead>

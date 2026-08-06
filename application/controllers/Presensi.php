@@ -25,13 +25,10 @@ class Presensi extends MY_Controller
             $user_id = 0;
             if ($tipe_user === 'ptk') {
                 if (isset($s->id_ptk)) $user_id = intval($s->id_ptk);
-                if (!empty($s->niy))              $pin_list[] = "'" . $this->db->escape_str($s->niy) . "'";
-                if (!empty($s->pin_fingerprint)) $pin_list[] = "'" . $this->db->escape_str($s->pin_fingerprint) . "'";
-                if (!empty($s->nik))              $pin_list[] = "'" . $this->db->escape_str($s->nik) . "'";
+                if (!empty($s->niy))   $pin_list[] = "'" . $this->db->escape_str($s->niy) . "'";
             } else {
                 if (isset($s->id_siswa)) $user_id = intval($s->id_siswa);
-                if (!empty($s->nipd))            $pin_list[] = "'" . $this->db->escape_str($s->nipd) . "'";
-                if (!empty($s->pin_fingerprint)) $pin_list[] = "'" . $this->db->escape_str($s->pin_fingerprint) . "'";
+                if (!empty($s->nipd))    $pin_list[] = "'" . $this->db->escape_str($s->nipd) . "'";
             }
 
             if ($user_id > 0) {
@@ -43,16 +40,14 @@ class Presensi extends MY_Controller
         $pin_list     = array_unique($pin_list);
 
         $where_cond = [];
-        if (!empty($id_user_list)) {
-            $where_cond[] = "id_user IN (" . implode(',', $id_user_list) . ")";
-        }
+        $where_cond[] = "tipe_user = " . $this->db->escape($tipe_user);
         if (!empty($pin_list)) {
             $where_cond[] = "pin IN (" . implode(',', $pin_list) . ")";
+        } else {
+            $where_cond[] = "1=0";
         }
 
-        if (empty($where_cond)) return ['by_id' => [], 'by_pin' => []];
-
-        $where_sql = "(" . implode(" OR ", $where_cond) . ")";
+        $where_sql = "(" . implode(" AND ", $where_cond) . ")";
 
         if ($tipe_user === 'ptk') {
             // Ketentuan Presensi Guru: Cukup 1 kali atau lebih tap dalam 1 hari = 'Hadir' (keterangan NULL)
@@ -195,11 +190,10 @@ class Presensi extends MY_Controller
     {
         $extra_select = $join_extra_col ? ", u.{$join_extra_col}" : '';
 
-        $join_cond = "u.{$join_key} = p.id_user";
         if ($tipe_user === 'ptk') {
-            $join_cond .= " OR (p.pin IS NOT NULL AND p.pin != '' AND (u.niy = p.pin OR ltrim(u.niy, '0') = ltrim(p.pin, '0') OR u.pin_fingerprint = p.pin OR u.nik = p.pin))";
+            $join_cond = "p.pin IS NOT NULL AND p.pin != '' AND (u.niy = p.pin OR ltrim(u.niy, '0') = ltrim(p.pin, '0'))";
         } else {
-            $join_cond .= " OR (p.pin IS NOT NULL AND p.pin != '' AND (u.nipd = p.pin OR ltrim(u.nipd, '0') = ltrim(p.pin, '0') OR u.pin_fingerprint = p.pin OR u.nisn = p.pin OR u.nik = p.pin))";
+            $join_cond = "p.pin IS NOT NULL AND p.pin != '' AND (u.nipd = p.pin OR ltrim(u.nipd, '0') = ltrim(p.pin, '0'))";
         }
 
         $sql = "
@@ -228,11 +222,12 @@ class Presensi extends MY_Controller
             FROM presensi_harian p
             JOIN {$join_table} u ON ({$join_cond})
             WHERE p.tanggal = ?
+              AND p.tipe_user = ?
             GROUP BY u.{$join_key}, p.tanggal
             ORDER BY jam_dhuha ASC
         ";
 
-        return $this->db->query($sql, [$tanggal])->result();
+        return $this->db->query($sql, [$tanggal, $tipe_user])->result();
     }
 
     // =========================================================================
@@ -585,14 +580,14 @@ class Presensi extends MY_Controller
         $status     = $this->input->post('status');
         $keterangan = $this->input->post('keterangan');
 
-        // Cari pin user
-        $pin = 0;
+        // Cari pin user (Gunakan NIPD untuk siswa dan NIY untuk PTK)
+        $pin = '';
         if ($tipe_user === 'siswa') {
             $user_obj = $this->db->get_where('siswa', ['id_siswa' => $id_user])->row();
-            $pin = $user_obj ? $user_obj->pin_fingerprint : 0;
+            $pin = $user_obj ? $user_obj->nipd : '';
         } else {
             $user_obj = $this->db->get_where('ptk', ['id_ptk' => $id_user])->row();
-            $pin = $user_obj ? $user_obj->pin_fingerprint : 0;
+            $pin = $user_obj ? $user_obj->niy : '';
         }
 
         if ($status === 'Hadir') {
@@ -736,7 +731,7 @@ class Presensi extends MY_Controller
                     `id`         INT(11) NOT NULL AUTO_INCREMENT,
                     `tipe_user`  ENUM('siswa','ptk') NOT NULL,
                     `id_user`    INT(11) NOT NULL,
-                    `pin`        INT(11) NOT NULL DEFAULT 0,
+                    `pin`        VARCHAR(100) NOT NULL DEFAULT '',
                     `tanggal`    DATE NOT NULL,
                     `status`     VARCHAR(20) NOT NULL DEFAULT 'Hadir',
                     `keterangan` TEXT NULL,
