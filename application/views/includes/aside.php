@@ -835,7 +835,7 @@
 
 <li class="sidebar-menu-group-title">Aplikasi Tambahan</li>
 <li>
-    <a href="<?php echo $url->assets ?>downloads/mkdc_scanner_bridge.zip" download class="d-flex align-items-center gap-2">
+    <a href="<?php echo $url->assets ?>downloads/MKDC_Scanner_Bridge_Setup.exe" download class="d-flex align-items-center gap-2">
         <iconify-icon icon="lucide:download" class="menu-icon text-primary"></iconify-icon>
         <span>Download Scanner Bridge</span>
     </a>

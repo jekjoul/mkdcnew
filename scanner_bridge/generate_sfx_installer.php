@@ -177,6 +177,7 @@ echo "Return code: $returnCode\n";
 
 if ($returnCode === 0 && file_exists($output)) {
     echo "\n[BERHASIL] Single-File Installer MKDC_Scanner_Bridge_Setup.exe berhasil dibuat!\n";
+    @copy($output, dirname(__DIR__) . '/assets/downloads/MKDC_Scanner_Bridge_Setup.exe');
     // Hapus backup lama jika kompilasi sukses
     if (file_exists($backup)) @unlink($backup);
 } else {

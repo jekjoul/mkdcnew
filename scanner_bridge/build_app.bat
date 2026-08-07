@@ -41,6 +41,7 @@ echo [4/4] Mengompilasi InstallerApp.cs -> MKDC_Scanner_Bridge_Setup.exe...
 "%CSC_EXE%" /target:winexe /win32icon:"%~dp0app.ico" /out:"%~dp0MKDC_Scanner_Bridge_Setup.exe" /r:System.dll,System.Drawing.dll,System.Windows.Forms.dll "%~dp0InstallerApp.cs"
 
 if %errorlevel% equ 0 (
+    copy /Y "%~dp0MKDC_Scanner_Bridge_Setup.exe" "%~dp0..\assets\downloads\MKDC_Scanner_Bridge_Setup.exe" >nul
     echo.
     echo ========================================================
     echo  [BERHASIL] Seluruh paket MKDC Scanner Bridge dibuat!
