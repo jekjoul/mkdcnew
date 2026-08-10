@@ -97,7 +97,7 @@ if ($is_guru) {
 <script src=" https://cdn.jsdelivr.net/npm/sweetalert2@11.26.2/dist/sweetalert2.all.min.js "></script>
 
 <!-- scanner plugin -->
-<script src="<?php echo $url->assets ?>js/scanner-plugin.js"></script>
+<script src="<?php echo $url->assets ?>js/scanner-plugin.js?v=<?php echo filemtime(FCPATH . 'assets/js/scanner-plugin.js'); ?>"></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

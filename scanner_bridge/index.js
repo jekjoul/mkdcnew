@@ -67,10 +67,11 @@ function runPowerShell(script) {
 // Server HTTP
 // --------------------------------------------------------------------------
 const server = http.createServer(async (req, res) => {
-    // Enable CORS untuk web application yang memanggil local API ini
+    // Enable CORS & Private Network Access untuk web application yang memanggil local API ini
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Access-Control-Allow-Private-Network');
+    res.setHeader('Access-Control-Allow-Private-Network', 'true');
 
     if (req.method === 'OPTIONS') {
         res.writeHead(204);
