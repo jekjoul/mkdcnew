@@ -67,11 +67,14 @@ function runPowerShell(script) {
 // Server HTTP
 // --------------------------------------------------------------------------
 const server = http.createServer(async (req, res) => {
-    // Enable CORS & Private Network Access untuk web application yang memanggil local API ini
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    // Enable CORS & Private Network Access (PNA) untuk Chrome 109+ di Windows 7
+    const origin = req.headers.origin || '*';
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Access-Control-Allow-Private-Network');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Access-Control-Allow-Private-Network, Authorization');
     res.setHeader('Access-Control-Allow-Private-Network', 'true');
+    res.setHeader('Access-Control-Max-Age', '86400');
 
     if (req.method === 'OPTIONS') {
         res.writeHead(204);
@@ -276,7 +279,7 @@ try {
     res.end(JSON.stringify({ error: 'Endpoint tidak ditemukan' }));
 });
 
-server.listen(PORT, '127.0.0.1', () => {
+server.listen(PORT, '0.0.0.0', () => {
     const psPath = findPowerShell();
     const timeStr = new Date().toLocaleTimeString();
     console.log(`[${timeStr}] =========================================`);

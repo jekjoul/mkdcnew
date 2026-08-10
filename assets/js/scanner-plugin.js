@@ -42,14 +42,26 @@ $(document).ready(function () {
             console.warn('[Scanner Plugin] Web berjalan di HTTPS, sedangkan Scanner Bridge running di HTTP.');
         }
 
-        // Cek 127.0.0.1 dan localhost secara bersamaan (paralel) agar tidak terjadi delay/stuck
         const candidateUrls = ['http://127.0.0.1:7999', 'http://localhost:7999'];
+        const savedUrl = localStorage.getItem('mkdc_scanner_bridge_url');
+        if (savedUrl && !candidateUrls.includes(savedUrl)) {
+            candidateUrls.unshift(savedUrl);
+        }
+        const hostname = window.location.hostname;
+        if (hostname && hostname !== 'localhost' && hostname !== '127.0.0.1') {
+            const hostBridgeUrl = 'http://' + hostname + ':7999';
+            if (!candidateUrls.includes(hostBridgeUrl)) {
+                candidateUrls.push(hostBridgeUrl);
+            }
+        }
+
         const results = await Promise.all(candidateUrls.map(url => checkSingleBridgeUrl(url)));
 
         const success = results.find(r => r && r.ok);
         if (success) {
             bridgeInfo = success.data;
             SCANNER_API_URL = success.url;
+            localStorage.setItem('mkdc_scanner_bridge_url', success.url);
             return true;
         }
 
