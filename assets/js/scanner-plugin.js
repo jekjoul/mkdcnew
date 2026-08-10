@@ -3,40 +3,56 @@ $(document).ready(function () {
     let SCANNER_API_URL = 'http://127.0.0.1:7999';
     let bridgeInfo = null;
 
-    // Helper fetch dengan timeout yang kompatibel dengan semua browser
-    function fetchWithTimeout(url, options = {}, timeoutMs = 3000) {
-        const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
-        const signal = controller ? controller.signal : null;
-        const timeoutId = controller ? setTimeout(() => controller.abort(), timeoutMs) : null;
+    // Helper fetch dengan timeout yang pasti melepaskan koneksi (mencegah stuck/hang)
+    function fetchWithTimeout(url, options = {}, timeoutMs = 2000) {
+        return new Promise((resolve, reject) => {
+            const timer = setTimeout(() => {
+                reject(new Error('Koneksi timeout ke ' + url));
+            }, timeoutMs);
 
-        return fetch(url, { ...options, signal })
-            .finally(() => {
-                if (timeoutId) clearTimeout(timeoutId);
-            });
+            fetch(url, options)
+                .then(res => {
+                    clearTimeout(timer);
+                    resolve(res);
+                })
+                .catch(err => {
+                    clearTimeout(timer);
+                    reject(err);
+                });
+        });
+    }
+
+    async function checkSingleBridgeUrl(url) {
+        try {
+            const res = await fetchWithTimeout(url, {}, 2000);
+            if (res && res.ok) {
+                const data = await res.json();
+                if (data && data.status === 'running') {
+                    return { ok: true, url, data };
+                }
+            }
+        } catch (e) {
+            // Abaikan error per URL
+        }
+        return { ok: false, url };
     }
 
     async function checkScannerBridge() {
-        // Deteksi jika web dibuka di HTTPS (Mixed Content)
         if (window.location.protocol === 'https:') {
             console.warn('[Scanner Plugin] Web berjalan di HTTPS, sedangkan Scanner Bridge running di HTTP.');
         }
 
+        // Cek 127.0.0.1 dan localhost secara bersamaan (paralel) agar tidak terjadi delay/stuck
         const candidateUrls = ['http://127.0.0.1:7999', 'http://localhost:7999'];
-        for (const targetUrl of candidateUrls) {
-            try {
-                const res = await fetchWithTimeout(targetUrl, {}, 3000);
-                if (res && res.ok) {
-                    const data = await res.json();
-                    if (data && data.status === 'running') {
-                        bridgeInfo = data;
-                        SCANNER_API_URL = targetUrl;
-                        return true;
-                    }
-                }
-            } catch (e) {
-                // Lanjut coba candidate berikutnya
-            }
+        const results = await Promise.all(candidateUrls.map(url => checkSingleBridgeUrl(url)));
+
+        const success = results.find(r => r && r.ok);
+        if (success) {
+            bridgeInfo = success.data;
+            SCANNER_API_URL = success.url;
+            return true;
         }
+
         return false;
     }
 
@@ -72,30 +88,39 @@ $(document).ready(function () {
     // Alur utama scan
     // -----------------------------------------------------------------------
     async function startScanFlow(fileInput) {
-        // 1. Cek bridge
-        Swal.fire({
-            title: 'Menghubungkan ke Scanner...',
-            text: 'Pastikan software MKDC Scanner Bridge sudah dijalankan.',
-            allowOutsideClick: false,
-            didOpen: () => { Swal.showLoading(); }
-        });
+        try {
+            // 1. Cek bridge
+            Swal.fire({
+                title: 'Menghubungkan ke Scanner...',
+                text: 'Pastikan software MKDC Scanner Bridge sudah dijalankan.',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
 
-        const isBridgeRunning = await checkScannerBridge();
-        if (!isBridgeRunning) {
-            let extraTip = '';
-            if (window.location.protocol === 'https:') {
-                extraTip = `<br><br><span class="text-danger" style="font-size:12px;">⚠️ Halaman web ini dibuka via <strong>HTTPS</strong>. Browser keamanan memblokir koneksi ke HTTP local. Silakan buka aplikasi web via HTTP (misal: http://localhost/...)</span>`;
+            const isBridgeRunning = await checkScannerBridge();
+            if (!isBridgeRunning) {
+                let extraTip = '';
+                if (window.location.protocol === 'https:') {
+                    extraTip = `<br><br><span class="text-danger" style="font-size:12px;">⚠️ Halaman web ini dibuka via <strong>HTTPS</strong>. Browser keamanan memblokir koneksi ke HTTP local. Silakan buka aplikasi web via HTTP (misal: http://localhost/...)</span>`;
+                }
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Koneksi Gagal',
+                    html: `Aplikasi Desktop MKDC Scanner Bridge belum merespon.<br><br>
+                           <div style="text-align:left;font-size:13px;">
+                               <strong>Langkah Penyelesaian:</strong><br>
+                               1. Pastikan aplikasi <strong>MKDC Scanner Bridge</strong> sudah dibuka di PC ini.<br>
+                               2. Jika aplikasi desktop sudah aktif, coba klik <strong>"Restart Service"</strong> di aplikasi desktop tersebut.<br>
+                               3. Tekan <strong>Ctrl + F5</strong> pada browser untuk memperbarui koneksi cache.${extraTip}
+                           </div>`
+                });
+                return;
             }
+        } catch (initErr) {
             Swal.fire({
                 icon: 'error',
                 title: 'Koneksi Gagal',
-                html: `Aplikasi Desktop MKDC Scanner Bridge belum merespon.<br><br>
-                       <div style="text-align:left;font-size:13px;">
-                           <strong>Langkah Penyelesaian:</strong><br>
-                           1. Pastikan aplikasi <strong>MKDC Scanner Bridge</strong> sudah dibuka di PC ini.<br>
-                           2. Jika aplikasi desktop sudah aktif, coba klik <strong>"Restart Service"</strong> di aplikasi desktop tersebut.<br>
-                           3. Tekan <strong>Ctrl + F5</strong> pada browser untuk memperbarui koneksi cache.${extraTip}
-                       </div>`
+                text: 'Terjadi kesalahan saat memeriksa koneksi ke scanner bridge: ' + (initErr.message || initErr)
             });
             return;
         }

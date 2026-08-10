@@ -111,7 +111,7 @@ const server = http.createServer(async (req, res) => {
 $ErrorActionPreference = 'Stop'
 try {
     $deviceManager = New-Object -ComObject WIA.DeviceManager
-    $devices = @()
+    $jsonItems = @()
     foreach ($info in $deviceManager.DeviceInfos) {
         # Type 1 = Scanner
         if ($info.Type -eq 1) {
@@ -123,18 +123,13 @@ try {
             try { $devDesc = $info.Properties.Item('Description').Value } catch {
                 try { $devDesc = $info.Properties.Item('Manufacturer').Value } catch {}
             }
-            $devices += [PSCustomObject]@{
-                id          = $devId
-                name        = $devName
-                description = $devDesc
-            }
+            $escId   = if ($devId) { $devId.Replace('\\', '\\\\').Replace('"', '\\"') } else { '' }
+            $escName = if ($devName) { $devName.Replace('\\', '\\\\').Replace('"', '\\"') } else { '' }
+            $escDesc = if ($devDesc) { $devDesc.Replace('\\', '\\\\').Replace('"', '\\"') } else { '' }
+            $jsonItems += ('{"id":"' + $escId + '","name":"' + $escName + '","description":"' + $escDesc + '"}')
         }
     }
-    if ($devices.Count -gt 0) {
-        $devices | ConvertTo-Json -Compress
-    } else {
-        '[]'
-    }
+    '[' + ($jsonItems -join ',') + ']'
 } catch {
     Write-Error $_.Exception.Message
     exit 1
