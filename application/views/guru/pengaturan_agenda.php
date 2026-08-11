@@ -2,71 +2,80 @@
 <?php include viewPath('includes/header'); ?>
 
 <div class="dashboard-main-body">
-    <div class="card">
-        <div class="card-header d-flex flex-wrap justify-content-between align-items-center bg-primary-600 text-white radius-top-8 gap-2">
-            <div class="d-flex align-items-center gap-2">
-                <iconify-icon icon="solar:calendar-date-bold" class="text-xl"></iconify-icon>
-                <h6 class="mb-0 text-white"><?php echo !empty($is_nonaktif) ? 'Agenda Pembelajaran Tidak Aktif' : 'Daftar Agenda Pembelajaran Harian'; ?></h6>
+    <!-- Breadcrumb & Header Card -->
+    <div class="card mb-24 radius-12 border-0 shadow-xs">
+        <div class="card-body p-20 d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div>
+                <h5 class="fw-bold mb-1 text-primary-900">Pengaturan Agenda Pembelajaran Saya</h5>
+                <p class="text-secondary-light text-sm mb-0">Kelola dan buat agenda pembelajaran harian mandiri sesuai penugasan mata pelajaran &amp; kelas yang Anda ampu.</p>
             </div>
             <div class="d-flex flex-wrap align-items-center gap-2">
-                <button type="button" class="btn btn-sm btn-warning text-primary-900 radius-8 px-12 py-8 d-flex align-items-center gap-2 fw-bold" data-bs-toggle="modal" data-bs-target="#modalBuatAgenda">
-                    <iconify-icon icon="solar:add-circle-bold" class="text-lg"></iconify-icon>
+                <button type="button" class="btn btn-warning text-primary-900 radius-8 px-16 py-8 d-flex align-items-center gap-2 fw-bold" data-bs-toggle="modal" data-bs-target="#modalBuatAgenda">
+                    <iconify-icon icon="solar:add-circle-bold" class="text-xl"></iconify-icon>
                     + Buat Agenda Pembelajaran Baru
                 </button>
-                <a href="<?php echo url('agenda_pembelajaran/ptk') ?>" class="btn btn-sm btn-light text-primary-600 radius-8 px-12 py-8 d-flex align-items-center gap-2">
-                    <iconify-icon icon="solar:users-group-two-rounded-bold" class="text-lg"></iconify-icon>
-                    Agenda per Guru Pengampu
-                </a>
-                <a href="<?php echo url(!empty($is_nonaktif) ? 'agenda_pembelajaran' : 'agenda_pembelajaran/nonaktif') ?>" class="btn btn-sm btn-outline-light radius-8 px-12 py-8 d-flex align-items-center gap-2">
-                    <iconify-icon icon="<?php echo !empty($is_nonaktif) ? 'solar:arrow-left-linear' : 'solar:archive-linear'; ?>" class="text-lg"></iconify-icon>
-                    <?php echo !empty($is_nonaktif) ? 'Kembali ke Aktif' : 'Data Tidak Aktif'; ?>
+                <a href="<?php echo url('guru/agenda') ?>" class="btn btn-outline-secondary radius-8 px-16 py-8 d-flex align-items-center gap-2">
+                    <iconify-icon icon="solar:notebook-linear" class="text-lg"></iconify-icon> Agenda Pembelajaran Saya
                 </a>
             </div>
         </div>
-        <div class="card-body">
-            <!-- Alert Flash Data -->
-            <?php if ($this->session->flashdata('alert')): ?>
-                <div class="alert alert-<?php echo $this->session->flashdata('alert-type') ?: 'info' ?> alert-dismissible fade show radius-8 mb-24" role="alert">
-                    <?php echo $this->session->flashdata('alert') ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Alert Flash Data -->
+    <?php if ($this->session->flashdata('alert')): ?>
+        <div class="alert alert-<?php echo $this->session->flashdata('alert-type') ?: 'info' ?> alert-dismissible fade show radius-8 mb-24" role="alert">
+            <?php echo $this->session->flashdata('alert') ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <?php endif; ?>
+
+    <!-- Summary Badges -->
+    <?php $total_mapel = count($items); ?>
+    <div class="row g-3 mb-24">
+        <div class="col-md-6 col-12">
+            <div class="card border-0 radius-12 bg-primary-50 p-16 d-flex align-items-center flex-row justify-content-between">
+                <div>
+                    <span class="text-xs text-primary-600 fw-semibold text-uppercase">Guru Pengampu</span>
+                    <h4 class="mb-0 text-primary-900 fw-bold mt-1"><?php echo html_escape($ptk->nama_ptk); ?></h4>
+                    <span class="text-xs text-secondary-light">NIP: <?php echo html_escape(!empty($ptk->nip) ? $ptk->nip : (!empty($ptk->nuptk) ? $ptk->nuptk : '-')); ?></span>
                 </div>
-            <?php endif; ?>
-
-            <!-- Filter Bar per PTK / Guru -->
-            <div class="p-16 bg-neutral-50 radius-8 border mb-24">
-                <form method="GET" action="" class="row g-3 align-items-end">
-                    <div class="col-md-8">
-                        <label class="form-label text-xs fw-semibold text-secondary-light mb-6">Filter Pengampu Guru / PTK</label>
-                        <select name="id_ptk" class="form-select radius-8 text-sm" onchange="this.form.submit()">
-                            <option value="">-- Semua Guru Pengampu --</option>
-                            <?php if (!empty($teachers)): ?>
-                                <?php foreach ($teachers as $t): ?>
-                                    <option value="<?php echo $t->id_ptk; ?>" <?php echo (!empty($selected_ptk) && (int)$selected_ptk === (int)$t->id_ptk) ? 'selected' : ''; ?>>
-                                        <?php echo html_escape($t->nama_ptk); ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </select>
-                    </div>
-                    <div class="col-md-4 d-flex gap-2">
-                        <button type="submit" class="btn btn-primary radius-8 px-16 w-100 text-sm">
-                            <iconify-icon icon="solar:filter-bold" class="me-1"></iconify-icon> Filter PTK
-                        </button>
-                        <?php if (!empty($selected_ptk)): ?>
-                            <a href="<?php echo url('agenda_pembelajaran') ?>" class="btn btn-outline-secondary radius-8 px-12" title="Reset Filter">
-                                <iconify-icon icon="solar:restart-bold"></iconify-icon>
-                            </a>
-                        <?php endif; ?>
-                    </div>
-                </form>
+                <div class="w-48-px h-48-px bg-primary-600 rounded-circle d-flex align-items-center justify-content-center text-white">
+                    <iconify-icon icon="solar:user-bold" class="text-2xl"></iconify-icon>
+                </div>
             </div>
+        </div>
+        <div class="col-md-6 col-12">
+            <div class="card border-0 radius-12 bg-info-50 p-16 d-flex align-items-center flex-row justify-content-between">
+                <div>
+                    <span class="text-xs text-info-600 fw-semibold text-uppercase">Total Judul Agenda Pembelajaran Dibuat</span>
+                    <h3 class="mb-0 text-info-900 fw-bold mt-1"><?php echo $total_mapel; ?> Judul Agenda</h3>
+                </div>
+                <div class="w-48-px h-48-px bg-info-600 rounded-circle d-flex align-items-center justify-content-center text-white">
+                    <iconify-icon icon="solar:notebook-bookmark-bold" class="text-2xl"></iconify-icon>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- Main List Card -->
+    <div class="card border-0 radius-12 shadow-xs">
+        <div class="card-header bg-white border-bottom p-20 d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+                <iconify-icon icon="solar:settings-linear" class="text-xl text-primary-600"></iconify-icon>
+                <h6 class="mb-0 text-primary-900">Daftar Agenda Pembelajaran Harian Saya</h6>
+            </div>
+            <span class="badge bg-primary-100 text-primary-700 px-12 py-6 radius-6 text-xs fw-bold">
+                Total <?php echo count($items); ?> Agenda Dibuat
+            </span>
+        </div>
+        <div class="card-body p-20">
             <?php if (!empty($items)): ?>
                 <!-- TAMPILAN DESKTOP (Tabel) -->
                 <div class="table-responsive d-none d-md-block">
-                    <table class="table bordered-table" id="agendaDataTable">
+                    <table class="table bordered-table" id="guruAgendaTable">
                         <thead>
                             <tr>
+                                <th style="width: 50px;">No</th>
                                 <th>Tahun/Sem</th>
                                 <th>Kelas</th>
                                 <th>Judul Agenda / Mapel</th>
@@ -75,8 +84,9 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($items as $row): ?>
+                            <?php $no = 1; foreach ($items as $row): ?>
                                 <tr>
+                                    <td class="text-center fw-bold"><?php echo $no++; ?></td>
                                     <td><?php echo html_escape($row->tahun_pelajaran . ' (' . $row->semester . ')') ?></td>
                                     <td><span class="badge bg-info-100 text-info-700 px-8 py-4 radius-4 fw-semibold"><?php echo html_escape($row->nama_tingkat . ' - ' . $row->nama_rombel) ?></span></td>
                                     <td>
@@ -86,7 +96,7 @@
                                             <span class="badge bg-warning-100 text-warning-700 ms-2 text-xs">Take-Over</span>
                                         <?php endif; ?>
                                     </td>
-                                    <td><?php echo html_escape($row->nama_ptk ?: '-') ?></td>
+                                    <td><?php echo html_escape($ptk->nama_ptk ?: '-') ?></td>
                                     <td class="text-center">
                                         <div class="d-inline-flex gap-2">
                                             <a href="<?php echo url('agenda_pembelajaran/detail/' . $row->id_pembelajaran_mapel) ?>" class="btn btn-sm btn-primary-600 d-inline-flex align-items-center gap-1 radius-8 px-12">
@@ -107,36 +117,36 @@
                 <div class="d-block d-md-none">
                     <div class="mb-16">
                         <div class="position-relative">
-                            <input type="text" id="mobileAgendaSearch" class="form-control text-sm radius-8 ps-40" placeholder="🔍 Cari Judul Agenda, Kelas, Mapel, atau Guru...">
+                            <input type="text" id="mobileGuruAgendaSearch" class="form-control text-sm radius-8 ps-40" placeholder="🔍 Cari Judul Agenda, Kelas, atau Mapel...">
                             <span class="position-absolute top-50 start-0 translate-middle-y ms-16 text-secondary-light d-flex align-items-center">
                                 <iconify-icon icon="solar:magnifer-linear" class="text-lg"></iconify-icon>
                             </span>
                         </div>
                     </div>
 
-                    <div class="accordion custom-accordion" id="accordionAgendaMobile">
+                    <div class="accordion custom-accordion" id="accordionGuruAgendaMobile">
                         <?php foreach ($items as $row): ?>
                             <?php
-                            $accordionId = "collapseAgenda" . $row->id_pembelajaran_mapel;
-                            $headingId   = "headingAgenda" . $row->id_pembelajaran_mapel;
+                            $accordionId = "collapseGuruAgenda" . $row->id_pembelajaran_mapel;
+                            $headingId   = "headingGuruAgenda" . $row->id_pembelajaran_mapel;
                             $nama_kelas  = trim($row->nama_tingkat . ' - ' . $row->nama_rombel);
-                            $searchableText = strtolower(html_escape($row->judul_agenda . ' ' . $row->nama_mapel . ' ' . $nama_kelas . ' ' . ($row->nama_ptk ?: '') . ' ' . $row->tahun_pelajaran));
+                            $searchableText = strtolower(html_escape($row->judul_agenda . ' ' . $row->nama_mapel . ' ' . $nama_kelas . ' ' . $ptk->nama_ptk . ' ' . $row->tahun_pelajaran));
                             ?>
-                            <div class="accordion-item border radius-8 mb-12 mobile-agenda-card" data-search="<?php echo $searchableText; ?>">
+                            <div class="accordion-item border radius-8 mb-12 mobile-guru-agenda-card" data-search="<?php echo $searchableText; ?>">
                                 <h2 class="accordion-header" id="<?php echo $headingId; ?>">
                                     <button class="accordion-button collapsed px-16 py-12 text-sm fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#<?php echo $accordionId; ?>" aria-expanded="false">
                                         <div class="d-flex flex-column gap-1 w-100 me-12">
                                             <div class="d-flex align-items-center justify-content-between">
-                                                <span class="text-primary-600 fw-bold text-truncate" style="max-width: 200px;"><?php echo html_escape($row->judul_agenda); ?></span>
+                                                <span class="text-primary-600 fw-bold text-truncate" style="max-width: 220px;"><?php echo html_escape($row->judul_agenda); ?></span>
                                                 <span class="badge bg-info-100 text-info-700 px-8 py-2 radius-4 text-xs"><?php echo html_escape($nama_kelas); ?></span>
                                             </div>
                                             <div class="d-flex align-items-center gap-12 text-xs text-secondary-light mt-4">
-                                                <span><iconify-icon icon="solar:user-bold" class="me-4"></iconify-icon><strong><?php echo html_escape($row->nama_ptk ?: '-'); ?></strong></span>
+                                                <span><iconify-icon icon="solar:user-bold" class="me-4"></iconify-icon><strong><?php echo html_escape($ptk->nama_ptk ?: '-'); ?></strong></span>
                                             </div>
                                         </div>
                                     </button>
                                 </h2>
-                                <div id="<?php echo $accordionId; ?>" class="accordion-collapse collapse" aria-labelledby="<?php echo $headingId; ?>" data-bs-parent="#accordionAgendaMobile">
+                                <div id="<?php echo $accordionId; ?>" class="accordion-collapse collapse" aria-labelledby="<?php echo $headingId; ?>" data-bs-parent="#accordionGuruAgendaMobile">
                                     <div class="accordion-body p-16 bg-neutral-50 radius-bottom-8">
                                         <div class="row gy-2 text-xs mb-12">
                                             <div class="col-6">
@@ -149,10 +159,10 @@
                                             </div>
                                         </div>
                                         <div class="mt-16 pt-12 border-top d-flex align-items-center justify-content-between">
-                                            <a href="<?php echo url('agenda_pembelajaran/hapus_header/' . $row->id_pembelajaran_mapel) ?>" onclick="return confirm('Hapus Agenda ini?');" class="btn btn-outline-danger btn-sm radius-8 px-10 text-xs">
+                                            <a href="<?php echo url('agenda_pembelajaran/hapus_header/' . $row->id_pembelajaran_mapel) ?>" onclick="return confirm('Hapus Agenda Pembelajaran ini?');" class="btn btn-outline-danger btn-sm radius-8 px-10 text-xs">
                                                 <iconify-icon icon="solar:trash-bin-trash-bold"></iconify-icon> Hapus
                                             </a>
-                                            <a href="<?php echo url('agenda_pembelajaran/detail/' . $row->id_pembelajaran_mapel) ?>" class="btn btn-primary-600 btn-sm radius-8 px-12 py-6 text-xs d-inline-flex align-items-center gap-1">
+                                            <a href="<?php echo url('agenda_pembelajaran/detail/' . $row->id_pembelajaran_mapel) ?>" class="btn btn-primary-600 btn-sm radius-8 px-16 py-6 text-xs d-inline-flex align-items-center gap-1">
                                                 <iconify-icon icon="solar:calendar-date-bold"></iconify-icon> Kelola Agenda
                                             </a>
                                         </div>
@@ -168,9 +178,9 @@
                     <div class="w-64-px h-64-px bg-primary-100 text-primary-600 rounded-circle d-inline-flex align-items-center justify-content-center mb-16">
                         <iconify-icon icon="solar:notebook-square-bold" class="text-3xl"></iconify-icon>
                     </div>
-                    <h6 class="fw-bold text-primary-900 mb-8">Belum Ada Agenda Pembelajaran Dibuat</h6>
+                    <h6 class="fw-bold text-primary-900 mb-8">Anda Belum Membuat Agenda Pembelajaran Baru</h6>
                     <p class="text-secondary-light text-sm max-w-500-px mx-auto mb-20">
-                        Agenda Pembelajaran berdiri sendiri secara mandiri. Silakan buat Agenda Pembelajaran Baru berdasarkan penugasan Mata Pelajaran &amp; Rombel yang telah diberikan pada semester aktif ini.
+                        Agenda Pembelajaran berdiri sendiri secara mandiri. Silakan klik tombol "+ Buat Agenda Pembelajaran Baru" di bawah ini untuk memilih penugasan mata pelajaran &amp; memberikan judul agenda kustom Anda.
                     </p>
                     <button type="button" class="btn btn-primary-600 radius-8 px-20 py-10 fw-bold d-inline-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalBuatAgenda">
                         <iconify-icon icon="solar:add-circle-bold" class="text-xl"></iconify-icon>
@@ -194,6 +204,7 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="<?php echo url('agenda_pembelajaran/simpan_agenda_baru'); ?>" method="POST">
+                <input type="hidden" name="redirect_to" value="guru/pengaturan_agenda">
                 <div class="modal-body p-24">
                     <div class="alert alert-primary bg-primary-50 border-primary-200 radius-8 p-16 mb-20 text-sm text-primary-900 d-flex align-items-center gap-2">
                         <iconify-icon icon="solar:info-circle-bold" class="text-xl text-primary-600 flex-shrink-0"></iconify-icon>
@@ -205,16 +216,16 @@
                     <div class="mb-20">
                         <label class="form-label text-sm fw-semibold text-primary-900 mb-8">Pilih Penugasan Mapel &amp; Kelas / Rombel <span class="text-danger">*</span></label>
                         <select name="id_pembelajaran_mapel" class="form-select radius-8 text-sm" required>
-                            <option value="">-- Pilih Penugasan Mata Pelajaran &amp; Kelas --</option>
+                            <option value="">-- Pilih Penugasan Mata Pelajaran &amp; Kelas Saya --</option>
                             <?php if (!empty($available_mapels)): ?>
                                 <?php foreach ($available_mapels as $amp): ?>
                                     <option value="<?php echo $amp->id_pembelajaran_mapel; ?>">
-                                        <?php echo html_escape('[' . $amp->tahun_pelajaran . ' - Sem ' . $amp->semester . '] ' . $amp->nama_tingkat . ' ' . $amp->nama_rombel . ' - ' . $amp->nama_mapel . ' (' . $amp->nama_ptk . ')'); ?>
+                                        <?php echo html_escape('[' . $amp->tahun_pelajaran . ' - Sem ' . $amp->semester . '] ' . $amp->nama_tingkat . ' ' . $amp->nama_rombel . ' - ' . $amp->nama_mapel); ?>
                                     </option>
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </select>
-                        <span class="text-xs text-secondary-light mt-4 d-block">Pilihan ini diambil dari penugasan pembelajaran semester aktif.</span>
+                        <span class="text-xs text-secondary-light mt-4 d-block">Pilihan ini diambil dari penugasan mata pelajaran yang Anda ampu di semester aktif.</span>
                     </div>
 
                     <div class="mb-12">
@@ -236,13 +247,13 @@
 
 <?php include viewPath('includes/footer'); ?>
 <script>
-    if (document.getElementById('agendaDataTable')) {
-        new DataTable('#agendaDataTable', { order: [] });
+    if (document.getElementById('guruAgendaTable')) {
+        new DataTable('#guruAgendaTable', { order: [] });
     }
 
-    $('#mobileAgendaSearch').on('keyup', function() {
+    $('#mobileGuruAgendaSearch').on('keyup', function() {
         var term = $(this).val().toLowerCase();
-        $('.mobile-agenda-card').each(function() {
+        $('.mobile-guru-agenda-card').each(function() {
             var searchData = $(this).attr('data-search') || '';
             if (searchData.indexOf(term) !== -1) {
                 $(this).removeClass('d-none');

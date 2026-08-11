@@ -49,7 +49,7 @@
         </div>
     <?php endif; ?>
 
-    <!-- Schedule Alert Status Banner (Peringatan Perubahan Jadwal / Draft Pending) -->
+    <!-- Schedule Alert Status Banner -->
     <?php if (!empty($schedule_status) && $schedule_status['status'] === 'draft_pending'): ?>
         <div class="alert alert-info border-0 radius-12 p-20 mb-24 shadow-xs d-flex align-items-center gap-3">
             <div class="w-48-px h-48-px rounded-circle bg-info-100 text-info-700 d-flex align-items-center justify-content-center flex-shrink-0">
@@ -104,24 +104,29 @@
                         <iconify-icon icon="solar:copy-bold" class="text-base"></iconify-icon> Pilih / Salin Agenda
                     </button>
                 <?php endif; ?>
-                <?php echo form_open($generate_agenda_url, ['class' => 'd-inline']); ?>
-                    <button type="submit" class="btn btn-outline-secondary radius-8 px-14 py-8 text-xs fw-semibold d-flex align-items-center gap-1" onclick="return confirm('Peringatan: Reset agenda akan menyusun ulang seluruh pertemuan dari awal. Lanjutkan?')">
-                        <iconify-icon icon="solar:restart-linear" class="text-base"></iconify-icon> Reset / Regenerate
-                    </button>
-                <?php echo form_close(); ?>
-                <?php echo form_open($generate_agenda_ai_url, ['class' => 'd-inline']); ?>
-                    <button type="submit" class="btn btn-success-600 radius-8 px-14 py-8 text-xs fw-semibold text-white d-flex align-items-center gap-1">
+                
+                <?php if (!empty($agenda)): ?>
+                    <!-- Tombol Generate via AI HANYA TAMPIL SETELAH AGENDA DIGENERATE -->
+                    <button type="button" class="btn btn-success-600 radius-8 px-14 py-8 text-xs fw-semibold text-white d-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#modalGenerateAi">
                         <iconify-icon icon="solar:magic-stick-bold" class="text-base"></iconify-icon> Generate via AI
                     </button>
-                <?php echo form_close(); ?>
+                    <?php echo form_open($generate_agenda_url, ['class' => 'd-inline']); ?>
+                        <button type="submit" class="btn btn-outline-secondary radius-8 px-14 py-8 text-xs fw-semibold d-flex align-items-center gap-1" onclick="return confirm('Peringatan: Reset agenda akan menyusun ulang seluruh pertemuan dari awal. Lanjutkan?')">
+                            <iconify-icon icon="solar:restart-linear" class="text-base"></iconify-icon> Reset Agenda
+                        </button>
+                    <?php echo form_close(); ?>
+                <?php endif; ?>
             </div>
         </div>
         <div class="card-body p-20">
             <?php if (empty($agenda)): ?>
+                <!-- EMPTY STATE KETIKA AGENDA BELUM DIGENERATE -->
                 <div class="text-center py-48 bg-neutral-50 radius-12 border border-dashed">
                     <iconify-icon icon="solar:notebook-square-linear" style="font-size: 56px;" class="text-primary-300 mb-12"></iconify-icon>
                     <h5 class="fw-bold text-primary-light mb-8">Agenda Harian Belum Digenerate</h5>
-                    <p class="text-secondary-light text-sm max-w-500-px mx-auto mb-20">Pilih dari agenda yang tersimpan, buat otomatis via Google AI, atau jalankan regenerate berdasarkan kalender efektif.</p>
+                    <p class="text-secondary-light text-sm max-w-500-px mx-auto mb-20">
+                        Silakan buat agenda harian dasar terlebih dahulu berdasarkan jadwal pelajaran &amp; kalender hari efektif kelas ini.
+                    </p>
                     <div class="d-flex align-items-center justify-content-center gap-3">
                         <?php if (!empty($templates)): ?>
                             <button type="button" class="btn btn-primary-600 radius-8 px-20 py-10 text-sm fw-bold" data-bs-toggle="modal" data-bs-target="#modalPilihTemplate">
@@ -129,66 +134,196 @@
                             </button>
                         <?php endif; ?>
                         <?php echo form_open($generate_agenda_url, ['class' => 'd-inline']); ?>
-                            <button type="submit" class="btn btn-outline-primary radius-8 px-20 py-10 text-sm fw-bold">
-                                Generate Agenda Baru
+                            <button type="submit" class="btn btn-success-600 text-white radius-8 px-20 py-10 text-sm fw-bold d-inline-flex align-items-center gap-2">
+                                <iconify-icon icon="solar:add-circle-bold" class="text-lg"></iconify-icon> Generate Agenda Baru
                             </button>
                         <?php echo form_close(); ?>
                     </div>
                 </div>
             <?php else: ?>
-                <?php echo form_open($save_agenda_url); ?>
-                    <div class="table-responsive">
-                        <table class="table bordered-table align-middle">
-                            <thead>
-                                <tr class="bg-neutral-100">
-                                    <th style="width: 50px;" class="text-center">Ke-</th>
-                                    <th style="width: 140px;">Hari / Tanggal</th>
-                                    <th style="width: 120px;">Jam KBM</th>
-                                    <th>Materi & Pokok Bahasan</th>
-                                    <th>Kegiatan & Aktivitas Pembelajaran</th>
-                                    <th style="width: 130px;" class="text-center">Status</th>
-                                    <th style="width: 150px;">Catatan</th>
+                <!-- TAMPILAN FIXED READ-ONLY DENGAN TOMBOL EDIT PER ITEM -->
+                <div class="table-responsive">
+                    <table class="table bordered-table align-middle">
+                        <thead>
+                            <tr class="bg-neutral-100">
+                                <th style="width: 50px;" class="text-center">Ke-</th>
+                                <th style="width: 140px;">Hari / Tanggal</th>
+                                <th style="width: 130px;">Jam KBM</th>
+                                <th>Materi &amp; Pokok Bahasan</th>
+                                <th>Kegiatan Pembelajaran</th>
+                                <th style="width: 180px;">Media Pembelajaran</th>
+                                <th style="width: 110px;" class="text-center">Status</th>
+                                <th style="width: 90px;" class="text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($agenda as $row): ?>
+                                <?php
+                                $media_items = json_decode($row->media_files ?: '[]', true) ?: [];
+                                ?>
+                                <tr>
+                                    <td class="text-center fw-bold text-primary-600"><?php echo $row->pertemuan_ke ?></td>
+                                    <td>
+                                        <div class="fw-bold text-primary-900"><?php echo html_escape($row->hari) ?></div>
+                                        <div class="text-xs text-secondary-light"><?php echo date('d M Y', strtotime($row->tanggal)) ?></div>
+                                    </td>
+                                    <td>
+                                        <div class="text-xs fw-semibold text-neutral-800"><?php echo html_escape($row->jam_mulai ?: '-') ?> - <?php echo html_escape($row->jam_selesai ?: '-') ?></div>
+                                        <div class="text-xs text-secondary-light"><?php echo $row->jumlah_jam ?: 0 ?> JP</div>
+                                    </td>
+                                    <td>
+                                        <div class="text-sm fw-semibold text-primary-900">
+                                            <?php echo !empty($row->materi) ? nl2br(html_escape($row->materi)) : '<em class="text-secondary-light text-xs">- belum diisi -</em>'; ?>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="text-xs text-neutral-700">
+                                            <?php echo !empty($row->kegiatan) ? nl2br(html_escape($row->kegiatan)) : '<em class="text-secondary-light">- belum diisi -</em>'; ?>
+                                        </div>
+                                        <?php if (!empty($row->catatan)): ?>
+                                            <div class="text-xs text-warning-800 bg-warning-50 p-6 radius-4 mt-6 border border-warning-200">
+                                                <strong>Catatan:</strong> <?php echo html_escape($row->catatan); ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <!-- DAFTAR MEDIA PEMBELAJARAN (FILE / LINK) -->
+                                        <?php if (!empty($media_items)): ?>
+                                            <div class="d-flex flex-column gap-4">
+                                                <?php foreach ($media_items as $m_idx => $media): ?>
+                                                    <?php if (isset($media['type']) && $media['type'] === 'file'): ?>
+                                                        <a href="<?php echo base_url('uploads/agenda_media/' . $media['file_name']); ?>" target="_blank" class="badge bg-primary-50 text-primary-700 border border-primary-200 px-8 py-4 radius-4 text-xs d-inline-flex align-items-center gap-1 text-truncate" style="max-width: 170px;" title="<?php echo html_escape($media['title']); ?>">
+                                                            <iconify-icon icon="solar:document-bold" class="text-sm"></iconify-icon>
+                                                            <?php echo html_escape($media['title']); ?>
+                                                        </a>
+                                                    <?php elseif (isset($media['type']) && $media['type'] === 'link'): ?>
+                                                        <a href="<?php echo html_escape($media['url']); ?>" target="_blank" class="badge bg-info-50 text-info-700 border border-info-200 px-8 py-4 radius-4 text-xs d-inline-flex align-items-center gap-1 text-truncate" style="max-width: 170px;" title="<?php echo html_escape($media['url']); ?>">
+                                                            <iconify-icon icon="solar:link-bold" class="text-sm"></iconify-icon>
+                                                            <?php echo html_escape($media['title'] ?: 'Link Media'); ?>
+                                                        </a>
+                                                    <?php endif; ?>
+                                                <?php endforeach; ?>
+                                            </div>
+                                        <?php else: ?>
+                                            <span class="text-xs text-secondary-light">- Tidak ada -</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td class="text-center">
+                                        <?php if ($row->status === 'Terlaksana'): ?>
+                                            <span class="badge bg-success-100 text-success-700 px-8 py-4 radius-4 text-xs fw-bold">Terlaksana</span>
+                                        <?php else: ?>
+                                            <span class="badge bg-warning-100 text-warning-700 px-8 py-4 radius-4 text-xs fw-bold">Belum</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td class="text-center">
+                                        <!-- TOMBOL EDIT PER ITEM -->
+                                        <button type="button" 
+                                                class="btn btn-sm btn-primary-600 radius-8 px-10 py-6 text-xs d-inline-flex align-items-center gap-1 btn-trigger-edit-item"
+                                                data-agenda='<?php echo html_escape(json_encode($row)); ?>'>
+                                            <iconify-icon icon="solar:pen-bold" class="text-sm"></iconify-icon> Edit
+                                        </button>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($agenda as $row): ?>
-                                    <tr>
-                                        <td class="text-center fw-bold text-primary-600"><?php echo $row->pertemuan_ke ?></td>
-                                        <td>
-                                            <div class="fw-bold text-primary-900"><?php echo html_escape($row->hari) ?></div>
-                                            <div class="text-xs text-secondary-light"><?php echo date('d M Y', strtotime($row->tanggal)) ?></div>
-                                        </td>
-                                        <td>
-                                            <div class="text-xs fw-semibold text-neutral-800"><?php echo html_escape($row->jam_mulai ?: '-') ?> - <?php echo html_escape($row->jam_selesai ?: '-') ?></div>
-                                            <div class="text-xs text-secondary-light"><?php echo $row->jumlah_jam ?: 0 ?> JP</div>
-                                        </td>
-                                        <td>
-                                            <textarea name="agenda[<?php echo $row->id_agenda ?>][materi]" class="form-control text-sm radius-8" rows="2" placeholder="Isi materi pokok..."><?php echo html_escape($row->materi) ?></textarea>
-                                        </td>
-                                        <td>
-                                            <textarea name="agenda[<?php echo $row->id_agenda ?>][kegiatan]" class="form-control text-sm radius-8" rows="2" placeholder="Isi bentuk kegiatan KBM..."><?php echo html_escape($row->kegiatan) ?></textarea>
-                                        </td>
-                                        <td class="text-center">
-                                            <select name="agenda[<?php echo $row->id_agenda ?>][status]" class="form-select text-xs radius-8 fw-semibold <?php echo $row->status === 'Terlaksana' ? 'border-success text-success-700 bg-success-50' : 'border-warning text-warning-700 bg-warning-50' ?>">
-                                                <option value="Belum" <?php echo $row->status === 'Belum' ? 'selected' : '' ?>>Belum</option>
-                                                <option value="Terlaksana" <?php echo $row->status === 'Terlaksana' ? 'selected' : '' ?>>Terlaksana</option>
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <input type="text" name="agenda[<?php echo $row->id_agenda ?>][catatan]" value="<?php echo html_escape($row->catatan) ?>" class="form-control text-xs radius-8" placeholder="Catatan kelas...">
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="mt-20 text-end">
-                        <button type="submit" class="btn btn-primary-600 radius-8 px-24 py-12 fw-bold text-sm">
-                            <iconify-icon icon="solar:disk-bold" class="me-1"></iconify-icon> Simpan Perubahan Agenda
-                        </button>
-                    </div>
-                <?php echo form_close(); ?>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
             <?php endif; ?>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL EDIT ITEM AGENDA (EDIT PER ITEM + MEDIA FILES/LINKS) -->
+<div class="modal fade" id="modalEditItemAgenda" tabindex="-1" aria-labelledby="modalEditItemAgendaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content radius-12 border-0 shadow-lg">
+            <div class="modal-header bg-primary-600 text-white radius-top-12">
+                <h6 class="modal-title text-white d-flex align-items-center gap-2" id="modalEditItemAgendaLabel">
+                    <iconify-icon icon="solar:pen-bold" class="text-xl"></iconify-icon>
+                    Edit Item Agenda Pertemuan <span id="modalPertemuanTitle" class="fw-bold"></span>
+                </h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <?php echo form_open_multipart('agenda_pembelajaran/simpan_item_agenda_modal', ['id' => 'formEditItemAgenda']); ?>
+                <input type="hidden" name="id_agenda" id="edit_id_agenda">
+                <input type="hidden" name="id_pembelajaran_mapel" value="<?php echo $item->id_pembelajaran_mapel; ?>">
+
+                <div class="modal-body p-24">
+                    <div class="alert alert-primary bg-primary-50 border-primary-200 radius-8 p-12 mb-20 text-xs text-primary-900 d-flex align-items-center justify-content-between">
+                        <div>
+                            <strong>Hari/Tanggal:</strong> <span id="modalHariTanggal" class="fw-bold"></span>
+                        </div>
+                        <div>
+                            <strong>Jam KBM:</strong> <span id="modalJamKbm" class="fw-bold"></span>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-16">
+                        <div class="col-md-8">
+                            <label class="form-label text-sm fw-semibold text-primary-900 mb-6">Status Keterlaksanaan <span class="text-danger">*</span></label>
+                            <select name="status" id="edit_status" class="form-select radius-8 text-sm" required>
+                                <option value="Belum">Belum Terlaksana</option>
+                                <option value="Terlaksana">Terlaksana</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label text-sm fw-semibold text-primary-900 mb-6">Catatan Kelas / Tambahan</label>
+                            <input type="text" name="catatan" id="edit_catatan" class="form-control radius-8 text-sm" placeholder="Contoh: Siswa antusias...">
+                        </div>
+                    </div>
+
+                    <div class="mb-16">
+                        <label class="form-label text-sm fw-semibold text-primary-900 mb-6">Materi &amp; Pokok Bahasan <span class="text-danger">*</span></label>
+                        <textarea name="materi" id="edit_materi" class="form-control radius-8 text-sm" rows="3" placeholder="Tuliskan materi pokok bahasan yang diajarkan..." required></textarea>
+                    </div>
+
+                    <div class="mb-20">
+                        <label class="form-label text-sm fw-semibold text-primary-900 mb-6">Kegiatan &amp; Aktivitas Pembelajaran</label>
+                        <textarea name="kegiatan" id="edit_kegiatan" class="form-control radius-8 text-sm" rows="3" placeholder="Tuliskan bentuk aktivitas/kegiatan KBM..."></textarea>
+                    </div>
+
+                    <!-- SEKSI MEDIA PEMBELAJARAN (FILE UPLOAD & LINKS) -->
+                    <div class="border-top pt-16 mt-20">
+                        <h6 class="fw-bold text-primary-900 text-sm mb-12 d-flex align-items-center gap-2">
+                            <iconify-icon icon="solar:folder-open-bold" class="text-lg text-primary-600"></iconify-icon>
+                            Media &amp; Berkas Pembelajaran
+                        </h6>
+
+                        <!-- Daftar Media yang Sudah Ada -->
+                        <div id="existingMediaContainer" class="mb-16 d-none">
+                            <label class="form-label text-xs fw-semibold text-secondary-light mb-6">Media / Berkas Tersimpan:</label>
+                            <div class="d-flex flex-column gap-2" id="existingMediaList"></div>
+                        </div>
+
+                        <!-- Form Upload File Baru -->
+                        <div class="mb-16 p-12 bg-neutral-50 radius-8 border">
+                            <label class="form-label text-xs fw-semibold text-primary-900 mb-6">📁 Upload File Media Baru (Dapat Lebih dari 1 File)</label>
+                            <input type="file" name="media_file[]" multiple class="form-control radius-8 text-xs">
+                            <span class="text-xs text-secondary-light mt-4 d-block">Format didukung: PDF, DOC, DOCX, PPT, PPTX, XLS, XLSX, JPG, PNG, ZIP, MP4.</span>
+                        </div>
+
+                        <!-- Form Sisipkan Link Baru -->
+                        <div class="p-12 bg-neutral-50 radius-8 border">
+                            <label class="form-label text-xs fw-semibold text-primary-900 mb-6">🔗 Sisipkan Link Media (Google Drive, YouTube, Website, DLL)</label>
+                            <div class="row g-2">
+                                <div class="col-md-5">
+                                    <input type="text" name="media_title[]" class="form-control radius-8 text-xs" placeholder="Nama Link (opsional, misal: Slide Google Drive)">
+                                </div>
+                                <div class="col-md-7">
+                                    <input type="url" name="media_link[]" class="form-control radius-8 text-xs" placeholder="https://drive.google.com/... atau https://youtube.com/...">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer bg-neutral-50 radius-bottom-12 p-16">
+                    <button type="button" class="btn btn-outline-secondary radius-8 px-16" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary-600 radius-8 px-20 fw-bold d-inline-flex align-items-center gap-1">
+                        <iconify-icon icon="solar:diskette-bold" class="text-lg"></iconify-icon> Simpan Perubahan Item
+                    </button>
+                </div>
+            <?php echo form_close(); ?>
         </div>
     </div>
 </div>
@@ -255,12 +390,12 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content radius-12 border-0">
             <div class="modal-header bg-primary-600 text-white">
-                <h6 class="modal-title text-white fw-bold">Pilih & Salin Agenda Tersimpan</h6>
+                <h6 class="modal-title text-white fw-bold">Pilih &amp; Salin Agenda Tersimpan</h6>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <?php echo form_open($pilih_template_url); ?>
             <div class="modal-body p-20">
-                <p class="text-xs text-secondary-light mb-16">Pilih agenda tersimpan untuk mapel <strong><?php echo html_escape($item->nama_mapel) ?> (Tingkat <?php echo html_escape($item->nama_tingkat) ?>)</strong>. Materi & kegiatan akan disalin, dan jadwal tanggal/jamnya akan disesuaikan otomatis dengan kelas ini.</p>
+                <p class="text-xs text-secondary-light mb-16">Pilih agenda tersimpan untuk mapel <strong><?php echo html_escape($item->nama_mapel) ?> (Tingkat <?php echo html_escape($item->nama_tingkat) ?>)</strong>. Materi &amp; kegiatan akan disalin, dan jadwal tanggal/jamnya akan disesuaikan otomatis dengan kelas ini.</p>
                 <div class="list-group radius-8">
                     <?php foreach ($templates as $tpl): ?>
                         <label class="list-group-item d-flex align-items-center justify-content-between p-16 cursor-pointer hover-bg-neutral-50">
@@ -280,7 +415,7 @@
             </div>
             <div class="modal-footer bg-neutral-50">
                 <button type="button" class="btn btn-secondary radius-8 text-sm" data-bs-dismiss="modal">Batal</button>
-                <button type="submit" class="btn btn-primary-600 radius-8 text-sm fw-bold">Salin & Sesuaikan Jadwal</button>
+                <button type="submit" class="btn btn-primary-600 radius-8 text-sm fw-bold">Salin &amp; Sesuaikan Jadwal</button>
             </div>
             <?php echo form_close(); ?>
         </div>
@@ -288,4 +423,106 @@
 </div>
 <?php endif; ?>
 
+<!-- Modal Konfirmasi Generate AI -->
+<div class="modal fade" id="modalGenerateAi" tabindex="-1" aria-labelledby="modalGenerateAiLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content radius-12 border-0 shadow-lg">
+            <div class="modal-header bg-success-600 text-white radius-top-12">
+                <h6 class="modal-title text-white d-flex align-items-center gap-2" id="modalGenerateAiLabel">
+                    <iconify-icon icon="solar:magic-stick-bold" class="text-xl"></iconify-icon>
+                    Generate Agenda Pembelajaran via AI
+                </h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <?php echo form_open($generate_agenda_ai_url, ['id' => 'formGenerateAi']); ?>
+            <div class="modal-body p-24">
+                <div class="text-center mb-20">
+                    <div class="w-64-px h-64-px bg-success-50 text-success-600 rounded-circle d-inline-flex align-items-center justify-content-center mb-12">
+                        <iconify-icon icon="solar:magic-stick-3-bold" class="text-3xl"></iconify-icon>
+                    </div>
+                    <h6 class="fw-bold text-primary-900 mb-8">Konfirmasi Generate Agenda Pembelajaran</h6>
+                </div>
+                
+                <div class="alert alert-success bg-success-50 border-success-200 radius-8 p-16 mb-16 text-sm text-success-900 d-flex align-items-start gap-2">
+                    <iconify-icon icon="solar:info-circle-bold" class="text-xl text-success-600 flex-shrink-0 mt-2"></iconify-icon>
+                    <div>
+                        Agenda harian pembelajaran akan dibuat oleh AI berdasarkan CP, ATP dan Modul Pembelajaran yang telah dibuat sebelumnya.
+                    </div>
+                </div>
+
+                <div id="aiGeneratingStatus" class="d-none text-center p-20 bg-neutral-100 radius-8 mt-16 border">
+                    <div class="spinner-border text-success mb-12" role="status" style="width: 2.5rem; height: 2.5rem;">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <h6 class="fw-bold text-success-700 mb-4">AI sedang membuat agenda...</h6>
+                    <p class="text-xs text-secondary-light mb-0">Mohon tunggu sebentar, AI sedang menganalisis CP, ATP &amp; Modul Pembelajaran untuk menyusun alur materi dan kegiatan KBM pertemuannya.</p>
+                </div>
+            </div>
+            <div class="modal-footer bg-neutral-50 radius-bottom-12 p-16" id="aiModalFooter">
+                <button type="button" class="btn btn-outline-secondary radius-8 px-16" data-bs-dismiss="modal">Batal</button>
+                <button type="submit" id="btnSubmitGenerateAi" class="btn btn-success-600 radius-8 px-20 fw-bold text-white d-inline-flex align-items-center gap-2">
+                    <iconify-icon icon="solar:magic-stick-bold" class="text-lg"></iconify-icon> Ya, Generate Sekarang
+                </button>
+            </div>
+            <?php echo form_close(); ?>
+        </div>
+    </div>
+</div>
+
 <?php include viewPath('includes/footer'); ?>
+<script>
+    $('#formGenerateAi').on('submit', function() {
+        $('#aiGeneratingStatus').removeClass('d-none');
+        $('#btnSubmitGenerateAi').prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> AI sedang membuat agenda...');
+        $('#aiModalFooter button[data-bs-dismiss]').prop('disabled', true);
+    });
+
+    // Populate Modal Edit Item Agenda
+    $('.btn-trigger-edit-item').on('click', function() {
+        var rowData = $(this).data('agenda');
+        if (!rowData) return;
+
+        $('#edit_id_agenda').val(rowData.id_agenda);
+        $('#modalPertemuanTitle').text('#' + rowData.pertemuan_ke);
+        $('#modalHariTanggal').text(rowData.hari + ', ' + rowData.tanggal);
+        $('#modalJamKbm').text((rowData.jam_mulai || '-') + ' - ' + (rowData.jam_selesai || '-') + ' (' + (rowData.jumlah_jam || 0) + ' JP)');
+        
+        $('#edit_status').val(rowData.status || 'Belum');
+        $('#edit_catatan').val(rowData.catatan || '');
+        $('#edit_materi').val(rowData.materi || '');
+        $('#edit_kegiatan').val(rowData.kegiatan || '');
+
+        // Render existing media list inside modal
+        var mediaContainer = $('#existingMediaContainer');
+        var mediaListEl = $('#existingMediaList');
+        mediaListEl.empty();
+
+        var mediaItems = [];
+        try {
+            mediaItems = JSON.parse(rowData.media_files || '[]');
+        } catch (e) {
+            mediaItems = [];
+        }
+
+        if (mediaItems && mediaItems.length > 0) {
+            mediaContainer.removeClass('d-none');
+            $.each(mediaItems, function(idx, item) {
+                var deleteUrl = '<?php echo url("agenda_pembelajaran/hapus_media_item/"); ?>' + rowData.id_agenda + '/' + idx;
+                var htmlItem = '<div class="d-flex align-items-center justify-content-between p-8 bg-white border radius-6">';
+                if (item.type === 'file') {
+                    htmlItem += '<div class="text-xs text-truncate me-2"><iconify-icon icon="solar:document-bold" class="text-primary-600 me-1"></iconify-icon><strong>File:</strong> ' + item.title + '</div>';
+                } else {
+                    htmlItem += '<div class="text-xs text-truncate me-2"><iconify-icon icon="solar:link-bold" class="text-info-600 me-1"></iconify-icon><strong>Link:</strong> <a href="' + item.url + '" target="_blank">' + (item.title || item.url) + '</a></div>';
+                }
+                htmlItem += '<a href="' + deleteUrl + '" onclick="return confirm(\'Hapus media ini?\')" class="btn btn-xs btn-outline-danger px-8 py-2 radius-4 text-xs flex-shrink-0">Hapus</a>';
+                htmlItem += '</div>';
+                mediaListEl.append(htmlItem);
+            });
+        } else {
+            mediaContainer.addClass('d-none');
+        }
+
+        var editModal = new bootstrap.Modal(document.getElementById('modalEditItemAgenda'));
+        editModal.show();
+    });
+</script>

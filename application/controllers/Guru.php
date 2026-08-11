@@ -70,6 +70,24 @@ class Guru extends MY_Controller
         $this->load->view('guru/perangkat', $this->page_data);
     }
 
+    public function pengaturan_agenda()
+    {
+        $ptk = $this->currentPtk();
+        if (!$ptk) {
+            return $this->notLinked();
+        }
+
+        $this->load->model('Agenda_pembelajaran_model', 'agenda_model');
+
+        $this->setPage('Portal Guru', 'Pengaturan Agenda Pembelajaran Saya', 'guru/pengaturan_agenda', 'solar:settings-linear');
+        $this->page_data['ptk'] = $ptk;
+        
+        $this->page_data['items'] = $this->agenda_model->getAdminItems('Aktif', $ptk->id_ptk);
+        $this->page_data['available_mapels'] = $this->agenda_model->getAvailableMapelForGuru($ptk->id_ptk, 'Aktif');
+
+        $this->load->view('guru/pengaturan_agenda', $this->page_data);
+    }
+
     public function perangkat_detail($id_pembelajaran_mapel)
     {
         $ptk = $this->currentPtk();

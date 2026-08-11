@@ -115,6 +115,7 @@ class MY_Controller extends CI_Controller {
 				'ptk',
 				'pembelajaran',
 				'perangkat_pembelajaran',
+				'agenda_pembelajaran',
 				'nilai_siswa',
 				'tugas_tambahan_ptk',
 				'tahun_pelajaran',

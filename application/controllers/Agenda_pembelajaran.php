@@ -43,17 +43,174 @@ class Agenda_pembelajaran extends MY_Controller
         }
         $is_admin = in_array('admin', $user_roles, true) || logged('role') == 1 || hasPermissions('pembelajaran_list');
 
+        $selected_ptk = (int) $this->input->get('id_ptk');
+
         if (!$is_admin && $ptk_id > 0) {
             $items = $this->agenda_model->getGuruItems($ptk_id, $status_tahun);
         } else {
-            $items = $this->agenda_model->getAdminItems($status_tahun);
+            $items = $this->agenda_model->getAdminItems($status_tahun, $selected_ptk);
         }
 
         $this->page_data['items'] = $items;
+        $this->page_data['selected_ptk'] = $selected_ptk;
         $this->page_data['is_nonaktif'] = $is_nonaktif;
         $this->page_data['teachers'] = $this->db->where('status_keaktifan', 'Aktif')->order_by('nama_ptk', 'ASC')->get('ptk')->result();
         
+        $filter_ptk_available = (!$is_admin && $ptk_id > 0) ? $ptk_id : $selected_ptk;
+        $this->page_data['available_mapels'] = $this->agenda_model->getAvailableMapelForGuru($filter_ptk_available, $status_tahun);
+
         $this->load->view('agenda_pembelajaran/list', $this->page_data);
+    }
+
+    public function simpan_agenda_baru()
+    {
+        $id_pembelajaran_mapel = (int) $this->input->post('id_pembelajaran_mapel');
+        $judul_agenda          = trim((string) $this->input->post('judul_agenda'));
+        $redirect_to           = $this->input->post('redirect_to');
+
+        if (!$id_pembelajaran_mapel || empty($judul_agenda)) {
+            $this->session->set_flashdata('alert-type', 'danger');
+            $this->session->set_flashdata('alert', 'Harap pilih mata pelajaran dan isi judul agenda pembelajaran!');
+            redirect(!empty($redirect_to) ? $redirect_to : 'agenda_pembelajaran');
+            return;
+        }
+
+        $pm_row = $this->db->get_where('pembelajaran_mapel', ['id_pembelajaran_mapel' => $id_pembelajaran_mapel])->row();
+        if (!$pm_row) {
+            $this->session->set_flashdata('alert-type', 'danger');
+            $this->session->set_flashdata('alert', 'Mata pelajaran tidak ditemukan.');
+            redirect(!empty($redirect_to) ? $redirect_to : 'agenda_pembelajaran');
+            return;
+        }
+
+        $this->db->where('id_pembelajaran_mapel', $id_pembelajaran_mapel);
+        $this->db->update('pembelajaran_mapel', ['judul_agenda' => $judul_agenda]);
+
+        $this->session->set_flashdata('alert-type', 'success');
+        $this->session->set_flashdata('alert', 'Agenda Pembelajaran "' . html_escape($judul_agenda) . '" berhasil disimpan!');
+
+        if (!empty($redirect_to)) {
+            redirect($redirect_to);
+        } else {
+            $referer = $this->input->server('HTTP_REFERER');
+            if ($referer && strpos($referer, 'guru/pengaturan_agenda') !== false) {
+                redirect('guru/pengaturan_agenda');
+            } else {
+                redirect('agenda_pembelajaran');
+            }
+        }
+    }
+
+    public function hapus_header($id_pembelajaran_mapel = 0)
+    {
+        $id_pembelajaran_mapel = (int) $id_pembelajaran_mapel;
+        if ($id_pembelajaran_mapel > 0) {
+            $this->db->where('id_pembelajaran_mapel', $id_pembelajaran_mapel);
+            $this->db->update('pembelajaran_mapel', ['judul_agenda' => NULL]);
+
+            $this->db->where('id_pembelajaran_mapel', $id_pembelajaran_mapel);
+            $this->db->delete('agenda_pembelajaran');
+
+            $this->session->set_flashdata('alert-type', 'success');
+            $this->session->set_flashdata('alert', 'Agenda Pembelajaran berhasil dihapus.');
+        }
+
+        $referer = $this->input->server('HTTP_REFERER');
+        if ($referer && strpos($referer, 'guru/pengaturan_agenda') !== false) {
+            redirect('guru/pengaturan_agenda');
+        } else {
+            redirect('agenda_pembelajaran');
+        }
+    }
+
+    public function ptk($id_ptk = null)
+    {
+        $userId = logged('id');
+        $user = $this->db->get_where('users', ['id' => $userId])->row();
+        $user_ptk_id = $user ? (int) $user->id_ptk : 0;
+
+        $user_roles = [];
+        foreach ($this->db->get_where('user_roles', ['user_id' => $userId])->result() as $ur) {
+            $r_row = $this->db->get_where('roles', ['id' => $ur->role_id])->row();
+            if ($r_row) {
+                $user_roles[] = strtolower((string) $r_row->title);
+            }
+        }
+        $is_admin = in_array('admin', $user_roles, true) || logged('role') == 1 || hasPermissions('pembelajaran_list');
+
+        if (!$is_admin && $user_ptk_id > 0) {
+            $id_ptk = $user_ptk_id;
+        }
+
+        $id_ptk = (int) ($id_ptk ?: $this->input->get('id_ptk'));
+
+        if (!$id_ptk) {
+            // Tampilkan rekap per Guru Pengampu
+            $this->page_data['page']->title = 'Agenda Pembelajaran per Guru Pengampu';
+            $this->page_data['page']->titleUrl = 'agenda_pembelajaran/ptk';
+            $this->page_data['page']->subtitle = 'Rekapitulasi Agenda Harian Seluruh Guru Pengampu';
+            $this->page_data['page']->subtitleUrl = 'agenda_pembelajaran/ptk';
+            $this->page_data['page']->icon = 'solar:users-group-two-rounded-bold';
+
+            $this->page_data['ptk_summary'] = $this->agenda_model->getPtkAgendaSummary('Aktif');
+            $this->load->view('agenda_pembelajaran/ptk_summary', $this->page_data);
+            return;
+        }
+
+        $ptk_row = $this->db->get_where('ptk', ['id_ptk' => $id_ptk])->row();
+        if (!$ptk_row) {
+            show_404();
+        }
+
+        $status = $this->input->get('status');
+        $bulan  = $this->input->get('bulan');
+        $id_tp  = $this->input->get('id_tahun_pelajaran');
+
+        $agendas = $this->agenda_model->getAgendaHarianPerPtk($id_ptk, $id_tp, $status, $bulan);
+        $guru_mapel_list = $this->agenda_model->getGuruItems($id_ptk, 'Aktif');
+        if (empty($guru_mapel_list)) {
+            $guru_mapel_list = $this->agenda_model->getGuruItems($id_ptk, null);
+        }
+        $tp_active = $this->db->get_where('pembelajaran_tahun_pelajaran', ['status' => 'Aktif'])->row();
+
+        $this->page_data['page']->title = 'Agenda Harian Guru Pengampu';
+        $this->page_data['page']->titleUrl = 'agenda_pembelajaran/ptk/' . $id_ptk;
+        $this->page_data['page']->subtitle = 'Daftar Agenda Harian Guru Pengampu: ' . $ptk_row->nama_ptk;
+        $this->page_data['page']->subtitleUrl = 'agenda_pembelajaran/ptk/' . $id_ptk;
+        $this->page_data['page']->icon = 'solar:calendar-date-bold';
+
+        $this->page_data['ptk'] = $ptk_row;
+        $this->page_data['agendas'] = $agendas;
+        $this->page_data['guru_mapel_list'] = $guru_mapel_list;
+        $this->page_data['selected_status'] = $status;
+        $this->page_data['selected_bulan'] = $bulan;
+        $this->page_data['tp_active'] = $tp_active;
+        $this->page_data['teachers'] = $this->db->order_by('nama_ptk', 'ASC')->get('ptk')->result();
+
+        $this->load->view('agenda_pembelajaran/ptk_detail', $this->page_data);
+    }
+
+    public function cetak_ptk($id_ptk)
+    {
+        $ptk_row = $this->db->get_where('ptk', ['id_ptk' => (int) $id_ptk])->row();
+        if (!$ptk_row) {
+            show_404();
+        }
+
+        $status = $this->input->get('status');
+        $bulan  = $this->input->get('bulan');
+        $id_tp  = $this->input->get('id_tahun_pelajaran');
+
+        $agendas = $this->agenda_model->getAgendaHarianPerPtk($id_ptk, $id_tp, $status, $bulan);
+        $tp_active = $this->db->get_where('pembelajaran_tahun_pelajaran', ['status' => 'Aktif'])->row();
+        $lembaga = $this->db->get('lembaga')->row();
+
+        $this->page_data['ptk'] = $ptk_row;
+        $this->page_data['agendas'] = $agendas;
+        $this->page_data['tp_active'] = $tp_active;
+        $this->page_data['lembaga'] = $lembaga;
+
+        $this->load->view('agenda_pembelajaran/cetak_ptk', $this->page_data);
     }
 
     public function detail($id_pembelajaran_mapel)
@@ -102,6 +259,125 @@ class Agenda_pembelajaran extends MY_Controller
             $this->session->set_flashdata('alert', 'Judul agenda harian berhasil diperbarui.');
         }
         redirect('agenda_pembelajaran/detail/' . $id_pembelajaran_mapel);
+    }
+
+    public function simpan_item_agenda_modal()
+    {
+        postAllowed();
+        $id_agenda = (int) post('id_agenda');
+        $id_pembelajaran_mapel = (int) post('id_pembelajaran_mapel');
+
+        $item_agenda = $this->agenda_model->getItemAgenda($id_agenda);
+        if (!$item_agenda) {
+            $this->session->set_flashdata('alert-type', 'danger');
+            $this->session->set_flashdata('alert', 'Item agenda tidak ditemukan.');
+            redirect('agenda_pembelajaran/detail/' . $id_pembelajaran_mapel);
+            return;
+        }
+
+        $materi   = post('materi');
+        $kegiatan = post('kegiatan');
+        $status   = post('status');
+        $catatan  = post('catatan');
+
+        $media_list = json_decode($item_agenda->media_files ?: '[]', true) ?: [];
+
+        $link_urls   = post('media_link');
+        $link_titles = post('media_title');
+        if (!empty($link_urls) && is_array($link_urls)) {
+            foreach ($link_urls as $idx => $url_val) {
+                $url_clean = trim((string)$url_val);
+                if (!empty($url_clean)) {
+                    $title_clean = !empty($link_titles[$idx]) ? trim((string)$link_titles[$idx]) : 'Link Media Pembelajaran';
+                    $media_list[] = [
+                        'type' => 'link',
+                        'title' => $title_clean,
+                        'url' => $url_clean
+                    ];
+                }
+            }
+        }
+
+        if (!empty($_FILES['media_file']['name'][0])) {
+            $upload_dir = './uploads/agenda_media/';
+            if (!is_dir($upload_dir)) {
+                mkdir($upload_dir, 0777, true);
+            }
+
+            $filesCount = count($_FILES['media_file']['name']);
+            for ($i = 0; $i < $filesCount; $i++) {
+                if (!empty($_FILES['media_file']['name'][$i])) {
+                    $_FILES['file']['name']     = $_FILES['media_file']['name'][$i];
+                    $_FILES['file']['type']     = $_FILES['media_file']['type'][$i];
+                    $_FILES['file']['tmp_name'] = $_FILES['media_file']['tmp_name'][$i];
+                    $_FILES['file']['error']    = $_FILES['media_file']['error'][$i];
+                    $_FILES['file']['size']     = $_FILES['media_file']['size'][$i];
+
+                    $ext = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
+                    $new_name = 'agenda_' . $id_agenda . '_' . time() . '_' . rand(100, 999) . '.' . $ext;
+
+                    $config['upload_path']   = $upload_dir;
+                    $config['allowed_types'] = 'pdf|doc|docx|ppt|pptx|xls|xlsx|jpg|jpeg|png|gif|zip|rar|mp4|webm|txt';
+                    $config['file_name']     = $new_name;
+
+                    $this->load->library('upload', $config);
+                    $this->upload->initialize($config);
+
+                    if ($this->upload->do_upload('file')) {
+                        $uploadData = $this->upload->data();
+                        $media_list[] = [
+                            'type' => 'file',
+                            'title' => $_FILES['media_file']['name'][$i],
+                            'file_name' => $uploadData['file_name'],
+                            'file_size' => $uploadData['file_size']
+                        ];
+                    }
+                }
+            }
+        }
+
+        $update_data = [
+            'materi'      => $materi,
+            'kegiatan'    => $kegiatan,
+            'status'      => $status,
+            'catatan'     => $catatan,
+            'media_files' => json_encode($media_list),
+            'updated_at'  => date('Y-m-d H:i:s')
+        ];
+
+        $this->agenda_model->updateItemAgenda($id_agenda, $update_data);
+
+        $this->session->set_flashdata('alert-type', 'success');
+        $this->session->set_flashdata('alert', 'Agenda pertemuan ke-' . $item_agenda->pertemuan_ke . ' berhasil diperbarui.');
+        redirect('agenda_pembelajaran/detail/' . $id_pembelajaran_mapel);
+    }
+
+    public function hapus_media_item($id_agenda, $index_media)
+    {
+        $id_agenda = (int) $id_agenda;
+        $index_media = (int) $index_media;
+
+        $item_agenda = $this->agenda_model->getItemAgenda($id_agenda);
+        if (!$item_agenda) {
+            show_404();
+        }
+
+        $media_list = json_decode($item_agenda->media_files ?: '[]', true) ?: [];
+        if (isset($media_list[$index_media])) {
+            $item = $media_list[$index_media];
+            if (isset($item['type']) && $item['type'] === 'file' && !empty($item['file_name'])) {
+                $file_path = './uploads/agenda_media/' . $item['file_name'];
+                if (is_file($file_path)) {
+                    @unlink($file_path);
+                }
+            }
+            array_splice($media_list, $index_media, 1);
+            $this->agenda_model->updateItemAgenda($id_agenda, ['media_files' => json_encode($media_list)]);
+            $this->session->set_flashdata('alert-type', 'success');
+            $this->session->set_flashdata('alert', 'Media pembelajaran berhasil dihapus.');
+        }
+
+        redirect('agenda_pembelajaran/detail/' . $item_agenda->id_pembelajaran_mapel);
     }
 
     public function takeover($id_pembelajaran_mapel)

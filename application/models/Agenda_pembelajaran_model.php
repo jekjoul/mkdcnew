@@ -43,6 +43,11 @@ class Agenda_pembelajaran_model extends MY_Model
                     'link_video' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true]
                 ]);
             }
+            if (!$this->db->field_exists('media_files', 'agenda_pembelajaran')) {
+                $this->dbforge->add_column('agenda_pembelajaran', [
+                    'media_files' => ['type' => 'TEXT', 'null' => true]
+                ]);
+            }
         }
 
         // Ensure custom agenda fields in pembelajaran_mapel
@@ -115,9 +120,9 @@ class Agenda_pembelajaran_model extends MY_Model
         return "Agenda Harian Mapel " . $item->nama_mapel . " Kelas " . $item->nama_rombel . " Semester " . $item->semester . " Tahun Pelajaran " . $item->tahun_pelajaran;
     }
 
-    public function getAdminItems($status_tahun = 'Aktif')
+    public function getAdminItems($status_tahun = 'Aktif', $id_ptk = null)
     {
-        $this->db->select('pm.id_pembelajaran_mapel, pm.id_ptk, pm.judul_agenda, pm.status_takeover, l.nama_lembaga, l.nama_lembaga_singkat, t.nama_tingkat, r.nama_rombel, tp.tahun_pelajaran, tp.semester, m.nama_mapel, ptk.nama_ptk as nama_ptk, COUNT(ap.id_agenda) AS total_agenda, SUM(CASE WHEN ap.status = "Terlaksana" THEN 1 ELSE 0 END) AS terlaksana');
+        $this->db->select('pm.id_pembelajaran_mapel, pm.id_ptk, pm.judul_agenda, pm.status_takeover, l.nama_lembaga, l.nama_lembaga_singkat, t.nama_tingkat, r.nama_rombel, tp.tahun_pelajaran, tp.semester, m.nama_mapel, COALESCE(ptk.nama_ptk, ptk_pemilik.nama_ptk, ptk_takeover.nama_ptk) as nama_ptk, COUNT(ap.id_agenda) AS total_agenda, SUM(CASE WHEN ap.status = "Terlaksana" THEN 1 ELSE 0 END) AS terlaksana');
         $this->db->from('pembelajaran_mapel pm');
         $this->db->join('pembelajaran p', 'p.id_pembelajaran = pm.id_pembelajaran');
         $this->db->join('lembaga l', 'l.id_lembaga = p.id_lembaga');
@@ -126,16 +131,26 @@ class Agenda_pembelajaran_model extends MY_Model
         $this->db->join('pembelajaran_tahun_pelajaran tp', 'tp.id_tahun_pelajaran = p.id_tahun_pelajaran');
         $this->db->join('mapel m', 'm.id_mapel = pm.id_mapel');
         $this->db->join('ptk', 'ptk.id_ptk = pm.id_ptk', 'left');
+        $this->db->join('ptk ptk_pemilik', 'ptk_pemilik.id_ptk = pm.id_ptk_pemilik', 'left');
+        $this->db->join('ptk ptk_takeover', 'ptk_takeover.id_ptk = pm.id_ptk_takeover', 'left');
         $this->db->join('agenda_pembelajaran ap', 'ap.id_pembelajaran_mapel = pm.id_pembelajaran_mapel', 'left');
+
+        // Only include Agendas that have been explicitly created/named by teachers
+        $this->db->where('pm.judul_agenda IS NOT NULL', NULL, FALSE);
+        $this->db->where("TRIM(pm.judul_agenda) != ''", NULL, FALSE);
+
+        if (!empty($id_ptk)) {
+            $this->db->group_start();
+            $this->db->where('pm.id_ptk', (int) $id_ptk);
+            $this->db->or_where('pm.id_ptk_pemilik', (int) $id_ptk);
+            $this->db->or_where('pm.id_ptk_takeover', (int) $id_ptk);
+            $this->db->group_end();
+        }
 
         if ($status_tahun === 'Aktif') {
             $this->db->where('tp.status', 'Aktif');
-            $this->db->where('p.status', 'Aktif');
-        } else {
-            $this->db->group_start();
+        } elseif ($status_tahun === 'Tidak Aktif') {
             $this->db->where('tp.status !=', 'Aktif');
-            $this->db->or_where('p.status !=', 'Aktif');
-            $this->db->group_end();
         }
 
         $this->db->group_by('pm.id_pembelajaran_mapel');
@@ -144,18 +159,12 @@ class Agenda_pembelajaran_model extends MY_Model
         $this->db->order_by('r.nama_rombel', 'ASC');
         $this->db->order_by('m.nama_mapel', 'ASC');
         
-        $items = $this->db->get()->result();
-        foreach ($items as $item) {
-            if (empty($item->judul_agenda)) {
-                $item->judul_agenda = $this->getDefaultAgendaTitle($item);
-            }
-        }
-        return $items;
+        return $this->db->get()->result();
     }
 
-    public function getGuruItems($id_ptk, $status_tahun = 'Aktif')
+    public function getAvailableMapelForGuru($id_ptk = null, $status_tahun = 'Aktif')
     {
-        $this->db->select('pm.id_pembelajaran_mapel, pm.id_ptk, pm.judul_agenda, pm.status_takeover, l.nama_lembaga, l.nama_lembaga_singkat, t.nama_tingkat, r.nama_rombel, tp.tahun_pelajaran, tp.semester, m.nama_mapel, ptk.nama_ptk as nama_ptk, COUNT(ap.id_agenda) AS total_agenda, SUM(CASE WHEN ap.status = "Terlaksana" THEN 1 ELSE 0 END) AS terlaksana');
+        $this->db->select('pm.id_pembelajaran_mapel, pm.id_ptk, pm.judul_agenda, l.nama_lembaga_singkat, t.nama_tingkat, r.nama_rombel, tp.tahun_pelajaran, tp.semester, m.nama_mapel, COALESCE(ptk.nama_ptk, ptk_pemilik.nama_ptk, ptk_takeover.nama_ptk) as nama_ptk');
         $this->db->from('pembelajaran_mapel pm');
         $this->db->join('pembelajaran p', 'p.id_pembelajaran = pm.id_pembelajaran');
         $this->db->join('lembaga l', 'l.id_lembaga = p.id_lembaga');
@@ -164,43 +173,50 @@ class Agenda_pembelajaran_model extends MY_Model
         $this->db->join('pembelajaran_tahun_pelajaran tp', 'tp.id_tahun_pelajaran = p.id_tahun_pelajaran');
         $this->db->join('mapel m', 'm.id_mapel = pm.id_mapel');
         $this->db->join('ptk', 'ptk.id_ptk = pm.id_ptk', 'left');
-        $this->db->join('agenda_pembelajaran ap', 'ap.id_pembelajaran_mapel = pm.id_pembelajaran_mapel', 'left');
+        $this->db->join('ptk ptk_pemilik', 'ptk_pemilik.id_ptk = pm.id_ptk_pemilik', 'left');
+        $this->db->join('ptk ptk_takeover', 'ptk_takeover.id_ptk = pm.id_ptk_takeover', 'left');
 
-        $this->db->group_start();
-        $this->db->where('pm.id_ptk', (int) $id_ptk);
-        $this->db->or_where('pm.id_ptk_pemilik', (int) $id_ptk);
-        $this->db->or_where('pm.id_ptk_takeover', (int) $id_ptk);
-        $this->db->group_end();
-
-        if ($status_tahun === 'Aktif') {
-            $this->db->where('tp.status', 'Aktif');
-            $this->db->where('p.status', 'Aktif');
-        } else {
+        if (!empty($id_ptk)) {
             $this->db->group_start();
-            $this->db->where('tp.status !=', 'Aktif');
-            $this->db->or_where('p.status !=', 'Aktif');
+            $this->db->where('pm.id_ptk', (int) $id_ptk);
+            $this->db->or_where('pm.id_ptk_pemilik', (int) $id_ptk);
+            $this->db->or_where('pm.id_ptk_takeover', (int) $id_ptk);
             $this->db->group_end();
         }
 
-        $this->db->group_by('pm.id_pembelajaran_mapel');
+        if ($status_tahun === 'Aktif') {
+            $this->db->where('tp.status', 'Aktif');
+        }
+
         $this->db->order_by('tp.id_tahun_pelajaran', 'DESC');
+        $this->db->order_by('t.tingkat_angka', 'ASC');
         $this->db->order_by('r.nama_rombel', 'ASC');
         $this->db->order_by('m.nama_mapel', 'ASC');
 
-        $items = $this->db->get()->result();
-        foreach ($items as $item) {
-            if (empty($item->judul_agenda)) {
-                $item->judul_agenda = $this->getDefaultAgendaTitle($item);
-            }
-        }
-        return $items;
+        return $this->db->get()->result();
+    }
+
+    public function getGuruItems($id_ptk, $status_tahun = 'Aktif')
+    {
+        return $this->getAdminItems($status_tahun, $id_ptk);
     }
 
     public function getAgendaByMapel($id_pembelajaran_mapel)
     {
-        $this->db->order_by('pertemuan_ke', 'ASC');
-        $this->db->order_by('tanggal', 'ASC');
-        return $this->db->get_where($this->agenda_table, ['id_pembelajaran_mapel' => (int) $id_pembelajaran_mapel])->result();
+        return $this->db->order_by('pertemuan_ke', 'ASC')
+            ->get_where($this->agenda_table, ['id_pembelajaran_mapel' => $id_pembelajaran_mapel])
+            ->result();
+    }
+
+    public function getItemAgenda($id_agenda)
+    {
+        return $this->db->get_where($this->agenda_table, ['id_agenda' => (int) $id_agenda])->row();
+    }
+
+    public function updateItemAgenda($id_agenda, $data)
+    {
+        $this->db->where('id_agenda', (int) $id_agenda);
+        return $this->db->update($this->agenda_table, $data);
     }
 
     public function updateJudulAgenda($id_pembelajaran_mapel, $judul)
@@ -535,6 +551,22 @@ class Agenda_pembelajaran_model extends MY_Model
         return true;
     }
 
+    public function getActiveSchedules($id_pembelajaran, $id_mapel)
+    {
+        if ($this->db->table_exists('jadwal_pelajaran_item')) {
+            return $this->db->get_where('jadwal_pelajaran_item', [
+                'id_pembelajaran' => (int) $id_pembelajaran,
+                'id_mapel' => (int) $id_mapel
+            ])->result();
+        } elseif ($this->db->table_exists('jadwal_pelajaran')) {
+            return $this->db->get_where('jadwal_pelajaran', [
+                'id_pembelajaran' => (int) $id_pembelajaran,
+                'id_mapel' => (int) $id_mapel
+            ])->result();
+        }
+        return [];
+    }
+
     public function detectScheduleStatus($id_pembelajaran_mapel)
     {
         $item = $this->getPembelajaranMapel($id_pembelajaran_mapel);
@@ -587,5 +619,106 @@ class Agenda_pembelajaran_model extends MY_Model
         }
 
         return ['status' => 'ok', 'message' => 'Jadwal agenda sudah selaras dengan jadwal pelajaran'];
+    }
+
+    public function getPtkAgendaSummary($status_tahun = 'Aktif')
+    {
+        $items = $this->getAdminItems($status_tahun);
+        if (empty($items)) {
+            $items = $this->getAdminItems(null);
+        }
+
+        $ptk_map = [];
+        foreach ($items as $item) {
+            $ptk_id = (int) ($item->id_ptk ?: (!empty($item->id_ptk_pemilik) ? $item->id_ptk_pemilik : (!empty($item->id_ptk_takeover) ? $item->id_ptk_takeover : 0)));
+            if (!$ptk_id) {
+                continue;
+            }
+            if (!isset($ptk_map[$ptk_id])) {
+                $ptk_map[$ptk_id] = (object) [
+                    'id_ptk' => $ptk_id,
+                    'nama_ptk' => $item->nama_ptk ?: 'Guru (ID: ' . $ptk_id . ')',
+                    'nip' => '',
+                    'nuptk' => '',
+                    'total_mapel' => 0,
+                    'total_agenda' => 0,
+                    'terlaksana' => 0
+                ];
+            }
+            $ptk_map[$ptk_id]->total_mapel += 1;
+            $ptk_map[$ptk_id]->total_agenda += (int) $item->total_agenda;
+            $ptk_map[$ptk_id]->terlaksana += (int) $item->terlaksana;
+        }
+
+        if (!empty($ptk_map)) {
+            $ptk_ids = array_filter(array_keys($ptk_map), function ($v) {
+                return (int) $v > 0;
+            });
+            if (!empty($ptk_ids)) {
+                $query = $this->db->select('id_ptk, nama_ptk, nip, nuptk')->where_in('id_ptk', array_values($ptk_ids))->get('ptk');
+                if ($query && is_object($query)) {
+                    $ptk_details = $query->result();
+                    foreach ($ptk_details as $detail) {
+                        if (isset($ptk_map[$detail->id_ptk])) {
+                            if (!empty($detail->nama_ptk)) {
+                                $ptk_map[$detail->id_ptk]->nama_ptk = $detail->nama_ptk;
+                            }
+                            $ptk_map[$detail->id_ptk]->nip = $detail->nip;
+                            $ptk_map[$detail->id_ptk]->nuptk = $detail->nuptk;
+                        }
+                    }
+                }
+            }
+        }
+
+        usort($ptk_map, function ($a, $b) {
+            return strcmp($a->nama_ptk, $b->nama_ptk);
+        });
+
+        return array_values($ptk_map);
+    }
+
+    public function getAgendaHarianPerPtk($id_ptk, $id_tahun_pelajaran = null, $status = null, $bulan = null)
+    {
+        $this->db->select('ap.*, pm.id_pembelajaran_mapel, pm.judul_agenda, m.nama_mapel, m.mapel_singkat, r.nama_rombel, t.nama_tingkat, l.nama_lembaga_singkat, tp.tahun_pelajaran, tp.semester, ptk.nama_ptk');
+        $this->db->from('agenda_pembelajaran ap');
+        $this->db->join('pembelajaran_mapel pm', 'pm.id_pembelajaran_mapel = ap.id_pembelajaran_mapel');
+        $this->db->join('pembelajaran p', 'p.id_pembelajaran = pm.id_pembelajaran');
+        $this->db->join('lembaga l', 'l.id_lembaga = p.id_lembaga');
+        $this->db->join('master_tingkat_sekolah t', 't.id_tingkat_sekolah = p.id_tingkat_sekolah');
+        $this->db->join('rombel r', 'r.id_rombel = p.id_rombel');
+        $this->db->join('pembelajaran_tahun_pelajaran tp', 'tp.id_tahun_pelajaran = p.id_tahun_pelajaran');
+        $this->db->join('mapel m', 'm.id_mapel = pm.id_mapel');
+        $this->db->join('ptk', 'ptk.id_ptk = pm.id_ptk', 'left');
+
+        $this->db->group_start();
+        $this->db->where('pm.id_ptk', (int) $id_ptk);
+        $this->db->or_where('pm.id_ptk_pemilik', (int) $id_ptk);
+        $this->db->or_where('pm.id_ptk_takeover', (int) $id_ptk);
+        $this->db->group_end();
+
+        if ($id_tahun_pelajaran) {
+            $this->db->where('p.id_tahun_pelajaran', (int) $id_tahun_pelajaran);
+        } else {
+            $this->db->where('tp.status', 'Aktif');
+        }
+
+        if (!empty($status)) {
+            $this->db->where('ap.status', $status);
+        }
+
+        if (!empty($bulan)) {
+            $this->db->where('MONTH(ap.tanggal)', (int) $bulan);
+        }
+
+        $this->db->order_by('ap.tanggal', 'ASC');
+        $this->db->order_by('ap.jam_mulai', 'ASC');
+        $this->db->order_by('ap.pertemuan_ke', 'ASC');
+
+        $query = $this->db->get();
+        if ($query && is_object($query)) {
+            return $query->result();
+        }
+        return [];
     }
 }

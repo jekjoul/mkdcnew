@@ -81,6 +81,12 @@
                         </a>
                     </li>
                     <li>
+                        <a href="<?php echo url('guru/pengaturan_agenda') ?>">
+                            <iconify-icon icon="solar:settings-linear" class="menu-icon"></iconify-icon>
+                            <span>Pengaturan Agenda</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="<?php echo url('guru/agenda') ?>">
                             <iconify-icon icon="solar:notebook-linear" class="menu-icon"></iconify-icon>
                             <span>Agenda Pembelajaran Saya</span>
@@ -427,11 +433,19 @@
                 <span>Perangkat Pembelajaran</span>
             </a>
         </li>
-        <li>
-            <a href="<?php echo url('agenda_pembelajaran') ?>">
+        <li class="dropdown">
+            <a href="javascript:void(0)">
                 <iconify-icon icon="solar:calendar-date-linear" class="menu-icon"></iconify-icon>
                 <span>Agenda Pembelajaran</span>
             </a>
+            <ul class="sidebar-submenu">
+                <li>
+                    <a href="<?php echo url('agenda_pembelajaran') ?>"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> Per Mapel &amp; Rombel</a>
+                </li>
+                <li>
+                    <a href="<?php echo url('agenda_pembelajaran/ptk') ?>"><i class="ri-circle-fill circle-icon text-success-600 w-auto"></i> Agenda per Guru Pengampu</a>
+                </li>
+            </ul>
         </li>
     <?php endif; ?>
 

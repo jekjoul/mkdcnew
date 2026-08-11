@@ -9,10 +9,11 @@ ALTER TABLE `pembelajaran_mapel`
   ADD COLUMN `status_takeover` VARCHAR(20) NOT NULL DEFAULT 'Tidak' AFTER `id_ptk_pemilik`,
   ADD COLUMN `id_ptk_takeover` INT(11) NULL DEFAULT NULL AFTER `status_takeover`;
 
--- 2. Memastikan Kolom Tambahan pada Tabel agenda_pembelajaran
+-- 2. Memastikan Kolom Tambahan & Media Files pada Tabel agenda_pembelajaran
 ALTER TABLE `agenda_pembelajaran`
   ADD COLUMN `slide_drive_id` VARCHAR(255) NULL DEFAULT NULL AFTER `catatan`,
-  ADD COLUMN `link_video` VARCHAR(255) NULL DEFAULT NULL AFTER `slide_drive_id`;
+  ADD COLUMN `link_video` VARCHAR(255) NULL DEFAULT NULL AFTER `slide_drive_id`,
+  ADD COLUMN `media_files` TEXT NULL DEFAULT NULL AFTER `link_video`;
 
 -- 3. Pembuatan Tabel Baru untuk Header Versi Jadwal Pelajaran
 CREATE TABLE IF NOT EXISTS `jadwal_pelajaran_header` (
