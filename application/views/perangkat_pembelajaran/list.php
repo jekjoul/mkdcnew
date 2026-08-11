@@ -6,6 +6,10 @@
         <div class="card-header d-flex justify-content-between align-items-center bg-warning-900">
             <h6 class="mb-0 text-light"><?php echo !empty($is_nonaktif) ? 'Perangkat Pembelajaran Tidak Aktif' : 'Perangkat Pembelajaran'; ?></h6>
             <div class="d-flex flex-wrap align-items-center gap-2">
+                <a href="<?php echo url('agenda_pembelajaran') ?>" class="btn btn-sm btn-primary-600 text-light radius-8 px-12 py-8 d-flex align-items-center gap-2">
+                    <iconify-icon icon="solar:calendar-date-bold" class="text-lg"></iconify-icon>
+                    Agenda Pembelajaran Harian
+                </a>
                 <a href="<?php echo url(!empty($is_nonaktif) ? 'perangkat_pembelajaran' : 'perangkat_pembelajaran/nonaktif') ?>" class="btn btn-sm btn-warning-600 text-light radius-8 px-12 py-8 d-flex align-items-center gap-2">
                     <iconify-icon icon="<?php echo !empty($is_nonaktif) ? 'solar:arrow-left-linear' : 'solar:archive-linear'; ?>" class="text-lg"></iconify-icon>
                     <?php echo !empty($is_nonaktif) ? 'Kembali ke Aktif' : 'Data Tidak Aktif'; ?>

@@ -427,6 +427,12 @@
                 <span>Perangkat Pembelajaran</span>
             </a>
         </li>
+        <li>
+            <a href="<?php echo url('agenda_pembelajaran') ?>">
+                <iconify-icon icon="solar:calendar-date-linear" class="menu-icon"></iconify-icon>
+                <span>Agenda Pembelajaran</span>
+            </a>
+        </li>
     <?php endif; ?>
 
     <?php if (hasPermissions('menu_nilai_siswa')): ?>

@@ -1,0 +1,156 @@
+<?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
+<?php include viewPath('includes/header'); ?>
+
+<div class="dashboard-main-body">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center bg-primary-600 text-white radius-top-8">
+            <div class="d-flex align-items-center gap-2">
+                <iconify-icon icon="solar:calendar-date-bold" class="text-xl"></iconify-icon>
+                <h6 class="mb-0 text-white"><?php echo !empty($is_nonaktif) ? 'Agenda Pembelajaran Tidak Aktif' : 'Daftar Agenda Pembelajaran Harian'; ?></h6>
+            </div>
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <a href="<?php echo url(!empty($is_nonaktif) ? 'agenda_pembelajaran' : 'agenda_pembelajaran/nonaktif') ?>" class="btn btn-sm btn-outline-light radius-8 px-12 py-8 d-flex align-items-center gap-2">
+                    <iconify-icon icon="<?php echo !empty($is_nonaktif) ? 'solar:arrow-left-linear' : 'solar:archive-linear'; ?>" class="text-lg"></iconify-icon>
+                    <?php echo !empty($is_nonaktif) ? 'Kembali ke Aktif' : 'Data Tidak Aktif'; ?>
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <!-- Alert Flash Data -->
+            <?php if ($this->session->flashdata('alert')): ?>
+                <div class="alert alert-<?php echo $this->session->flashdata('alert-type') ?: 'info' ?> alert-dismissible fade show radius-8 mb-24" role="alert">
+                    <?php echo $this->session->flashdata('alert') ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+
+            <!-- TAMPILAN DESKTOP (Tabel) -->
+            <div class="table-responsive d-none d-md-block">
+                <table class="table bordered-table" id="agendaDataTable">
+                    <thead>
+                        <tr>
+                            <th>Tahun/Sem</th>
+                            <th>Kelas</th>
+                            <th>Judul Agenda / Mapel</th>
+                            <th>Pengampu</th>
+                            <th class="text-center">Keterlaksanaan</th>
+                            <th class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($items as $row): ?>
+                            <?php
+                            $total = (int) $row->total_agenda;
+                            $terlaksana = (int) $row->terlaksana;
+                            $percent = $total > 0 ? round(($terlaksana / $total) * 100) : 0;
+                            ?>
+                            <tr>
+                                <td><?php echo html_escape($row->tahun_pelajaran . ' (' . $row->semester . ')') ?></td>
+                                <td><span class="badge bg-info-100 text-info-700 px-8 py-4 radius-4 fw-semibold"><?php echo html_escape($row->nama_tingkat . ' - ' . $row->nama_rombel) ?></span></td>
+                                <td>
+                                    <div class="fw-semibold text-primary-900 mb-1"><?php echo html_escape($row->judul_agenda) ?></div>
+                                    <span class="text-xs text-secondary-light"><iconify-icon icon="solar:book-bookmark-linear" class="me-1"></iconify-icon><?php echo html_escape($row->nama_mapel) ?></span>
+                                    <?php if (!empty($row->status_takeover) && $row->status_takeover === 'Ya'): ?>
+                                        <span class="badge bg-warning-100 text-warning-700 ms-2 text-xs">Take-Over</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td><?php echo html_escape($row->nama_ptk ?: '-') ?></td>
+                                <td class="text-center">
+                                    <div class="d-flex align-items-center justify-content-center gap-2">
+                                        <div class="progress flex-grow-1" style="height: 8px; max-width: 100px;">
+                                            <div class="progress-bar bg-success-main" style="width: <?php echo $percent ?>%"></div>
+                                        </div>
+                                        <span class="text-xs fw-bold"><?php echo $terlaksana . '/' . $total ?> (<?php echo $percent ?>%)</span>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <a href="<?php echo url('agenda_pembelajaran/detail/' . $row->id_pembelajaran_mapel) ?>" class="btn btn-sm btn-primary-600 d-inline-flex align-items-center gap-1 radius-8 px-12">
+                                        <iconify-icon icon="solar:calendar-date-bold"></iconify-icon> Kelola Agenda
+                                    </a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- TAMPILAN MOBILE (Accordion List + Live Search) -->
+            <div class="d-block d-md-none">
+                <div class="mb-16">
+                    <div class="position-relative">
+                        <input type="text" id="mobileAgendaSearch" class="form-control text-sm radius-8 ps-40" placeholder="🔍 Cari Judul Agenda, Kelas, Mapel, atau Guru...">
+                        <span class="position-absolute top-50 start-0 translate-middle-y ms-16 text-secondary-light d-flex align-items-center">
+                            <iconify-icon icon="solar:magnifer-linear" class="text-lg"></iconify-icon>
+                        </span>
+                    </div>
+                </div>
+
+                <?php if (!empty($items)): ?>
+                    <div class="accordion custom-accordion" id="accordionAgendaMobile">
+                        <?php foreach ($items as $row): ?>
+                            <?php
+                            $total = (int) $row->total_agenda;
+                            $terlaksana = (int) $row->terlaksana;
+                            $percent = $total > 0 ? round(($terlaksana / $total) * 100) : 0;
+                            $accordionId = "collapseAgenda" . $row->id_pembelajaran_mapel;
+                            $headingId   = "headingAgenda" . $row->id_pembelajaran_mapel;
+                            $nama_kelas  = trim($row->nama_tingkat . ' - ' . $row->nama_rombel);
+                            $searchableText = strtolower(html_escape($row->judul_agenda . ' ' . $row->nama_mapel . ' ' . $nama_kelas . ' ' . ($row->nama_ptk ?: '') . ' ' . $row->tahun_pelajaran));
+                            ?>
+                            <div class="accordion-item border radius-8 mb-12 mobile-agenda-card" data-search="<?php echo $searchableText; ?>">
+                                <h2 class="accordion-header" id="<?php echo $headingId; ?>">
+                                    <button class="accordion-button collapsed px-16 py-12 text-sm fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#<?php echo $accordionId; ?>" aria-expanded="false">
+                                        <div class="d-flex flex-column gap-1 w-100 me-12">
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <span class="text-primary-600 fw-bold text-truncate" style="max-width: 200px;"><?php echo html_escape($row->judul_agenda); ?></span>
+                                                <span class="badge bg-success-100 text-success-700 px-8 py-2 radius-4 text-xs"><?php echo $percent; ?>% Terlaksana</span>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-12 text-xs text-secondary-light mt-4">
+                                                <span><iconify-icon icon="solar:user-bold" class="me-4"></iconify-icon><strong><?php echo html_escape($row->nama_ptk ?: '-'); ?></strong></span>
+                                                <span><iconify-icon icon="solar:users-group-two-rounded-linear" class="me-4"></iconify-icon><?php echo html_escape($nama_kelas); ?></span>
+                                            </div>
+                                        </div>
+                                    </button>
+                                </h2>
+                                <div id="<?php echo $accordionId; ?>" class="accordion-collapse collapse" aria-labelledby="<?php echo $headingId; ?>" data-bs-parent="#accordionAgendaMobile">
+                                    <div class="accordion-body p-16 bg-neutral-50 radius-bottom-8">
+                                        <div class="row gy-2 text-xs mb-12">
+                                            <div class="col-6">
+                                                <span class="text-secondary-light d-block mb-2">Tahun / Semester</span>
+                                                <span class="fw-semibold text-primary-light"><?php echo html_escape($row->tahun_pelajaran) ?> (<?php echo html_escape($row->semester) ?>)</span>
+                                            </div>
+                                            <div class="col-6">
+                                                <span class="text-secondary-light d-block mb-2">Mata Pelajaran</span>
+                                                <span class="fw-semibold text-primary-light"><?php echo html_escape($row->nama_mapel); ?></span>
+                                            </div>
+                                        </div>
+                                        <div class="mt-16 pt-12 border-top">
+                                            <a href="<?php echo url('agenda_pembelajaran/detail/' . $row->id_pembelajaran_mapel) ?>" class="btn btn-primary-600 btn-sm radius-8 w-100 d-flex align-items-center justify-content-center gap-2 py-8 fw-semibold">
+                                                <iconify-icon icon="solar:calendar-date-bold" class="text-lg"></iconify-icon> Kelola Agenda Pembelajaran
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php include viewPath('includes/footer'); ?>
+<script>
+    if (document.getElementById('agendaDataTable')) {
+        new DataTable('#agendaDataTable', { order: [] });
+    }
+
+    // Live search mobile
+    $('#mobileAgendaSearch').on('keyup', function() {
+        let value = $(this).val().toLowerCase();
+        $('.mobile-agenda-card').filter(function() {
+            $(this).toggle($(this).attr('data-search').indexOf(value) > -1);
+        });
+    });
+</script>

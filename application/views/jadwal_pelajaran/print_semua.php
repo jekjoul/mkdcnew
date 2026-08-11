@@ -229,7 +229,9 @@ foreach ($hari as $h) {
         $active_tp = isset($pembelajaran[0]) ? $pembelajaran[0]->tahun_pelajaran : '2026/2027';
         $active_smt = isset($pembelajaran[0]) ? $pembelajaran[0]->semester : 'Ganjil';
         ?>
-        <h5 class="print-only-title">Jadwal Pelajaran Tahun Pelajaran <?php echo $active_tp ?> (Semester <?php echo $active_smt ?>)</h5>
+        <h5 class="print-only-title">
+            Jadwal Pelajaran <?php echo !empty($header->nama_jadwal) ? html_escape($header->nama_jadwal) : 'Tahun Pelajaran ' . $active_tp . ' (Semester ' . $active_smt . ')' ?>
+        </h5>
         
         <table class="weekly-table">
             <thead>
