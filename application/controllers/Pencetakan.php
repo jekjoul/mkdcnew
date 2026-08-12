@@ -31,11 +31,25 @@ class Pencetakan extends MY_Controller
             }
 
             // Get students in this class
-            $this->db->select('s.nama_siswa, s.nisn, s.nipd, s.jenis_kelamin');
+            $show_menginduk = $this->input->get('show_menginduk') == '1';
+            $menginduk_ids  = [];
+            if (!$show_menginduk && $this->db->table_exists('kelas_jauh_siswa')) {
+                $q_kj = $this->db->select('id_siswa')->get('kelas_jauh_siswa');
+                if ($q_kj && $q_kj->num_rows() > 0) {
+                    $menginduk_ids = array_column($q_kj->result_array(), 'id_siswa');
+                }
+            }
+
+            $this->db->select('s.id_siswa, s.nama_siswa, s.nisn, s.nipd, s.jenis_kelamin');
             $this->db->from('pembelajaran_siswa ps');
             $this->db->join('siswa s', 's.id_siswa = ps.peserta_didik_id');
             $this->db->where('ps.id_pembelajaran', $id_pembelajaran);
             $this->db->where('s.status_keaktifan', 'Aktif');
+
+            if (!empty($menginduk_ids)) {
+                $this->db->where_not_in('s.id_siswa', $menginduk_ids);
+            }
+
             $this->db->order_by('s.nama_siswa', 'ASC');
             $students = $this->db->get()->result();
 
@@ -60,6 +74,7 @@ class Pencetakan extends MY_Controller
             $has_submit = $this->input->get('id_pembelajaran') !== null;
             $pakai_kop = $has_submit ? ($this->input->get('pakai_kop') === '1') : true;
             $pakai_ttd = $has_submit ? ($this->input->get('pakai_ttd') === '1') : true;
+            $pakai_jumlah = $has_submit ? ($this->input->get('pakai_jumlah') === '1') : true;
             $size = $this->input->get('size') ?: 'landscape';
 
             $this->page_data['pembelajaran'] = $pembelajaran;
@@ -68,6 +83,7 @@ class Pencetakan extends MY_Controller
             $this->page_data['kop'] = $kop;
             $this->page_data['pakai_kop'] = $pakai_kop;
             $this->page_data['pakai_ttd'] = $pakai_ttd;
+            $this->page_data['pakai_jumlah'] = $pakai_jumlah;
             $this->page_data['size'] = $size;
 
             $format = $this->input->get('format');

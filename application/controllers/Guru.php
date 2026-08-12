@@ -27,6 +27,7 @@ class Guru extends MY_Controller
         $this->page_data['jumlah_pembelajaran'] = count($this->getPembelajaranMapel($ptk->id_ptk));
         $this->page_data['jumlah_siswa'] = count($this->getSiswaGuru($ptk->id_ptk));
         $this->page_data['jumlah_jadwal'] = count($this->getJadwalGuru($ptk->id_ptk));
+        $this->page_data['agenda_terdekat'] = $this->perangkat_model->getAgendaTerdekatGuru($ptk->id_ptk, 5);
         $this->load->view('guru/dashboard', $this->page_data);
     }
 
@@ -69,6 +70,24 @@ class Guru extends MY_Controller
         $this->load->view('guru/perangkat', $this->page_data);
     }
 
+    public function pengaturan_agenda()
+    {
+        $ptk = $this->currentPtk();
+        if (!$ptk) {
+            return $this->notLinked();
+        }
+
+        $this->load->model('Agenda_pembelajaran_model', 'agenda_model');
+
+        $this->setPage('Portal Guru', 'Pengaturan Agenda Pembelajaran Saya', 'guru/pengaturan_agenda', 'solar:settings-linear');
+        $this->page_data['ptk'] = $ptk;
+        
+        $this->page_data['items'] = $this->agenda_model->getAdminItems('Aktif', $ptk->id_ptk);
+        $this->page_data['available_mapels'] = $this->agenda_model->getAvailableMapelForGuru($ptk->id_ptk, 'Aktif');
+
+        $this->load->view('guru/pengaturan_agenda', $this->page_data);
+    }
+
     public function perangkat_detail($id_pembelajaran_mapel)
     {
         $ptk = $this->currentPtk();
@@ -106,6 +125,7 @@ class Guru extends MY_Controller
         $this->page_data['unduh_berkas_url'] = url('guru/unduh_berkas/' . $id_pembelajaran_mapel);
         $this->page_data['generate_agenda_url'] = url('guru/generate_agenda/' . $id_pembelajaran_mapel);
         $this->page_data['generate_agenda_ai_url'] = url('guru/generate_agenda_ai/' . $id_pembelajaran_mapel);
+        $this->page_data['generate_media_ai_url'] = url('guru/generate_media_ai/' . $id_pembelajaran_mapel);
         $this->page_data['save_agenda_url'] = url('guru/simpan_agenda/' . $id_pembelajaran_mapel);
         $this->page_data['salin_perangkat_url'] = url('guru/salin_perangkat/' . $id_pembelajaran_mapel);
         $this->page_data['salin_agenda_url'] = url('guru/salin_agenda/' . $id_pembelajaran_mapel);
@@ -333,6 +353,78 @@ class Guru extends MY_Controller
         redirect('guru/perangkat_detail/' . $id_pembelajaran_mapel);
     }
 
+    public function generate_media_ai($id_pembelajaran_mapel)
+    {
+        postAllowed();
+        $ptk = $this->currentPtk();
+        if (!$ptk) {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'status'  => false,
+                    'message' => 'Akses ditolak.'
+                ]));
+        }
+
+        $jenis_media     = $this->input->post('jenis_media');
+        $materi_topik    = $this->input->post('materi_topik');
+        $prompt_tambahan = $this->input->post('prompt_tambahan');
+
+        if (empty($materi_topik)) {
+            $materi_topik = "Materi Pembelajaran";
+        }
+
+        $this->load->library('GoogleAI_Helper');
+        $result = $this->googleai_helper->generateAgendaMedia($jenis_media, $materi_topik, $prompt_tambahan);
+
+        if (isset($result['error'])) {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'status'  => false,
+                    'message' => $result['error']
+                ]));
+        }
+
+        // Jika jenis_media adalah slide interaktif, unggah ke Google Drive user
+        if ($jenis_media === 'slide' && !empty($result['content'])) {
+            $this->load->library('GoogleDrive_Helper');
+
+            $clean_name   = preg_replace('/[^a-zA-Z0-9_\-]/', '_', substr($materi_topik, 0, 30));
+            $tmp_filename = 'Slide_' . $clean_name . '_' . time() . '.docx';
+            $tmp_filepath = FCPATH . 'uploads/' . $tmp_filename;
+
+            $slide_doc_html = "<html><head><meta charset='UTF-8'><title>Slide - {$materi_topik}</title></head><body>"
+                . "<h1>Slide Presentasi Pembelajaran</h1>"
+                . "<h3>Materi: " . htmlspecialchars($materi_topik) . "</h3>"
+                . "<hr>"
+                . $result['content']
+                . "</body></html>";
+
+            file_put_contents($tmp_filepath, $slide_doc_html);
+
+            $drive_res = $this->googledrive_helper->uploadFile($tmp_filepath, 'Slide Agenda - ' . $materi_topik, 'application/msword', true);
+
+            if (file_exists($tmp_filepath)) {
+                @unlink($tmp_filepath);
+            }
+
+            if (isset($drive_res['id'])) {
+                $result['slide_drive_id'] = $drive_res['id'];
+                $result['drive_url']      = 'https://docs.google.com/document/d/' . $drive_res['id'] . '/edit';
+            } elseif (isset($drive_res['error'])) {
+                $result['drive_error'] = $drive_res['error'];
+            }
+        }
+
+        return $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode([
+                'status' => true,
+                'data'   => $result
+            ]));
+    }
+
     public function simpan_agenda($id_pembelajaran_mapel)
     {
         postAllowed();
@@ -351,11 +443,16 @@ class Guru extends MY_Controller
             $this->db->where('id_agenda', $id_agenda);
             $this->db->where('id_pembelajaran_mapel', $id_pembelajaran_mapel);
             $this->db->update('agenda_pembelajaran', [
-                'materi' => $this->input->post('materi'),
-                'kegiatan' => $this->input->post('kegiatan'),
-                'status' => post('status'),
-                'catatan' => post('catatan'),
-                'updated_at' => date('Y-m-d H:i:s')
+                'materi'         => $this->input->post('materi'),
+                'kegiatan'       => $this->input->post('kegiatan'),
+                'status'         => post('status'),
+                'catatan'        => post('catatan'),
+                'jumlah_jam'     => post('jumlah_jam') ?: null,
+                'jam_mulai'      => post('jam_mulai') ?: null,
+                'jam_selesai'    => post('jam_selesai') ?: null,
+                'link_video'     => post('link_video') ?: null,
+                'slide_drive_id' => post('slide_drive_id') ?: null,
+                'updated_at'     => date('Y-m-d H:i:s')
             ]);
         }
 
@@ -743,7 +840,7 @@ class Guru extends MY_Controller
         $this->db->where('pm.id_ptk', (int) $id_ptk);
         $this->db->group_by('pm.id_pembelajaran_mapel');
         $this->db->order_by('tp.status', 'ASC');
-        $this->db->order_by('t.tingkat_angka', 'ASC');
+        $this->db->order_by('CAST(t.tingkat_angka AS UNSIGNED)', 'ASC');
         $this->db->order_by('r.nama_rombel', 'ASC');
         $this->db->order_by('m.nama_mapel', 'ASC');
         return $this->db->get()->result();
@@ -823,18 +920,19 @@ class Guru extends MY_Controller
             $settings_cache[$id_pem] = $this->getJadwalSettings($id_pem);
         }
 
-        // Filter out items that are on disabled days or exceed JP slots
+        // Filter out items that are on disabled days
         $filtered = [];
         foreach ($rows as $row) {
             $pem_id = $row->id_pembelajaran;
             $hari = $row->hari;
-            $slot = (int)$row->slot_ke;
 
             if (isset($settings_cache[$pem_id][$hari])) {
                 $set = $settings_cache[$pem_id][$hari];
-                if ($set['aktif'] && $slot <= $set['jumlah_jp']) {
+                if ($set['aktif'] !== false) {
                     $filtered[] = $row;
                 }
+            } else {
+                $filtered[] = $row;
             }
         }
 
@@ -879,10 +977,24 @@ class Guru extends MY_Controller
 
     private function getSiswaPembelajaran($id_pembelajaran)
     {
+        $show_menginduk = ($this->input->get('show_menginduk') == '1');
+        $menginduk_ids  = [];
+        if (!$show_menginduk && $this->db->table_exists('kelas_jauh_siswa')) {
+            $q_kj = $this->db->select('id_siswa')->get('kelas_jauh_siswa');
+            if ($q_kj && $q_kj->num_rows() > 0) {
+                $menginduk_ids = array_column($q_kj->result_array(), 'id_siswa');
+            }
+        }
+
         $this->db->select('s.id_siswa, s.nama_siswa, s.nisn, s.nipd');
         $this->db->from('pembelajaran_siswa ps');
         $this->db->join('siswa s', 's.id_siswa = ps.peserta_didik_id');
         $this->db->where('ps.id_pembelajaran', (int) $id_pembelajaran);
+
+        if (!empty($menginduk_ids)) {
+            $this->db->where_not_in('s.id_siswa', $menginduk_ids);
+        }
+
         $this->db->order_by('s.nama_siswa', 'ASC');
         return $this->db->get()->result();
     }
@@ -1547,6 +1659,212 @@ class Guru extends MY_Controller
             $this->session->set_flashdata('alert', 'Modul Ajar / RPP baru berhasil digenerate oleh AI, disimpan ke Drive, dan siap diedit online.');
         }
         redirect('guru/perangkat_detail/' . $id_pembelajaran_mapel . '?tab=modul');
+    }
+
+    public function agenda()
+    {
+        $ptk = $this->currentPtk();
+        if (!$ptk) {
+            return $this->notLinked();
+        }
+        $ptk_id = $ptk->id_ptk;
+
+        $this->setPage('Portal Guru', 'Agenda Pembelajaran Saya', 'guru/agenda', 'solar:notebook-linear');
+
+        $id_mapel  = $this->input->get('id_mapel') ?: null;
+        $id_rombel = $this->input->get('id_rombel') ?: null;
+        $status    = $this->input->get('status') ?: null;
+
+        $filters = $this->perangkat_model->getGuruMapelRombelFilter($ptk_id);
+        $this->page_data['mapel_list']  = $filters['mapel_list'];
+        $this->page_data['rombel_list'] = $filters['rombel_list'];
+
+        $this->page_data['selected_mapel']  = $id_mapel;
+        $this->page_data['selected_rombel'] = $id_rombel;
+        $this->page_data['selected_status'] = $status;
+
+        $this->page_data['agendas'] = $this->perangkat_model->getAgendaGuruFiltered($ptk_id, $id_mapel, $id_rombel, $status);
+
+        $this->load->view('perangkat_pembelajaran/agenda', $this->page_data);
+    }
+
+    public function agenda_detail($id_agenda)
+    {
+        $ptk = $this->currentPtk();
+        if (!$ptk) {
+            return $this->notLinked();
+        }
+
+        $agenda = $this->perangkat_model->getAgendaDetail($id_agenda);
+        if (!$agenda || (int) $agenda->id_ptk !== (int) $ptk->id_ptk) {
+            show_404();
+        }
+
+        $this->setPage('Portal Guru', 'Detail Agenda Pembelajaran', 'guru/agenda', 'solar:notebook-bold');
+        $this->page_data['agenda'] = $agenda;
+        $this->page_data['siswa_presensi'] = $this->perangkat_model->getSiswaAgenda($id_agenda);
+
+        $this->load->view('perangkat_pembelajaran/agenda_detail', $this->page_data);
+    }
+
+    public function autosave_presensi_siswa($id_agenda)
+    {
+        postAllowed();
+        $id_siswa = (int) post('id_siswa');
+        $status   = post('status') ?: 'Hadir';
+        $catatan  = post('catatan');
+
+        if ($id_siswa > 0 && $id_agenda > 0) {
+            $this->perangkat_model->saveSinglePresensiSiswa($id_agenda, $id_siswa, $status, $catatan);
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'status'  => true,
+                    'message' => 'Presensi siswa berhasil disimpan secara otomatis.'
+                ]));
+        }
+
+        return $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode([
+                'status'  => false,
+                'message' => 'Parameter tidak lengkap.'
+            ]));
+    }
+
+    public function update_status_agenda($id_agenda)
+    {
+        postAllowed();
+        $ptk = $this->currentPtk();
+        if (!$ptk) {
+            return $this->notLinked();
+        }
+
+        $agenda = $this->perangkat_model->getAgendaDetail($id_agenda);
+        if (!$agenda || (int) $agenda->id_ptk !== (int) $ptk->id_ptk) {
+            show_404();
+        }
+
+        $status    = post('status') ?: 'Terlaksana';
+        $hambatan  = post('hambatan');
+        $pemecahan = post('pemecahan');
+
+        $this->perangkat_model->updateAgendaStatusCatatan($id_agenda, $status, $hambatan, $hambatan, $pemecahan);
+
+        $this->session->set_flashdata('alert-type', 'success');
+        $this->session->set_flashdata('alert', 'Status pelaksanaan dan catatan tambahan agenda berhasil disimpan.');
+        redirect('guru/agenda_detail/' . $id_agenda);
+    }
+
+    public function toggle_status_agenda($id_agenda)
+    {
+        $new_status = $this->perangkat_model->toggleAgendaStatus($id_agenda);
+
+        if ($this->input->is_ajax_request()) {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'status'     => true,
+                    'new_status' => $new_status,
+                    'message'    => 'Status agenda berhasil diperbarui menjadi ' . $new_status
+                ]));
+        }
+
+        $this->load->library('user_agent');
+        $this->session->set_flashdata('alert-type', 'success');
+        $this->session->set_flashdata('alert', 'Status agenda berhasil diperbarui.');
+        redirect($this->agent->referrer() ?: 'guru/agenda');
+    }
+
+    public function rekap_absensi_agenda()
+    {
+        $ptk = $this->currentPtk();
+        if (!$ptk) {
+            return $this->notLinked();
+        }
+
+        $this->setPage('Portal Guru', 'Rekap Absensi Agenda', 'guru/rekap_absensi_agenda', 'solar:chart-square-bold');
+
+        $filter_options = $this->perangkat_model->getGuruMapelRombelFilter($ptk->id_ptk);
+        $mapel_list     = isset($filter_options['mapel_list']) ? $filter_options['mapel_list'] : [];
+        $rombel_list    = isset($filter_options['rombel_list']) ? $filter_options['rombel_list'] : [];
+
+        $selected_mapel  = $this->input->get('id_mapel');
+        $selected_rombel = $this->input->get('id_rombel');
+
+        if (!$selected_mapel && !empty($mapel_list)) {
+            $first_mapel = reset($mapel_list);
+            $selected_mapel = (is_object($first_mapel) && isset($first_mapel->id_mapel)) ? $first_mapel->id_mapel : null;
+        }
+
+        $selected_bulan = $this->input->get('bulan') ?: date('m');
+        $selected_tahun = $this->input->get('tahun') ?: date('Y');
+
+        $rekap_data = $this->perangkat_model->getRekapAbsensiAgendaGuru($ptk->id_ptk, $selected_mapel, $selected_rombel, $selected_bulan, $selected_tahun);
+
+        $this->page_data['mapel_list']      = $mapel_list;
+        $this->page_data['rombel_list']     = $rombel_list;
+        $this->page_data['selected_mapel']  = $selected_mapel;
+        $this->page_data['selected_rombel'] = $selected_rombel;
+        $this->page_data['selected_bulan']  = sprintf('%02d', (int)$selected_bulan);
+        $this->page_data['selected_tahun']  = $selected_tahun;
+        $this->page_data['agendas']         = $rekap_data['agendas'];
+        $this->page_data['total_pertemuan'] = $rekap_data['total_pertemuan'];
+        $this->page_data['rekap_siswa']     = $rekap_data['rekap_siswa'];
+
+        $this->load->view('guru/rekap_absensi_agenda', $this->page_data);
+    }
+
+    public function sesuaikan_jadwal_agenda($id_agenda)
+    {
+        postAllowed();
+        $ptk = $this->currentPtk();
+        if (!$ptk) {
+            return $this->notLinked();
+        }
+
+        $agenda = $this->perangkat_model->getAgendaDetail($id_agenda);
+        if (!$agenda || (int) $agenda->id_ptk !== (int) $ptk->id_ptk) {
+            show_404();
+        }
+
+        $tanggal     = post('tanggal') ?: $agenda->tanggal;
+        $jam_mulai   = post('jam_mulai');
+        $jam_selesai = post('jam_selesai');
+
+        if (post('sync_master') == '1') {
+            $master = $this->perangkat_model->getJadwalMasterPembelajaran($agenda->id_pembelajaran_mapel);
+            if ($master) {
+                if (!empty($master->jam_mulai)) $jam_mulai = $master->jam_mulai;
+                if (!empty($master->jam_selesai)) $jam_selesai = $master->jam_selesai;
+            }
+        }
+
+        $this->perangkat_model->updateAgendaJadwalWaktu($id_agenda, $tanggal, $jam_mulai, $jam_selesai);
+
+        $this->load->library('user_agent');
+        $this->session->set_flashdata('alert-type', 'success');
+        $this->session->set_flashdata('alert', 'Jadwal hari, tanggal, dan jam masuk/keluar agenda berhasil disesuaikan.');
+        redirect($this->agent->referrer() ?: 'guru/agenda');
+    }
+
+    public function sync_all_agenda_jadwal()
+    {
+        postAllowed();
+        $ptk = $this->currentPtk();
+        if (!$ptk) {
+            return $this->notLinked();
+        }
+
+        $id_mapel  = post('id_mapel');
+        $id_rombel = post('id_rombel');
+
+        $updated_count = $this->perangkat_model->syncAllAgendaWithMasterJadwal($ptk->id_ptk, $id_mapel, $id_rombel);
+
+        $this->load->library('user_agent');
+        $this->session->set_flashdata('alert-type', 'success');
+        $this->session->set_flashdata('alert', 'Berhasil menyelaraskan ' . $updated_count . ' agenda pembelajaran dengan Jadwal Master KBM.');
+        redirect($this->agent->referrer() ?: 'guru/agenda');
     }
 }
 

@@ -91,6 +91,11 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                             <iconify-icon icon="bi:display-fill" class="menu-icon"></iconify-icon>
                           </a>
                         <?php endif ?>
+                        <?php if (hasPermissions('users_edit')): ?>
+                          <a href="<?php echo url('users/hak_akses/' . $row->id) ?>" class="bg-warning-100 text-warning-600 bg-hover-warning-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-warning" data-bs-title="Hak Akses Individual">
+                            <iconify-icon icon="mdi:shield-key" class="menu-icon"></iconify-icon>
+                          </a>
+                        <?php endif ?>
                         <?php if (hasPermissions('users_delete')): ?>
                           <?php if ($row->id != 1 && logged('id') != $row->id): ?>
                             <a href="<?php echo url('users/delete/' . $row->id) ?>" class="bg-danger-100 text-danger-600 bg-hover-danger-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" onclick="return confirm('Do you really want to delete this user ?')">

@@ -124,7 +124,7 @@ class Users_model extends MY_Model {
 
 			];
 
-			$expiry = strtotime('+7 days');
+			$expiry = strtotime('+30 days');
 
 			set_cookie( 'login', true, $expiry );
 

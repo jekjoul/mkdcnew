@@ -229,7 +229,9 @@ foreach ($hari as $h) {
         $active_tp = isset($pembelajaran[0]) ? $pembelajaran[0]->tahun_pelajaran : '2026/2027';
         $active_smt = isset($pembelajaran[0]) ? $pembelajaran[0]->semester : 'Ganjil';
         ?>
-        <h5 class="print-only-title">Jadwal Pelajaran Tahun Pelajaran <?php echo $active_tp ?> (Semester <?php echo $active_smt ?>)</h5>
+        <h5 class="print-only-title">
+            Jadwal Pelajaran <?php echo !empty($header->nama_jadwal) ? html_escape($header->nama_jadwal) : 'Tahun Pelajaran ' . $active_tp . ' (Semester ' . $active_smt . ')' ?>
+        </h5>
         
         <table class="weekly-table">
             <thead>
@@ -296,10 +298,10 @@ foreach ($hari as $h) {
                                     $selected_id = isset($items[$kelas->id_pembelajaran][$h][$row['slot']]) ? $items[$kelas->id_pembelajaran][$h][$row['slot']] : 0;
                                     $selected = $selected_id && isset($mapel_by_id[$selected_id]) ? $mapel_by_id[$selected_id] : null;
                                     ?>
-                                    <td class="text-center align-middle" style="padding: 2px 1px !important;">
+                                    <td class="text-center align-middle" style="padding: 0px 0px !important;">
                                         <?php if ($selected): ?>
                                             <?php $color_style = ptk_color_style($selected->id_ptk); ?>
-                                            <div class="scheduled-token" style="<?php echo $color_style ?>">
+                                            <div class="scheduled-token" style="<?php echo $color_style ?>; min-height: 16px !important;">
                                                 <?php echo ($selected->mapel_singkat ?: $selected->nama_mapel) . ' (' . get_ptk_code($selected) . ')' ?>
                                             </div>
                                         <?php endif; ?>

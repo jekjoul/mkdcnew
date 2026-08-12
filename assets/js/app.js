@@ -62,6 +62,44 @@
         } else if (currentUrl.startsWith(menuUrl + "/") && menuUrl.length > maxMatchLen) {
           bestMatch = $(this);
           maxMatchLen = menuUrl.length;
+        } else if (menuUrl.endsWith("/surat/buat")) {
+          // Khusus alur Buat Surat (surat/buat_otomatis, surat/keterangan_siswa_aktif, surat/sk_pengangkatan, surat/keluar_tambah_*)
+          if (
+            currentUrl.indexOf("/surat/buat_otomatis") !== -1 ||
+            currentUrl.indexOf("/surat/keterangan_siswa_aktif") !== -1 ||
+            currentUrl.indexOf("/surat/sk_pengangkatan") !== -1 ||
+            currentUrl.indexOf("/surat/keluar_tambah") !== -1
+          ) {
+            bestMatch = $(this);
+            maxMatchLen = 9999;
+          }
+        } else if (menuUrl.endsWith("/surat/template")) {
+          // Khusus kelola template (surat/template_tambah, surat/template_edit)
+          if (
+            currentUrl.indexOf("/surat/template_tambah") !== -1 ||
+            currentUrl.indexOf("/surat/template_edit") !== -1
+          ) {
+            bestMatch = $(this);
+            maxMatchLen = 9999;
+          }
+        } else if (menuUrl.endsWith("/surat/kop")) {
+          // Khusus kelola kop (surat/kop_tambah, surat/kop_edit)
+          if (
+            currentUrl.indexOf("/surat/kop_tambah") !== -1 ||
+            currentUrl.indexOf("/surat/kop_edit") !== -1
+          ) {
+            bestMatch = $(this);
+            maxMatchLen = 9999;
+          }
+        } else if (menuUrl.endsWith("/surat/kode")) {
+          // Khusus kelola kode (surat/kode_tambah, surat/kode_edit)
+          if (
+            currentUrl.indexOf("/surat/kode_tambah") !== -1 ||
+            currentUrl.indexOf("/surat/kode_edit") !== -1
+          ) {
+            bestMatch = $(this);
+            maxMatchLen = 9999;
+          }
         }
       }
     });
@@ -92,7 +130,11 @@ function calculateSettingAsThemeString({ localStorageTheme }) {
   if (localStorageTheme !== null) {
     return localStorageTheme;
   }
-  return "light"; // default to light theme if nothing is stored
+  const htmlTheme = document.querySelector("html").getAttribute("data-theme");
+  if (htmlTheme) {
+    return htmlTheme;
+  }
+  return "light";
 }
 
 /**
@@ -165,4 +207,50 @@ $('#selectAll').on('change', function () {
     }
   });
   // Remove Table Tr when click on remove btn end
+
+  // =========================== Dedicated Mobile Loader Handler ================================
+  function hideMobileLoader() {
+    var loader = $('#mobile-page-loader');
+    if (loader.length) {
+      loader.addClass('loaded');
+    }
+  }
+
+  function showMobileLoader() {
+    if (window.innerWidth <= 768) {
+      var loader = $('#mobile-page-loader');
+      if (loader.length) {
+        loader.removeClass('loaded');
+      }
+    }
+  }
+
+  // Hide loader when document ready & window loaded
+  hideMobileLoader();
+  $(window).on('load', function() {
+    hideMobileLoader();
+  });
+
+  // Safety fallback: ensure loader is hidden after max 1.5 seconds
+  setTimeout(hideMobileLoader, 1500);
+
+  // Show loader when navigating via links on mobile
+  $(document).on('click', 'a', function(e) {
+    if (window.innerWidth > 768) return;
+
+    var href = $(this).attr('href');
+    var target = $(this).attr('target');
+    var isToggle = $(this).attr('data-bs-toggle') || $(this).attr('data-toggle');
+
+    if (href && href !== '#' && href !== 'javascript:void(0)' && !href.startsWith('#') && !href.startsWith('javascript:') && target !== '_blank' && !isToggle) {
+      showMobileLoader();
+    }
+  });
+
+  // Show loader when submitting forms on mobile
+  $(document).on('submit', 'form', function() {
+    if (window.innerWidth <= 768) {
+      showMobileLoader();
+    }
+  });
 })(jQuery);

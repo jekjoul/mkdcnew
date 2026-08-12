@@ -155,7 +155,10 @@ if (!empty($kop)) {
         }
         @page {
             size: <?php echo ($size === 'A4') ? 'A4 landscape' : 'landscape'; ?>;
-            margin: 1cm !important;
+            margin-top: 0.5cm !important;
+            margin-bottom: 0.5cm !important;
+            margin-left: 1cm !important;
+            margin-right: 1cm !important;
         }
         body {
             font-family: "Times New Roman", Times, serif;
@@ -272,7 +275,10 @@ if (!empty($kop)) {
         <?php if (!empty($is_pdf)): ?>
         @page {
             size: A4 landscape;
-            margin: 1cm !important;
+            margin-top: 0.5cm !important;
+            margin-bottom: 0.5cm !important;
+            margin-left: 1cm !important;
+            margin-right: 1cm !important;
         }
         body {
             font-size: 8pt !important;
@@ -412,6 +418,34 @@ if (!empty($kop)) {
                             </td>
                         </tr>
                     </table>
+                <?php elseif ($layout_style === 'left_logo_center_text'): ?>
+                    <table style="width: 100%; border-collapse: collapse; border: 0;">
+                        <tr>
+                            <td style="width: 90px; vertical-align: middle; text-align: left; padding-right: 10px; border: 0;">
+                                <?php if (!empty($logo_kop)): ?>
+                                    <img src="<?php echo $logo_kop ?>" alt="Logo Kiri">
+                                <?php endif; ?>
+                            </td>
+                            <td style="vertical-align: middle; text-align: center; border: 0;">
+                                <?php if (!empty($naungan)): ?>
+                                    <div class="kop-title-naungan" style="font-size: <?php echo $sz_naungan ?>px; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($naungan) ?></div>
+                                <?php endif; ?>
+                                <?php if (!empty($naungan_2)): ?>
+                                    <div class="kop-title-naungan" style="font-size: <?php echo $sz_naungan_2 ?>px; margin-top: 1px; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($naungan_2) ?></div>
+                                <?php endif; ?>
+                                <div class="kop-title-lembaga" style="font-size: <?php echo $sz_lembaga ?>px; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($nama_lembaga) ?></div>
+                                <?php if (!empty($sub_nama)): ?>
+                                    <div class="kop-title-sub" style="font-size: <?php echo $sz_sub ?>px; text-transform: <?php echo $transform_text ?>;"><?php echo html_escape($sub_nama) ?></div>
+                                <?php endif; ?>
+                                <?php if (!empty($alamat_kop)): ?>
+                                    <div class="kop-text-alamat" style="font-size: <?php echo $sz_alamat ?>px;"><?php echo html_escape($alamat_kop) ?></div>
+                                <?php endif; ?>
+                                <?php if (!empty($kontak)): ?>
+                                    <div class="kop-text-alamat" style="font-size: <?php echo $sz_alamat ?>px; margin-top: 0;"><?php echo html_escape($kontak) ?></div>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                    </table>
                 <?php elseif ($layout_style === 'double_logo'): ?>
                     <table style="width: 100%; border-collapse: collapse; border: 0;">
                         <tr>
@@ -526,6 +560,7 @@ if (!empty($kop)) {
         <table border="0" style="width: 100%; margin-top: 15px; font-size: 10pt; border-collapse: collapse; border: 0;">
             <tr>
                 <td style="width: 50%; vertical-align: top; text-align: left; border: 0; padding: 0;">
+                    <?php if (!empty($pakai_jumlah)): ?>
                     <table style="border: 0; font-size: 10pt; line-height: 1.1; border-collapse: collapse; width: auto;">
                         <tr>
                             <td style="padding-right: 15px; border: 0; padding-top: 1px; padding-bottom: 1px;">Laki-laki</td>
@@ -543,7 +578,8 @@ if (!empty($kop)) {
                             <td style="font-weight: bold; border: 0; border-top: 1px solid #000; padding-top: 2px; padding-bottom: 1px;"><?php echo $total_siswa ?> Siswa</td>
                         </tr>
                     </table>
-                    <div style="font-size: 9pt; margin-top: 15px; color: #555;">
+                    <?php endif; ?>
+                    <div style="font-size: 7.5pt; font-style: italic; font-family: Arial, sans-serif; margin-top: 15px; color: #555;">
                         Dicetak tanggal: <?php echo $tgl_cetak ?>
                     </div>
                 </td>

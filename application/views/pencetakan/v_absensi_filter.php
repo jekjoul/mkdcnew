@@ -36,6 +36,12 @@
                                             Tampilkan Tanda Tangan (Wali Kelas)
                                         </label>
                                     </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="show_menginduk" value="1" id="checkMenginduk">
+                                        <label class="form-check-label fw-semibold text-sm" for="checkMenginduk">
+                                            Tampilkan Siswa Menginduk (Kelas Jauh)
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-9 mb-20 d-flex gap-12">
@@ -68,9 +74,10 @@
         var id_pembelajaran = this.querySelector('[name="id_pembelajaran"]').value;
         var pakai_kop = this.querySelector('[name="pakai_kop"]').checked ? '1' : '0';
         var pakai_ttd = this.querySelector('[name="pakai_ttd"]').checked ? '1' : '0';
+        var show_menginduk = this.querySelector('[name="show_menginduk"]').checked ? '1' : '0';
         
         var format = (submitType === 'print') ? '' : submitType;
-        var url = this.action + '?id_pembelajaran=' + id_pembelajaran + '&pakai_kop=' + pakai_kop + '&pakai_ttd=' + pakai_ttd + '&format=' + format;
+        var url = this.action + '?id_pembelajaran=' + id_pembelajaran + '&pakai_kop=' + pakai_kop + '&pakai_ttd=' + pakai_ttd + '&show_menginduk=' + show_menginduk + '&format=' + format;
         
         window.open(url, '_blank');
     };

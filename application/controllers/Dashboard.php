@@ -7,6 +7,11 @@ class Dashboard extends MY_Controller
 	public function __construct()
 	{
 		parent::__construct();
+		
+		// Clean up temporary check files
+		@unlink('c:/xampp/htdocs/mkdcnew/check_old_db.php');
+		@unlink('c:/xampp/htdocs/mkdcnew/check_db_patch.php');
+		@unlink('c:/xampp/htdocs/mkdcnew/db_diagnostic_output.txt');
 	}
 
 	public function index()
@@ -75,6 +80,10 @@ class Dashboard extends MY_Controller
 			$siswa_rombel[$row->nama_lembaga][] = $row;
 		}
 		$this->page_data['siswa_rombel'] = $siswa_rombel;
+
+		$ptk_id = logged('ptk_id');
+		$this->load->model('Perangkat_pembelajaran_model', 'perangkat_model');
+		$this->page_data['agenda_terdekat'] = $this->perangkat_model->getAgendaTerdekatGuru($ptk_id, 5);
 
 		$this->load->view('dashboard', $this->page_data);
 	}

@@ -1,3 +1,6 @@
+<!-- Load Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
 <?php include viewPath('includes/header'); ?>
 <div class="dashboard-main-body">
     <form action="<?php echo url('surat/keluar_simpan') ?>" method="post" id="formSuratOtomatis">
@@ -80,27 +83,23 @@
                     </div>
 
                     <div class="col-md-12">
-                        <label class="form-label fw-semibold d-block mb-8">Pejabat Penandatangan <span class="text-danger">*</span> <small class="text-muted">(Bisa memilih lebih dari satu)</small></label>
-                        <div class="row bg-light p-16 radius-8 g-3 border">
+                        <label class="form-label fw-semibold d-block mb-8">Pejabat Penandatangan <span class="text-danger">*</span> <small class="text-muted">(Pilih satu atau lebih pejabat)</small></label>
+                        <select name="id_ptk_penandatangan[]" id="penandatanganSelect" class="form-control select2" multiple required data-placeholder="-- Pilih Pejabat Penandatangan --" style="width: 100%;">
                             <?php foreach ($ptk as $p): 
-                                $isChecked = in_array($p->id_ptk, $selected_penandatangan);
+                                $isSelected = in_array($p->id_ptk, $selected_penandatangan);
                                 $jabatanVal = isset($penandatangan_jabatan_map[$p->id_ptk]) ? $penandatangan_jabatan_map[$p->id_ptk] : '';
                             ?>
-                                <div class="col-md-6">
-                                    <div class="border p-12 radius-8 bg-white h-100 d-flex flex-column justify-content-between">
-                                        <div class="form-check">
-                                            <input class="form-check-input ptk-checkbox" type="checkbox" name="id_ptk_penandatangan[]" value="<?php echo $p->id_ptk ?>" id="ptk_<?php echo $p->id_ptk ?>" <?php echo $isChecked ? 'checked' : '' ?>>
-                                            <label class="form-check-label fw-semibold" for="ptk_<?php echo $p->id_ptk ?>">
-                                                <?php echo $p->nama_ptk ?>
-                                            </label>
-                                            <div class="text-muted text-xs">NIK/NIY: <?php echo $p->nik ?: ($p->niy ?: '-') ?></div>
-                                        </div>
-                                        <div class="mt-8">
-                                            <input type="text" name="jabatan_penandatangan[<?php echo $p->id_ptk ?>]" class="form-control form-control-sm" placeholder="Ketik Jabatan (misal: Kepala Sekolah / Bendahara)" value="<?php echo htmlspecialchars($jabatanVal) ?>">
-                                        </div>
-                                    </div>
-                                </div>
+                                <option value="<?php echo $p->id_ptk ?>" data-nama="<?php echo htmlspecialchars($p->nama_ptk) ?>" data-jabatan="<?php echo htmlspecialchars($jabatanVal) ?>" <?php echo $isSelected ? 'selected' : '' ?>>
+                                    <?php echo htmlspecialchars($p->nama_ptk) ?> (NIK/NIY: <?php echo $p->nik ?: ($p->niy ?: '-') ?>)
+                                </option>
                             <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="col-md-12" id="wrapperFormJabatan" style="display: none;">
+                        <label class="form-label fw-semibold d-block mb-8 text-primary-600">Jabatan Pejabat Penandatangan Terpilih <span class="text-danger">*</span></label>
+                        <div class="row g-3 p-16 bg-light radius-8 border" id="containerFormJabatan">
+                            <!-- Form Jabatan akan dipopulasikan otomatis via JS -->
                         </div>
                     </div>
                 </div>
@@ -114,8 +113,71 @@
 </div>
 <?php include viewPath('includes/footer'); ?>
 
+<!-- Load Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 <script type="text/javascript">
     $(document).ready(function() {
+        if (typeof $.fn.select2 !== 'undefined') {
+            $('#penandatanganSelect').select2({
+                placeholder: "-- Pilih Pejabat Penandatangan --",
+                allowClear: true
+            });
+        }
+
+        function renderJabatanForms() {
+            const selectedVals = $('#penandatanganSelect').val() || [];
+            const container = $('#containerFormJabatan');
+            const wrapper = $('#wrapperFormJabatan');
+
+            if (selectedVals.length === 0) {
+                container.empty();
+                wrapper.hide();
+                return;
+            }
+
+            wrapper.show();
+
+            const existingValues = {};
+            container.find('.input-jabatan-field').each(function() {
+                const ptkId = $(this).data('ptk-id');
+                existingValues[ptkId] = $(this).val();
+            });
+
+            container.empty();
+
+            selectedVals.forEach(function(ptkId) {
+                const option = $('#penandatanganSelect option[value="' + ptkId + '"]');
+                const namaPtk = option.data('nama') || 'Pejabat';
+                const defaultJabatan = option.data('jabatan') || '';
+                const currentVal = (existingValues[ptkId] !== undefined) ? existingValues[ptkId] : defaultJabatan;
+
+                const html = `
+                    <div class="col-md-6 item-jabatan-group" data-ptk-id="${ptkId}">
+                        <div class="p-12 border radius-8 bg-white shadow-xs">
+                            <label class="form-label fw-semibold text-primary-600 mb-1">
+                                Jabatan untuk: <strong>${namaPtk}</strong> <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" 
+                                   name="jabatan_penandatangan[${ptkId}]" 
+                                   class="form-control input-jabatan-field" 
+                                   data-ptk-id="${ptkId}" 
+                                   placeholder="Ketik Jabatan (misal: Kepala Sekolah / Bendahara)" 
+                                   value="${currentVal}" 
+                                   required>
+                        </div>
+                    </div>
+                `;
+                container.append(html);
+            });
+        }
+
+        $('#penandatanganSelect').on('change', function() {
+            renderJabatanForms();
+        });
+
+        renderJabatanForms();
+
         function filterTemplateByKode() {
             const kode = $('#kodeSelect').val();
             $('#templateSelect option').each(function() {
@@ -175,7 +237,6 @@
             });
         });
 
-        // Trigger filter dan generate jika edit
         if ($('#kodeSelect').val()) {
             filterTemplateByKode();
             <?php if (empty($row->nomor_surat)): ?>
@@ -183,9 +244,9 @@
             <?php endif; ?>
         }
 
-        // Validasi minimal 1 penandatangan dipilih sebelum submit
         $('#formSuratOtomatis').on('submit', function(e) {
-            if ($('.ptk-checkbox:checked').length === 0) {
+            const selectedVals = $('#penandatanganSelect').val() || [];
+            if (selectedVals.length === 0) {
                 e.preventDefault();
                 alert('Peringatan: Silakan pilih minimal 1 Pejabat Penandatangan!');
             }

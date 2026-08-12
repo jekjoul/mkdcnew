@@ -77,6 +77,21 @@ class Surat extends MY_Controller
         redirect('surat/masuk');
     }
 
+    public function masuk_hapus($id)
+    {
+        ifPermissions('surat_list');
+        $row = $this->db->get_where('surat_masuk', ['id_surat_masuk' => $id])->row();
+        if ($row) {
+            if (!empty($row->scan_file) && file_exists(FCPATH . 'uploads/surat_masuk/' . $row->scan_file)) {
+                @unlink(FCPATH . 'uploads/surat_masuk/' . $row->scan_file);
+            }
+            $this->db->where('id_surat_masuk', $id);
+            $this->db->delete('surat_masuk');
+            $this->flashSuccess('Surat masuk berhasil dihapus');
+        }
+        redirect('surat/masuk');
+    }
+
     public function kode()
     {
         $this->setPage('Kode Surat', 'surat/kode', 'solar:hashtag-linear');
@@ -133,36 +148,112 @@ class Surat extends MY_Controller
         redirect('surat/kode');
     }
 
+    public function kode_hapus($id = null)
+    {
+        if (empty($id)) {
+            $id = (int) post('id_kode_surat');
+        } else {
+            $id = (int) $id;
+        }
+
+        if ($id <= 0) {
+            $this->flashDanger('ID Kode Surat tidak valid');
+            redirect('surat/kode');
+            return;
+        }
+
+        $row = $this->db->get_where('surat_kode', ['id_kode_surat' => $id])->row();
+        if (!$row) {
+            $this->flashDanger('Kode Surat tidak ditemukan');
+            redirect('surat/kode');
+            return;
+        }
+
+        // Check 1: Cek apakah kode surat digunakan di tabel surat_keluar
+        $cnt_keluar = $this->db->where('id_kode_surat', $id)->count_all_results('surat_keluar');
+
+        // Check 2: Cek apakah kode surat digunakan di tabel surat_template
+        $cnt_template = $this->db->where('id_kode_surat', $id)->count_all_results('surat_template');
+
+        if ($cnt_keluar > 0 || $cnt_template > 0) {
+            $reasons = [];
+            if ($cnt_keluar > 0) {
+                $reasons[] = "{$cnt_keluar} dokumen Surat Keluar";
+            }
+            if ($cnt_template > 0) {
+                $reasons[] = "{$cnt_template} Template Surat";
+            }
+            $msg = 'Kode Surat <strong>' . htmlspecialchars($row->kode_jenis . ' - ' . $row->nama_jenis) . '</strong> tidak dapat dihapus karena masih digunakan oleh ' . implode(' dan ', $reasons) . '.';
+            $this->flashDanger($msg);
+            redirect('surat/kode');
+            return;
+        }
+
+        // Hapus dari database jika aman (tidak digunakan di manapun)
+        $this->db->where('id_kode_surat', $id);
+        $this->db->delete('surat_kode');
+
+        $this->activity_model->add(logged('name') . ' menghapus Kode Surat: ' . $row->kode_jenis . ' (' . $row->nama_jenis . ')', logged('id'));
+        $this->flashSuccess('Kode Surat <strong>' . htmlspecialchars($row->kode_jenis . ' - ' . $row->nama_jenis) . '</strong> berhasil dihapus.');
+        redirect('surat/kode');
+    }
+
     public function template()
     {
+        $this->init_db();
         $this->setPage('Template Surat', 'surat/template', 'solar:document-text-linear');
-        $this->db->select('st.*, sk.kode_jenis, sk.nama_jenis, l.nama_lembaga');
+        $this->db->select('st.*, sk.kode_jenis, sk.nama_jenis');
         $this->db->from('surat_template st');
-        $this->db->join('surat_kode sk', 'sk.id_kode_surat = st.id_kode_surat');
-        $this->db->join('lembaga l', 'l.id_lembaga = sk.id_lembaga', 'left');
-        $this->db->order_by('l.nama_lembaga', 'ASC');
-        $this->db->order_by('sk.kode_jenis', 'ASC');
+        $this->db->join('surat_kode sk', 'sk.id_kode_surat = st.id_kode_surat', 'left');
+        $this->db->order_by('st.kategori', 'ASC');
         $this->db->order_by('st.nama_template', 'ASC');
-        $this->page_data['template'] = $this->db->get()->result();
+        $templates = $this->db->get()->result();
+
+        foreach ($templates as $tmpl) {
+            $tmpl->allowed_lembaga = $this->db->select('l.*')
+                ->from('surat_template_lembaga stl')
+                ->join('lembaga l', 'l.id_lembaga = stl.id_lembaga')
+                ->where('stl.id_template_surat', $tmpl->id_template_surat)
+                ->order_by('l.nama_lembaga', 'ASC')
+                ->get()->result();
+        }
+
+        $this->page_data['template'] = $templates;
         $this->load->view('surat/template_list', $this->page_data);
     }
 
     public function template_tambah()
     {
+        $this->init_db();
         $this->setPage('Tambah Template Surat', 'surat/template_tambah', 'solar:document-text-linear');
         $this->setTemplateOptions();
+        $this->db->order_by('nama_lembaga', 'ASC');
+        $this->page_data['lembaga_list'] = $this->db->get('lembaga')->result();
+        $this->page_data['selected_lembaga_ids'] = [];
         $this->page_data['row'] = null;
         $this->load->view('surat/template_form', $this->page_data);
     }
 
     public function template_edit($id)
     {
+        $this->init_db();
         $this->setPage('Edit Template Surat', 'surat/template_edit/' . $id, 'solar:document-text-linear');
         $this->setTemplateOptions();
+        $this->db->order_by('nama_lembaga', 'ASC');
+        $this->page_data['lembaga_list'] = $this->db->get('lembaga')->result();
         $this->page_data['row'] = $this->db->get_where('surat_template', ['id_template_surat' => $id])->row();
         if (!$this->page_data['row']) {
             show_404();
         }
+
+        $allowed = $this->db->get_where('surat_template_lembaga', ['id_template_surat' => $id])->result();
+        $selected_ids = array_map(function($a) { return (int)$a->id_lembaga; }, $allowed);
+        
+        if (empty($selected_ids) && !empty($this->page_data['row']->id_lembaga)) {
+            $selected_ids = [(int)$this->page_data['row']->id_lembaga];
+        }
+
+        $this->page_data['selected_lembaga_ids'] = $selected_ids;
         $this->load->view('surat/template_form', $this->page_data);
     }
 
@@ -170,19 +261,47 @@ class Surat extends MY_Controller
     {
         postAllowed();
         $id = (int) post('id_template_surat');
+        $lembaga_ids = post('id_lembaga');
+        if (!is_array($lembaga_ids)) {
+            $lembaga_ids = [];
+        }
+        $lembaga_ids = array_values(array_unique(array_filter(array_map('intval', $lembaga_ids))));
+        $single_id_lembaga = (count($lembaga_ids) === 1) ? $lembaga_ids[0] : null;
+
         $data = [
-            'id_kode_surat' => post('id_kode_surat'),
+            'id_lembaga' => $single_id_lembaga,
+            'id_kode_surat' => post('id_kode_surat') ?: null,
             'nama_template' => post('nama_template'),
+            'kategori' => post('kategori') ?: 'Kesiswaan',
+            'deskripsi' => post('deskripsi') ?: null,
+            'icon' => post('icon') ?: 'solar:document-bold-duotone',
+            'target_url' => post('target_url') ?: null,
             'perihal_default' => post('perihal_default') ?: null,
-            'isi_template' => post('isi_template'),
+            'isi_template' => post('isi_template') ?: null,
             'status' => post('status') ?: 'Aktif',
         ];
 
         if ($id > 0) {
             $this->db->where('id_template_surat', $id);
             $this->db->update('surat_template', $data);
+            $id_template_surat = $id;
         } else {
+            $data['created_at'] = date('Y-m-d H:i:s');
             $this->db->insert('surat_template', $data);
+            $id_template_surat = $this->db->insert_id();
+        }
+
+        // Simpan ke tabel pivot surat_template_lembaga
+        $this->db->where('id_template_surat', $id_template_surat)->delete('surat_template_lembaga');
+        if (!empty($lembaga_ids)) {
+            $insert_pivot = [];
+            foreach ($lembaga_ids as $lid) {
+                $insert_pivot[] = [
+                    'id_template_surat' => $id_template_surat,
+                    'id_lembaga' => $lid
+                ];
+            }
+            $this->db->insert_batch('surat_template_lembaga', $insert_pivot);
         }
 
         $this->flashSuccess('Template surat berhasil disimpan');
@@ -290,6 +409,431 @@ class Surat extends MY_Controller
         redirect('surat/kop');
     }
 
+    // =========================================================================
+    // MODUL MASTER DASAR HUKUM SK
+    // =========================================================================
+    public function dasar_hukum()
+    {
+        $this->init_db();
+        $this->setPage('Master Dasar Hukum SK', 'surat/dasar_hukum', 'solar:document-text-linear');
+        $this->db->order_by('urutan', 'ASC');
+        $this->db->order_by('id_dasar_hukum', 'ASC');
+        $this->page_data['dasar_hukum'] = $this->db->get('surat_dasar_hukum')->result();
+        $this->load->view('surat/dasar_hukum_list', $this->page_data);
+    }
+
+    public function dasar_hukum_simpan()
+    {
+        postAllowed();
+        $this->init_db();
+
+        $id = (int) post('id_dasar_hukum');
+        $data = [
+            'kategori' => post('kategori') ?: 'Umum',
+            'judul'    => post('judul'),
+            'isi'      => post('isi') ?: null,
+            'urutan'   => (int) post('urutan') ?: 0
+        ];
+
+        if ($id > 0) {
+            $this->db->where('id_dasar_hukum', $id)->update('surat_dasar_hukum', $data);
+            $this->flashSuccess('Dasar Hukum berhasil diperbarui.');
+        } else {
+            $this->db->insert('surat_dasar_hukum', $data);
+            $this->flashSuccess('Dasar Hukum baru berhasil ditambahkan.');
+        }
+
+        redirect('surat/dasar_hukum');
+    }
+
+    public function dasar_hukum_hapus($id)
+    {
+        $this->init_db();
+        $id = (int) $id;
+        if ($id > 0) {
+            $this->db->where('id_dasar_hukum', $id)->delete('surat_dasar_hukum');
+            $this->flashSuccess('Dasar Hukum berhasil dihapus.');
+        }
+        redirect('surat/dasar_hukum');
+    }
+
+    // =========================================================================
+    // MODUL SURAT KEPUTUSAN (SK) PENGANGKATAN PEGAWAI / GURU YAYASAN
+    // =========================================================================
+    public function sk_pengangkatan($id = null)
+    {
+        $this->init_db();
+        
+        $surat_edit = null;
+        $payload_edit = [];
+        if ($id) {
+            $surat_edit = $this->db->get_where('surat_keluar', ['id_surat_keluar' => (int)$id])->row();
+            if ($surat_edit) {
+                $payload_edit = json_decode($surat_edit->isi_surat, true) ?: [];
+            }
+        }
+
+        $page_title = $surat_edit ? 'Edit SK Pengangkatan Pegawai/Guru Yayasan' : 'Buat SK Pengangkatan Pegawai/Guru Yayasan';
+        $this->setPage($page_title, 'surat/sk_pengangkatan', 'solar:document-bold-linear');
+
+        // Data Kop Surat (Default: Kop Yayasan)
+        $this->db->order_by('id_kop_surat', 'DESC');
+        $kop_list = $this->db->get('surat_kop')->result();
+        
+        $selected_kop = null;
+        if ($surat_edit && !empty($surat_edit->id_kop_surat)) {
+            foreach ($kop_list as $kp) {
+                if ($kp->id_kop_surat == $surat_edit->id_kop_surat) {
+                    $selected_kop = $kp;
+                    break;
+                }
+            }
+        }
+        if (!$selected_kop) {
+            foreach ($kop_list as $kp) {
+                if (stripos($kp->nama_kop, 'YAYASAN') !== false || stripos($kp->nama_lembaga, 'YAYASAN') !== false) {
+                    $selected_kop = $kp;
+                    break;
+                }
+            }
+        }
+        if (!$selected_kop && !empty($kop_list)) {
+            $selected_kop = $kop_list[0];
+        }
+
+        // Data Kode Surat (Default: Kode Surat YMK / Yayasan)
+        $this->db->select('sk.*, l.nama_lembaga');
+        $this->db->from('surat_kode sk');
+        $this->db->join('lembaga l', 'l.id_lembaga = sk.id_lembaga', 'left');
+        $this->db->order_by('sk.kode_jenis', 'ASC');
+        $kode_list = $this->db->get()->result();
+
+        $selected_kode = null;
+        if ($surat_edit && !empty($surat_edit->id_kode_surat)) {
+            foreach ($kode_list as $kd) {
+                if ($kd->id_kode_surat == $surat_edit->id_kode_surat) {
+                    $selected_kode = $kd;
+                    break;
+                }
+            }
+        }
+        if (!$selected_kode) {
+            foreach ($kode_list as $kd) {
+                if (stripos($kd->kode_lembaga, 'YMK') !== false || stripos($kd->nama_lembaga, 'YAYASAN') !== false || stripos($kd->nama_jenis, 'KEPUTUSAN') !== false) {
+                    $selected_kode = $kd;
+                    break;
+                }
+            }
+        }
+        if (!$selected_kode && !empty($kode_list)) {
+            $selected_kode = $kode_list[0];
+        }
+
+        // Hitung Nomor Urut Otomatis
+        $nomor_urut = ($surat_edit && !empty($surat_edit->nomor_urut)) ? $surat_edit->nomor_urut : 1;
+        if (!$surat_edit && $selected_kode) {
+            $last_surat = $this->db->where('id_kode_surat', $selected_kode->id_kode_surat)
+                                   ->order_by('id_surat_keluar', 'DESC')
+                                   ->get('surat_keluar')
+                                   ->row();
+            if ($last_surat && !empty($last_surat->nomor_urut)) {
+                $nomor_urut = (int)$last_surat->nomor_urut + 1;
+            }
+        }
+
+        // Data Master PTK (Guru / Pegawai)
+        $this->db->where('status_keaktifan', 'Aktif');
+        $this->db->order_by('nama_ptk', 'ASC');
+        $ptk_list = $this->db->get('ptk')->result();
+
+        // Data Master Lembaga (termasuk Yayasan)
+        $this->db->order_by('nama_lembaga', 'ASC');
+        $lembaga_list = $this->db->get('lembaga')->result();
+
+        // Data Master Dasar Hukum SK
+        $this->db->order_by('urutan', 'ASC');
+        $this->db->order_by('id_dasar_hukum', 'ASC');
+        $dasar_hukum_list = $this->db->get('surat_dasar_hukum')->result();
+
+        // Data Preset SK Pengangkatan
+        $this->db->where('jenis_sk', 'sk_pengangkatan');
+        $this->db->order_by('id_preset', 'DESC');
+        $preset_list = $this->db->get('surat_preset_sk')->result();
+
+        // Data Yayasan khusus untuk lokasi kabupaten
+        $yayasan_row = $this->db->where('TRIM(UPPER(nama_lembaga_singkat))', 'YAYASAN')->get('lembaga')->row();
+        $kab_yayasan = 'Ciamis';
+        if ($yayasan_row && !empty($yayasan_row->kabupaten)) {
+            $raw_k = preg_replace('/^(KAB\.?|KABUPATEN|KOTA)\s+/i', '', trim($yayasan_row->kabupaten));
+            $kab_yayasan = ucwords(strtolower($raw_k ?: 'Ciamis'));
+        }
+
+        $this->page_data['surat_edit']       = $surat_edit;
+        $this->page_data['payload_edit']     = $payload_edit;
+        $this->page_data['kop_list']         = $kop_list;
+        $this->page_data['selected_kop']     = $selected_kop;
+        $this->page_data['kode_list']        = $kode_list;
+        $this->page_data['selected_kode']    = $selected_kode;
+        $this->page_data['nomor_urut']       = $nomor_urut;
+        $this->page_data['ptk_list']         = $ptk_list;
+        $this->page_data['lembaga_list']     = $lembaga_list;
+        $this->page_data['dasar_hukum_list'] = $dasar_hukum_list;
+        $this->page_data['preset_list']      = $preset_list;
+        $this->page_data['kab_yayasan']      = $kab_yayasan;
+
+        $this->load->view('surat/form_sk_pengangkatan', $this->page_data);
+    }
+
+    public function preset_sk_simpan()
+    {
+        postAllowed();
+        $this->init_db();
+
+        $id_preset   = (int) post('id_preset');
+        $nama_preset = trim(post('nama_preset'));
+        if (empty($nama_preset)) {
+            echo json_encode(['status' => 'error', 'message' => 'Nama preset tidak boleh kosong']);
+            return;
+        }
+
+        $data = [
+            'nama_preset'           => $nama_preset,
+            'jenis_sk'              => 'sk_pengangkatan',
+            'tentang'               => post('tentang'),
+            'menimbang'             => post('menimbang'),
+            'mengingat_json'        => post('mengingat_json'),
+            'memperhatikan'         => post('memperhatikan'),
+            'poin_kedua'            => post('poin_kedua'),
+            'poin_ketiga'           => post('poin_ketiga'),
+            'poin_keempat'          => post('poin_keempat'),
+            'poin_kelima'           => post('poin_kelima'),
+            'id_ptk_penandatangan'  => (int) post('id_ptk_penandatangan'),
+            'jabatan_penandatangan' => post('jabatan_penandatangan'),
+            'payload_json'          => json_encode($_POST)
+        ];
+
+        if ($id_preset > 0) {
+            $this->db->where('id_preset', $id_preset)->update('surat_preset_sk', $data);
+            $saved_id = $id_preset;
+            $msg = 'Preset berhasil diperbarui (overwrite)!';
+        } else {
+            $this->db->insert('surat_preset_sk', $data);
+            $saved_id = $this->db->insert_id();
+            $msg = 'Preset baru berhasil disimpan!';
+        }
+
+        echo json_encode(['status' => 'success', 'id_preset' => $saved_id, 'nama_preset' => $nama_preset, 'message' => $msg]);
+    }
+
+    public function preset_sk_load($id)
+    {
+        $this->init_db();
+        $id = (int) $id;
+        $row = $this->db->get_where('surat_preset_sk', ['id_preset' => $id])->row();
+        if ($row) {
+            echo json_encode(['status' => 'success', 'data' => $row]);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Preset tidak ditemukan']);
+        }
+    }
+
+    public function preset_sk_hapus($id)
+    {
+        postAllowed();
+        $this->init_db();
+
+        $id = (int) $id;
+        $row = $this->db->get_where('surat_preset_sk', ['id_preset' => $id])->row();
+        if ($row) {
+            $this->db->where('id_preset', $id)->delete('surat_preset_sk');
+            echo json_encode(['status' => 'success', 'message' => 'Preset "' . $row->nama_preset . '" berhasil dihapus']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Preset tidak ditemukan']);
+        }
+    }
+
+    public function sk_pengangkatan_simpan()
+    {
+        postAllowed();
+        $this->init_db();
+
+        $id_surat_keluar_edit = (int) post('id_surat_keluar');
+        $id_kop_surat        = (int) post('id_kop_surat');
+        $id_kode_surat       = (int) post('id_kode_surat');
+        $nomor_urut          = (int) post('nomor_urut');
+        $nomor_surat         = trim(post('nomor_surat'));
+        $tanggal_surat       = post('tanggal_surat') ?: date('Y-m-d');
+        $tentang             = trim(post('tentang'));
+        $menimbang_raw       = post('menimbang');
+        if (is_array($menimbang_raw)) {
+            $menimbang       = array_values(array_filter(array_map('trim', $menimbang_raw)));
+        } else {
+            $menimbang       = trim($menimbang_raw);
+        }
+        $mengingat_arr       = post('mengingat'); // Array text dasar hukum
+        $memperhatikan       = trim(post('memperhatikan'));
+        $id_lembaga_tujuan   = (int) post('id_lembaga_tujuan');
+        $id_ptk              = (int) post('id_ptk');
+        $tmt                 = post('tmt') ?: date('Y-m-d');
+        $poin_kedua          = trim(post('poin_kedua'));
+        $poin_ketiga         = trim(post('poin_ketiga'));
+        $poin_keempat        = trim(post('poin_keempat'));
+        $poin_kelima         = trim(post('poin_kelima'));
+        $id_ptk_penandatangan= (int) post('id_ptk_penandatangan');
+        $jabatan_penandatangan= trim(post('jabatan_penandatangan')) ?: 'Ketua Yayasan';
+        $tipe_ttd            = post('tipe_ttd') ?: 'digital';
+
+        // Ambil data PTK yang diangkat
+        $ptk_target = $this->db->get_where('ptk', ['id_ptk' => $id_ptk])->row();
+        // Ambil data Lembaga tujuan
+        $lembaga_target = $this->db->get_where('lembaga', ['id_lembaga' => $id_lembaga_tujuan])->row();
+        $nama_lembaga_target = $lembaga_target ? $lembaga_target->nama_lembaga : '';
+
+        $bulan_indo = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April', 5 => 'Mei', 6 => 'Juni',
+            7 => 'Juli', 8 => 'Agustus', 9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+        ];
+
+        $ptk_tempat = ($ptk_target && !empty($ptk_target->tempat_lahir)) ? ucwords(strtolower(trim($ptk_target->tempat_lahir))) : '-';
+        $ptk_tgl = '-';
+        if ($ptk_target && !empty($ptk_target->tanggal_lahir) && $ptk_target->tanggal_lahir !== '0000-00-00') {
+            $time = strtotime($ptk_target->tanggal_lahir);
+            if ($time) {
+                $d = date('j', $time);
+                $m = (int)date('n', $time);
+                $y = date('Y', $time);
+                $ptk_tgl = $d . ' ' . (isset($bulan_indo[$m]) ? $bulan_indo[$m] : date('F', $time)) . ' ' . $y;
+            }
+        }
+        $ttl_ptk_target = ($ptk_tempat !== '-' || $ptk_tgl !== '-') ? (($ptk_tempat !== '-' ? $ptk_tempat : '') . ($ptk_tempat !== '-' && $ptk_tgl !== '-' ? ', ' : '') . ($ptk_tgl !== '-' ? $ptk_tgl : '')) : '-';
+        
+        // Format Alamat Lengkap PTK Target (dengan non-breaking wrapper agar Kab. Ciamis dll tidak terpisah beda baris)
+        $addr_parts = [];
+        if ($ptk_target) {
+            $raw_alamat = !empty($ptk_target->alamat) ? trim($ptk_target->alamat) : (!empty($ptk_target->alamat_jalan) ? trim($ptk_target->alamat_jalan) : '');
+            if ($raw_alamat) {
+                $addr_parts[] = '<span style="white-space: nowrap;">' . htmlspecialchars(ucwords(strtolower($raw_alamat))) . '</span>';
+            }
+            $rt = !empty($ptk_target->rt) ? trim($ptk_target->rt) : '';
+            $rw = !empty($ptk_target->rw) ? trim($ptk_target->rw) : '';
+            if ($rt || $rw) {
+                $rtrw = '';
+                if ($rt) $rtrw .= 'RT&nbsp;' . sprintf('%02d', (int)$rt);
+                if ($rw) $rtrw .= ($rtrw ? '&nbsp;' : '') . 'RW&nbsp;' . sprintf('%02d', (int)$rw);
+                $addr_parts[] = '<span style="white-space: nowrap;">' . $rtrw . '</span>';
+            }
+            $desa = !empty($ptk_target->kelurahan_desa) ? trim($ptk_target->kelurahan_desa) : (!empty($ptk_target->desa) ? trim($ptk_target->desa) : '');
+            if ($desa) {
+                $clean_desa = preg_replace('/^(DESA|KEL\.?|KELURAHAN)\s+/i', '', $desa);
+                $addr_parts[] = '<span style="white-space: nowrap;">Desa&nbsp;' . htmlspecialchars(ucwords(strtolower($clean_desa))) . '</span>';
+            }
+            $kec = !empty($ptk_target->kecamatan) ? trim($ptk_target->kecamatan) : '';
+            if ($kec) {
+                $clean_kec = preg_replace('/^(KEC\.?|KECAMATAN)\s+/i', '', $kec);
+                $addr_parts[] = '<span style="white-space: nowrap;">Kec.&nbsp;' . htmlspecialchars(ucwords(strtolower($clean_kec))) . '</span>';
+            }
+            $kab = !empty($ptk_target->kabupaten) ? trim($ptk_target->kabupaten) : '';
+            if ($kab) {
+                $clean_kab = preg_replace('/^(KAB\.?|KABUPATEN|KOTA)\s+/i', '', $kab);
+                $addr_parts[] = '<span style="white-space: nowrap;">Kab.&nbsp;' . htmlspecialchars(ucwords(strtolower($clean_kab))) . '</span>';
+            }
+            $prov = !empty($ptk_target->provinsi) ? trim($ptk_target->provinsi) : '';
+            if ($prov) {
+                $clean_prov = preg_replace('/^(PROV\.?|PROVINSI)\s+/i', '', $prov);
+                $addr_parts[] = '<span style="white-space: nowrap;">Prov.&nbsp;' . htmlspecialchars(ucwords(strtolower($clean_prov))) . '</span>';
+            }
+        }
+        $alamat_ptk_target = !empty($addr_parts) ? implode(' ', $addr_parts) : '-';
+
+        $id_preset_loaded    = (int) post('id_preset_loaded');
+
+        // Format isi_surat JSON terstruktur khusus SK Pengangkatan
+        $sk_payload = [
+            'jenis_dokumen'         => 'sk_pengangkatan',
+            'id_preset'             => $id_preset_loaded,
+            'tentang'               => $tentang,
+            'menimbang'             => $menimbang,
+            'mengingat'             => is_array($mengingat_arr) ? array_values(array_filter($mengingat_arr)) : [],
+            'memperhatikan'         => $memperhatikan,
+            'id_lembaga_target'     => $id_lembaga_tujuan,
+            'nama_lembaga_target'   => $nama_lembaga_target,
+            'id_ptk_target'         => $id_ptk,
+            'nama_ptk_target'       => $ptk_target ? $ptk_target->nama_ptk : '',
+            'ttl_ptk_target'        => $ttl_ptk_target,
+            'alamat_ptk_target'     => $alamat_ptk_target,
+            'jk_ptk_target'         => $ptk_target ? (!empty($ptk_target->jenis_kelamin) && $ptk_target->jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan') : '-',
+            'tmt'                   => $tmt,
+            'poin_kedua'            => $poin_kedua,
+            'poin_ketiga'           => $poin_ketiga,
+            'poin_keempat'          => $poin_keempat,
+            'poin_kelima'           => $poin_kelima,
+            'id_ptk_penandatangan'  => $id_ptk_penandatangan,
+            'jabatan_penandatangan' => $jabatan_penandatangan
+        ];
+
+        // Ambil data Yayasan untuk id_lembaga pemilik SK
+        $yayasan_row = $this->db->where('TRIM(UPPER(nama_lembaga_singkat))', 'YAYASAN')->get('lembaga')->row();
+        $id_lembaga_owner = $yayasan_row ? $yayasan_row->id_lembaga : ($lembaga_target ? $lembaga_target->id_lembaga : 1);
+
+        $data_surat = [
+            'id_lembaga'         => $id_lembaga_owner,
+            'id_kode_surat'      => $id_kode_surat,
+            'id_template_surat'  => null,
+            'metode_pembuatan'   => 'Otomatis',
+            'jenis_template'     => 'sk_pengangkatan',
+            'id_kop_surat'       => $id_kop_surat,
+            'id_siswa'           => null,
+            'tanggal_surat'      => $tanggal_surat,
+            'nomor_urut'         => $nomor_urut,
+            'nomor_surat'        => $nomor_surat,
+            'tujuan_surat'       => $ptk_target ? $ptk_target->nama_ptk : '-',
+            'perihal'            => 'SK ' . $tentang,
+            'isi_surat'          => json_encode($sk_payload, JSON_PRETTY_PRINT),
+            'penandatangan_nama' => '',
+            'penandatangan_jabatan' => $jabatan_penandatangan,
+            'tipe_ttd'           => $tipe_ttd,
+            'status'             => 'Selesai',
+            'token_validasi'     => md5($nomor_surat . time())
+        ];
+
+        if ($id_surat_keluar_edit > 0) {
+            unset($data_surat['token_validasi']);
+            $this->db->where('id_surat_keluar', $id_surat_keluar_edit)->update('surat_keluar', $data_surat);
+            
+            $this->db->where('id_surat_keluar', $id_surat_keluar_edit)->delete('surat_keluar_penandatangan');
+            if ($id_ptk_penandatangan > 0) {
+                $this->db->insert('surat_keluar_penandatangan', [
+                    'id_surat_keluar' => $id_surat_keluar_edit,
+                    'id_ptk'          => $id_ptk_penandatangan,
+                    'jabatan'         => $jabatan_penandatangan,
+                    'urutan'          => 1
+                ]);
+            }
+
+            $this->activity_model->add(logged('name') . ' memperbarui SK Pengangkatan: ' . $nomor_surat, logged('id'));
+            $this->flashSuccess('SK Pengangkatan Pegawai/Guru Yayasan berhasil diperbarui.');
+            redirect('surat/keluar_preview/' . $id_surat_keluar_edit);
+        } else {
+            $this->db->insert('surat_keluar', $data_surat);
+            $id_surat_keluar = $this->db->insert_id();
+
+            if ($id_ptk_penandatangan > 0) {
+                $this->db->insert('surat_keluar_penandatangan', [
+                    'id_surat_keluar' => $id_surat_keluar,
+                    'id_ptk'          => $id_ptk_penandatangan,
+                    'jabatan'         => $jabatan_penandatangan,
+                    'urutan'          => 1
+                ]);
+            }
+
+            $this->activity_model->add(logged('name') . ' membuat SK Pengangkatan: ' . $nomor_surat, logged('id'));
+            $this->flashSuccess('SK Pengangkatan Pegawai/Guru Yayasan berhasil diterbitkan.');
+            redirect('surat/keluar_preview/' . $id_surat_keluar);
+        }
+
+        redirect('surat/keluar_preview/' . $id_surat_keluar);
+    }
+
     public function keluar()
     {
         $this->setPage('Surat Keluar', 'surat/keluar', 'solar:inbox-out-linear');
@@ -311,6 +855,121 @@ class Surat extends MY_Controller
 
         $this->page_data['surat'] = $surat_list;
         $this->load->view('surat/keluar_list', $this->page_data);
+    }
+
+    public function buat()
+    {
+        $this->setPage('Buat Surat', 'surat/buat', 'solar:document-add-linear');
+        $this->db->order_by('nama_lembaga', 'ASC');
+        $this->page_data['lembaga'] = $this->db->get('lembaga')->result();
+        $this->load->view('surat/pilih_tipe', $this->page_data);
+    }
+
+    public function buat_otomatis()
+    {
+        $this->init_db();
+        $this->setPage('Buat Surat Otomatis', 'surat/buat_otomatis', 'solar:document-text-linear');
+        $id_lembaga = (int)$this->input->get('id_lembaga');
+        
+        $selected_lembaga = null;
+        if ($id_lembaga > 0) {
+            $selected_lembaga = $this->db->get_where('lembaga', ['id_lembaga' => $id_lembaga])->row();
+        }
+        
+        $this->page_data['id_lembaga'] = $id_lembaga;
+        $this->page_data['selected_lembaga'] = $selected_lembaga;
+        $this->db->order_by('nama_lembaga', 'ASC');
+        $this->page_data['lembaga_list'] = $this->db->get('lembaga')->result();
+
+        // Ambil template dari database berdasarkan id_lembaga
+        $this->db->select('st.*');
+        $this->db->from('surat_template st');
+        $this->db->where('st.status', 'Aktif');
+
+        if ($id_lembaga > 0) {
+            $this->db->group_start();
+            $this->db->where("st.id_template_surat NOT IN (SELECT id_template_surat FROM surat_template_lembaga)", null, false);
+            $this->db->or_where("st.id_template_surat IN (SELECT id_template_surat FROM surat_template_lembaga WHERE id_lembaga = {$id_lembaga})", null, false);
+            $this->db->group_end();
+        }
+
+        $this->db->order_by('st.kategori', 'ASC');
+        $this->db->order_by('st.nama_template', 'ASC');
+        $template_rows = $this->db->get()->result();
+
+        foreach ($template_rows as $tmpl) {
+            $tmpl->allowed_lembaga = $this->db->select('l.*')
+                ->from('surat_template_lembaga stl')
+                ->join('lembaga l', 'l.id_lembaga = stl.id_lembaga')
+                ->where('stl.id_template_surat', $tmpl->id_template_surat)
+                ->order_by('l.nama_lembaga', 'ASC')
+                ->get()->result();
+        }
+
+        // Group templates by kategori
+        $categories = [];
+        $category_meta = [
+            'Kesiswaan' => [
+                'icon' => 'solar:users-group-two-rounded-bold-duotone',
+                'icon_color' => 'text-info-600',
+                'bg_icon' => 'bg-info-50',
+                'desc' => 'Daftar template dokumen administrasi & pelayanan santri/siswa aktif.'
+            ],
+            'Kepegawaian & Penugasan' => [
+                'icon' => 'solar:user-id-bold-duotone',
+                'icon_color' => 'text-primary-600',
+                'bg_icon' => 'bg-primary-50',
+                'desc' => 'Daftar template dokumen tugas dinas dan keputusan pengurus/kepala.'
+            ],
+            'Kedinasan & Komunikasi' => [
+                'icon' => 'solar:buildings-2-bold-duotone',
+                'icon_color' => 'text-success-600',
+                'bg_icon' => 'bg-success-50',
+                'desc' => 'Daftar template undangan resmi dan surat edaran pemberitahuan.'
+            ],
+            'Akademik & Kelulusan' => [
+                'icon' => 'solar:diploma-bold-duotone',
+                'icon_color' => 'text-purple-600',
+                'bg_icon' => 'bg-purple-50',
+                'desc' => 'Daftar template dokumen bukti akademis dan kelulusan.'
+            ],
+            'Rekomendasi & Perjanjian' => [
+                'icon' => 'solar:handshake-bold-duotone',
+                'icon_color' => 'text-warning-600',
+                'bg_icon' => 'bg-warning-50',
+                'desc' => 'Daftar template surat rekomendasi dan naskah perjanjian kerjasama (MoU).'
+            ],
+            'Yayasan & Kelembagaan' => [
+                'icon' => 'solar:buildings-3-bold-duotone',
+                'icon_color' => 'text-danger-600',
+                'bg_icon' => 'bg-danger-50',
+                'desc' => 'Daftar template khusus keputusan, penugasan, dan edaran Yayasan.'
+            ]
+        ];
+
+        foreach ($template_rows as $tmpl) {
+            $cat_name = !empty($tmpl->kategori) ? $tmpl->kategori : 'Lainnya';
+            if (!isset($categories[$cat_name])) {
+                $meta = isset($category_meta[$cat_name]) ? $category_meta[$cat_name] : [
+                    'icon' => 'solar:document-bold-duotone',
+                    'icon_color' => 'text-primary-600',
+                    'bg_icon' => 'bg-primary-50',
+                    'desc' => 'Daftar template dokumen ' . strtolower($cat_name)
+                ];
+                $categories[$cat_name] = [
+                    'title' => 'Kategori ' . $cat_name,
+                    'icon' => $meta['icon'],
+                    'icon_color' => $meta['icon_color'],
+                    'bg_icon' => $meta['bg_icon'],
+                    'desc' => $meta['desc'],
+                    'items' => []
+                ];
+            }
+            $categories[$cat_name]['items'][] = $tmpl;
+        }
+
+        $this->page_data['categories'] = $categories;
+        $this->load->view('surat/buat_otomatis', $this->page_data);
     }
 
     public function keluar_tambah_manual()
@@ -357,12 +1016,35 @@ class Surat extends MY_Controller
 
     public function keluar_edit_otomatis($id)
     {
-        $this->setPage('Edit Surat Keluar Otomatis', 'surat/keluar_edit_otomatis/' . $id, 'solar:inbox-out-linear');
-        $this->setKeluarOptions();
+        $id = (int) $id;
         $row = $this->db->get_where('surat_keluar', ['id_surat_keluar' => $id])->row();
         if (!$row) {
             show_404();
         }
+
+        // Jika surat dibuat dari template SK Pengangkatan Yayasan
+        if ($row->jenis_template === 'sk_pengangkatan') {
+            redirect('surat/sk_pengangkatan/' . $id);
+            return;
+        }
+
+        // Jika surat dibuat dari template Keterangan Siswa Aktif
+        if ($row->jenis_template === 'keterangan_siswa_aktif') {
+            redirect('surat/keterangan_siswa_aktif/' . $id);
+            return;
+        }
+
+        // Jika surat memiliki id_template_surat dengan target_url
+        if (!empty($row->id_template_surat)) {
+            $tmpl = $this->db->get_where('surat_template', ['id_template_surat' => $row->id_template_surat])->row();
+            if ($tmpl && !empty($tmpl->target_url)) {
+                redirect($tmpl->target_url . '/' . $id);
+                return;
+            }
+        }
+
+        $this->setPage('Edit Surat Keluar Otomatis', 'surat/keluar_edit_otomatis/' . $id, 'solar:inbox-out-linear');
+        $this->setKeluarOptions();
         $this->page_data['row'] = $row;
         
         $penandatangan = $this->db->get_where('surat_keluar_penandatangan', ['id_surat_keluar' => $id])->result();
@@ -399,6 +1081,160 @@ class Surat extends MY_Controller
         ]));
     }
 
+    public function keterangan_siswa_aktif($id = null)
+    {
+        $this->init_db();
+
+        $surat_edit = null;
+        $selected_penandatangan = [];
+        $penandatangan_jabatan_map = [];
+
+        if ($id) {
+            $surat_edit = $this->db->get_where('surat_keluar', ['id_surat_keluar' => (int)$id])->row();
+            if ($surat_edit) {
+                $penandatangan = $this->db->get_where('surat_keluar_penandatangan', ['id_surat_keluar' => (int)$id])->result();
+                foreach ($penandatangan as $p) {
+                    $selected_penandatangan[] = $p->id_ptk;
+                    $penandatangan_jabatan_map[$p->id_ptk] = $p->jabatan;
+                }
+            }
+        }
+
+        $page_title = $surat_edit ? 'Edit Surat Keterangan Siswa Aktif' : 'Buat Surat Keterangan Siswa Aktif';
+        $this->setPage($page_title, 'surat/keterangan_siswa_aktif', 'solar:document-bold-linear');
+        $this->setKeluarOptions();
+
+        $id_lembaga = $surat_edit ? (int)$surat_edit->id_lembaga : (int)$this->input->get('id_lembaga');
+        
+        $selected_lembaga = null;
+        if ($id_lembaga > 0) {
+            $selected_lembaga = $this->db->get_where('lembaga', ['id_lembaga' => $id_lembaga])->row();
+        }
+        if (!$selected_lembaga) {
+            $selected_lembaga = $this->db->get('lembaga')->row();
+            $id_lembaga = $selected_lembaga ? (int)$selected_lembaga->id_lembaga : 1;
+        }
+
+        if ($selected_lembaga && !empty($selected_lembaga->kabupaten) && is_numeric($selected_lembaga->kabupaten)) {
+            $reg_k = $this->db->get_where('reg_kabupaten', ['id_kab' => $selected_lembaga->kabupaten])->row();
+            if ($reg_k && !empty($reg_k->nama)) {
+                $selected_lembaga->kabupaten = $reg_k->nama;
+            }
+        }
+
+        // Cari Kode Surat untuk lembaga yang dipilih
+        $kode_surat_selected = null;
+        if ($surat_edit && !empty($surat_edit->id_kode_surat)) {
+            $kode_surat_selected = $this->db->get_where('surat_kode', ['id_kode_surat' => $surat_edit->id_kode_surat])->row();
+        }
+        if (!$kode_surat_selected) {
+            $kode_surat_selected = $this->db->get_where('surat_kode', ['id_lembaga' => $id_lembaga, 'status' => 'Aktif'])->row();
+        }
+        if (!$kode_surat_selected) {
+            $kode_surat_selected = $this->db->get_where('surat_kode', ['status' => 'Aktif'])->row();
+        }
+
+        // Cari Kop Surat untuk lembaga yang dipilih
+        $kop_selected = null;
+        if ($surat_edit && !empty($surat_edit->id_kop_surat)) {
+            $kop_selected = $this->db->get_where('surat_kop', ['id_kop_surat' => $surat_edit->id_kop_surat])->row();
+        }
+        if (!$kop_selected && $this->db->field_exists('id_lembaga', 'surat_kop')) {
+            $kop_selected = $this->db->get_where('surat_kop', ['id_lembaga' => $id_lembaga, 'status' => 'Aktif'])->row();
+        }
+        
+        if (!$kop_selected && $selected_lembaga) {
+            $singkatan = trim($selected_lembaga->nama_lembaga_singkat);
+            $nama_lg = trim($selected_lembaga->nama_lembaga);
+            $bentuk = trim($selected_lembaga->bentuk_pendidikan);
+
+            $all_kops_query = $this->db->get_where('surat_kop', ['status' => 'Aktif']);
+            $all_kops = ($all_kops_query && is_object($all_kops_query)) ? $all_kops_query->result() : [];
+            foreach ($all_kops as $kp) {
+                if (($singkatan && stripos($kp->nama_kop, $singkatan) !== false) ||
+                    ($nama_lg && stripos($kp->nama_kop, $nama_lg) !== false) ||
+                    ($nama_lg && stripos($kp->nama_lembaga, $nama_lg) !== false) ||
+                    ($bentuk && stripos($kp->nama_kop, $bentuk) !== false) ||
+                    ($bentuk && stripos($kp->nama_lembaga, $bentuk) !== false)) {
+                    $kop_selected = $kp;
+                    break;
+                }
+            }
+        }
+
+        if (!$kop_selected) {
+            $kop_selected = $this->db->get_where('surat_kop', ['status' => 'Aktif'])->row();
+        }
+
+        // Filter siswa berdasarkan id_lembaga
+        $this->db->select('s.id_siswa, s.nama_siswa, s.nisn, s.nipd, s.rombel, s.tempat_lahir, s.tanggal_lahir');
+        $this->db->from('siswa s');
+        $this->db->where('s.status_keaktifan', 'Aktif');
+
+        if ($id_lembaga > 0) {
+            $this->db->join('pembelajaran_siswa ps', 'ps.peserta_didik_id = s.id_siswa', 'left');
+            $this->db->join('pembelajaran p', 'p.id_pembelajaran = ps.id_pembelajaran', 'left');
+            $this->db->group_start();
+            $this->db->where('p.id_lembaga', $id_lembaga);
+            $this->db->or_where('p.id_lembaga IS NULL', null, false);
+            $this->db->group_end();
+        }
+
+        $this->db->order_by('s.nama_siswa', 'ASC');
+        $this->db->group_by('s.id_siswa');
+        $siswa_query = $this->db->get();
+        $siswa_list = ($siswa_query && is_object($siswa_query)) ? $siswa_query->result() : [];
+
+        if (empty($siswa_list)) {
+            $this->db->select('s.id_siswa, s.nama_siswa, s.nisn, s.nipd, s.rombel, s.tempat_lahir, s.tanggal_lahir');
+            $this->db->from('siswa s');
+            $this->db->where('s.status_keaktifan', 'Aktif');
+            $this->db->order_by('s.nama_siswa', 'ASC');
+            $siswa_query = $this->db->get();
+            $siswa_list = ($siswa_query && is_object($siswa_query)) ? $siswa_query->result() : [];
+        }
+
+        $this->page_data['row'] = $surat_edit;
+        $this->page_data['selected_lembaga'] = $selected_lembaga;
+        $this->page_data['lembaga_smp'] = $selected_lembaga;
+        $this->page_data['id_lembaga_smp'] = $id_lembaga;
+        $this->page_data['kode_surat_smp'] = $kode_surat_selected;
+        $this->page_data['kop_smp'] = $kop_selected;
+        $this->page_data['siswa_list'] = $siswa_list;
+        $this->page_data['selected_penandatangan'] = $selected_penandatangan;
+        $this->page_data['penandatangan_jabatan_map'] = $penandatangan_jabatan_map;
+
+        $this->load->view('surat/form_keterangan_siswa_aktif', $this->page_data);
+    }
+
+    public function get_siswa_detail_ajax()
+    {
+        $id_siswa = (int) $this->input->get('id_siswa');
+        $siswa = $this->db->get_where('siswa', ['id_siswa' => $id_siswa])->row();
+        if ($siswa) {
+            $months = [1 => 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            $tgl_str = '-';
+            if ($siswa->tanggal_lahir) {
+                $t = strtotime($siswa->tanggal_lahir);
+                $m = (int)date('n', $t);
+                $tgl_str = date('d', $t) . ' ' . (isset($months[$m]) ? $months[$m] : date('F', $t)) . ' ' . date('Y', $t);
+            }
+            $ttl_formatted = ($siswa->tempat_lahir ?: '-') . ', ' . $tgl_str;
+
+            $this->output->set_content_type('application/json')->set_output(json_encode([
+                'success' => true,
+                'nama_siswa' => $siswa->nama_siswa,
+                'nisn' => $siswa->nisn ?: '-',
+                'rombel' => $siswa->rombel ?: '-',
+                'tempat_lahir' => $siswa->tempat_lahir ?: '-',
+                'tanggal_lahir' => $siswa->tanggal_lahir,
+                'ttl_formatted' => $ttl_formatted
+            ]));
+        } else {
+            $this->output->set_content_type('application/json')->set_output(json_encode(['success' => false]));
+        }
+    }
+
     public function keluar_simpan()
     {
         postAllowed();
@@ -418,22 +1254,44 @@ class Surat extends MY_Controller
         $nomor_surat = post('nomor_surat') ?: ($nomor_custom ?: $this->formatNomorSurat($kode, $nomor_urut, $tahun));
         $token = post('token_validasi') ?: bin2hex(random_bytes(16));
         $metode = post('metode_pembuatan') ?: 'Manual';
+        $jenis_template = post('jenis_template') ?: null;
+
+        // Process Upload File TTD Digital jika ada
+        $file_ttd_digital = post('file_ttd_digital_existing');
+        if (isset($_FILES['file_ttd_digital']) && $_FILES['file_ttd_digital']['error'] === UPLOAD_ERR_OK) {
+            $upload_path = FCPATH . 'uploads/ttd/';
+            if (!is_dir($upload_path)) {
+                @mkdir($upload_path, 0777, true);
+            }
+            $ext = pathinfo($_FILES['file_ttd_digital']['name'], PATHINFO_EXTENSION);
+            $new_filename = 'ttd_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . strtolower($ext);
+            if (move_uploaded_file($_FILES['file_ttd_digital']['tmp_name'], $upload_path . $new_filename)) {
+                $file_ttd_digital = $new_filename;
+            }
+        }
+
+        $tujuan = post('tujuan_surat') ?: 'Siswa Bersangkutan';
+        $perihal = post('perihal') ?: ($jenis_template === 'keterangan_siswa_aktif' ? 'Surat Keterangan Siswa Aktif' : 'Surat Keluar');
 
         $data = [
-            'id_lembaga' => $kode->id_lembaga,
+            'id_lembaga' => post('id_lembaga') ? (int) post('id_lembaga') : ($kode ? $kode->id_lembaga : 1),
             'id_kode_surat' => $kode->id_kode_surat,
             'metode_pembuatan' => $metode,
+            'jenis_template' => $jenis_template,
             'id_template_surat' => ($metode === 'Otomatis') ? (post('id_template_surat') ?: null) : null,
-            'id_kop_surat' => ($metode === 'Otomatis') ? (post('id_kop_surat') ?: null) : null,
+            'id_kop_surat' => post('id_kop_surat') ?: null,
+            'id_siswa' => post('id_siswa') ? (int) post('id_siswa') : null,
             'tanggal_surat' => $tanggal,
             'nomor_urut' => $nomor_urut,
             'nomor_surat' => $nomor_surat,
             'nomor_custom' => $nomor_custom ?: null,
-            'tujuan_surat' => post('tujuan_surat'),
-            'perihal' => post('perihal'),
+            'tujuan_surat' => $tujuan,
+            'perihal' => $perihal,
             'isi_surat' => ($metode === 'Otomatis') ? post('isi_surat') : null,
             'keterangan' => ($metode === 'Manual') ? post('keterangan') : null,
-            'status' => ($metode === 'Otomatis') ? (post('status') ?: 'Draft') : 'Manual',
+            'tipe_ttd' => post('tipe_ttd') ?: 'manual',
+            'file_ttd_digital' => $file_ttd_digital ?: null,
+            'status' => ($metode === 'Otomatis') ? (post('status') ?: 'Final') : 'Manual',
             'token_validasi' => $token,
         ];
 
@@ -461,6 +1319,103 @@ class Surat extends MY_Controller
 
         $this->flashSuccess('Surat keluar berhasil disimpan');
         redirect('surat/keluar_preview/' . $id);
+    }
+
+    public function keluar_hapus($id)
+    {
+        ifPermissions('surat_list');
+        $row = $this->db->get_where('surat_keluar', ['id_surat_keluar' => $id])->row();
+        if ($row) {
+            if (!empty($row->file_ttd_digital) && file_exists(FCPATH . 'uploads/ttd/' . $row->file_ttd_digital)) {
+                @unlink(FCPATH . 'uploads/ttd/' . $row->file_ttd_digital);
+            }
+            if (!empty($row->file_dokumen_basah) && file_exists(FCPATH . 'uploads/dokumen_basah/' . $row->file_dokumen_basah)) {
+                @unlink(FCPATH . 'uploads/dokumen_basah/' . $row->file_dokumen_basah);
+            }
+            $this->db->where('id_surat_keluar', $id);
+            $this->db->delete('surat_keluar_penandatangan');
+
+            $this->db->where('id_surat_keluar', $id);
+            $this->db->delete('surat_keluar');
+            $this->flashSuccess('Surat keluar berhasil dihapus');
+        }
+        redirect('surat/keluar');
+    }
+
+    /**
+     * Upload dokumen TTD Basah (scan/foto surat yang sudah ditandatangani)
+     */
+    public function keluar_upload_basah($id)
+    {
+        postAllowed();
+        ifPermissions('surat_list');
+        $id = (int) $id;
+        $row = $this->db->get_where('surat_keluar', ['id_surat_keluar' => $id])->row();
+        if (!$row) {
+            echo json_encode(['status' => 'error', 'message' => 'Surat tidak ditemukan']);
+            return;
+        }
+
+        $upload_path = FCPATH . 'uploads/dokumen_basah/';
+        if (!is_dir($upload_path)) {
+            @mkdir($upload_path, 0775, true);
+        }
+
+        $this->load->library('upload', [
+            'upload_path'   => $upload_path,
+            'allowed_types' => 'jpg|jpeg|png|pdf',
+            'max_size'      => 10240, // 10MB
+            'file_name'     => 'basah_' . $id . '_' . time(),
+        ]);
+
+        if (!$this->upload->do_upload('file_dokumen_basah')) {
+            echo json_encode(['status' => 'error', 'message' => $this->upload->display_errors('', '')]);
+            return;
+        }
+
+        $upload_data = $this->upload->data();
+        $file_name   = $upload_data['file_name'];
+
+        // Hapus file lama jika ada
+        if (!empty($row->file_dokumen_basah) && file_exists($upload_path . $row->file_dokumen_basah)) {
+            @unlink($upload_path . $row->file_dokumen_basah);
+        }
+
+        $this->db->where('id_surat_keluar', $id)->update('surat_keluar', [
+            'file_dokumen_basah' => $file_name,
+            'status'             => 'Diarsipkan',
+        ]);
+
+        echo json_encode(['status' => 'success', 'message' => 'Dokumen berhasil diupload dan diarsipkan!', 'file' => $file_name]);
+    }
+
+    /**
+     * Hapus file dokumen TTD Basah (surat kembali bisa diedit)
+     */
+    public function keluar_hapus_basah($id)
+    {
+        postAllowed();
+        ifPermissions('surat_list');
+        $id  = (int) $id;
+        $row = $this->db->get_where('surat_keluar', ['id_surat_keluar' => $id])->row();
+        if (!$row) {
+            echo json_encode(['status' => 'error', 'message' => 'Surat tidak ditemukan']);
+            return;
+        }
+
+        if (!empty($row->file_dokumen_basah)) {
+            $path = FCPATH . 'uploads/dokumen_basah/' . $row->file_dokumen_basah;
+            if (file_exists($path)) {
+                @unlink($path);
+            }
+        }
+
+        $this->db->where('id_surat_keluar', $id)->update('surat_keluar', [
+            'file_dokumen_basah' => null,
+            'status'             => 'Diterbitkan',
+        ]);
+
+        echo json_encode(['status' => 'success', 'message' => 'File dokumen basah berhasil dihapus. Surat dapat diedit kembali.']);
     }
 
     public function keluar_preview($id)
@@ -537,17 +1492,31 @@ class Surat extends MY_Controller
 
     private function getSuratKeluar($id)
     {
-        $this->db->select('skel.*, l.nama_lembaga, l.alamat, l.telepon, l.email, l.logo, l.id_ptk_kepsek, ptk.nama_ptk AS nama_kepsek, sk.kode_jenis, sk.nama_jenis, sk.kode_lembaga, sk.lokasi, kp.nama_kop, kp.logo as kop_logo, kp.logo_kanan, kp.naungan, kp.naungan_2, kp.nama_lembaga as kop_nama_lembaga, kp.sub_nama, kp.alamat as alamat_kop, kp.kontak, kp.font_size_naungan, kp.font_size_naungan_2, kp.font_size_lembaga, kp.font_size_sub, kp.font_size_alamat, kp.layout_style, kp.case_style');
+        $this->db->select('skel.*, l.nama_lembaga, l.alamat, l.kecamatan as kecamatan_lembaga, l.kabupaten as kabupaten_lembaga, l.telepon, l.email, l.logo, l.id_ptk_kepsek, ptk.nama_ptk AS nama_kepsek, ptk.gelar_depan AS kepsek_gelar_depan, ptk.gelar_belakang AS kepsek_gelar_belakang, sk.kode_jenis, sk.nama_jenis, sk.kode_lembaga, sk.lokasi, kp.nama_kop, kp.logo as kop_logo, kp.logo_kanan, kp.naungan, kp.naungan_2, kp.nama_lembaga as kop_nama_lembaga, kp.sub_nama, kp.alamat as alamat_kop, kp.kontak, kp.font_size_naungan, kp.font_size_naungan_2, kp.font_size_lembaga, kp.font_size_sub, kp.font_size_alamat, kp.layout_style, kp.case_style, sis.nama_siswa, sis.nisn, sis.nipd, sis.rombel, sis.tempat_lahir, sis.tanggal_lahir');
         $this->db->from('surat_keluar skel');
         $this->db->join('lembaga l', 'l.id_lembaga = skel.id_lembaga', 'left');
         $this->db->join('ptk', 'ptk.id_ptk = l.id_ptk_kepsek', 'left');
         $this->db->join('surat_kode sk', 'sk.id_kode_surat = skel.id_kode_surat', 'left');
         $this->db->join('surat_kop kp', 'kp.id_kop_surat = skel.id_kop_surat', 'left');
+        $this->db->join('siswa sis', 'sis.id_siswa = skel.id_siswa', 'left');
         $this->db->where('skel.id_surat_keluar', $id);
         $surat = $this->db->get()->row();
 
         if ($surat) {
-            $this->db->select('ptk.nama_ptk, ptk.nik, ptk.id_ptk, ptk.niy, skp.jabatan');
+            if (!empty($surat->kabupaten_lembaga) && is_numeric($surat->kabupaten_lembaga)) {
+                $reg = $this->db->get_where('reg_kabupaten', ['id_kab' => $surat->kabupaten_lembaga])->row();
+                if ($reg && !empty($reg->nama)) {
+                    $surat->kabupaten_lembaga = $reg->nama;
+                }
+            }
+            if (!empty($surat->kecamatan_lembaga) && is_numeric($surat->kecamatan_lembaga)) {
+                $reg_kec = $this->db->get_where('reg_kecamatan', ['id_kec' => $surat->kecamatan_lembaga])->row();
+                if ($reg_kec && !empty($reg_kec->nama)) {
+                    $surat->kecamatan_lembaga = $reg_kec->nama;
+                }
+            }
+
+            $this->db->select('ptk.nama_ptk, ptk.gelar_depan, ptk.gelar_belakang, ptk.nik, ptk.id_ptk, ptk.niy, skp.jabatan');
             $this->db->from('surat_keluar_penandatangan skp');
             $this->db->join('ptk', 'ptk.id_ptk = skp.id_ptk', 'left');
             $this->db->where('skp.id_surat_keluar', $id);
@@ -636,6 +1605,11 @@ class Surat extends MY_Controller
 
     private function ensureTables()
     {
+        $this->init_db();
+    }
+
+    private function init_db()
+    {
         $this->load->dbforge();
 
         if (!$this->db->table_exists('surat_kode')) {
@@ -657,15 +1631,111 @@ class Surat extends MY_Controller
         if (!$this->db->table_exists('surat_template')) {
             $this->dbforge->add_field([
                 'id_template_surat' => ['type' => 'INT', 'constraint' => 11, 'auto_increment' => true],
-                'id_kode_surat' => ['type' => 'INT', 'constraint' => 11],
+                'id_lembaga' => ['type' => 'INT', 'constraint' => 11, 'null' => true],
+                'id_kode_surat' => ['type' => 'INT', 'constraint' => 11, 'null' => true],
                 'nama_template' => ['type' => 'VARCHAR', 'constraint' => 150],
+                'kategori' => ['type' => 'VARCHAR', 'constraint' => 100, 'default' => 'Kesiswaan'],
+                'deskripsi' => ['type' => 'TEXT', 'null' => true],
+                'icon' => ['type' => 'VARCHAR', 'constraint' => 100, 'default' => 'solar:document-bold-duotone'],
+                'target_url' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
                 'perihal_default' => ['type' => 'VARCHAR', 'constraint' => 180, 'null' => true],
-                'isi_template' => ['type' => 'TEXT'],
+                'isi_template' => ['type' => 'TEXT', 'null' => true],
                 'status' => ['type' => 'VARCHAR', 'constraint' => 20, 'default' => 'Aktif'],
                 'created_at' => ['type' => 'DATETIME', 'null' => true],
             ]);
             $this->dbforge->add_key('id_template_surat', true);
             $this->dbforge->create_table('surat_template', true);
+        } else {
+            if (!$this->db->field_exists('id_lembaga', 'surat_template')) {
+                $this->dbforge->add_column('surat_template', [
+                    'id_lembaga' => ['type' => 'INT', 'constraint' => 11, 'null' => true, 'after' => 'id_template_surat']
+                ]);
+            }
+            if (!$this->db->field_exists('kategori', 'surat_template')) {
+                $this->dbforge->add_column('surat_template', [
+                    'kategori' => ['type' => 'VARCHAR', 'constraint' => 100, 'null' => true, 'default' => 'Kesiswaan', 'after' => 'nama_template']
+                ]);
+            }
+            if (!$this->db->field_exists('deskripsi', 'surat_template')) {
+                $this->dbforge->add_column('surat_template', [
+                    'deskripsi' => ['type' => 'TEXT', 'null' => true, 'after' => 'kategori']
+                ]);
+            }
+            if (!$this->db->field_exists('icon', 'surat_template')) {
+                $this->dbforge->add_column('surat_template', [
+                    'icon' => ['type' => 'VARCHAR', 'constraint' => 100, 'null' => true, 'default' => 'solar:document-bold-duotone', 'after' => 'deskripsi']
+                ]);
+            }
+            if (!$this->db->field_exists('target_url', 'surat_template')) {
+                $this->dbforge->add_column('surat_template', [
+                    'target_url' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true, 'after' => 'icon']
+                ]);
+            }
+        }
+
+        if (!$this->db->table_exists('surat_template_lembaga')) {
+            $this->dbforge->add_field([
+                'id' => ['type' => 'INT', 'constraint' => 11, 'auto_increment' => true],
+                'id_template_surat' => ['type' => 'INT', 'constraint' => 11],
+                'id_lembaga' => ['type' => 'INT', 'constraint' => 11],
+            ]);
+            $this->dbforge->add_key('id', true);
+            $this->dbforge->create_table('surat_template_lembaga', true);
+        }
+
+        // Auto-sync data id_lembaga ke tabel pivot surat_template_lembaga jika pivot masih kosong
+        if ($this->db->count_all_results('surat_template_lembaga') === 0) {
+            $existing = $this->db->get_where('surat_template', ['id_lembaga >' => 0])->result();
+            $sync_batch = [];
+            foreach ($existing as $ex) {
+                if ($ex->id_lembaga > 0) {
+                    $sync_batch[] = [
+                        'id_template_surat' => $ex->id_template_surat,
+                        'id_lembaga' => $ex->id_lembaga
+                    ];
+                }
+            }
+            if (!empty($sync_batch)) {
+                $this->db->insert_batch('surat_template_lembaga', $sync_batch);
+            }
+        }
+
+        // Seed data template default jika tabel masih kosong
+        if ($this->db->count_all_results('surat_template') === 0) {
+            $yayasan = $this->db->where("TRIM(UPPER(nama_lembaga_singkat))", "YAYASAN")->get('lembaga')->row();
+            $id_yayasan = $yayasan ? $yayasan->id_lembaga : null;
+
+            $default_templates = [
+                // Template Kesiswaan (Bisa Digunakan Bersama)
+                [
+                    'id_lembaga' => null,
+                    'nama_template' => 'Surat Keterangan Siswa Aktif',
+                    'kategori' => 'Kesiswaan',
+                    'deskripsi' => 'Surat keterangan resmi yang menyatakan bahwa siswa bersangkutan masih terdaftar aktif di sekolah.',
+                    'icon' => 'solar:user-speak-bold-duotone',
+                    'target_url' => 'surat/keterangan_siswa_aktif',
+                    'perihal_default' => 'Surat Keterangan Siswa Aktif',
+                    'status' => 'Aktif',
+                    'created_at' => date('Y-m-d H:i:s')
+                ],
+            ];
+
+            // Template khusus Yayasan
+            if ($id_yayasan) {
+                $default_templates[] = [
+                    'id_lembaga' => $id_yayasan,
+                    'nama_template' => 'Surat Pengangkatan Pegawai / Guru Yayasan',
+                    'kategori' => 'Yayasan & Kelembagaan',
+                    'deskripsi' => 'Surat penetapan resmi status pengangkatan Guru dan Tenaga Kependidikan di lingkungan Yayasan.',
+                    'icon' => 'solar:user-id-bold-duotone',
+                    'target_url' => null,
+                    'perihal_default' => 'Surat Pengangkatan Pegawai Yayasan',
+                    'status' => 'Aktif',
+                    'created_at' => date('Y-m-d H:i:s')
+                ];
+            }
+
+            $this->db->insert_batch('surat_template', $default_templates);
         }
 
         if (!$this->db->table_exists('surat_masuk')) {
@@ -724,6 +1794,30 @@ class Surat extends MY_Controller
             if (!$this->db->field_exists('keterangan', 'surat_keluar')) {
                 $this->dbforge->add_column('surat_keluar', [
                     'keterangan' => ['type' => 'TEXT', 'null' => true, 'after' => 'isi_surat']
+                ]);
+            }
+            // Cek jika kolom id_siswa belum ada di table surat_keluar
+            if (!$this->db->field_exists('id_siswa', 'surat_keluar')) {
+                $this->dbforge->add_column('surat_keluar', [
+                    'id_siswa' => ['type' => 'INT', 'constraint' => 11, 'null' => true, 'after' => 'id_kop_surat']
+                ]);
+            }
+            // Cek jika kolom jenis_template belum ada di table surat_keluar
+            if (!$this->db->field_exists('jenis_template', 'surat_keluar')) {
+                $this->dbforge->add_column('surat_keluar', [
+                    'jenis_template' => ['type' => 'VARCHAR', 'constraint' => 50, 'null' => true, 'after' => 'metode_pembuatan']
+                ]);
+            }
+            // Cek jika kolom tipe_ttd belum ada di table surat_keluar
+            if (!$this->db->field_exists('tipe_ttd', 'surat_keluar')) {
+                $this->dbforge->add_column('surat_keluar', [
+                    'tipe_ttd' => ['type' => 'VARCHAR', 'constraint' => 20, 'default' => 'manual', 'after' => 'penandatangan_jabatan']
+                ]);
+            }
+            // Cek jika kolom file_ttd_digital belum ada di table surat_keluar
+            if (!$this->db->field_exists('file_ttd_digital', 'surat_keluar')) {
+                $this->dbforge->add_column('surat_keluar', [
+                    'file_ttd_digital' => ['type' => 'VARCHAR', 'constraint' => 180, 'null' => true, 'after' => 'tipe_ttd']
                 ]);
             }
             // Jadikan kolom isi_surat nullable

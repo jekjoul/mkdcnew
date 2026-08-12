@@ -67,6 +67,11 @@
                                                     <iconify-icon icon="solar:document-add-linear"></iconify-icon> Perangkat
                                                 </a>
                                             </li>
+                                            <li>
+                                                <a class="dropdown-item d-flex align-items-center gap-2" href="<?php echo url('agenda_pembelajaran') ?>">
+                                                    <iconify-icon icon="solar:calendar-date-linear"></iconify-icon> Agenda
+                                                </a>
+                                            </li>
                                             <?php if (!$is_nonaktif): ?>
                                             <li>
                                                 <a class="dropdown-item d-flex align-items-center gap-2 text-danger btn-luluskan" href="#" data-id="<?php echo $row->id_pembelajaran; ?>">
@@ -87,7 +92,7 @@
 </div>
 <?php include viewPath('includes/footer'); ?>
 <script>
-    let table = new DataTable('#dataTable');
+    let table = new DataTable('#dataTable', { order: [] });
     
     $(document).on('click', '.btn-luluskan', function(e) {
         e.preventDefault();

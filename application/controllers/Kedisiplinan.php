@@ -26,12 +26,25 @@ class Kedisiplinan extends MY_Controller
         $this->db->order_by('kp.tanggal_pelanggaran', 'DESC');
         $this->page_data['pelanggaran'] = $this->db->get()->result();
 
+        // Rekapitulasi poin per siswa
+        $this->db->select('s.id_siswa, s.nama_siswa, s.nisn, s.rombel, COUNT(kp.id_pelanggaran_siswa) as total_pelanggaran, SUM(COALESCE(kk.bobot_poin, 0)) as total_poin');
+        $this->db->from('siswa s');
+        $this->db->join('kedisiplinan_pelanggaran_siswa kp', 's.id_siswa = kp.id_siswa');
+        $this->db->join('kedisiplinan_pelanggaran_kategori kk', 'kk.id_kategori = kp.id_kategori', 'left');
+        $this->db->group_by('s.id_siswa');
+        $this->db->order_by('total_poin', 'DESC');
+        $this->page_data['rekap_siswa'] = $this->db->get()->result();
+
+        // Data Aturan Sanksi Dinamis
+        $this->db->order_by('min_poin', 'ASC');
+        $this->page_data['aturan_sanksi'] = $this->db->get('kedisiplinan_sanksi_aturan')->result();
+
         $this->load->view('kedisiplinan/list', $this->page_data);
     }
 
     public function kategori()
     {
-        ifPermissions('master_list');
+        ifPermissions('kedisiplinan_kategori');
         $this->page_data['page']->title = 'Kedisiplinan';
         $this->page_data['page']->titleUrl = 'kedisiplinan';
         $this->page_data['page']->subtitle = 'Kategori Pelanggaran';
@@ -43,9 +56,59 @@ class Kedisiplinan extends MY_Controller
         $this->load->view('kedisiplinan/kategori', $this->page_data);
     }
 
+    public function sanksi()
+    {
+        ifPermissions('kedisiplinan_kategori');
+        $this->page_data['page']->title = 'Kedisiplinan';
+        $this->page_data['page']->titleUrl = 'kedisiplinan';
+        $this->page_data['page']->subtitle = 'Aturan Status Sanksi & Poin';
+        $this->page_data['page']->subtitleUrl = 'kedisiplinan/sanksi';
+        $this->page_data['page']->icon = 'solar:settings-linear';
+
+        $this->db->order_by('min_poin', 'ASC');
+        $this->page_data['sanksi'] = $this->db->get('kedisiplinan_sanksi_aturan')->result();
+        $this->load->view('kedisiplinan/sanksi', $this->page_data);
+    }
+
+    public function sanksi_simpan()
+    {
+        ifPermissions('kedisiplinan_kategori');
+        postAllowed();
+
+        $id_sanksi = (int) post('id_sanksi');
+        $data = [
+            'min_poin' => (int) post('min_poin'),
+            'max_poin' => (int) post('max_poin'),
+            'nama_sanksi' => post('nama_sanksi'),
+            'warna_badge' => post('warna_badge') ?: 'warning',
+        ];
+
+        if ($id_sanksi > 0) {
+            $this->db->where('id_sanksi', $id_sanksi);
+            $this->db->update('kedisiplinan_sanksi_aturan', $data);
+            $msg = 'Aturan sanksi berhasil diperbarui.';
+        } else {
+            $this->db->insert('kedisiplinan_sanksi_aturan', $data);
+            $msg = 'Aturan sanksi baru berhasil ditambahkan.';
+        }
+
+        $this->session->set_flashdata('alert-type', 'success');
+        $this->session->set_flashdata('alert', $msg);
+        redirect('kedisiplinan/sanksi');
+    }
+
+    public function sanksi_hapus($id)
+    {
+        ifPermissions('kedisiplinan_kategori');
+        $this->db->delete('kedisiplinan_sanksi_aturan', ['id_sanksi' => $id]);
+        $this->session->set_flashdata('alert-type', 'success');
+        $this->session->set_flashdata('alert', 'Aturan sanksi berhasil dihapus.');
+        redirect('kedisiplinan/sanksi');
+    }
+
     public function kategori_simpan()
     {
-        ifPermissions('master_add');
+        ifPermissions('kedisiplinan_kategori');
         postAllowed();
 
         $data = [
@@ -61,7 +124,7 @@ class Kedisiplinan extends MY_Controller
 
     public function kategori_hapus($id)
     {
-        ifPermissions('master_delete');
+        ifPermissions('kedisiplinan_kategori');
         $this->db->delete('kedisiplinan_pelanggaran_kategori', ['id_kategori' => $id]);
         $this->session->set_flashdata('alert-type', 'success');
         $this->session->set_flashdata('alert', 'Kategori pelanggaran berhasil dihapus.');
@@ -97,6 +160,7 @@ class Kedisiplinan extends MY_Controller
             'tanggal_pelanggaran' => post('tanggal_pelanggaran') ?: date('Y-m-d'),
             'catatan' => post('catatan'),
             'tindak_lanjut' => post('tindak_lanjut') ?: 'Belum ditentukan',
+            'pelapor' => post('pelapor') ?: logged('name'),
             'created_at' => date('Y-m-d H:i:s'),
         ];
 
@@ -171,11 +235,93 @@ class Kedisiplinan extends MY_Controller
                 'tanggal_pelanggaran' => ['type' => 'DATE'],
                 'catatan' => ['type' => 'TEXT', 'null' => true],
                 'tindak_lanjut' => ['type' => 'TEXT', 'null' => true],
+                'pelapor' => ['type' => 'VARCHAR', 'constraint' => 150, 'null' => true],
                 'created_at' => ['type' => 'DATETIME', 'null' => true],
                 'updated_at' => ['type' => 'DATETIME', 'null' => true],
             ]);
             $this->dbforge->add_key('id_pelanggaran_siswa', true);
             $this->dbforge->create_table('kedisiplinan_pelanggaran_siswa', true);
+        } else {
+            // Check if column 'pelapor' exists, if not add it
+            if (!$this->db->field_exists('pelapor', 'kedisiplinan_pelanggaran_siswa')) {
+                $this->dbforge->add_column('kedisiplinan_pelanggaran_siswa', [
+                    'pelapor' => ['type' => 'VARCHAR', 'constraint' => 150, 'null' => true]
+                ]);
+            }
+        }
+
+        if (!$this->db->table_exists('kedisiplinan_sanksi_aturan')) {
+            $this->dbforge->add_field([
+                'id_sanksi' => ['type' => 'INT', 'constraint' => 11, 'auto_increment' => true],
+                'min_poin' => ['type' => 'INT', 'constraint' => 5],
+                'max_poin' => ['type' => 'INT', 'constraint' => 5],
+                'nama_sanksi' => ['type' => 'VARCHAR', 'constraint' => 200],
+                'warna_badge' => ['type' => 'VARCHAR', 'constraint' => 30, 'default' => 'warning'],
+            ]);
+            $this->dbforge->add_key('id_sanksi', true);
+            $this->dbforge->create_table('kedisiplinan_sanksi_aturan', true);
+
+            // Seed default sanksi rules
+            $this->db->insert_batch('kedisiplinan_sanksi_aturan', [
+                ['min_poin' => 1, 'max_poin' => 15, 'nama_sanksi' => 'Pembinaan Ringan (Wali Kelas / Guru)', 'warna_badge' => 'success'],
+                ['min_poin' => 16, 'max_poin' => 30, 'nama_sanksi' => 'Peringatan I & Konseling BK', 'warna_badge' => 'warning'],
+                ['min_poin' => 31, 'max_poin' => 50, 'nama_sanksi' => 'Peringatan II & Pemanggilan Orang Tua', 'warna_badge' => 'warning'],
+                ['min_poin' => 51, 'max_poin' => 75, 'nama_sanksi' => 'Peringatan Keras / Skorsing', 'warna_badge' => 'danger'],
+                ['min_poin' => 76, 'max_poin' => 999, 'nama_sanksi' => 'Pengembalian Kepada Orang Tua (DO)', 'warna_badge' => 'danger'],
+            ]);
+        }
+
+        // Ensure permissions registered in 'permissions' table
+        if ($this->db->table_exists('permissions')) {
+            $parent = $this->db->get_where('permissions', ['code' => 'menu_kedisiplinan'])->row();
+            $parentId = $parent ? $parent->id : null;
+            $level = $parent ? ($parent->level + 1) : 2;
+
+            $newPerms = [
+                [
+                    'code' => 'kedisiplinan_kategori',
+                    'title' => 'Atur Kategori Poin Kedisiplinan'
+                ],
+                [
+                    'code' => 'kedisiplinan_bk',
+                    'title' => 'Tindak Lanjut BK Kedisiplinan'
+                ],
+                [
+                    'code' => 'kedisiplinan_add',
+                    'title' => 'Tambah Laporan Kedisiplinan'
+                ],
+                [
+                    'code' => 'kedisiplinan_delete',
+                    'title' => 'Hapus Laporan Kedisiplinan'
+                ]
+            ];
+
+            foreach ($newPerms as $np) {
+                $exist = $this->db->get_where('permissions', ['code' => $np['code']])->row();
+                if (!$exist) {
+                    $this->db->insert('permissions', [
+                        'code' => $np['code'],
+                        'title' => $np['title'],
+                        'parent_id' => $parentId,
+                        'level' => $level
+                    ]);
+                }
+
+                if ($this->db->table_exists('role_permissions')) {
+                    $rolesToGrant = array_filter(array_unique([1, $this->session->userdata('role')]));
+                    foreach ($rolesToGrant as $rId) {
+                        if (!empty($rId)) {
+                            $hasRolePerm = $this->db->get_where('role_permissions', ['role' => $rId, 'permission' => $np['code']])->row();
+                            if (!$hasRolePerm) {
+                                $this->db->insert('role_permissions', [
+                                    'role' => $rId,
+                                    'permission' => $np['code']
+                                ]);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

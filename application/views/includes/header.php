@@ -1,12 +1,46 @@
 <?php
-defined('BASEPATH') or exit('No direct script access allowed'); ?>
+defined('BASEPATH') or exit('No direct script access allowed'); 
+
+if (!isset($page) || !is_object($page)) {
+    $page = new stdClass();
+}
+if (!isset($page->title)) {
+    $page->title = 'Dashboard';
+}
+if (!isset($page->titleUrl)) {
+    $page->titleUrl = 'dashboard';
+}
+if (!isset($page->subtitleUrl)) {
+    $page->subtitleUrl = 'dashboard';
+}
+if (!isset($page->icon)) {
+    $page->icon = 'solar:home-angle-bold';
+}
+
+if (!isset($url) || !is_object($url)) {
+    $url = (object) ['assets' => assets_url() . '/'];
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 
 <head>
+    <script>
+        (function() {
+            var savedTheme = localStorage.getItem("theme");
+            if (savedTheme === "dark") {
+                document.documentElement.setAttribute("data-theme", "dark");
+            } else {
+                document.documentElement.setAttribute("data-theme", "light");
+            }
+        })();
+    </script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#487fff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>MKDC | <?php echo $page->title ?></title>
     <link rel="icon" type="image/png" href="<?php echo $url->assets ?>images/logodc_round.png" sizes="16x16">
     <!-- remix icon font css  -->
@@ -39,7 +73,56 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
     <link rel="stylesheet" href="<?php echo $url->assets ?>css/lib/audioplayer.css">
     <!-- main css -->
     <link rel="stylesheet" href="<?php echo $url->assets ?>css/style.css">
+    <link rel="stylesheet" href="<?php echo $url->assets ?>css/dark-theme.css">
+    <link rel="stylesheet" href="<?php echo $url->assets ?>css/mobile-app.css">
     <link href=" https://cdn.jsdelivr.net/npm/sweetalert2@11.26.2/dist/sweetalert2.min.css " rel="stylesheet">
+
+    <!-- Offline Detector Style -->
+    <style>
+        #mkdc-offline-banner {
+            position: fixed;
+            top: -60px;
+            left: 0;
+            right: 0;
+            z-index: 99999;
+            background: linear-gradient(90deg, #dc2626, #ef4444);
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.84rem;
+            font-weight: 600;
+            box-shadow: 0 4px 20px rgba(220,38,38,0.35);
+            transition: top 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        #mkdc-offline-banner.show { top: 0; }
+        #mkdc-offline-banner .offline-banner-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        #mkdc-offline-banner .offline-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.9);
+            animation: mkdcDotBlink 1s ease-in-out infinite;
+        }
+        @keyframes mkdcDotBlink {
+            0%, 100% { opacity: 1; } 50% { opacity: 0.2; }
+        }
+        #mkdc-offline-banner a.offline-retry-link {
+            color: white;
+            text-decoration: underline;
+            cursor: pointer;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        #mkdc-offline-banner a.offline-retry-link:hover { opacity: 0.85; }
+    </style>
 
     <style>
         @media screen {
@@ -61,10 +144,125 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
         .card-hover:hover {
             opacity: 70% !important;
         }
+
+        /* ── Scroll Glitch Fix ────────────────────────────────────────────────
+         * Masalah: elemen position:sticky / position:fixed yang berada dalam
+         * stacking context yang sama dengan konten scroll bisa menyebabkan
+         * "glitch" (jitter / flicker) karena browser harus melakukan repaint
+         * setiap frame scroll.
+         *
+         * Solusi:
+         * 1. Paksa elemen fixed/sticky ke GPU layer tersendiri (translateZ/will-change)
+         * 2. Gunakan contain:layout style agar browser tidak perlu recalc layout global
+         * 3. Hindari backdrop-filter pada elemen yang bergerak atau menempel di sisi layar
+         * ─────────────────────────────────────────────────────────────────── */
+
+        /* Navbar header — selalu sticky di atas */
+        .navbar-header {
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            will-change: transform;
+            contain: layout style;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
+        /* Sidebar — fixed di sisi kiri */
+        .sidebar {
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            will-change: transform;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
+        /* Konten utama — isolasi scroll context agar tidak terpengaruh layer fixed */
+        .dashboard-main-body {
+            isolation: isolate;
+        }
+
+        /* Smooth scroll di seluruh app */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Hindari sub-pixel rendering artifact pada tabel saat scroll */
+        table {
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+        }
+
+        /* Animasi card hover — gunakan opacity bukan transform untuk performa lebih baik */
+        .card-hover:hover {
+            opacity: 0.72 !important;
+            transition: opacity 0.18s ease;
+        }
     </style>
+
+    <!-- ── Service Worker: Cache halaman offline agar tampil saat server mati ── -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker
+                    .register('/mkdcnew/service-worker.js', { scope: '/mkdcnew/' })
+                    .catch(function(err) {
+                        console.warn('[MKDC SW] Registrasi gagal:', err);
+                    });
+            });
+        }
+    </script>
 </head>
 
 <body>
+    <!-- ── Offline Banner (muncul otomatis jika internet terputus saat di halaman ini) ── -->
+    <div id="mkdc-offline-banner" role="alert" aria-live="assertive" style="display:none;">
+        <div class="offline-banner-left">
+            <span class="offline-dot"></span>
+            <span>&#128683; Tidak ada koneksi internet &mdash; beberapa fitur mungkin tidak berfungsi.</span>
+        </div>
+        <a class="offline-retry-link" onclick="window.location.reload()">Muat Ulang</a>
+    </div>
+    <script>
+        // ── MKDC Offline Detector ──────────────────────────────────────────────
+        (function() {
+            var banner = document.getElementById('mkdc-offline-banner');
+            if (!banner) return;
+
+            function showBanner() {
+                banner.style.display = 'flex';
+                setTimeout(function() { banner.classList.add('show'); }, 10);
+            }
+
+            function hideBanner() {
+                banner.classList.remove('show');
+                setTimeout(function() { banner.style.display = 'none'; }, 450);
+            }
+
+            if (!navigator.onLine) { showBanner(); }
+
+            window.addEventListener('offline', showBanner);
+            window.addEventListener('online', function() {
+                // Verifikasi koneksi nyata sebelum sembunyikan banner
+                fetch('/mkdcnew/favicon.ico?_=' + Date.now(), {
+                    method: 'HEAD', cache: 'no-store', mode: 'no-cors'
+                }).then(hideBanner).catch(showBanner);
+            });
+        })();
+    </script>
+
+    <!-- Mobile Page Loading Spinner / Preloader -->
+    <div id="mobile-page-loader" class="mobile-page-loader">
+        <div class="mobile-loader-container">
+            <div class="mobile-loader-spinner-wrapper">
+                <div class="mobile-loader-ring"></div>
+                <img src="<?php echo $url->assets ?>images/logo-icon.png" alt="Logo" class="mobile-loader-logo">
+            </div>
+            <div class="mobile-loader-text">
+                <span class="mobile-loader-label">Memuat</span>
+                <span class="mobile-loader-dots"><span>.</span><span>.</span><span>.</span></span>
+            </div>
+        </div>
+    </div>
     <main class="dashboard-main">
         <div class="navbar-header shadow">
             <div class="row align-items-center justify-content-between">
@@ -80,15 +278,15 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                         </button>
                         <ul class="d-flex align-items-center gap-2 mobile-hide">
                             <li class="fw-medium">
-                                <a href="<?php echo url($page->titleUrl) ?>" class="d-flex align-items-center gap-1 hover-text-primary">
-                                    <iconify-icon icon="<?php echo $page->icon; ?>" class="icon text-lg"></iconify-icon>
-                                    <?php echo $page->title; ?>
+                                <a href="<?php echo url(!empty($page->titleUrl) ? $page->titleUrl : 'dashboard') ?>" class="d-flex align-items-center gap-1 hover-text-primary">
+                                    <iconify-icon icon="<?php echo !empty($page->icon) ? $page->icon : 'solar:home-angle-bold'; ?>" class="icon text-lg"></iconify-icon>
+                                    <?php echo !empty($page->title) ? $page->title : 'Dashboard'; ?>
                                 </a>
                             </li>
                             <?php if (isset($page->subtitle)) { ?>
                                 <li>/</li>
                                 <li class="fw-medium">
-                                    <a href="<?php echo url($page->subtitleUrl) ?>" class="d-flex align-items-center gap-1 hover-text-primary"> <?php echo $page->subtitle; ?></a>
+                                    <a href="<?php echo url(!empty($page->subtitleUrl) ? $page->subtitleUrl : 'dashboard') ?>" class="d-flex align-items-center gap-1 hover-text-primary"> <?php echo $page->subtitle; ?></a>
                                 </li>
                             <?php } ?>
                             <?php if (isset($page->subsubtitle)) { ?>
@@ -108,17 +306,16 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                         $current_user = $CI->db->get_where('users', ['id' => $user_id])->row();
                         $is_google_connected = ($current_user && !empty($current_user->google_id));
                         ?>
-                        <div class="d-flex align-items-center gap-2 me-12">
+                        <div class="d-none d-sm-block d-flex align-items-center gap-2 me-12">
                             <?php if ($is_google_connected): ?>
                                 <span class="badge bg-success-focus text-success-main radius-8 px-12 py-8 d-inline-flex align-items-center gap-1">
                                     <iconify-icon icon="logos:google-icon" class="align-middle"></iconify-icon>
-                                    <span class="text-xs fw-semibold">Terhubung ke Google</span>
+                                    <span class="text-xs fw-semibold"><?php echo html_escape($current_user->name); ?></span>
                                 </span>
                             <?php else: ?>
-                                <a href="<?php echo url('profile/index/google') ?>" class="badge bg-neutral-200 text-neutral-600 radius-8 px-12 py-8 d-inline-flex align-items-center gap-1 hover-bg-neutral-300">
-                                    <iconify-icon icon="lucide:link" class="align-middle text-xs"></iconify-icon>
-                                    <span class="text-xs fw-semibold">Hubungkan ke Google</span>
-                                </a>
+                                <span class="badge bg-neutral-200 text-neutral-600 radius-8 px-12 py-8 d-inline-flex align-items-center gap-1">
+                                    <span class="text-xs fw-semibold"><?php echo html_escape($current_user->name); ?></span>
+                                </span>
                             <?php endif; ?>
                         </div>
                         <button type="button" data-theme-toggle

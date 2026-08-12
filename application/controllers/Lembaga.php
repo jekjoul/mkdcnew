@@ -3,10 +3,26 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Lembaga extends MY_Controller
 {
+	public $jenis_lembaga_options = [
+		'Sekolah Formal',
+		'Sekolah Kesetaraan',
+		'Pondok Pesantren',
+		'Madrasah Diniyah',
+		'Yayasan',
+		'Majelis Ta\'lim'
+	];
 
 	public function __construct()
 	{
 		parent::__construct();
+		$this->ensureJenisLembagaColumn();
+	}
+
+	private function ensureJenisLembagaColumn()
+	{
+		if ($this->db->table_exists('lembaga') && !$this->db->field_exists('jenis_lembaga', 'lembaga')) {
+			$this->db->query("ALTER TABLE `lembaga` ADD `jenis_lembaga` VARCHAR(100) NULL AFTER `nama_lembaga_singkat`");
+		}
 	}
 
 	public function index()
@@ -35,6 +51,7 @@ class Lembaga extends MY_Controller
 		}
 
 		$this->page_data['lembaga'] = $lembaga;
+		$this->page_data['jenis_lembaga_options'] = $this->jenis_lembaga_options;
 		$this->load->view('lembaga/v_lembaga_list', $this->page_data);
 	}
 
@@ -56,6 +73,7 @@ class Lembaga extends MY_Controller
 
 		$this->page_data['ptk'] = $this->db->order_by('nama_ptk', 'ASC')->get('ptk')->result();
 		$this->page_data['lembaga'] = $lembaga;
+		$this->page_data['jenis_lembaga_options'] = $this->jenis_lembaga_options;
 		$this->load->view('lembaga/v_lembaga_detail', $this->page_data);
 	}
 
@@ -67,6 +85,7 @@ class Lembaga extends MY_Controller
 		$data = [
 			'nama_lembaga' => $this->input->post('nama_lembaga'),
 			'nama_lembaga_singkat' => $this->input->post('nama_lembaga_singkat'),
+			'jenis_lembaga' => $this->input->post('jenis_lembaga'),
 			'npsn' => $this->input->post('npsn'),
 			'bentuk_pendidikan' => $this->input->post('bentuk_pendidikan'),
 			'status' => $this->input->post('status'),

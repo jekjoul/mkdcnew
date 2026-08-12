@@ -167,6 +167,7 @@ class Siswa extends MY_Controller
         $this->page_data['judul_tabel'] = 'Data Siswa ' . $rombel_label;
         $this->page_data['tambah_url'] = 'pembelajaran/daftar_siswa/' . $id_pembelajaran;
         $this->page_data['tambah_label'] = 'Atur Siswa';
+        $this->page_data['id_pembelajaran'] = $id_pembelajaran;
 
         $this->load->view('siswa/v_siswa_list', $this->page_data);
     }
@@ -206,6 +207,14 @@ class Siswa extends MY_Controller
 
         $this->db->order_by('tanggal', 'DESC');
         $this->page_data['prestasi'] = $this->db->get_where('siswa_prestasi', ['id_siswa' => $id])->result();
+
+        // Riwayat pelanggaran kedisiplinan
+        $this->db->select('kp.*, kk.nama_pelanggaran, kk.bobot_poin');
+        $this->db->from('kedisiplinan_pelanggaran_siswa kp');
+        $this->db->join('kedisiplinan_pelanggaran_kategori kk', 'kk.id_kategori = kp.id_kategori', 'left');
+        $this->db->where('kp.id_siswa', $id);
+        $this->db->order_by('kp.tanggal_pelanggaran', 'DESC');
+        $this->page_data['pelanggaran_siswa'] = $this->db->get()->result();
         
         $this->db->select('r.nama_rombel, t.nama_tingkat');
         $this->db->from('pembelajaran p');
@@ -221,7 +230,7 @@ class Siswa extends MY_Controller
         $this->page_data['pekerjaan_options'] = $this->pekerjaan_options;
         $this->page_data['jenis_tempat_tinggal_options'] = $this->jenis_tempat_tinggal_options;
         $this->page_data['alat_transportasi_options'] = $this->alat_transportasi_options;
-        $this->page_data['lembaga'] = $this->db->order_by('nama_lembaga', 'ASC')->get('lembaga')->result();
+        $this->page_data['lembaga'] = $this->db->where("TRIM(UPPER(nama_lembaga_singkat)) !=", "YAYASAN")->order_by('nama_lembaga', 'ASC')->get('lembaga')->result();
         $this->load->view('siswa/v_siswa_detail', $this->page_data);
     }
 
@@ -250,7 +259,7 @@ class Siswa extends MY_Controller
         $this->page_data['pekerjaan_options'] = $this->pekerjaan_options;
         $this->page_data['jenis_tempat_tinggal_options'] = $this->jenis_tempat_tinggal_options;
         $this->page_data['alat_transportasi_options'] = $this->alat_transportasi_options;
-        $this->page_data['lembaga'] = $this->db->order_by('nama_lembaga', 'ASC')->get('lembaga')->result();
+        $this->page_data['lembaga'] = $this->db->where("TRIM(UPPER(nama_lembaga_singkat)) !=", "YAYASAN")->order_by('nama_lembaga', 'ASC')->get('lembaga')->result();
         $this->load->view('siswa/v_siswa_form', $this->page_data);
     }
 
@@ -263,6 +272,18 @@ class Siswa extends MY_Controller
         if ($this->db->insert($this->table, $data)) {
             $id = $this->db->insert_id();
             $this->uploadFotoSiswa($id);
+            
+            // Tambahkan tugas sinkronisasi ke mesin fingerprint (Gunakan pin_fingerprint atau NIPD)
+            $effective_pin = !empty($data['pin_fingerprint']) ? intval($data['pin_fingerprint']) : intval($data['nipd']);
+            if ($effective_pin > 0) {
+                $this->db->insert('fingerprint_tasks', [
+                    'action' => 'SET_USER',
+                    'pin'    => $effective_pin,
+                    'nama'   => mb_substr($data['nama_siswa'], 0, 15),
+                    'status' => 'pending'
+                ]);
+            }
+
             $this->activity_model->add(logged('name') . ' Menambah data siswa: ' . $data['nama_siswa'], logged('id'));
             $this->session->set_flashdata('alert-type', 'success');
             if ($this->isAlumniStatus($data['status_keaktifan'])) {
@@ -291,6 +312,38 @@ class Siswa extends MY_Controller
         $data = $this->siswaData();
         $this->db->where('id_siswa', $id);
         if ($this->db->update($this->table, $data)) {
+            $old_pin = !empty($siswa->pin_fingerprint) ? intval($siswa->pin_fingerprint) : intval($siswa->nipd);
+            $new_pin = !empty($data['pin_fingerprint']) ? intval($data['pin_fingerprint']) : intval($data['nipd']);
+
+            // Logika sinkronisasi fingerprint dua arah
+            if ($old_pin != $new_pin) {
+                // Jika PIN lama ada, hapus dari mesin sidik jari
+                if ($old_pin > 0) {
+                    $this->db->insert('fingerprint_tasks', [
+                        'action' => 'DEL_USER',
+                        'pin'    => $old_pin,
+                        'status' => 'pending'
+                    ]);
+                }
+                // Jika ada PIN baru, daftarkan ke mesin sidik jari
+                if ($new_pin > 0) {
+                    $this->db->insert('fingerprint_tasks', [
+                        'action' => 'SET_USER',
+                        'pin'    => $new_pin,
+                        'nama'   => mb_substr($data['nama_siswa'], 0, 15),
+                        'status' => 'pending'
+                    ]);
+                }
+            } else if ($new_pin > 0 && $siswa->nama_siswa != $data['nama_siswa']) {
+                // Jika PIN sama tetapi nama berubah, update nama di mesin sidik jari
+                $this->db->insert('fingerprint_tasks', [
+                    'action' => 'SET_USER',
+                    'pin'    => $new_pin,
+                    'nama'   => mb_substr($data['nama_siswa'], 0, 15),
+                    'status' => 'pending'
+                ]);
+            }
+
             $this->uploadFotoSiswa($id);
             $this->activity_model->add(logged('name') . ' Mengubah data siswa: ' . $data['nama_siswa'], logged('id'));
             $this->session->set_flashdata('alert-type', 'success');
@@ -348,6 +401,15 @@ class Siswa extends MY_Controller
             show_404();
         }
 
+        // Hapus dari mesin sidik jari jika ada PIN terdaftar
+        if (!empty($siswa->pin_fingerprint)) {
+            $this->db->insert('fingerprint_tasks', [
+                'action' => 'DEL_USER',
+                'pin' => intval($siswa->pin_fingerprint),
+                'status' => 'pending'
+            ]);
+        }
+
         foreach ($this->db->get_where('siswa_foto', ['id_siswa' => $id])->result() as $foto) {
             $this->hapusFile('uploads/siswa_foto/' . $foto->foto);
         }
@@ -357,6 +419,9 @@ class Siswa extends MY_Controller
         $this->db->delete('siswa_foto', ['id_siswa' => $id]);
         $this->db->delete('siswa_dokumen', ['id_siswa' => $id]);
         $this->db->delete($this->table, ['id_siswa' => $id]);
+
+        $this->activity_model->add(logged('name') . ' Menghapus data siswa: ' . $siswa->nama_siswa . ' (NIPD: ' . $siswa->nipd . ')', logged('id'));
+
         $this->session->set_flashdata('alert-type', 'success');
         $this->session->set_flashdata('alert', 'Data Siswa Berhasil Dihapus');
         redirect('siswa/all');
@@ -501,6 +566,7 @@ class Siswa extends MY_Controller
 
         return [
             'nama_siswa' => post('nama_siswa'),
+            'pin_fingerprint' => post('pin_fingerprint') ? intval(post('pin_fingerprint')) : null,
             'nisn' => post('nisn'),
             'nipd' => post('nipd'),
             'nik' => post('nik'),
@@ -651,7 +717,7 @@ class Siswa extends MY_Controller
         $this->upload->initialize([
             'upload_path' => $path,
             'allowed_types' => 'pdf|jpg|jpeg|png',
-            'max_size' => 5120,
+            'max_size' => 25120,
             'file_name' => 'siswa-' . $id_siswa . '-' . time(),
             'overwrite' => false,
         ]);
@@ -688,6 +754,97 @@ class Siswa extends MY_Controller
         $rombel = trim((string) $pembelajaran->nama_rombel);
 
         return $tingkat !== '' ? $tingkat . ' - ' . $rombel : $rombel;
+    }
+
+    public function cetak_rombel($id_pembelajaran = null)
+    {
+        ifPermissions('siswa_list');
+        if (!$id_pembelajaran) {
+            redirect('siswa/all');
+        }
+
+        // Load detail pembelajaran
+        $this->db->select('p.*, l.nama_lembaga, l.npsn, l.alamat, l.logo, l.bentuk_pendidikan, l.telepon, l.email, l.website, l.no_sk_akreditasi, l.akreditasi, t.nama_tingkat, r.nama_rombel, tp.tahun_pelajaran, tp.semester, w.nama_ptk as nama_walikelas');
+        $this->db->from('pembelajaran p');
+        $this->db->join('lembaga l', 'p.id_lembaga = l.id_lembaga');
+        $this->db->join('master_tingkat_sekolah t', 'p.id_tingkat_sekolah = t.id_tingkat_sekolah');
+        $this->db->join('rombel r', 'p.id_rombel = r.id_rombel');
+        $this->db->join('pembelajaran_tahun_pelajaran tp', 'p.id_tahun_pelajaran = tp.id_tahun_pelajaran');
+        $this->db->join('ptk w', 'p.id_ptk_wali = w.id_ptk', 'left');
+        $this->db->where('p.id_pembelajaran', $id_pembelajaran);
+        $pembelajaran = $this->db->get()->row();
+
+        if (!$pembelajaran) {
+            show_404();
+        }
+
+        // Get active students in this class
+        $this->db->select('s.*');
+        $this->db->from('pembelajaran_siswa ps');
+        $this->db->join('siswa s', 's.id_siswa = ps.peserta_didik_id');
+        $this->db->where('ps.id_pembelajaran', $id_pembelajaran);
+        $this->db->where('s.status_keaktifan', 'Aktif');
+        $this->db->order_by('s.nama_siswa', 'ASC');
+        $students = $this->db->get()->result();
+
+        // Load Kepala Sekolah details
+        $kepsek = null;
+        if ($pembelajaran->id_lembaga) {
+            $lembaga = $this->db->get_where('lembaga', ['id_lembaga' => $pembelajaran->id_lembaga])->row();
+            if ($lembaga && $lembaga->id_ptk_kepsek) {
+                $ptk = $this->db->get_where('ptk', ['id_ptk' => $lembaga->id_ptk_kepsek])->row();
+                if ($ptk) {
+                    $kepsek = $ptk->nama_ptk;
+                }
+            }
+        }
+
+        // Load Kop Surat aktif
+        $kop = $this->db->get_where('surat_kop', ['status' => 'Aktif'])->row();
+        if (!$kop) {
+            $kop = $this->db->get('surat_kop')->row();
+        }
+
+        $pakai_kop = $this->input->get('pakai_kop') !== '0';
+        $pakai_ttd = $this->input->get('pakai_ttd') !== '0';
+        $format = $this->input->get('format') ?: 'html';
+
+        $this->page_data['pembelajaran'] = $pembelajaran;
+        $this->page_data['students'] = $students;
+        $this->page_data['kepsek'] = $kepsek ?: '...........................';
+        $this->page_data['kop'] = $kop;
+        $this->page_data['pakai_kop'] = $pakai_kop;
+        $this->page_data['pakai_ttd'] = $pakai_ttd;
+
+        if ($format === 'pdf') {
+            $this->page_data['is_pdf'] = true;
+            $html = $this->load->view('siswa/v_siswa_print', $this->page_data, true);
+            
+            $options = new \Dompdf\Options();
+            $options->set('isHtml5ParserEnabled', true);
+            $options->set('isRemoteEnabled', true);
+            
+            $dompdf = new \Dompdf\Dompdf($options);
+            $dompdf->loadHtml($html);
+            $dompdf->setPaper('A4', 'portrait');
+            $dompdf->render();
+            
+            $filename = 'Daftar_Siswa_' . str_replace(' ', '_', $pembelajaran->nama_tingkat . '_' . $pembelajaran->nama_rombel) . '.pdf';
+            $dompdf->stream($filename, array("Attachment" => 0));
+            return;
+        } elseif ($format === 'excel') {
+            $filename = 'Daftar_Siswa_' . str_replace(' ', '_', $pembelajaran->nama_tingkat . '_' . $pembelajaran->nama_rombel) . '.xls';
+            header("Content-Type: application/vnd.ms-excel; charset=utf-8");
+            header("Content-Disposition: attachment; filename=\"$filename\"");
+            header("Cache-Control: max-age=0");
+            
+            $this->page_data['is_excel'] = true;
+            $this->load->view('siswa/v_siswa_excel', $this->page_data);
+            return;
+        } else {
+            $this->page_data['is_pdf'] = false;
+            $this->load->view('siswa/v_siswa_print', $this->page_data);
+        }
     }
 
     public function rekamMedisSimpan($id_siswa)
@@ -837,5 +994,162 @@ class Siswa extends MY_Controller
                 ]);
             }
         }
+    }
+
+    // -------------------------------------------------------------------------
+    // Verifikasi Kelengkapan Dokumen Siswa per Rombel
+    // -------------------------------------------------------------------------
+    public function verifikasiDokumen()
+    {
+        ifPermissions('siswa_list');
+
+        $this->page_data['page']->title      = 'Siswa';
+        $this->page_data['page']->titleUrl   = 'siswa/all';
+        $this->page_data['page']->subtitle   = 'Verifikasi Kelengkapan Dokumen';
+        $this->page_data['page']->subtitleUrl = 'siswa/verifikasiDokumen';
+        $this->page_data['page']->icon       = 'solar:checklist-minimalistic-bold';
+
+        // Ambil semua jenis dokumen aktif
+        $this->db->order_by('nama_jenis_dokumen', 'ASC');
+        $jenis_dokumen = $this->db->get_where('master_jenis_dokumen_siswa', ['status' => 'Aktif'])->result();
+
+        // Ambil ID siswa yang menginduk (semua kelas jauh)
+        $menginduk_ids = [];
+        if ($this->db->table_exists('kelas_jauh_siswa')) {
+            $q_kj = $this->db->select('id_siswa')->get('kelas_jauh_siswa');
+            if ($q_kj->num_rows() > 0) {
+                $menginduk_ids = array_column($q_kj->result_array(), 'id_siswa');
+            }
+        }
+
+        // Ambil daftar pembelajaran aktif (rombel reguler)
+        $this->db->select('p.id_pembelajaran, l.nama_lembaga, l.nama_lembaga_singkat, t.nama_tingkat, r.nama_rombel, tp.tahun_pelajaran, tp.semester');
+        $this->db->from('pembelajaran p');
+        $this->db->join('lembaga l', 'p.id_lembaga = l.id_lembaga');
+        $this->db->join('master_tingkat_sekolah t', 'p.id_tingkat_sekolah = t.id_tingkat_sekolah');
+        $this->db->join('rombel r', 'p.id_rombel = r.id_rombel');
+        $this->db->join('pembelajaran_tahun_pelajaran tp', 'p.id_tahun_pelajaran = tp.id_tahun_pelajaran');
+        $this->db->where('tp.status', 'Aktif');
+        $this->db->where('p.status', 'Aktif');
+        $this->db->order_by('l.nama_lembaga', 'ASC');
+        $this->db->order_by('CAST(t.tingkat_angka AS UNSIGNED)', 'ASC');
+        $this->db->order_by('r.nama_rombel', 'ASC');
+        $daftar_rombel = $this->db->get()->result();
+
+        // Ambil daftar kelas jauh aktif (rombel menginduk)
+        $daftar_kelas_jauh = [];
+        if ($this->db->table_exists('kelas_jauh')) {
+            $this->db->select('kj.id_kelas_jauh, kj.nama_kelas_jauh, tp.tahun_pelajaran, tp.semester');
+            $this->db->from('kelas_jauh kj');
+            $this->db->join('pembelajaran_tahun_pelajaran tp', 'tp.id_tahun_pelajaran = kj.id_tahun_pelajaran', 'left');
+            $this->db->where('(tp.status = \'Aktif\' OR kj.id_tahun_pelajaran IS NULL)');
+            $this->db->order_by('kj.nama_kelas_jauh', 'ASC');
+            $daftar_kelas_jauh = $this->db->get()->result();
+        }
+
+        // Filter yang dipilih
+        $selected_value       = $this->input->get('id_rombel');   // bisa "p_123" atau "kj_456"
+        $selected_dokumen_ids = $this->input->get('jenis_dokumen') ?: [];
+        if (!is_array($selected_dokumen_ids)) {
+            $selected_dokumen_ids = [$selected_dokumen_ids];
+        }
+        $selected_dokumen_ids = array_filter(array_map('intval', $selected_dokumen_ids));
+
+        $siswa_list      = [];
+        $filtered_jenis  = [];
+        $selected_label  = '';
+        $is_kelas_jauh   = false;
+
+        if ($selected_value && !empty($selected_dokumen_ids)) {
+            // Ambil jenis dokumen yang dipilih
+            $this->db->where_in('id_jenis_dokumen', $selected_dokumen_ids);
+            $this->db->order_by('nama_jenis_dokumen', 'ASC');
+            $filtered_jenis = $this->db->get('master_jenis_dokumen_siswa')->result();
+
+            // Tentukan tipe rombel: pembelajaran reguler (prefix p_) atau kelas jauh (prefix kj_)
+            if (strpos($selected_value, 'kj_') === 0) {
+                $is_kelas_jauh  = true;
+                $id_kelas_jauh  = (int) substr($selected_value, 3);
+
+                // Cari label kelas jauh
+                foreach ($daftar_kelas_jauh as $kj) {
+                    if ($kj->id_kelas_jauh == $id_kelas_jauh) {
+                        $selected_label = 'Kelas Jauh — ' . $kj->nama_kelas_jauh .
+                            ($kj->tahun_pelajaran ? ' (' . $kj->tahun_pelajaran . ' Sem.' . $kj->semester . ')' : '');
+                        break;
+                    }
+                }
+
+                // Ambil siswa anggota kelas jauh ini
+                $this->db->select('s.id_siswa, s.nama_siswa, s.nisn, s.nipd');
+                $this->db->from('kelas_jauh_siswa kjs');
+                $this->db->join('siswa s', 's.id_siswa = kjs.id_siswa');
+                $this->db->where('kjs.id_kelas_jauh', $id_kelas_jauh);
+                $this->db->where('s.status_keaktifan', 'Aktif');
+                $this->db->order_by('s.nama_siswa', 'ASC');
+                $raw_siswa = $this->db->get()->result();
+
+            } else {
+                // Rombel reguler
+                $id_pembelajaran = (int) substr($selected_value, 2); // strip "p_"
+
+                // Cari label rombel reguler
+                foreach ($daftar_rombel as $r) {
+                    if ($r->id_pembelajaran == $id_pembelajaran) {
+                        $selected_label = $r->nama_lembaga_singkat . ' — ' . $r->nama_tingkat . ' ' . $r->nama_rombel .
+                            ' (' . $r->tahun_pelajaran . ' Sem.' . $r->semester . ')';
+                        break;
+                    }
+                }
+
+                // Ambil siswa reguler, KECUALIKAN yang menginduk
+                $this->db->select('s.id_siswa, s.nama_siswa, s.nisn, s.nipd');
+                $this->db->from('pembelajaran_siswa ps');
+                $this->db->join('siswa s', 's.id_siswa = ps.peserta_didik_id');
+                $this->db->where('ps.id_pembelajaran', $id_pembelajaran);
+                $this->db->where('s.status_keaktifan', 'Aktif');
+                if (!empty($menginduk_ids)) {
+                    $this->db->where_not_in('s.id_siswa', $menginduk_ids);
+                }
+                $this->db->order_by('s.nama_siswa', 'ASC');
+                $raw_siswa = $this->db->get()->result();
+            }
+
+            // Ambil dokumen siswa
+            if (!empty($raw_siswa)) {
+                $all_ids = array_column($raw_siswa, 'id_siswa');
+
+                $this->db->select('sd.id_siswa, sd.id_jenis_dokumen');
+                $this->db->from('siswa_dokumen sd');
+                $this->db->where_in('sd.id_siswa', $all_ids);
+                $this->db->where_in('sd.id_jenis_dokumen', $selected_dokumen_ids);
+                $raw_docs = $this->db->get()->result();
+
+                $doc_index = [];
+                foreach ($raw_docs as $doc) {
+                    $doc_index[$doc->id_siswa][$doc->id_jenis_dokumen] = true;
+                }
+
+                foreach ($raw_siswa as $s) {
+                    $s->dokumen_status = [];
+                    foreach ($filtered_jenis as $jd) {
+                        $s->dokumen_status[$jd->id_jenis_dokumen] = !empty($doc_index[$s->id_siswa][$jd->id_jenis_dokumen]);
+                    }
+                    $siswa_list[] = $s;
+                }
+            }
+        }
+
+        $this->page_data['jenis_dokumen']       = $jenis_dokumen;
+        $this->page_data['daftar_rombel']       = $daftar_rombel;
+        $this->page_data['daftar_kelas_jauh']   = $daftar_kelas_jauh;
+        $this->page_data['selected_value']      = $selected_value;
+        $this->page_data['selected_dokumen_ids'] = $selected_dokumen_ids;
+        $this->page_data['filtered_jenis']      = $filtered_jenis;
+        $this->page_data['siswa_list']           = $siswa_list;
+        $this->page_data['selected_label']       = $selected_label;
+        $this->page_data['is_kelas_jauh']        = $is_kelas_jauh;
+
+        $this->load->view('siswa/v_siswa_verifikasi_dokumen', $this->page_data);
     }
 }

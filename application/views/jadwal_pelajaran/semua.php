@@ -413,24 +413,63 @@ foreach ($hari as $h) {
     }
 </style>
 <div class="dashboard-main-body">
-    <div class="card mb-4">
-        <div class="card-header bg-warning-900 d-flex flex-wrap justify-content-between align-items-center gap-2">
-            <h6 class="mb-0 text-light">Susun Jadwal Mingguan Semua Kelas</h6>
-            <div class="d-flex gap-2">
-                <a href="<?php echo url('jadwal_pelajaran/print_semua') ?>" target="_blank" class="btn btn-info btn-sm d-inline-flex align-items-center gap-2 text-light border-0" style="background-color: rgba(255,255,255,0.15);">
+    <!-- Alert Flash Data -->
+    <?php if ($this->session->flashdata('alert')): ?>
+        <div class="alert alert-<?php echo $this->session->flashdata('alert-type') ?: 'info' ?> alert-dismissible fade show radius-8 mb-24" role="alert">
+            <?php echo $this->session->flashdata('alert') ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <?php endif; ?>
+
+    <!-- Card Header Info Versi Jadwal -->
+    <div class="card mb-24 radius-12 border-0 shadow-xs">
+        <div class="card-header bg-warning-900 py-16 px-20 d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <a href="<?php echo url('jadwal_pelajaran') ?>" class="btn btn-sm btn-outline-light radius-8 d-inline-flex align-items-center gap-1 text-xs">
+                    <iconify-icon icon="solar:arrow-left-linear"></iconify-icon> Kembali ke Daftar Versi
+                </a>
+                <h6 class="mb-0 text-light fw-bold">
+                    Papan Drag & Drop: <?php echo html_escape($header->nama_jadwal) ?>
+                </h6>
+                <?php if ($header->status === 'Aktif'): ?>
+                    <span class="badge bg-success-500 text-white px-10 py-4 radius-4 text-xs fw-bold">AKTIF</span>
+                <?php elseif ($header->status === 'Draft'): ?>
+                    <span class="badge bg-warning-500 text-white px-10 py-4 radius-4 text-xs fw-bold">DRAFT</span>
+                <?php else: ?>
+                    <span class="badge bg-neutral-400 text-white px-10 py-4 radius-4 text-xs fw-bold">NONAKTIF</span>
+                <?php endif; ?>
+            </div>
+
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <a href="<?php echo url('jadwal_pelajaran/print_semua/' . $header->id_jadwal_header) ?>" target="_blank" class="btn btn-info btn-sm d-inline-flex align-items-center gap-2 text-light border-0" style="background-color: rgba(255,255,255,0.15);">
                     <iconify-icon icon="lucide:printer"></iconify-icon> Cetak Jadwal
                 </a>
                 <button type="button" id="generateScheduleBtn" class="btn btn-warning-600 btn-sm d-inline-flex align-items-center gap-2">
-                    <iconify-icon icon="solar:magic-stick-3-linear"></iconify-icon> Generate Jadwal Otomatis
+                    <iconify-icon icon="solar:magic-stick-3-linear"></iconify-icon> Generate Otomatis
                 </button>
                 <a href="<?php echo url('jadwal_pelajaran/waktu') ?>" class="btn btn-secondary btn-sm d-inline-flex align-items-center gap-2 text-light border-0" style="background-color: rgba(255,255,255,0.15);">
                     <iconify-icon icon="lucide:settings"></iconify-icon> Atur Waktu
                 </a>
             </div>
         </div>
+        <div class="card-body p-16 bg-warning-50 d-flex flex-wrap align-items-center justify-content-between gap-2 border-top">
+            <div class="d-flex align-items-center gap-4 text-xs text-warning-900">
+                <div>
+                    <strong class="fw-bold">Mulai Efektif:</strong> <?php echo !empty($header->tanggal_mulai_efektif) ? date('d M Y', strtotime($header->tanggal_mulai_efektif)) : '-' ?>
+                </div>
+                <div>
+                    <strong class="fw-bold">Akhir Efektif:</strong> <?php echo !empty($header->tanggal_akhir_efektif) ? date('d M Y', strtotime($header->tanggal_akhir_efektif)) : ($header->status === 'Aktif' ? 'Seterusnya (Aktif)' : '-') ?>
+                </div>
+                <?php if (!empty($header->keterangan)): ?>
+                    <div>
+                        <strong class="fw-bold">Catatan:</strong> <?php echo html_escape($header->keterangan) ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
     </div>
 
-    <form id="scheduleForm" action="<?php echo url('jadwal_pelajaran/simpan_semua') ?>" method="post">
+    <form id="scheduleForm" action="<?php echo url('jadwal_pelajaran/simpan_semua/' . $header->id_jadwal_header) ?>" method="post">
         <div class="all-schedule-layout">
             <div class="card subject-bank">
                 <div class="card-header bg-neutral-100">
@@ -566,13 +605,18 @@ foreach ($hari as $h) {
                     </table>
                 </div>
 
-                <div class="d-flex justify-content-end gap-2 mt-4 mb-4">
-                    <span id="saveStatus" class="align-self-center text-success-600 me-auto" style="font-size: 13px; font-weight: 550;">
-                        <iconify-icon icon="solar:check-circle-linear" class="align-middle fs-5"></iconify-icon> Semua perubahan disimpan
+                <div class="d-flex flex-wrap align-items-center justify-content-end gap-2 mt-4 mb-4">
+                    <span id="saveStatus" class="align-self-center text-success-600 me-auto text-xs fw-bold">
+                        <iconify-icon icon="solar:check-circle-linear" class="align-middle fs-5 me-1"></iconify-icon> Perubahan susunan jadwal tersimpan
                     </span>
-                    <a href="<?php echo url('jadwal_pelajaran') ?>" class="btn btn-secondary">Kembali</a>
-                    <button type="button" class="btn btn-outline-danger" id="clearSchedule">
-                        <iconify-icon icon="lucide:trash-2"></iconify-icon> Kosongkan
+                    <a href="<?php echo url('jadwal_pelajaran') ?>" class="btn btn-secondary radius-8 text-sm">
+                        <iconify-icon icon="solar:arrow-left-linear" class="me-1"></iconify-icon> Kembali
+                    </a>
+                    <button type="button" class="btn btn-outline-danger radius-8 text-sm" id="clearSchedule">
+                        <iconify-icon icon="lucide:trash-2" class="me-1"></iconify-icon> Kosongkan
+                    </button>
+                    <button type="submit" class="btn btn-warning-600 text-white radius-8 text-sm fw-bold">
+                        <iconify-icon icon="solar:disk-bold" class="me-1"></iconify-icon> Simpan Perubahan Jadwal Ini
                     </button>
                 </div>
 
@@ -914,3 +958,5 @@ foreach ($hari as $h) {
         refreshConflicts();
     })();
 </script>
+
+<?php include viewPath('includes/footer'); ?>

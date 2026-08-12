@@ -38,7 +38,9 @@
                                 <td><span class="text-xs"><?php echo html_escape($row->sub_nama) ?></span></td>
                                 <td>
                                     <?php if ($row->layout_style === 'left_logo'): ?>
-                                        <span class="badge bg-primary-100 text-primary-800">Logo Kiri</span>
+                                        <span class="badge bg-primary-100 text-primary-800">Logo Kiri, Teks Kanan</span>
+                                    <?php elseif ($row->layout_style === 'left_logo_center_text'): ?>
+                                        <span class="badge bg-success-100 text-success-800">Logo Kiri, Teks Tengah</span>
                                     <?php elseif ($row->layout_style === 'double_logo'): ?>
                                         <span class="badge bg-info-100 text-info-800">Logo Kiri & Kanan</span>
                                     <?php else: ?>

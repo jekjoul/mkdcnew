@@ -23,13 +23,22 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                     <form action="<?php echo url('ptk/ptkSimpan') ?>" method="post" id="formTambahPtk">
                         <div class="row">
 
-                            <div class="col-sm-6">
+                            <div class="col-sm-4">
                                 <div class="mb-20">
                                     <label for="nama_ptk"
                                         class="form-label fw-semibold text-primary-light text-sm mb-8">Nama Lengkap
                                         <span class="text-danger-600">*</span></label>
                                     <input type="text" class="form-control radius-8" id="nama_ptk" name="nama_ptk" required
                                         placeholder="Masukan nama lengkap tanpa gelar">
+                                </div>
+                            </div>
+
+                            <div class="col-sm-2">
+                                <div class="mb-20">
+                                    <label for="pin_fingerprint"
+                                        class="form-label fw-semibold text-primary-light text-sm mb-8">PIN Sidik Jari</label>
+                                    <input type="number" class="form-control radius-8" id="pin_fingerprint" name="pin_fingerprint"
+                                        placeholder="PIN">
                                 </div>
                             </div>
 

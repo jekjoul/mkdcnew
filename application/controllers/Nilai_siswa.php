@@ -236,8 +236,8 @@ class Nilai_siswa extends MY_Controller
         }
         $this->db->group_by('pm.id_pembelajaran_mapel');
         $this->db->order_by('tp.id_tahun_pelajaran', 'DESC');
+        $this->db->order_by('CAST(t.tingkat_angka AS UNSIGNED)', 'ASC');
         $this->db->order_by('l.nama_lembaga', 'ASC');
-        $this->db->order_by('t.tingkat_angka', 'ASC');
         $this->db->order_by('r.nama_rombel', 'ASC');
         $this->db->order_by('m.nama_mapel', 'ASC');
         return $this->db->get()->result();

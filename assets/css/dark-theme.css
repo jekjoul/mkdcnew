@@ -1,0 +1,685 @@
+/* ==========================================================================
+   MKDC Comprehensive Dark Theme Stylesheet
+   ========================================================================== */
+
+html[data-theme="dark"],
+html[data-theme="dark"] body {
+    background-color: #1b2431 !important;
+    color: #cbd5e1 !important;
+}
+
+/* --- Logo Toggle --- */
+html[data-theme="dark"] .light-logo {
+    display: none !important;
+}
+
+html[data-theme="dark"] .dark-logo {
+    display: inline-block !important;
+}
+
+/* --- Aside / Sidebar Category Titles with Gradient --- */
+html[data-theme="dark"] .sidebar-menu .sidebar-menu-group-title {
+    color: #000000 !important;
+    font-weight: 700 !important;
+}
+
+/* --- Layout Backgrounds & Borders --- */
+html[data-theme="dark"] .dashboard-main,
+html[data-theme="dark"] .dashboard-main-body {
+    background: #1b2431 !important;
+    background-color: #1b2431 !important;
+    background-image: none !important;
+}
+
+html[data-theme="dark"] .navbar-header {
+    background-color: #273142 !important;
+    border-color: #323d4e !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4) !important;
+}
+
+html[data-theme="dark"] .sidebar {
+    background-color: #273142 !important;
+    border-color: #323d4e !important;
+}
+
+html[data-theme="dark"] .sidebar-menu li a {
+    color: #9ca3af !important;
+}
+
+html[data-theme="dark"] .sidebar-menu li a:hover,
+html[data-theme="dark"] .sidebar-menu li.active-page > a,
+html[data-theme="dark"] .sidebar-menu li.open > a {
+    color: #ffffff !important;
+    background-color: #323d4e !important;
+}
+
+html[data-theme="dark"] .footer {
+    background-color: #273142 !important;
+    border-color: #323d4e !important;
+    color: #9ca3af !important;
+}
+
+/* --- Navigation Tabs (Semua Judul Tab di Seluruh Halaman) --- */
+html[data-theme="dark"] .nav-tabs,
+html[data-theme="dark"] .nav-pills,
+html[data-theme="dark"] .nav {
+    border-color: #323d4e !important;
+}
+
+/* Tab Tidak Aktif: Background Gelap, Teks/Ikon Terang */
+html[data-theme="dark"] .nav-link,
+html[data-theme="dark"] .nav-item .nav-link,
+html[data-theme="dark"] .nav-tabs .nav-link,
+html[data-theme="dark"] .nav-pills .nav-link,
+html[data-theme="dark"] .bordered-tab .nav-link,
+html[data-theme="dark"] .pill-tab .nav-link,
+html[data-theme="dark"] .border-gradient-tab .nav-link,
+html[data-theme="dark"] .focus-tab .nav-link,
+html[data-theme="dark"] .button-tab .nav-link,
+html[data-theme="dark"] .btn-outline-primary {
+    color: #cbd5e1 !important;
+    background-color: #273142 !important;
+    border-color: #323d4e !important;
+}
+
+html[data-theme="dark"] .nav-link *,
+html[data-theme="dark"] .nav-item .nav-link *,
+html[data-theme="dark"] .btn-outline-primary * {
+    color: #cbd5e1 !important;
+}
+
+/* Hover Tab: Teks Putih Terang */
+html[data-theme="dark"] .nav-link:hover,
+html[data-theme="dark"] .nav-item .nav-link:hover,
+html[data-theme="dark"] .btn-outline-primary:hover {
+    color: #ffffff !important;
+    background-color: #323d4e !important;
+    border-color: #487fff !important;
+}
+
+html[data-theme="dark"] .nav-link:hover *,
+html[data-theme="dark"] .nav-item .nav-link:hover *,
+html[data-theme="dark"] .btn-outline-primary:hover * {
+    color: #ffffff !important;
+}
+
+/* Tab Aktif: Background Biru / Primary, Teks Putih Murni */
+html[data-theme="dark"] .nav-link.active,
+html[data-theme="dark"] .nav-item .nav-link.active,
+html[data-theme="dark"] .nav-tabs .nav-link.active,
+html[data-theme="dark"] .nav-pills .nav-link.active,
+html[data-theme="dark"] .bordered-tab .nav-link.active,
+html[data-theme="dark"] .pill-tab .nav-link.active,
+html[data-theme="dark"] .border-gradient-tab .nav-link.active,
+html[data-theme="dark"] .focus-tab .nav-link.active,
+html[data-theme="dark"] .button-tab .nav-link.active,
+html[data-theme="dark"] .btn-outline-primary.active,
+html[data-theme="dark"] .btn-outline-primary:active {
+    color: #ffffff !important;
+    background-color: #487fff !important;
+    border-color: #487fff !important;
+}
+
+html[data-theme="dark"] .nav-link.active *,
+html[data-theme="dark"] .nav-item .nav-link.active *,
+html[data-theme="dark"] .btn-outline-primary.active * {
+    color: #ffffff !important;
+}
+
+/* Tab Gaya Garis Bawah (.style-three) */
+html[data-theme="dark"] .nav-tabs.style-three .nav-link,
+html[data-theme="dark"] .style-three .nav-link {
+    background: transparent !important;
+    color: #cbd5e1 !important;
+    border-bottom: 2px solid transparent !important;
+}
+
+html[data-theme="dark"] .nav-tabs.style-three .nav-link.active,
+html[data-theme="dark"] .style-three .nav-link.active {
+    background: transparent !important;
+    color: #6bb1ff !important;
+    border-bottom-color: #487fff !important;
+}
+
+html[data-theme="dark"] .nav-tabs.style-three .nav-link.active *,
+html[data-theme="dark"] .style-three .nav-link.active * {
+    color: #6bb1ff !important;
+}
+
+/* --- Cards, Panels & Containers --- */
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .card-header,
+html[data-theme="dark"] .card-footer,
+html[data-theme="dark"] .card-body,
+html[data-theme="dark"] .bg-white,
+html[data-theme="dark"] .bg-base,
+html[data-theme="dark"] .bg-neutral-50,
+html[data-theme="dark"] .bg-neutral-100,
+html[data-theme="dark"] .bg-neutral-200,
+html[data-theme="dark"] .bg-neutral-300,
+html[data-theme="dark"] .bg-light,
+html[data-theme="dark"] .bg-light-100,
+html[data-theme="dark"] .bg-light-200,
+html[data-theme="dark"] .bg-primary-50,
+html[data-theme="dark"] .bg-info-50,
+html[data-theme="dark"] .bg-warning-50,
+html[data-theme="dark"] .bg-success-50,
+html[data-theme="dark"] .bg-danger-50 {
+    background-color: #273142 !important;
+    color: #e2e8f0 !important;
+    border-color: #323d4e !important;
+}
+
+html[data-theme="dark"] .shadow-xs,
+html[data-theme="dark"] .shadow-sm,
+html[data-theme="dark"] .shadow,
+html[data-theme="dark"] .shadow-lg {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* --- Typography & Text Colors --- */
+html[data-theme="dark"] h1,
+html[data-theme="dark"] h2,
+html[data-theme="dark"] h3,
+html[data-theme="dark"] h4,
+html[data-theme="dark"] h5,
+html[data-theme="dark"] h6,
+html[data-theme="dark"] .text-dark,
+html[data-theme="dark"] .text-dark-100,
+html[data-theme="dark"] .text-primary-light,
+html[data-theme="dark"] .text-neutral-900,
+html[data-theme="dark"] .text-neutral-800,
+html[data-theme="dark"] .text-neutral-700,
+html[data-theme="dark"] .text-black,
+html[data-theme="dark"] strong,
+html[data-theme="dark"] b {
+    color: #f1f5f9 !important;
+}
+
+html[data-theme="dark"] .text-secondary,
+html[data-theme="dark"] .text-secondary-light,
+html[data-theme="dark"] .text-neutral-600,
+html[data-theme="dark"] .text-neutral-500,
+html[data-theme="dark"] .text-muted,
+html[data-theme="dark"] p {
+    color: #94a3b8 !important;
+}
+
+html[data-theme="dark"] a {
+    color: #6bb1ff;
+}
+
+html[data-theme="dark"] a:hover {
+    color: #95c7ff;
+}
+
+html[data-theme="dark"] .hover-text-primary:hover {
+    color: #6bb1ff !important;
+}
+
+/* --- Halaman Daftar Siswa Pembelajaran & Drag & Drop --- */
+html[data-theme="dark"] .siswa-dropzone {
+    background-color: #1e2736 !important;
+    border-color: #323d4e !important;
+}
+
+html[data-theme="dark"] .siswa-dropzone .list-group-item,
+html[data-theme="dark"] .list-group-item {
+    background-color: #273142 !important;
+    color: #e2e8f0 !important;
+    border-color: #323d4e !important;
+}
+
+html[data-theme="dark"] .drag-handle {
+    background-color: #323d4e !important;
+    color: #ffffff !important;
+}
+
+html[data-theme="dark"] .siswa-placeholder {
+    background-color: #1b2431 !important;
+    border: 1px dashed #487fff !important;
+}
+
+html[data-theme="dark"] .ui-sortable-helper {
+    background-color: #273142 !important;
+    color: #ffffff !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* --- Input Nilai Siswa (Sticky Header & Sticky Columns) --- */
+html[data-theme="dark"] .table-container-fixed thead tr:nth-child(1) th,
+html[data-theme="dark"] .table-container-fixed thead tr:nth-child(2) th,
+html[data-theme="dark"] .table-container-fixed thead tr:nth-child(1) th:nth-child(1),
+html[data-theme="dark"] .table-container-fixed thead tr:nth-child(1) th:nth-child(2),
+html[data-theme="dark"] .table-container-fixed thead tr:nth-child(1) th:nth-child(3) {
+    background-color: #1e2736 !important;
+    color: #ffffff !important;
+    border-color: #323d4e !important;
+}
+
+html[data-theme="dark"] .table-container-fixed tbody tr td:nth-child(1),
+html[data-theme="dark"] .table-container-fixed tbody tr td:nth-child(2),
+html[data-theme="dark"] .table-container-fixed tbody tr td:nth-child(3) {
+    background-color: #273142 !important;
+    color: #e2e8f0 !important;
+    border-color: #323d4e !important;
+}
+
+html[data-theme="dark"] .table-container-fixed tbody tr:hover td {
+    background-color: #323d4e !important;
+}
+
+html[data-theme="dark"] .editable-header {
+    border-bottom-color: #487fff !important;
+    color: #ffffff !important;
+}
+
+html[data-theme="dark"] .editable-header:focus {
+    background-color: #323d4e !important;
+    color: #ffffff !important;
+    border-bottom-color: #487fff !important;
+}
+
+/* --- Halaman Jadwal Saya (Portal Guru) --- */
+html[data-theme="dark"] .schedule-wrapper,
+html[data-theme="dark"] .schedule-table {
+    background-color: #273142 !important;
+    border-color: #323d4e !important;
+}
+
+html[data-theme="dark"] .schedule-table thead th.th-slot,
+html[data-theme="dark"] .schedule-table thead th.th-hari {
+    background-color: #1e2736 !important;
+    color: #ffffff !important;
+}
+
+html[data-theme="dark"] .schedule-table tbody tr:nth-child(even) td.td-slot,
+html[data-theme="dark"] .schedule-table tbody tr:nth-child(odd) td.td-slot,
+html[data-theme="dark"] .td-slot {
+    background-color: #1e2736 !important;
+    color: #f8fafc !important;
+    border-color: #323d4e !important;
+}
+
+html[data-theme="dark"] .td-cell {
+    border-color: #323d4e !important;
+    background-color: #273142 !important;
+}
+
+html[data-theme="dark"] .mapel-chip {
+    background-color: #323d4e !important;
+    border-left-width: 4px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+html[data-theme="dark"] .mapel-chip * {
+    color: #ffffff !important;
+}
+
+html[data-theme="dark"] .mapel-chip .text-secondary-light,
+html[data-theme="dark"] .mapel-chip small {
+    color: #cbd5e1 !important;
+}
+
+/* --- Tables & DataTables --- */
+html[data-theme="dark"] .table,
+html[data-theme="dark"] table {
+    color: #e2e8f0 !important;
+    border-color: #323d4e !important;
+}
+
+html[data-theme="dark"] .table th,
+html[data-theme="dark"] table th {
+    background-color: #1e2736 !important;
+    color: #f8fafc !important;
+    border-color: #323d4e !important;
+}
+
+html[data-theme="dark"] .table td,
+html[data-theme="dark"] table td {
+    background-color: #273142 !important;
+    color: #cbd5e1 !important;
+    border-color: #323d4e !important;
+}
+
+html[data-theme="dark"] .table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: #222c3c !important;
+    color: #e2e8f0 !important;
+}
+
+html[data-theme="dark"] .table-hover > tbody > tr:hover > * {
+    background-color: #323d4e !important;
+    color: #ffffff !important;
+}
+
+html[data-theme="dark"] .table-bordered,
+html[data-theme="dark"] .table-bordered td,
+html[data-theme="dark"] .table-bordered th {
+    border-color: #323d4e !important;
+}
+
+/* DataTables Styling */
+html[data-theme="dark"] .dataTables_wrapper .dataTables_length,
+html[data-theme="dark"] .dataTables_wrapper .dataTables_filter,
+html[data-theme="dark"] .dataTables_wrapper .dataTables_info,
+html[data-theme="dark"] .dataTables_wrapper .dataTables_processing,
+html[data-theme="dark"] .dataTables_wrapper .dataTables_paginate {
+    color: #cbd5e1 !important;
+}
+
+html[data-theme="dark"] .dataTables_wrapper .dataTables_paginate .paginate_button {
+    color: #cbd5e1 !important;
+    background: #323d4e !important;
+    border-color: #323d4e !important;
+}
+
+html[data-theme="dark"] .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+html[data-theme="dark"] .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+    color: #ffffff !important;
+    background: #487fff !important;
+    border-color: #487fff !important;
+}
+
+/* --- Forms & Controls --- */
+html[data-theme="dark"] .form-control,
+html[data-theme="dark"] .form-select,
+html[data-theme="dark"] input[type="text"],
+html[data-theme="dark"] input[type="number"],
+html[data-theme="dark"] input[type="email"],
+html[data-theme="dark"] input[type="password"],
+html[data-theme="dark"] input[type="date"],
+html[data-theme="dark"] input[type="time"],
+html[data-theme="dark"] input[type="datetime-local"],
+html[data-theme="dark"] input[type="search"],
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea {
+    background-color: #323d4e !important;
+    color: #ffffff !important;
+    border-color: #4b5563 !important;
+}
+
+html[data-theme="dark"] .form-control:disabled,
+html[data-theme="dark"] .form-select:disabled,
+html[data-theme="dark"] input:disabled,
+html[data-theme="dark"] select:disabled {
+    background-color: #1e2736 !important;
+    color: #6b7280 !important;
+    border-color: #323d4e !important;
+}
+
+html[data-theme="dark"] .form-control:focus,
+html[data-theme="dark"] .form-select:focus,
+html[data-theme="dark"] input:focus,
+html[data-theme="dark"] select:focus,
+html[data-theme="dark"] textarea:focus {
+    background-color: #323d4e !important;
+    color: #ffffff !important;
+    border-color: #487fff !important;
+    box-shadow: 0 0 0 0.25rem rgba(72, 127, 255, 0.25) !important;
+}
+
+html[data-theme="dark"] .form-control::placeholder,
+html[data-theme="dark"] textarea::placeholder {
+    color: #94a3b8 !important;
+    opacity: 0.8;
+}
+
+html[data-theme="dark"] .form-label,
+html[data-theme="dark"] label {
+    color: #e2e8f0 !important;
+}
+
+html[data-theme="dark"] .input-group-text {
+    background-color: #1e2736 !important;
+    color: #cbd5e1 !important;
+    border-color: #4b5563 !important;
+}
+
+html[data-theme="dark"] .form-check-input {
+    background-color: #323d4e;
+    border-color: #4b5563;
+}
+
+html[data-theme="dark"] .form-check-input:checked {
+    background-color: #487fff;
+    border-color: #487fff;
+}
+
+/* --- Select2 Dark Mode --- */
+html[data-theme="dark"] .select2-container--default .select2-selection--single,
+html[data-theme="dark"] .select2-container--default .select2-selection--multiple {
+    background-color: #323d4e !important;
+    border-color: #4b5563 !important;
+}
+
+html[data-theme="dark"] .select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: #ffffff !important;
+}
+
+html[data-theme="dark"] .select2-dropdown {
+    background-color: #273142 !important;
+    border-color: #323d4e !important;
+}
+
+html[data-theme="dark"] .select2-container--default .select2-results__option[aria-selected=true] {
+    background-color: #323d4e !important;
+}
+
+html[data-theme="dark"] .select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: #487fff !important;
+    color: white !important;
+}
+
+html[data-theme="dark"] .select2-search--dropdown .select2-search__field {
+    background-color: #323d4e !important;
+    color: #ffffff !important;
+    border-color: #4b5563 !important;
+}
+
+/* --- Modals, Dropdowns & Popups --- */
+html[data-theme="dark"] .modal-content,
+html[data-theme="dark"] .dropdown-menu {
+    background-color: #273142 !important;
+    color: #e2e8f0 !important;
+    border-color: #323d4e !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+}
+
+html[data-theme="dark"] .modal-header,
+html[data-theme="dark"] .modal-footer {
+    border-color: #323d4e !important;
+}
+
+html[data-theme="dark"] .dropdown-item {
+    color: #cbd5e1 !important;
+}
+
+html[data-theme="dark"] .dropdown-item:hover,
+html[data-theme="dark"] .dropdown-item:focus {
+    background-color: #323d4e !important;
+    color: #ffffff !important;
+}
+
+html[data-theme="dark"] .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* --- Badges & Buttons --- */
+html[data-theme="dark"] .badge.bg-neutral-200,
+html[data-theme="dark"] .badge.bg-light {
+    background-color: #323d4e !important;
+    color: #f1f5f9 !important;
+}
+
+html[data-theme="dark"] .btn-light,
+html[data-theme="dark"] .btn-light-100 {
+    background-color: #323d4e !important;
+    color: #f1f5f9 !important;
+    border-color: #4b5563 !important;
+}
+
+html[data-theme="dark"] .btn-light:hover,
+html[data-theme="dark"] .btn-light-100:hover {
+    background-color: #3d4a5e !important;
+    color: #ffffff !important;
+}
+
+/* --- Flatpickr Datepicker --- */
+html[data-theme="dark"] .flatpickr-calendar {
+    background-color: #273142 !important;
+    border-color: #323d4e !important;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5) !important;
+}
+
+html[data-theme="dark"] .flatpickr-calendar .flatpickr-months,
+html[data-theme="dark"] .flatpickr-calendar .flatpickr-weekdays {
+    background-color: #1e2736 !important;
+}
+
+html[data-theme="dark"] .flatpickr-calendar .flatpickr-day {
+    color: #cbd5e1 !important;
+}
+
+html[data-theme="dark"] .flatpickr-calendar .flatpickr-day:hover {
+    background-color: #323d4e !important;
+}
+
+html[data-theme="dark"] .flatpickr-calendar .flatpickr-day.selected {
+    background-color: #487fff !important;
+    border-color: #487fff !important;
+    color: #ffffff !important;
+}
+
+/* --- SweetAlert2 --- */
+html[data-theme="dark"] .swal2-popup {
+    background-color: #273142 !important;
+    color: #e2e8f0 !important;
+}
+
+html[data-theme="dark"] .swal2-title,
+html[data-theme="dark"] .swal2-html-container {
+    color: #f8fafc !important;
+}
+
+/* --- Apex Charts Dark Fix --- */
+html[data-theme="dark"] .apexcharts-canvas text {
+    fill: #cbd5e1 !important;
+}
+
+html[data-theme="dark"] .apexcharts-legend-text {
+    color: #cbd5e1 !important;
+}
+
+html[data-theme="dark"] .apexcharts-tooltip {
+    background: #1e2736 !important;
+    border-color: #323d4e !important;
+    color: #ffffff !important;
+}
+
+/* --- Scrollbars --- */
+html[data-theme="dark"] ::-webkit-scrollbar-track {
+    background: #1b2431;
+}
+
+html[data-theme="dark"] ::-webkit-scrollbar-thumb {
+    background: #323d4e;
+    border-radius: 4px;
+}
+
+html[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+    background: #4b5563;
+}
+
+/* --- High Contrast Brightness Overrides (Welcome Card, Student Name, Teacher Name, Time & Date) --- */
+html[data-theme="dark"] .trail-bg,
+html[data-theme="dark"] .trail-bg * {
+    color: #ffffff !important;
+    opacity: 1 !important;
+}
+
+html[data-theme="dark"] .trail-bg p {
+    color: #f1f5f9 !important;
+    opacity: 1 !important;
+}
+
+html[data-theme="dark"] .realtime-clock-display {
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+}
+
+html[data-theme="dark"] .realtime-date-display {
+    color: #f8fafc !important;
+    font-weight: 500 !important;
+    opacity: 1 !important;
+}
+
+/* High Contrast Student Names (Nama Siswa) */
+html[data-theme="dark"] td.fw-semibold,
+html[data-theme="dark"] table td span.fw-semibold,
+html[data-theme="dark"] .text-primary-900,
+html[data-theme="dark"] .text-neutral-800,
+html[data-theme="dark"] .nama-siswa,
+html[data-theme="dark"] .siswa-dropzone .list-group-item {
+    color: #ffffff !important;
+}
+
+/* High Contrast Teacher / User Names (Nama Guru & User) */
+html[data-theme="dark"] .user-name,
+html[data-theme="dark"] .profile-name,
+html[data-theme="dark"] .nav-profile-name,
+html[data-theme="dark"] .ptk-name {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+}
+
+/* --- High Contrast Overrides for Detail Agenda & Rekap Absensi --- */
+html[data-theme="dark"] .text-primary-900,
+html[data-theme="dark"] .text-info-900,
+html[data-theme="dark"] .text-success-900,
+html[data-theme="dark"] .text-primary-800,
+html[data-theme="dark"] .text-neutral-800,
+html[data-theme="dark"] .text-neutral-900 {
+    color: #ffffff !important;
+}
+
+/* Detail Agenda & Rekap Absensi: Hari & Tanggal, Jadwal Masuk (Waktu), Guru Pengampu, & Nama Siswa */
+html[data-theme="dark"] .card-body .fw-bold.text-primary-900,
+html[data-theme="dark"] .card-body .fw-semibold.text-primary-900,
+html[data-theme="dark"] #tablePresensiSiswa td span.fw-semibold,
+html[data-theme="dark"] #tableRekapAbsensiGuru td span.fw-semibold {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+}
+
+/* Sub-labels in Meta Info & Tables */
+html[data-theme="dark"] .text-secondary-light,
+html[data-theme="dark"] .text-xs.text-secondary-light,
+html[data-theme="dark"] .text-muted {
+    color: #cbd5e1 !important;
+}
+
+/* Rekap Absensi Summary Badges */
+html[data-theme="dark"] .bg-primary-50 {
+    background-color: #1e2736 !important;
+    border-color: #3b82f6 !important;
+}
+html[data-theme="dark"] .text-primary-700 {
+    color: #93c5fd !important;
+}
+
+html[data-theme="dark"] .bg-info-50 {
+    background-color: #1e2736 !important;
+    border-color: #0ea5e9 !important;
+}
+html[data-theme="dark"] .text-info-700 {
+    color: #7dd3fc !important;
+}
+
+html[data-theme="dark"] .bg-success-50 {
+    background-color: #1e2736 !important;
+    border-color: #10b981 !important;
+}
+html[data-theme="dark"] .text-success-700 {
+    color: #6ee7b7 !important;
+}

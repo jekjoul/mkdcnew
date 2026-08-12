@@ -281,6 +281,114 @@ class Users extends MY_Controller
 		echo 'done';
 	}
 
+	/**
+	 * Halaman pengaturan hak akses individual per user
+	 */
+	public function hak_akses($user_id)
+	{
+		ifPermissions('users_edit');
+
+		$user = $this->users_model->getById($user_id);
+		if (!$user) {
+			show_404();
+		}
+
+		$this->page_data['page']->title = 'Akun';
+		$this->page_data['page']->titleUrl = 'users';
+		$this->page_data['page']->subtitle = 'Hak Akses Individual';
+		$this->page_data['page']->subtitleUrl = 'users/hak_akses/' . $user_id;
+		$this->page_data['page']->icon = 'fa7-solid:users';
+
+		// Ambil nama role user
+		$user_roles = [];
+		$role_names = [];
+		if ($this->db->table_exists('user_roles')) {
+			$ur_list = $this->db->get_where('user_roles', ['user_id' => $user->id])->result();
+			foreach ($ur_list as $ur) {
+				$user_roles[] = (int) $ur->role_id;
+				$role_row = $this->db->get_where('roles', ['id' => $ur->role_id])->row();
+				if ($role_row) {
+					$role_names[] = $role_row->title;
+				}
+			}
+		}
+		if (empty($user_roles)) {
+			$user_roles[] = (int) $user->role;
+			$role_row = $this->db->get_where('roles', ['id' => $user->role])->row();
+			if ($role_row) {
+				$role_names[] = $role_row->title;
+			}
+		}
+
+		// Ambil permission bawaan role
+		$this->db->where_in('role', $user_roles);
+		$role_perms_result = $this->db->get('role_permissions')->result();
+		$role_permissions = array_map(function ($rp) {
+			return $rp->permission;
+		}, $role_perms_result);
+
+		// Ambil permission individual user
+		$user_perms_result = $this->db->get_where('user_permissions', ['user_id' => $user->id])->result();
+		$user_permissions = array_map(function ($up) {
+			return $up->permission;
+		}, $user_perms_result);
+
+		// Ambil data PTK jika terhubung
+		$ptk_data = null;
+		if (!empty($user->id_ptk)) {
+			$ptk_data = $this->db->get_where('ptk', ['id_ptk' => $user->id_ptk])->row();
+		}
+
+		$this->page_data['ptk_data'] = $ptk_data;
+		$this->page_data['user_data'] = $user;
+		$this->page_data['role_names'] = $role_names;
+		$this->page_data['role_permissions'] = $role_permissions;
+		$this->page_data['user_permissions'] = $user_permissions;
+
+		$this->load->view('users/hak_akses', $this->page_data);
+	}
+
+	/**
+	 * Simpan hak akses individual per user
+	 */
+	public function save_hak_akses($user_id)
+	{
+		ifPermissions('users_edit');
+		postAllowed();
+
+		$user = $this->users_model->getById($user_id);
+		if (!$user) {
+			show_404();
+		}
+
+		// Hapus permission individual lama
+		$this->db->delete('user_permissions', ['user_id' => $user->id]);
+
+		// Simpan permission individual baru
+		$permissions = $this->input->post('permission');
+		if (is_array($permissions) && !empty($permissions)) {
+			$batch = [];
+			foreach ($permissions as $perm) {
+				$batch[] = [
+					'user_id' => $user->id,
+					'permission' => $perm,
+					'created_at' => date('Y-m-d H:i:s'),
+				];
+			}
+			$this->db->insert_batch('user_permissions', $batch);
+		}
+
+		$this->activity_model->add(
+			logged('name') . ' mengatur hak akses individual User: ' . $user->name,
+			logged('id')
+		);
+
+		$this->session->set_flashdata('alert-type', 'success');
+		$this->session->set_flashdata('alert', 'Hak akses individual untuk ' . $user->name . ' berhasil disimpan.');
+
+		redirect('users/hak_akses/' . $user_id);
+	}
+
 	private function ensureUsersPtkColumn()
 	{
 		$this->load->dbforge();

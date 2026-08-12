@@ -80,28 +80,34 @@ $total_siswa = $count_l + $count_p;
 
 <table border="0">
     <tr>
-        <td colspan="4" style="font-weight: bold;">Laki-laki</td>
-        <td>:</td>
-        <td><?php echo $count_l ?> Siswa</td>
-        <td colspan="23"></td>
+        <?php if (!empty($pakai_jumlah)): ?>
+            <td colspan="4" style="font-weight: bold;">Laki-laki</td>
+            <td>:</td>
+            <td><?php echo $count_l ?> Siswa</td>
+            <td colspan="23"></td>
+        <?php else: ?>
+            <td colspan="29"></td>
+        <?php endif; ?>
         <td colspan="8" style="text-align: center; font-weight: bold;">
             <?php if ($pakai_ttd): ?>
                 Wali Kelas
             <?php endif; ?>
         </td>
     </tr>
-    <tr>
-        <td colspan="4" style="font-weight: bold;">Perempuan</td>
-        <td>:</td>
-        <td><?php echo $count_p ?> Siswa</td>
-        <td colspan="31"></td>
-    </tr>
-    <tr>
-        <td colspan="4" style="font-weight: bold; border-top: 1px solid #000;">Jumlah</td>
-        <td style="border-top: 1px solid #000;">:</td>
-        <td style="font-weight: bold; border-top: 1px solid #000;"><?php echo $total_siswa ?> Siswa</td>
-        <td colspan="31"></td>
-    </tr>
+    <?php if (!empty($pakai_jumlah)): ?>
+        <tr>
+            <td colspan="4" style="font-weight: bold;">Perempuan</td>
+            <td>:</td>
+            <td><?php echo $count_p ?> Siswa</td>
+            <td colspan="31"></td>
+        </tr>
+        <tr>
+            <td colspan="4" style="font-weight: bold; border-top: 1px solid #000;">Jumlah</td>
+            <td style="border-top: 1px solid #000;">:</td>
+            <td style="font-weight: bold; border-top: 1px solid #000;"><?php echo $total_siswa ?> Siswa</td>
+            <td colspan="31"></td>
+        </tr>
+    <?php endif; ?>
     <tr>
         <td colspan="29"></td>
         <td colspan="8" style="text-align: center; font-weight: bold;">

@@ -180,5 +180,44 @@
         map.on('click', function(event) {
             setStudentLocation(event.latlng);
         });
+
+        // Handler untuk mereset ukuran Leaflet map saat tab Setting aktif / terlihat
+        function refreshMapSize() {
+            setTimeout(function() {
+                if (map) {
+                    map.invalidateSize();
+                    if (selected) {
+                        map.setView([selected[0], selected[1]], 16);
+                    } else {
+                        map.setView(start, 15);
+                    }
+                }
+            }, 200);
+        }
+
+        // 1. Dengarkan event perpindahan tab di Bootstrap (Tab Setting)
+        const tabBtns = document.querySelectorAll('button[data-bs-toggle="pill"], a[data-bs-toggle="pill"], a[data-toggle="tab"], [data-bs-target="#pills-setting"], a[href="#pills-setting"]');
+        tabBtns.forEach(function(btn) {
+            btn.addEventListener('shown.bs.tab', refreshMapSize);
+            btn.addEventListener('click', refreshMapSize);
+        });
+
+        // 2. Gunakan IntersectionObserver untuk mendeteksi saat elemen map-koordinat muncul di viewport
+        if ('IntersectionObserver' in window) {
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        setTimeout(function() {
+                            if (map) map.invalidateSize();
+                        }, 150);
+                    }
+                });
+            }, { threshold: 0.1 });
+            observer.observe(mapEl);
+        }
+
+        // 3. Panggil saat window di-resize
+        window.addEventListener('resize', refreshMapSize);
+        setTimeout(refreshMapSize, 300);
     })();
 </script>

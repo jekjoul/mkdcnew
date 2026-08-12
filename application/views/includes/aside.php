@@ -3,7 +3,7 @@
         <iconify-icon icon="radix-icons:cross-2"></iconify-icon>
     </button>
     <div>
-        <a href="<?php echo url('') ?>" class="sidebar-logo shadow">
+        <a  class="sidebar-logo shadow">
             <img src="<?php echo $url->assets ?>images/logodc.png" alt="site logo" class="light-logo">
             <img src="<?php echo $url->assets ?>images/logodc.png" alt="site logo" class="dark-logo">
             <img src="<?php echo $url->assets ?>images/logo-icon.png" alt="site logo" class="logo-icon">
@@ -13,9 +13,33 @@
         <ul class="sidebar-menu" id="sidebar-menu">
             <?php
             $CI = &get_instance();
-            $role_title_row = $CI->db->get_where('roles', ['id' => logged('role')])->row();
-            $role_title = $role_title_row ? strtolower((string) $role_title_row->title) : '';
-            $is_guru_portal = ($role_title === 'guru' || logged('role') == 4);
+            $userId = logged('id');
+            $user_roles_aside = [];
+            if ($userId && $CI->db->table_exists('user_roles')) {
+                foreach ($CI->db->get_where('user_roles', ['user_id' => $userId])->result() as $ur) {
+                    $r_row = $CI->db->get_where('roles', ['id' => $ur->role_id])->row();
+                    if ($r_row) {
+                        $user_roles_aside[] = strtolower((string) $r_row->title);
+                    }
+                }
+            }
+            if (empty($user_roles_aside)) {
+                $role_title_row = $CI->db->get_where('roles', ['id' => logged('role')])->row();
+                if ($role_title_row) {
+                    $user_roles_aside[] = strtolower((string) $role_title_row->title);
+                }
+            }
+
+            $is_admin_aside = false;
+            foreach ($user_roles_aside as $r) {
+                $r_clean = trim(strtolower((string) $r));
+                if ($r_clean === 'admin' || $r_clean === 'administrator' || $r_clean === 'superadmin' || strpos($r_clean, 'admin') !== false) {
+                    $is_admin_aside = true;
+                    break;
+                }
+            }
+
+            $is_guru_portal = !$is_admin_aside || in_array('guru', $user_roles_aside, true) || in_array('guru bk', $user_roles_aside, true) || in_array('bk', $user_roles_aside, true) || in_array('wakasek', $user_roles_aside, true) || logged('role') == 4;
             ?>
             <?php if ($is_guru_portal): ?>
                 <?php if (hasPermissions('menu_dashboard_guru')): ?>
@@ -27,7 +51,7 @@
                     </li>
                 <?php endif; ?>
 
-                <?php if (hasPermissions('menu_data_siswa_guru') || hasPermissions('menu_pembelajaran_guru') || hasPermissions('menu_perangkat_guru') || hasPermissions('menu_jadwal_guru') || hasPermissions('menu_input_nilai_guru') || hasPermissions('menu_profil_ptk_guru')): ?>
+                <?php if (hasPermissions('menu_data_siswa_guru') || hasPermissions('menu_pembelajaran_guru') || hasPermissions('menu_perangkat_guru') || hasPermissions('menu_jadwal_guru') || hasPermissions('menu_input_nilai_guru') || hasPermissions('menu_profil_ptk_guru') || hasPermissions('kedisiplinan_add') || hasPermissions('menu_kedisiplinan')): ?>
                     <li class="sidebar-menu-group-title">Portal Guru</li>
                 <?php endif; ?>
 
@@ -56,6 +80,30 @@
                             <span>Perangkat Pembelajaran</span>
                         </a>
                     </li>
+                    <li>
+                        <a href="<?php echo url('guru/pengaturan_agenda') ?>">
+                            <iconify-icon icon="solar:settings-linear" class="menu-icon"></iconify-icon>
+                            <span>Pengaturan Agenda</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="<?php echo url('guru/agenda') ?>">
+                            <iconify-icon icon="solar:notebook-linear" class="menu-icon"></iconify-icon>
+                            <span>Agenda Pembelajaran Saya</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="<?php echo url('guru/rekap_absensi_agenda') ?>">
+                            <iconify-icon icon="solar:chart-square-linear" class="menu-icon"></iconify-icon>
+                            <span>Rekap Absensi Agenda</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="<?php echo url('jurnal_guru') ?>">
+                            <iconify-icon icon="solar:book-bookmark-bold" class="menu-icon text-primary"></iconify-icon>
+                            <span>Jurnal KBM Guru</span>
+                        </a>
+                    </li>
                 <?php endif; ?>
 
                 <?php if (hasPermissions('menu_jadwal_guru')): ?>
@@ -76,14 +124,22 @@
                     </li>
                 <?php endif; ?>
 
-                
+                <?php if (hasPermissions('kedisiplinan_add') || hasPermissions('menu_kedisiplinan')): ?>
+                    <li>
+                        <a href="<?php echo url('kedisiplinan/tambah') ?>" class="text-danger">
+                            <iconify-icon icon="solar:shield-warning-bold" class="menu-icon text-danger"></iconify-icon>
+                            <span class="text-danger fw-semibold">Laporkan Kenakalan</span>
+                        </a>
+                    </li>
+                <?php endif; ?>
+
             <?php endif; ?>
 
-<?php if (hasPermissions('menu_dashboard')): ?>
+<?php if ($is_admin_aside && hasPermissions('menu_dashboard')): ?>
     <li>
         <a href="<?php echo url('') ?>">
             <iconify-icon icon="solar:home-angle-2-linear" class="menu-icon"></iconify-icon>
-            <span>Dashboard</span>
+            <span>Dashboard Admin</span>
         </a>
     </li>
 <?php endif; ?>
@@ -221,9 +277,49 @@
         <li>
             <a href="<?php echo url('siswa/all') ?>">
                 <iconify-icon icon="icon-park-outline:every-user" class="menu-icon"></iconify-icon>
-                <span>Data Siswa</span>
+                <span>Data Siswa (Semua)</span>
             </a>
         </li>
+        <?php
+        $CI = &get_instance();
+        $CI->db->select('p.id_pembelajaran, l.nama_lembaga, l.nama_lembaga_singkat, l.bentuk_pendidikan, t.nama_tingkat, t.tingkat_angka, r.nama_rombel');
+        $CI->db->from('pembelajaran p');
+        $CI->db->join('lembaga l', 'p.id_lembaga = l.id_lembaga');
+        $CI->db->join('master_tingkat_sekolah t', 'p.id_tingkat_sekolah = t.id_tingkat_sekolah');
+        $CI->db->join('rombel r', 'p.id_rombel = r.id_rombel');
+        $CI->db->join('pembelajaran_tahun_pelajaran tp', 'p.id_tahun_pelajaran = tp.id_tahun_pelajaran');
+        $CI->db->where('tp.status', 'Aktif');
+        $CI->db->where('p.status', 'Aktif');
+        $CI->db->order_by('l.nama_lembaga', 'ASC');
+        $CI->db->order_by('t.tingkat_angka', 'ASC');
+        $CI->db->order_by('r.nama_rombel', 'ASC');
+        $menu_pembelajaran_siswa = $CI->db->get()->result();
+
+        $menu_siswa_lembaga = [];
+        foreach ($menu_pembelajaran_siswa as $menu_row) {
+            $nama_singkat = !empty($menu_row->nama_lembaga_singkat) 
+                ? $menu_row->nama_lembaga_singkat 
+                : (!empty($menu_row->bentuk_pendidikan) ? $menu_row->bentuk_pendidikan : $menu_row->nama_lembaga);
+            $menu_siswa_lembaga[$nama_singkat][] = $menu_row;
+        }
+        ?>
+        <?php foreach ($menu_siswa_lembaga as $nama_lembaga_singkat => $menu_rows): ?>
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="lucide:users" class="menu-icon"></iconify-icon>
+                    <span>Data Siswa <?php echo html_escape($nama_lembaga_singkat) ?></span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <?php foreach ($menu_rows as $menu_row): ?>
+                        <li>
+                            <a href="<?php echo url('siswa/pembelajaran/' . $menu_row->id_pembelajaran) ?>">
+                                <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> <?php echo html_escape($menu_row->nama_tingkat . ' - ' . $menu_row->nama_rombel) ?>
+                            </a>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            </li>
+        <?php endforeach; ?>
     <?php endif; ?>
     <?php if (hasPermissions('menu_generate_nipd')): ?>
         <li>
@@ -343,6 +439,23 @@
                 <span>Perangkat Pembelajaran</span>
             </a>
         </li>
+        <li class="dropdown">
+            <a href="javascript:void(0)">
+                <iconify-icon icon="solar:calendar-date-linear" class="menu-icon"></iconify-icon>
+                <span>Agenda Pembelajaran</span>
+            </a>
+            <ul class="sidebar-submenu">
+                <li>
+                    <a href="<?php echo url('agenda_pembelajaran') ?>"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> Per Mapel &amp; Rombel</a>
+                </li>
+                <li>
+                    <a href="<?php echo url('agenda_pembelajaran/ptk') ?>"><i class="ri-circle-fill circle-icon text-success-600 w-auto"></i> Agenda per Guru Pengampu</a>
+                </li>
+                <li>
+                    <a href="<?php echo url('jurnal_guru') ?>"><i class="ri-circle-fill circle-icon text-info-600 w-auto"></i> Jurnal KBM Guru</a>
+                </li>
+            </ul>
+        </li>
     <?php endif; ?>
 
     <?php if (hasPermissions('menu_nilai_siswa')): ?>
@@ -382,6 +495,7 @@
             </a>
         </li>
     <?php endif; ?>
+    
     <?php if (hasPermissions('menu_ekstrakurikuler')): ?>
         <li>
             <a href="<?php echo url('ekstrakurikuler') ?>">
@@ -395,6 +509,14 @@
             <a href="<?php echo url('kelas_jauh') ?>">
                 <iconify-icon icon="solar:globus-linear" class="menu-icon"></iconify-icon>
                 <span>Kelas Jauh (Menginduk)</span>
+            </a>
+        </li>
+    <?php endif; ?>
+    <?php if (logged('role') == '1' || logged('role') == 'admin'): ?>
+        <li>
+            <a href="<?php echo url('tutup_semester') ?>">
+                <iconify-icon icon="solar:lock-keyhole-bold" class="menu-icon text-danger-main"></iconify-icon>
+                <span class="text-danger-main fw-semibold">Penutupan Semester</span>
             </a>
         </li>
     <?php endif; ?>
@@ -426,6 +548,12 @@
                 </a>
             </li>
             <li>
+                <a href="<?php echo url('surat/buat') ?>">
+                    <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
+                    Buat Surat
+                </a>
+            </li>
+            <li>
                 <a href="<?php echo url('surat/kode') ?>">
                     <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
                     Kode Surat
@@ -441,6 +569,12 @@
                 <a href="<?php echo url('surat/kop') ?>">
                     <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
                     Kop Surat
+                </a>
+            </li>
+            <li>
+                <a href="<?php echo url('surat/dasar_hukum') ?>">
+                    <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
+                    Dasar Hukum SK
                 </a>
             </li>
         </ul>
@@ -465,6 +599,38 @@
         </ul>
     </li>
     <?php endif; ?>
+<?php endif; ?>
+
+<?php if (hasPermissions('menu_presensi')): ?>
+    <li class="sidebar-menu-group-title"
+        style="background: #bdd3b1;
+        background: linear-gradient(90deg, rgb(253, 206, 154) 0%, rgba(255, 255, 255, 0) 100%);">Presensi</li>
+    <li class="dropdown">
+        <a href="javascript:void(0)">
+            <iconify-icon icon="solar:user-speak-linear" class="menu-icon"></iconify-icon>
+            <span>Presensi & Kehadiran</span>
+        </a>
+        <ul class="sidebar-submenu">
+            <li>
+                <a href="<?php echo url('presensi/siswa') ?>">
+                    <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
+                    Presensi Siswa
+                </a>
+            </li>
+            <li>
+                <a href="<?php echo url('presensi/guru') ?>">
+                    <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
+                    Presensi PTK
+                </a>
+            </li>
+            <li>
+                <a href="<?php echo url('presensi/user_fingerprint') ?>">
+                    <i class="ri-circle-fill circle-icon text-primary-main w-auto"></i>
+                    User Mesin & Sidik Jari
+                </a>
+            </li>
+        </ul>
+    </li>
 <?php endif; ?>
 
 
@@ -621,12 +787,20 @@
     <?php endif; ?>
 <?php endif; ?>
 
-<?php if (hasPermissions('menu_edit_inline_ptk') || hasPermissions('menu_edit_inline_siswa')): ?>
+<?php if (hasPermissions('menu_alat_khusus') || hasPermissions('menu_verifikasi_dokumen_siswa')): ?>
     <li class="sidebar-menu-group-title"
         style="background: #bdd3b1;
                background: linear-gradient(90deg, rgb(255, 220, 185) 0%, rgba(255, 255, 255, 0) 100%);">
         Alat Khusus
     </li>
+    <?php if (hasPermissions('menu_verifikasi_dokumen_siswa')): ?>
+        <li>
+            <a href="<?php echo url('siswa/verifikasiDokumen') ?>">
+                <iconify-icon icon="solar:checklist-minimalistic-bold" class="menu-icon"></iconify-icon>
+                <span>Cek Berkas Siswa</span>
+            </a>
+        </li>
+    <?php endif; ?>
     <?php if (hasPermissions('menu_edit_inline_ptk')): ?>
         <li>
             <a href="<?php echo url('edit_inline_ptk') ?>">
@@ -649,21 +823,48 @@
             </a>
         </li>
     <?php endif; ?>
+   
+    <?php if (hasPermissions('menu_export_siswa')): ?>
+        <li>
+            <a href="<?php echo url('export_siswa') ?>">
+                <iconify-icon icon="solar:download-linear" class="menu-icon"></iconify-icon>
+                <span>Export Siswa massal</span>
+            </a>
+        </li>
+    <?php endif; ?>
+    <?php if (hasPermissions('menu_export_ptk')): ?>
+        <li>
+            <a href="<?php echo url('export_ptk') ?>">
+                <iconify-icon icon="solar:download-linear" class="menu-icon"></iconify-icon>
+                <span>Export PTK massal</span>
+            </a>
+        </li>
+    <?php endif; ?>
 <?php endif; ?>
 
-<?php if (hasPermissions('general_settings') || hasPermissions('company_settings') || hasPermissions('email_templates')): ?>
+<?php if (hasPermissions('general_settings') || hasPermissions('company_settings') || hasPermissions('email_templates') || hasPermissions('activity_log_list') || logged('role') == 1): ?>
     <li class="sidebar-menu-group-title">Pengaturan</li>
+    <?php if (hasPermissions('general_settings') || hasPermissions('company_settings')): ?>
     <li>
         <a href="<?php echo url('settings/general') ?>">
             <iconify-icon icon="solar:settings-linear" class="menu-icon"></iconify-icon>
             <span>Pengaturan</span>
         </a>
     </li>
+    <?php endif; ?>
+    <?php if (hasPermissions('activity_log_list') || logged('role') == 1): ?>
+    <li>
+        <a href="<?php echo url('activity_logs') ?>">
+            <iconify-icon icon="solar:history-bold-duotone" class="menu-icon text-primary"></iconify-icon>
+            <span>Log Aktivitas</span>
+        </a>
+    </li>
+    <?php endif; ?>
 <?php endif; ?>
 
 <li class="sidebar-menu-group-title">Aplikasi Tambahan</li>
 <li>
-    <a href="<?php echo $url->assets ?>downloads/mkdc_scanner_bridge.zip" download class="d-flex align-items-center gap-2">
+    <a href="<?php echo $url->assets ?>downloads/MKDC_Scanner_Bridge_Setup.exe" download class="d-flex align-items-center gap-2">
         <iconify-icon icon="lucide:download" class="menu-icon text-primary"></iconify-icon>
         <span>Download Scanner Bridge</span>
     </a>

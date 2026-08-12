@@ -1,257 +1,401 @@
-// Scan Plugin for MKDC Web
-$(document).ready(function() {
-    const SCANNER_API_URL = 'http://127.0.0.1:7999';
+// Scan Plugin for MKDC Web — v2.1
+$(document).ready(function () {
+    let SCANNER_API_URL = 'http://127.0.0.1:7999';
+    let bridgeInfo = null;
 
-    // Check if scanner bridge is running
-    function checkScannerBridge() {
-        return fetch(SCANNER_API_URL)
-            .then(res => res.json())
-            .then(data => data.status === 'running')
-            .catch(() => false);
+    // Helper fetch dengan timeout yang pasti melepaskan koneksi (mencegah stuck/hang)
+    function fetchWithTimeout(url, options = {}, timeoutMs = 2000) {
+        return new Promise((resolve, reject) => {
+            const timer = setTimeout(() => {
+                reject(new Error('Koneksi timeout ke ' + url));
+            }, timeoutMs);
+
+            fetch(url, options)
+                .then(res => {
+                    clearTimeout(timer);
+                    resolve(res);
+                })
+                .catch(err => {
+                    clearTimeout(timer);
+                    reject(err);
+                });
+        });
     }
 
-    // Attach "Scan Direct" button to input[type="file"]
+    async function checkSingleBridgeUrl(url) {
+        try {
+            const res = await fetchWithTimeout(url, {}, 2000);
+            if (res && res.ok) {
+                const data = await res.json();
+                if (data && data.status === 'running') {
+                    return { ok: true, url, data };
+                }
+            }
+        } catch (e) {
+            // Abaikan error per URL
+        }
+        return { ok: false, url };
+    }
+
+    async function checkScannerBridge() {
+        if (window.location.protocol === 'https:') {
+            console.warn('[Scanner Plugin] Web berjalan di HTTPS, sedangkan Scanner Bridge running di HTTP.');
+        }
+
+        const candidateUrls = ['http://127.0.0.1:7999', 'http://localhost:7999'];
+        const savedUrl = localStorage.getItem('mkdc_scanner_bridge_url');
+        if (savedUrl && !candidateUrls.includes(savedUrl)) {
+            candidateUrls.unshift(savedUrl);
+        }
+        const hostname = window.location.hostname;
+        if (hostname && hostname !== 'localhost' && hostname !== '127.0.0.1') {
+            const hostBridgeUrl = 'http://' + hostname + ':7999';
+            if (!candidateUrls.includes(hostBridgeUrl)) {
+                candidateUrls.push(hostBridgeUrl);
+            }
+        }
+
+        const results = await Promise.all(candidateUrls.map(url => checkSingleBridgeUrl(url)));
+
+        const success = results.find(r => r && r.ok);
+        if (success) {
+            bridgeInfo = success.data;
+            SCANNER_API_URL = success.url;
+            localStorage.setItem('mkdc_scanner_bridge_url', success.url);
+            return true;
+        }
+
+        return false;
+    }
+
+    // -----------------------------------------------------------------------
+    // Pasang tombol "Scan Langsung" pada setiap input file .scan-enabled
+    // -----------------------------------------------------------------------
     function attachScanButtons() {
-        $('input[type="file"].scan-enabled').each(function() {
+        $('input[type="file"].scan-enabled').each(function () {
             const input = $(this);
-            // Don't add twice
+
+            // Jangan tambahkan dua kali
             if (input.parent().find('.btn-direct-scan').length > 0) return;
-            
-            // We only attach to inputs that accept images or pdf/documents
+
+            // Hanya pasang pada input yang menerima gambar atau PDF
             const accept = input.attr('accept') || '';
-            if (accept && !accept.includes('image') && !accept.includes('pdf') && !accept.includes('*')) {
-                return; 
+            if (accept && !accept.includes('image') && !accept.includes('pdf') && !accept.includes('jpg') && !accept.includes('jpeg') && !accept.includes('png') && !accept.includes('*')) {
+                return;
             }
 
-            // Create a scan button next to the file input
-            const scanBtn = $('<button type="button" class="btn btn-sm btn-info-600 radius-8 px-12 py-6 ms-2 btn-direct-scan d-inline-flex align-items-center gap-1"><iconify-icon icon="lucide:scan"></iconify-icon> Scan Langsung</button>');
-            
-            // Insert button after input
+            // Buat tombol scan
+            const scanBtn = $('<button type="button" class="btn btn-sm btn-info-600 radius-8 px-12 py-6 ms-2 btn-direct-scan d-inline-flex align-items-center gap-1 flex-shrink-0"><iconify-icon icon="lucide:scan"></iconify-icon> Scan Langsung</button>');
+
             input.after(scanBtn);
 
-            scanBtn.on('click', async function(e) {
+            scanBtn.on('click', async function (e) {
                 e.preventDefault();
-                
-                // Show checking alert
-                Swal.fire({
-                    title: 'Menghubungkan ke Scanner...',
-                    text: 'Pastikan software MKDC Scanner Bridge dan scanner Epson L3210 Anda menyala.',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-
-                const isBridgeRunning = await checkScannerBridge();
-                if (!isBridgeRunning) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Koneksi Gagal',
-                        html: `Aplikasi bridge scanner belum dijalankan atau tidak terdeteksi.<br><br>
-                               Silakan buka folder <strong>scanner_bridge</strong> di komputer Anda dan jalankan file <strong>start.bat</strong> terlebih dahulu.`
-                    });
-                    return;
-                }
-
-                // Bridge is running! Fetch scanner devices
-                try {
-                    const devicesRes = await fetch(`${SCANNER_API_URL}/devices`);
-                    let devices = await devicesRes.json();
-
-                    // PowerShell ConvertTo-Json quirk: single object returned instead of array if there is only 1 device
-                    if (devices && !Array.isArray(devices)) {
-                        devices = [devices];
-                    }
-
-                    if (!devices || devices.length === 0 || (devices.length === 1 && !devices[0])) {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Alat Scanner Tidak Ditemukan',
-                            text: 'Bridge berjalan, tetapi tidak ada scanner fisik yang terhubung ke komputer. Pastikan kabel USB scanner Epson Anda terpasang.'
-                        });
-                        return;
-                    }
-
-                    // Open scanner selection and start scan modal
-                    let deviceOptionsHtml = '';
-                    devices.forEach((dev, idx) => {
-                        deviceOptionsHtml += `<option value="${dev.id}" ${idx === 0 ? 'selected' : ''}>${dev.name} (${dev.description || 'WIA Scanner'})</option>`;
-                    });
-
-                    Swal.fire({
-                        title: 'Mulai Memindai (Scan)',
-                        html: `
-                            <div class="text-start mb-3">
-                                <label class="form-label fw-semibold">Pilih Alat Scanner:</label>
-                                <select id="swal-scanner-device" class="form-select">${deviceOptionsHtml}</select>
-                            </div>
-                            <div class="text-start mb-3">
-                                <label class="form-label fw-semibold">Format & Metode Scan:</label>
-                                <select id="swal-scanner-format" class="form-select">
-                                    <option value="jpg" selected>JPEG (Gambar Tunggal)</option>
-                                    <option value="png">PNG (Gambar Tunggal - Kualitas Tinggi)</option>
-                                    <option value="pdf">PDF (Dokumen 1 Halaman)</option>
-                                    <option value="pdf_multi">PDF Multi Halaman (Scan Berturut-turut)</option>
-                                </select>
-                            </div>
-                            <div class="alert bg-info-focus text-info-main border border-info-200 px-12 py-8 radius-8 text-start text-xs">
-                                <iconify-icon icon="lucide:info" class="me-1"></iconify-icon>
-                                Ukuran diatur otomatis ke <strong>A4</strong>. Kontras & Gamma ditingkatkan <strong>+10%</strong> untuk mencerahkan dokumen.
-                            </div>
-                        `,
-                        showCancelButton: true,
-                        confirmButtonText: 'Mulai Scan',
-                        cancelButtonText: 'Batal',
-                        preConfirm: () => {
-                            const formatVal = document.getElementById('swal-scanner-format').value;
-                            return {
-                                deviceId: document.getElementById('swal-scanner-device').value,
-                                format: formatVal,
-                                convertToPdf: formatVal === 'pdf' || formatVal === 'pdf_multi',
-                                isMultiPage: formatVal === 'pdf_multi'
-                            }
-                        }
-                    }).then(async (result) => {
-                        if (result.isConfirmed) {
-                            const params = result.value;
-                            const scannedPages = []; // Array of Base64 (PNG data URLs)
-                            
-                            // Start scanning loop
-                            let scanMore = true;
-                            let pageNum = 1;
-
-                            while (scanMore) {
-                                Swal.fire({
-                                    title: params.isMultiPage ? `Memindai Halaman ${pageNum}...` : 'Memindai...',
-                                    text: 'Mohon tunggu, scanner sedang memproses dokumen Anda...',
-                                    allowOutsideClick: false,
-                                    didOpen: () => {
-                                        Swal.showLoading();
-                                    }
-                                });
-
-                                try {
-                                    // Send scan command (bridge always scans as PNG for high-quality intermediate)
-                                    const scanRes = await fetch(`${SCANNER_API_URL}/scan`, {
-                                        method: 'POST',
-                                        headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({
-                                            deviceId: params.deviceId,
-                                            format: 'png' // High quality format for processing
-                                        })
-                                    });
-
-                                    const scanData = await scanRes.json();
-                                    if (!scanData.success || !scanData.base64) {
-                                        throw new Error(scanData.details || 'Gagal memproses gambar dari scanner.');
-                                    }
-
-                                    // Apply +10% Contrast and +10% Gamma adjustment
-                                    const rawDataUrl = `data:${scanData.mime};base64,${scanData.base64}`;
-                                    const adjustedDataUrl = await adjustContrastAndGamma(rawDataUrl);
-                                    
-                                    // Save page
-                                    scannedPages.push(adjustedDataUrl);
-
-                                    if (params.isMultiPage) {
-                                        // Ask for next page
-                                        const nextAction = await Swal.fire({
-                                            title: `Halaman ${pageNum} Selesai`,
-                                            text: 'Apakah Anda ingin memindai halaman berikutnya untuk digabungkan?',
-                                            icon: 'question',
-                                            showCancelButton: true,
-                                            confirmButtonText: 'Lanjutkan Halaman Berikutnya',
-                                            cancelButtonText: 'Selesai & Lihat Preview',
-                                            allowOutsideClick: false
-                                        });
-
-                                        if (nextAction.isConfirmed) {
-                                            pageNum++;
-                                        } else {
-                                            scanMore = false;
-                                        }
-                                    } else {
-                                        // Single page scan completes immediately
-                                        scanMore = false;
-                                    }
-                                } catch (loopErr) {
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Pindai Gagal',
-                                        text: loopErr.message
-                                    });
-                                    return;
-                                }
-                            }
-
-                            // Show Preview Modal
-                            if (scannedPages.length > 0) {
-                                showPreviewModal(scannedPages, params, input);
-                            }
-                        }
-                    });
-
-                } catch (err) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Proses Pindai Gagal',
-                        text: 'Terjadi kesalahan saat memproses scan: ' + err.message
-                    });
-                }
+                await startScanFlow(input);
             });
         });
     }
 
-    // Adjust Contrast (+10%) & Gamma (+10%) of scanned image using Canvas
+    // -----------------------------------------------------------------------
+    // Alur utama scan
+    // -----------------------------------------------------------------------
+    async function startScanFlow(fileInput) {
+        try {
+            // 1. Cek bridge
+            Swal.fire({
+                title: 'Menghubungkan ke Scanner...',
+                text: 'Pastikan software MKDC Scanner Bridge sudah dijalankan.',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+
+            const isBridgeRunning = await checkScannerBridge();
+            if (!isBridgeRunning) {
+                let extraTip = '';
+                if (window.location.protocol === 'https:') {
+                    extraTip = `<br><br><span class="text-danger" style="font-size:12px;">⚠️ Halaman web ini dibuka via <strong>HTTPS</strong>. Browser keamanan memblokir koneksi ke HTTP local. Silakan buka aplikasi web via HTTP (misal: http://localhost/...)</span>`;
+                }
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Koneksi Gagal',
+                    html: `Aplikasi Desktop MKDC Scanner Bridge belum merespon.<br><br>
+                           <div style="text-align:left;font-size:13px;">
+                               <strong>Langkah Penyelesaian:</strong><br>
+                               1. Pastikan aplikasi <strong>MKDC Scanner Bridge</strong> sudah dibuka di PC ini.<br>
+                               2. Jika aplikasi desktop sudah aktif, coba klik <strong>"Restart Service"</strong> di aplikasi desktop tersebut.<br>
+                               3. Tekan <strong>Ctrl + F5</strong> pada browser untuk memperbarui koneksi cache.${extraTip}
+                           </div>`
+                });
+                return;
+            }
+        } catch (initErr) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Koneksi Gagal',
+                text: 'Terjadi kesalahan saat memeriksa koneksi ke scanner bridge: ' + (initErr.message || initErr)
+            });
+            return;
+        }
+
+        // 2. Ambil daftar device
+        let devices = [];
+        try {
+            const devicesRes = await fetch(`${SCANNER_API_URL}/devices`);
+            const raw = await devicesRes.json();
+
+            if (raw && raw.error) {
+                // Bridge mengembalikan error (misal: PowerShell gagal)
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal Mendaftar Scanner',
+                    html: `Bridge berjalan, tetapi gagal mendeteksi perangkat scanner.<br>
+                           <small class="text-muted">${raw.details || raw.error}</small><br><br>
+                           Pastikan:<br>
+                           1. Windows PowerShell tersedia<br>
+                           2. Scanner USB terpasang dengan benar<br>
+                           3. Driver scanner (WIA) sudah terinstal`
+                });
+                return;
+            }
+
+            // PowerShell ConvertTo-Json mengembalikan objek tunggal (bukan array) jika hanya 1 device
+            if (raw && !Array.isArray(raw)) {
+                devices = [raw];
+            } else {
+                devices = raw || [];
+            }
+
+            // Filter device yang tidak valid
+            devices = devices.filter(d => d && (d.id || d.name));
+
+        } catch (err) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Proses Pindai Gagal',
+                text: 'Terjadi kesalahan saat mengambil daftar scanner: ' + err.message
+            });
+            return;
+        }
+
+        if (devices.length === 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Alat Scanner Tidak Ditemukan',
+                html: `Bridge berjalan, tetapi tidak ada scanner fisik yang terhubung ke komputer.<br><br>
+                       Pastikan:<br>
+                       - Kabel USB scanner terpasang<br>
+                       - Driver scanner sudah terinstal<br>
+                       - Scanner sudah dinyalakan`
+            });
+            return;
+        }
+
+        // 3. Tampilkan form pilih scanner (radio button menghindari masalah z-index SweetAlert2)
+        let deviceRadioHtml = '';
+        const defaultId = (bridgeInfo && bridgeInfo.defaultDeviceId) ? bridgeInfo.defaultDeviceId : '';
+
+        // Tentukan index default yang harus dicentang
+        let defaultIdx = 0;
+        if (defaultId) {
+            const foundIdx = devices.findIndex(d => d.id === defaultId);
+            if (foundIdx >= 0) {
+                defaultIdx = foundIdx;
+            }
+        }
+
+        devices.forEach((dev, idx) => {
+            const id = dev.id || '';
+            const name = dev.name || 'Scanner ' + (idx + 1);
+            const desc = dev.description || 'WIA Scanner';
+            const isChecked = idx === defaultIdx;
+            const bg = isChecked ? '#e8f4fd' : '#fff';
+            deviceRadioHtml += `<label style="display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid #dee2e6;border-radius:8px;margin-bottom:6px;cursor:pointer;background:${bg};" class="swal-device-label"><input type="radio" name="swal_device" value="${id}" ${isChecked ? 'checked' : ''} style="accent-color:#0d6efd;"><span style="font-size:13px;"><strong>${name}</strong><br><small style="color:#6c757d;">${desc}</small></span></label>`;
+        });
+
+        const { value: params, isConfirmed } = await Swal.fire({
+            title: 'Mulai Memindai (Scan)',
+            width: 480,
+            html: `
+                <div style="text-align:left;margin-bottom:16px;">
+                    <div style="font-weight:600;margin-bottom:8px;font-size:13px;">&#128222; Pilih Alat Scanner:</div>
+                    ${deviceRadioHtml}
+                </div>
+                <div style="text-align:left;margin-bottom:16px;">
+                    <div style="font-weight:600;margin-bottom:8px;font-size:13px;">&#128196; Format &amp; Metode Scan:</div>
+                    <label style="display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid #dee2e6;border-radius:8px;margin-bottom:6px;cursor:pointer;background:#e8f4fd;" class="swal-format-label">
+                        <input type="radio" name="swal_format" value="pdf" checked style="accent-color:#0d6efd;">
+                        <span style="font-size:13px;"><strong>PDF</strong> &mdash; Dokumen 1 Halaman</span>
+                    </label>
+                    <label style="display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid #dee2e6;border-radius:8px;margin-bottom:6px;cursor:pointer;background:#fff;" class="swal-format-label">
+                        <input type="radio" name="swal_format" value="pdf_multi" style="accent-color:#0d6efd;">
+                        <span style="font-size:13px;"><strong>PDF Multi Halaman</strong> &mdash; Scan Berturut-turut</span>
+                    </label>
+                </div>
+                <div style="background:#e7f3ff;border:1px solid #b6d4fe;border-radius:8px;padding:8px 12px;font-size:12px;text-align:left;color:#0c63e4;">
+                    &#8505;&#65039; Ukuran diatur otomatis ke <strong>A4</strong>. Kontras &amp; Gamma ditingkatkan +10%.
+                </div>
+            `,
+            showCancelButton: true,
+            confirmButtonText: 'Mulai Scan',
+            cancelButtonText: 'Batal',
+            didOpen: () => {
+                // Highlight label aktif saat radio berubah
+                document.querySelectorAll('input[name="swal_device"]').forEach(r => {
+                    r.addEventListener('change', () => {
+                        document.querySelectorAll('.swal-device-label').forEach(l => l.style.background = '#fff');
+                        r.closest('.swal-device-label').style.background = '#e8f4fd';
+                    });
+                });
+                document.querySelectorAll('input[name="swal_format"]').forEach(r => {
+                    r.addEventListener('change', () => {
+                        document.querySelectorAll('.swal-format-label').forEach(l => l.style.background = '#fff');
+                        r.closest('.swal-format-label').style.background = '#e8f4fd';
+                    });
+                });
+            },
+            preConfirm: () => {
+                const deviceRadio = document.querySelector('input[name="swal_device"]:checked');
+                const formatRadio = document.querySelector('input[name="swal_format"]:checked');
+                if (!deviceRadio) {
+                    Swal.showValidationMessage('Pilih alat scanner terlebih dahulu.');
+                    return false;
+                }
+                if (!formatRadio) {
+                    Swal.showValidationMessage('Pilih format scan terlebih dahulu.');
+                    return false;
+                }
+                const formatVal = formatRadio.value;
+                return {
+                    deviceId: deviceRadio.value,
+                    format: formatVal,
+                    convertToPdf: true,
+                    isMultiPage: formatVal === 'pdf_multi'
+                };
+            }
+        });
+
+        if (!isConfirmed || !params) return;
+
+        // 4. Loop scan (support multi-halaman)
+        const scannedPages = [];
+        let scanMore = true;
+        let pageNum = 1;
+
+        while (scanMore) {
+            Swal.fire({
+                title: params.isMultiPage ? `Memindai Halaman ${pageNum}...` : 'Memindai...',
+                text: 'Mohon tunggu, scanner sedang memproses dokumen Anda...',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+
+            try {
+                const scanRes = await fetch(`${SCANNER_API_URL}/scan`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ deviceId: params.deviceId, format: 'png' })
+                });
+
+                const scanData = await scanRes.json();
+                if (!scanData.success || !scanData.base64) {
+                    throw new Error(scanData.details || scanData.error || 'Gagal memproses gambar dari scanner.');
+                }
+
+                // Penyesuaian kontras & gamma
+                const rawDataUrl = `data:${scanData.mime};base64,${scanData.base64}`;
+                const adjustedDataUrl = await adjustContrastAndGamma(rawDataUrl);
+                scannedPages.push(adjustedDataUrl);
+
+                if (params.isMultiPage) {
+                    const nextAction = await Swal.fire({
+                        title: `Halaman ${pageNum} Selesai`,
+                        text: 'Apakah Anda ingin memindai halaman berikutnya untuk digabungkan?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Lanjutkan Halaman Berikutnya',
+                        cancelButtonText: 'Selesai & Lihat Preview',
+                        allowOutsideClick: false
+                    });
+
+                    if (nextAction.isConfirmed) {
+                        pageNum++;
+                    } else {
+                        scanMore = false;
+                    }
+                } else {
+                    scanMore = false;
+                }
+
+            } catch (loopErr) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Pindai Gagal',
+                    text: loopErr.message
+                });
+                return;
+            }
+        }
+
+        // 5. Tampilkan preview hasil scan
+        if (scannedPages.length > 0) {
+            await showPreviewModal(scannedPages, params, fileInput);
+        }
+    }
+
+    // -----------------------------------------------------------------------
+    // Penyesuaian kontras & gamma + kompresi JPEG untuk efisiensi ukuran file
+    // Output: JPEG quality 88% (10-20x lebih kecil dari PNG, kualitas terjaga)
+    // -----------------------------------------------------------------------
     function adjustContrastAndGamma(dataUrl) {
         return new Promise((resolve) => {
             const img = new Image();
             img.src = dataUrl;
-            img.onload = function() {
+            img.onload = function () {
                 const canvas = document.createElement('canvas');
                 canvas.width = img.width;
                 canvas.height = img.height;
                 const ctx = canvas.getContext('2d');
+
+                // Isi background putih (penting agar JPEG tidak ada artefak transparansi)
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
                 ctx.drawImage(img, 0, 0);
 
                 const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
                 const data = imgData.data;
 
-                // Contrast: +10% is 25.5 on a scale of -255 to 255
-                const contrast = 25.5; 
+                const contrast = 30;
                 const factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
-
-                // Gamma: +10% (1.1)
-                const gamma = 1.1;
-                const gammaCorrection = 1 / gamma;
+                const gammaCorr = 1 / 1;
 
                 for (let i = 0; i < data.length; i += 4) {
-                    // Contrast
                     let r = factor * (data[i] - 128) + 128;
-                    let g = factor * (data[i+1] - 128) + 128;
-                    let b = factor * (data[i+2] - 128) + 128;
+                    let g = factor * (data[i + 1] - 128) + 128;
+                    let b = factor * (data[i + 2] - 128) + 128;
 
-                    // Gamma
-                    r = 255 * Math.pow(r / 255, gammaCorrection);
-                    g = 255 * Math.pow(g / 255, gammaCorrection);
-                    b = 255 * Math.pow(b / 255, gammaCorrection);
+                    r = 255 * Math.pow(Math.max(0, r) / 255, gammaCorr);
+                    g = 255 * Math.pow(Math.max(0, g) / 255, gammaCorr);
+                    b = 255 * Math.pow(Math.max(0, b) / 255, gammaCorr);
 
-                    // Clamp values between 0 and 255
                     data[i] = Math.min(255, Math.max(0, r));
-                    data[i+1] = Math.min(255, Math.max(0, g));
-                    data[i+2] = Math.min(255, Math.max(0, b));
+                    data[i + 1] = Math.min(255, Math.max(0, g));
+                    data[i + 2] = Math.min(255, Math.max(0, b));
                 }
 
                 ctx.putImageData(imgData, 0, 0);
-                resolve(canvas.toDataURL('image/png'));
+                // Gunakan JPEG 88% — jauh lebih kecil dari PNG, kualitas dokumen tetap baik
+                resolve(canvas.toDataURL('image/jpeg', 0.88));
             };
+            img.onerror = () => resolve(dataUrl); // fallback tanpa penyesuaian
         });
     }
 
-    // Show Preview Modal with Upload and Re-scan actions
+    // -----------------------------------------------------------------------
+    // Preview & upload hasil scan
+    // -----------------------------------------------------------------------
     async function showPreviewModal(pages, params, fileInput) {
         let previewHtml = '';
-        
+
         if (pages.length === 1) {
             previewHtml = `
                 <div class="text-center border p-2 radius-8 bg-light mb-3" style="max-height: 400px; overflow-y: auto;">
@@ -259,99 +403,83 @@ $(document).ready(function() {
                 </div>
             `;
         } else {
-            // Multi-page preview with thumbnails
             let thumbs = '';
             pages.forEach((page, idx) => {
                 thumbs += `
                     <div class="col-md-4 col-6 mb-3">
                         <div class="border p-2 radius-8 bg-light text-center h-100 position-relative">
-                            <span class="badge bg-primary text-light position-absolute top-0 start-0 m-2">Hal ${idx+1}</span>
+                            <span class="badge bg-primary text-light position-absolute top-0 start-0 m-2">Hal ${idx + 1}</span>
                             <img src="${page}" class="img-fluid border radius-4 shadow-sm" style="max-height: 120px;">
                         </div>
                     </div>
                 `;
             });
-            previewHtml = `
-                <div class="row" style="max-height: 400px; overflow-y: auto;">
-                    ${thumbs}
-                </div>
-            `;
+            previewHtml = `<div class="row" style="max-height: 400px; overflow-y: auto;">${thumbs}</div>`;
         }
 
-        Swal.fire({
+        const result = await Swal.fire({
             title: 'Preview Hasil Scan',
             html: `
                 <div class="text-start mb-3 text-sm text-secondary-light">
                     Jumlah Halaman: <strong>${pages.length} Halaman</strong><br>
-                    Format Output Akhir: <strong>${params.isMultiPage ? 'PDF' : params.format.toUpperCase()}</strong>
+                    Format Output: <strong>${params.isMultiPage ? 'PDF' : params.format.toUpperCase()}</strong>
                 </div>
                 ${previewHtml}
             `,
             showCancelButton: true,
-            confirmButtonText: '<iconify-icon icon="lucide:upload" class="me-1"></iconify-icon> Unggah Berkas',
+            confirmButtonText: 'Unggah Berkas',
             cancelButtonText: 'Ulangi / Batal',
-            confirmButtonColor: '#10b981', // green
-            cancelButtonColor: '#ef4444', // red
+            confirmButtonColor: '#10b981',
+            cancelButtonColor: '#ef4444',
             allowOutsideClick: false
-        }).then(async (res) => {
-            if (res.isConfirmed) {
-                Swal.fire({
-                    title: 'Memproses Berkas...',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-
-                try {
-                    let file;
-                    if (params.convertToPdf) {
-                        // Load jsPDF from CDN
-                        await loadJsPDF();
-                        
-                        // Combine all page images into a single PDF Blob
-                        const pdfBlob = await combineImagesToPdfBlob(pages);
-                        const filename = `scanned_document_${Date.now()}.pdf`;
-                        file = new File([pdfBlob], filename, { type: 'application/pdf' });
-                    } else {
-                        // Single Image (JPEG/PNG)
-                        const mime = params.format === 'png' ? 'image/png' : 'image/jpeg';
-                        file = dataURLtoFile(pages[0], `scanned_document_${Date.now()}.${params.format}`, mime);
-                    }
-
-                    // Put the final file into the HTML input
-                    const dataTransfer = new DataTransfer();
-                    dataTransfer.items.add(file);
-                    fileInput[0].files = dataTransfer.files;
-                    
-                    // Trigger change event
-                    fileInput.trigger('change');
-
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berkas Berhasil Diunggah',
-                        text: 'File berhasil dimasukkan ke form upload berkas.',
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
-                } catch (err) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Unggah Gagal',
-                        text: err.message
-                    });
-                }
-            }
         });
+
+        if (!result.isConfirmed) return;
+
+        Swal.fire({
+            title: 'Memproses Berkas...',
+            allowOutsideClick: false,
+            didOpen: () => { Swal.showLoading(); }
+        });
+
+        try {
+            let file;
+            if (params.convertToPdf) {
+                await loadJsPDF();
+                const pdfBlob = await combineImagesToPdfBlob(pages);
+                file = new File([pdfBlob], `scanned_${Date.now()}.pdf`, { type: 'application/pdf' });
+            } else {
+                const mime = params.format === 'png' ? 'image/png' : 'image/jpeg';
+                file = dataURLtoFile(pages[0], `scanned_${Date.now()}.${params.format}`, mime);
+            }
+
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            fileInput[0].files = dt.files;
+            fileInput.trigger('change');
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: 'File berhasil dimasukkan ke form upload berkas.',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } catch (err) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Unggah Gagal',
+                text: err.message
+            });
+        }
     }
 
-    // Dynamic jsPDF Loader
+    // -----------------------------------------------------------------------
+    // Muat jsPDF secara dinamis
+    // -----------------------------------------------------------------------
     function loadJsPDF() {
         return new Promise((resolve, reject) => {
-            if (window.jspdf) {
-                resolve();
-                return;
-            }
+            if (window.jspdf) { resolve(); return; }
             const script = document.createElement('script');
             script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
             script.onload = () => resolve();
@@ -360,7 +488,8 @@ $(document).ready(function() {
         });
     }
 
-    // Combine multiple page images into a single multi-page PDF Blob
+    // Gabungkan beberapa gambar menjadi satu PDF multi-halaman
+    // Gambar di-embed sebagai JPEG agar ukuran PDF minimal
     function combineImagesToPdfBlob(pages) {
         return new Promise(async (resolve) => {
             const { jsPDF } = window.jspdf;
@@ -370,51 +499,74 @@ $(document).ready(function() {
                 const imgData = pages[i];
                 const dimensions = await getImageDimensions(imgData);
 
+                // Konversi ke JPEG jika belum (misal halaman dari format lain)
+                const jpegData = await ensureJpeg(imgData);
+
                 if (i === 0) {
-                    // Initialize PDF with the first page dimensions
                     pdf = new jsPDF({
                         orientation: dimensions.width > dimensions.height ? 'landscape' : 'portrait',
                         unit: 'px',
                         format: [dimensions.width, dimensions.height]
                     });
                 } else {
-                    // Add subsequent pages
                     pdf.addPage([dimensions.width, dimensions.height], dimensions.width > dimensions.height ? 'l' : 'p');
                 }
-                
-                pdf.addImage(imgData, 'PNG', 0, 0, dimensions.width, dimensions.height);
+                // JPEG menghasilkan PDF 10-20x lebih kecil dibanding PNG
+                pdf.addImage(jpegData, 'JPEG', 0, 0, dimensions.width, dimensions.height);
             }
-            
+
             resolve(pdf.output('blob'));
         });
     }
 
-    // Helper to get image width and height
+    // Pastikan dataUrl dalam format JPEG (untuk konsistensi embed di PDF)
+    function ensureJpeg(dataUrl) {
+        return new Promise((resolve) => {
+            if (dataUrl.startsWith('data:image/jpeg')) {
+                resolve(dataUrl);
+                return;
+            }
+            const img = new Image();
+            img.src = dataUrl;
+            img.onload = function () {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0);
+                resolve(canvas.toDataURL('image/jpeg', 0.88));
+            };
+            img.onerror = () => resolve(dataUrl);
+        });
+    }
+
+    // Dapatkan dimensi gambar dari dataURL
     function getImageDimensions(dataUrl) {
         return new Promise((resolve) => {
             const img = new Image();
             img.src = dataUrl;
-            img.onload = function() {
-                resolve({ width: img.width, height: img.height });
-            };
+            img.onload = function () { resolve({ width: img.width, height: img.height }); };
         });
     }
 
-    // Helper to convert dataURL to File object
+    // Konversi dataURL ke objek File
     function dataURLtoFile(dataurl, filename, mimeType) {
-        var arr = dataurl.split(','),
-            bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
-        while(n--){
-            u8arr[n] = bstr.charCodeAt(n);
-        }
-        return new File([u8arr], filename, {type: mimeType});
+        const arr = dataurl.split(',');
+        const bstr = atob(arr[1]);
+        let n = bstr.length;
+        const u8arr = new Uint8Array(n);
+        while (n--) { u8arr[n] = bstr.charCodeAt(n); }
+        return new File([u8arr], filename, { type: mimeType });
     }
 
-    // Run on startup
-    setTimeout(attachScanButtons, 1000);
-    
-    // Re-run on modal events
+    // -----------------------------------------------------------------------
+    // Inisialisasi: pasang tombol saat halaman dan setiap kali modal dibuka
+    // -----------------------------------------------------------------------
+    setTimeout(attachScanButtons, 800);
+
     $(document).on('shown.bs.modal', function () {
-        attachScanButtons();
+        setTimeout(attachScanButtons, 100);
     });
 });

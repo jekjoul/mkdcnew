@@ -2,11 +2,29 @@
 <?php include viewPath('includes/header'); ?>
 
 <div class="dashboard-main-body">
+
+    <!-- Nav Tab Pengaturan Kedisiplinan -->
+    <ul class="nav nav-pills mb-24 border-bottom pb-12 gap-2" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active radius-8 fw-semibold" href="<?php echo url('kedisiplinan/kategori'); ?>">
+                <iconify-icon icon="solar:settings-linear" class="text-lg me-1"></iconify-icon> Kategori Pelanggaran (Poin)
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link radius-8 fw-semibold" href="<?php echo url('kedisiplinan/sanksi'); ?>">
+                <iconify-icon icon="solar:shield-warning-bold-duotone" class="text-lg me-1"></iconify-icon> Aturan Status Sanksi & Pembinaan Poin
+            </a>
+        </li>
+    </ul>
+
     <div class="row gy-4">
         <div class="col-lg-8">
             <div class="card">
-                <div class="card-header bg-info-600 text-white">
+                <div class="card-header bg-info-600 text-white d-flex justify-content-between align-items-center">
                     <h6 class="text-light mb-0">Daftar Kategori Pelanggaran Sekolah</h6>
+                    <a href="<?php echo url('kedisiplinan'); ?>" class="btn btn-sm btn-light text-dark radius-8">
+                        ← Kembali ke Data Kedisiplinan
+                    </a>
                 </div>
                 <div class="card-body">
                     <table class="table bordered-table mb-0">

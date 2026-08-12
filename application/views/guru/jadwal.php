@@ -253,8 +253,8 @@
     <div class="card" style="border-radius:16px; overflow:hidden;">
         <div class="card-header bg-warning-900 d-flex align-items-center justify-content-between gap-3">
             <div>
-                <h6 class="text-light mb-0"><iconify-icon icon="akar-icons:schedule" style="vertical-align:middle;margin-right:6px;"></iconify-icon>Jadwal Mengajar Saya</h6>
-                <small class="text-light" style="opacity:.75;">Tampilan tabel mingguan &mdash; jam pelajaran &times; hari</small>
+                <h6 class="text-light mb-0">Jadwal Mengajar Saya</h6>
+                <small class="text-light mobile-hide" style="opacity:.75;">Tampilan tabel mingguan &mdash; jam pelajaran &times; hari</small>
             </div>
             <div class="text-end text-light" style="white-space:nowrap; font-size:13px; opacity:.8;">
                 <?php echo date('l, d M Y'); ?>
@@ -282,8 +282,8 @@
                     <?php endforeach; ?>
                 </div>
 
-                <!-- Tabel Jadwal -->
-                <div class="schedule-wrapper">
+                <!-- TAMPILAN DESKTOP (Tabel Jadwal) -->
+                <div class="schedule-wrapper d-none d-md-block">
                     <table class="schedule-table">
                         <thead>
                             <tr>
@@ -308,7 +308,6 @@
                                         <?php foreach ($grid[$slot][$hari] as $entry):
                                             $idx = $mapelKeys[$entry->nama_mapel];
                                             $c   = getMapelColor($idx, $palette);
-                                            // Format kelas: nama_tingkat - nama_rombel (jam_mulai-jam_selesai)
                                             $kelasLabel = trim($entry->nama_tingkat . ' - ' . $entry->nama_rombel);
                                             $waktu = hitungWaktuSlot($hari, $slot, $waktuSettings);
                                             if ($waktu) {
@@ -334,6 +333,85 @@
                     </table>
                 </div>
 
+                <!-- TAMPILAN MOBILE (Accordion Per Hari + Live Search) -->
+                <div class="d-block d-md-none">
+                    <!-- Form Search Mobile -->
+                    <div class="mb-16">
+                        <div class="position-relative">
+                            <input type="text" id="mobileJadwalSearch" class="form-control text-sm radius-8 ps-40" placeholder="🔍 Cari Hari, Mapel, atau Rombel...">
+                            <span class="position-absolute top-50 start-0 translate-middle-y ms-16 text-secondary-light d-flex align-items-center">
+                                <iconify-icon icon="solar:magnifer-linear" class="text-lg"></iconify-icon>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="accordion custom-accordion" id="accordionGuruJadwalMobile">
+                        <?php foreach ($hariTampil as $hIdx => $hari): ?>
+                            <?php
+                            // Kumpulkan semua jadwal mengajar pada hari ini
+                            $jadwalHari = [];
+                            foreach ($slots as $slot) {
+                                if (!empty($grid[$slot][$hari])) {
+                                    foreach ($grid[$slot][$hari] as $entry) {
+                                        $entry->slot_ke = $slot;
+                                        $jadwalHari[] = $entry;
+                                    }
+                                }
+                            }
+                            $accordionId = "collapseJadwalHari" . $hIdx;
+                            $headingId   = "headingJadwalHari" . $hIdx;
+                            $searchableText = strtolower(html_escape($hari));
+                            foreach ($jadwalHari as $jh) {
+                                $searchableText .= ' ' . strtolower(html_escape($jh->nama_mapel . ' ' . $jh->nama_tingkat . ' ' . $jh->nama_rombel));
+                            }
+                            ?>
+                            <div class="accordion-item border radius-8 mb-12 mobile-jadwal-card" data-search="<?php echo $searchableText; ?>">
+                                <h2 class="accordion-header" id="<?php echo $headingId; ?>">
+                                    <button class="accordion-button <?php echo ($hIdx !== 0) ? 'collapsed' : ''; ?> px-16 py-12 text-sm fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#<?php echo $accordionId; ?>" aria-expanded="<?php echo ($hIdx === 0) ? 'true' : 'false'; ?>">
+                                        <div class="d-flex align-items-center justify-content-between w-100 me-12">
+                                            <span class="text-primary-600 fw-bold fs-6"><?php echo html_escape($hari); ?></span>
+                                            <span class="badge bg-primary-50 text-primary-700 px-10 py-4 radius-4 text-xs" style="position: relative;right: 40px;"><?php echo count($jadwalHari); ?> Jam Mengajar</span>
+                                        </div>
+                                    </button>
+                                </h2>
+                                <div id="<?php echo $accordionId; ?>" class="accordion-collapse collapse <?php echo ($hIdx === 0) ? 'show' : ''; ?>" aria-labelledby="<?php echo $headingId; ?>" data-bs-parent="#accordionGuruJadwalMobile">
+                                    <div class="accordion-body p-16 bg-neutral-50 radius-bottom-8">
+                                        <?php if (!empty($jadwalHari)): ?>
+                                            <div class="d-flex flex-column gap-12">
+                                                <?php foreach ($jadwalHari as $entry): ?>
+                                                    <?php
+                                                    $idx = $mapelKeys[$entry->nama_mapel];
+                                                    $c   = getMapelColor($idx, $palette);
+                                                    $waktu = hitungWaktuSlot($hari, $entry->slot_ke, $waktuSettings);
+                                                    $rombelStr = trim($entry->nama_tingkat . ' - ' . $entry->nama_rombel);
+                                                    ?>
+                                                    <div class="p-12 radius-8 border-start border-4 shadow-xs" style="background:<?php echo $c['bg']; ?>; border-color:<?php echo $c['border']; ?>!important; color:<?php echo $c['text']; ?>;">
+                                                        <div class="d-flex align-items-center justify-content-between mb-4">
+                                                            <span class="badge px-8 py-2 radius-4 text-xs fw-bold" style="background:<?php echo $c['border']; ?>; color:#fff;">
+                                                                JP Ke-<?php echo $entry->slot_ke; ?> <?php echo $waktu ? '(' . $waktu['mulai'] . ' - ' . $waktu['selesai'] . ' WIB)' : ''; ?>
+                                                            </span>
+                                                            <span class="fw-bold text-xs"><iconify-icon icon="solar:users-group-two-rounded-bold" class="me-2"></iconify-icon><?php echo html_escape($rombelStr); ?></span>
+                                                        </div>
+                                                        <div class="fw-bold text-sm mt-4"><?php echo html_escape($entry->nama_mapel); ?></div>
+                                                    </div>
+                                                <?php endforeach; ?>
+                                            </div>
+                                        <?php else: ?>
+                                            <div class="text-center py-12 text-secondary-light">
+                                                <p class="text-xs mb-0">Tidak ada jadwal mengajar pada hari <?php echo html_escape($hari); ?>.</p>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <div id="noMobileJadwalResult" class="text-center py-24 text-secondary-light d-none">
+                        <iconify-icon icon="solar:magnifer-bug-linear" style="font-size: 32px;" class="mb-8"></iconify-icon>
+                        <p class="text-sm">Jadwal mengajar tidak ditemukan.</p>
+                    </div>
+                </div>
+
                 <!-- Ringkasan total -->
                 <div class="mt-3 d-flex flex-wrap gap-3">
                     <div class="p-3 rounded-3" style="background:#f8fafc;border:1px solid #e2e8f0;">
@@ -356,3 +434,27 @@
 
 </div>
 <?php include viewPath('includes/footer'); ?>
+<script>
+    $(document).ready(function() {
+        $('#mobileJadwalSearch').on('keyup input', function() {
+            let q = $(this).val().toLowerCase().trim();
+            let matchCount = 0;
+
+            $('.mobile-jadwal-card').each(function() {
+                let text = $(this).attr('data-search') || '';
+                if (text.indexOf(q) !== -1) {
+                    $(this).removeClass('d-none');
+                    matchCount++;
+                } else {
+                    $(this).addClass('d-none');
+                }
+            });
+
+            if (matchCount === 0) {
+                $('#noMobileJadwalResult').removeClass('d-none');
+            } else {
+                $('#noMobileJadwalResult').addClass('d-none');
+            }
+        });
+    });
+</script>

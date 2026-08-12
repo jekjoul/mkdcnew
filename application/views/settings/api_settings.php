@@ -90,6 +90,39 @@ defined('BASEPATH') OR exit('No direct script access allowed'); ?>
                         </div>
                     </div>
 
+                    <!-- Integrasi Mesin Sidik Jari -->
+                    <div class="mb-3">
+                        <h6 class="text-primary-600 mb-2">
+                            <iconify-icon icon="solar:fingerprint-linear" class="align-middle mr-1 text-lg"></iconify-icon>
+                            Integrasi Mesin Sidik Jari (Fingerprint)
+                        </h6>
+                        <hr class="mt-1 mb-3">
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold text-secondary-light" for="fingerprint_api_url">URL Endpoint API Server Online</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control bg-light" name="fingerprint_api_url" id="fingerprint_api_url" value="<?php echo url('api/presensi') ?>" readonly />
+                                    <button class="btn btn-outline-secondary" type="button" onclick="navigator.clipboard.writeText(document.getElementById('fingerprint_api_url').value); alert('URL disalin!')">
+                                        Salin
+                                    </button>
+                                </div>
+                                <div class="text-xs text-secondary-light mt-1">Gunakan URL ini pada file <code>config.json</code> di komputer lokal sekolah.</div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold text-secondary-light" for="fingerprint_api_token">API Token Keamanan</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control bg-light" name="fingerprint_api_token" id="fingerprint_api_token" value="<?php echo $api_token ?>" readonly />
+                                    <button class="btn btn-outline-secondary" type="button" onclick="navigator.clipboard.writeText(document.getElementById('fingerprint_api_token').value); alert('Token disalin!')">
+                                        Salin
+                                    </button>
+                                </div>
+                                <div class="text-xs text-secondary-light mt-1">Token rahasia untuk otentikasi koneksi antara komputer lokal dan server online.</div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
                 
                 <div class="card-footer text-end bg-transparent border-top-0 pt-0 pb-24 px-24">

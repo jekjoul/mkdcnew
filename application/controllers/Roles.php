@@ -9,6 +9,62 @@ class Roles extends MY_Controller
 		parent::__construct();
 		$this->page_data['page']->title = 'Roles Management';
 		$this->page_data['page']->menu = 'roles';
+		$this->ensureKedisiplinanPermissions();
+	}
+
+	private function ensureKedisiplinanPermissions()
+	{
+		if ($this->db->table_exists('permissions')) {
+			$parent = $this->db->get_where('permissions', ['code' => 'menu_kedisiplinan'])->row();
+			$parentId = $parent ? $parent->id : null;
+			$level = $parent ? ($parent->level + 1) : 2;
+
+			$newPerms = [
+				[
+					'code' => 'kedisiplinan_kategori',
+					'title' => 'Atur Kategori Poin Kedisiplinan'
+				],
+				[
+					'code' => 'kedisiplinan_bk',
+					'title' => 'Tindak Lanjut BK Kedisiplinan'
+				],
+				[
+					'code' => 'kedisiplinan_add',
+					'title' => 'Tambah Laporan Kedisiplinan'
+				],
+				[
+					'code' => 'kedisiplinan_delete',
+					'title' => 'Hapus Laporan Kedisiplinan'
+				]
+			];
+
+			foreach ($newPerms as $np) {
+				$exist = $this->db->get_where('permissions', ['code' => $np['code']])->row();
+				if (!$exist) {
+					$this->db->insert('permissions', [
+						'code' => $np['code'],
+						'title' => $np['title'],
+						'parent_id' => $parentId,
+						'level' => $level
+					]);
+				}
+
+				if ($this->db->table_exists('role_permissions')) {
+					$rolesToGrant = array_filter(array_unique([1, $this->session->userdata('role')]));
+					foreach ($rolesToGrant as $rId) {
+						if (!empty($rId)) {
+							$hasRolePerm = $this->db->get_where('role_permissions', ['role' => $rId, 'permission' => $np['code']])->row();
+							if (!$hasRolePerm) {
+								$this->db->insert('role_permissions', [
+									'role' => $rId,
+									'permission' => $np['code']
+								]);
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
 	public function index()

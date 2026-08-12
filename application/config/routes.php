@@ -49,9 +49,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | Examples:	my-controller/index	-> my_controller/index
 |		my-controller/my-method	-> my_controller/my_method
 */
-$route['default_controller'] = 'welcome';
+// Switch ke 'login' agar pengunjung langsung ke Halaman Login tanpa melewati Landing Page
+// Untuk mengaktifkan kembali Landing Page di masa depan, ganti 'login' menjadi 'welcome'
+$route['default_controller'] = 'login';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
+
+// Halaman Offline (Tidak Ada Koneksi Internet)
+$route['offline'] = 'errors/offline';
 
 // [AdminLTE]
 // $route['adminlte/(:any)'] = 'adminlte/main/$1';

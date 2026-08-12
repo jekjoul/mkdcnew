@@ -134,241 +134,175 @@ if (empty($row->id_ptk)) {
                                 </div>
 
                                 <div class="card-body py-16 px-24">
+                                    <?php
+                                    if (!function_exists('renderDapodikStatusIcon')) {
+                                        function renderDapodikStatusIcon($val) {
+                                            $clean = is_string($val) ? trim($val) : $val;
+                                            $is_filled = (!empty($clean) && $clean !== '0' && $clean !== '-' && $clean !== '0000-00-00' && $clean !== 'Belum diisi' && $clean !== '0, 0' && $clean !== 'RT 0 RW 0');
+                                            if ($is_filled) {
+                                                return '<button type="button" class="text-success bg-transparent border-0 p-0" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Data sudah diisi"><iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon></button>';
+                                            } else {
+                                                return '<button type="button" class="text-danger bg-transparent border-0 p-0" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-danger" data-bs-title="Segera lengkapi data"><iconify-icon icon="solar:close-square-bold" class="text-xl"></iconify-icon></button>';
+                                            }
+                                        }
+                                    }
+                                    ?>
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
+                                            <div class="form-switch switch-primary py-12 px-16 border radius-8 mb-16">
                                                 <div class="align-items-center gap-3 d-flex justify-content-between">
                                                     <div>
-                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
-                                                            Nama Lengkap :
-                                                        </span>
-                                                        <br>
-                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
-                                                            <?php echo $row->nama_ptk ?>
-                                                        </span>&nbsp
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">Nama Lengkap :</span><br>
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light"><?php echo html_escape($row->nama_ptk ?: '-') ?></span>
                                                     </div>
-
-                                                    <button class="text-success " data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
-                                                    </button>
-
-                                                </div>
-                                            </div>
-
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
-                                                <div class="align-items-center gap-3 d-flex justify-content-between">
-                                                    <div>
-                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
-                                                            Jenis Kelamin :
-                                                        </span><br>
-                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
-                                                            <?php echo $row->jenis_kelamin ?>
-                                                        </span>
-                                                    </div>
-                                                    <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
-                                                    </button>
-                                                </div>
-                                            </div>
-
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
-                                                <div class="align-items-center gap-3 d-flex justify-content-between">
-                                                    <div>
-                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
-                                                            Tempat Tanggal Lahir :
-                                                        </span><br>
-                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
-                                                            <?php echo $row->tempat_lahir . ', ' . date('d F Y', strtotime($row->tanggal_lahir)) ?>
-                                                        </span>
-                                                    </div>
-                                                    <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
-                                                <div class="align-items-center gap-3 d-flex justify-content-between">
-                                                    <div>
-                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
-                                                            Agama :
-                                                        </span><br>
-                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
-                                                            <?php echo $row->agama ?>
-                                                        </span>
-                                                    </div>
-                                                    <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
-                                                <div class="align-items-center gap-3 d-flex justify-content-between">
-                                                    <div>
-                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
-                                                            Status Perkawinan :
-                                                        </span><br>
-                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
-                                                            <?php echo $row->status_perkawinan ?>
-                                                        </span>
-                                                    </div>
-                                                    <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
-                                                <div class="align-items-center gap-3 d-flex justify-content-between">
-                                                    <div>
-                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
-                                                            Nama Ibu Kandung :
-                                                        </span><br>
-                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
-                                                            <?php echo $row->nama_ibu_kandung ?>
-                                                        </span>
-                                                    </div>
-                                                    <button class="text-danger" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-danger" data-bs-title="Tidak Sesuai Dapodik : Yani">
-                                                        <iconify-icon icon="ion:warning" class="text-xl"></iconify-icon>
-                                                    </button>
+                                                    <?php echo renderDapodikStatusIcon($row->nama_ptk); ?>
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div class="col-md-6">
-                                            <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
+                                            <div class="form-switch switch-primary py-12 px-16 border radius-8 mb-16">
                                                 <div class="align-items-center gap-3 d-flex justify-content-between">
                                                     <div>
-                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
-                                                            NIK :
-                                                        </span><br>
-                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
-                                                            <?php echo $row->nik ?>
-                                                        </span>
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">Jenis Kelamin :</span><br>
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light"><?php echo html_escape($row->jenis_kelamin ?: '-') ?></span>
                                                     </div>
-                                                    <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
-                                                    </button>
+                                                    <?php echo renderDapodikStatusIcon($row->jenis_kelamin); ?>
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div class="col-md-6">
-                                            <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
+                                            <div class="form-switch switch-primary py-12 px-16 border radius-8 mb-16">
                                                 <div class="align-items-center gap-3 d-flex justify-content-between">
                                                     <div>
-                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
-                                                            NUPTK :
-                                                        </span><br>
-                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
-                                                            <?php echo ($row->nuptk ? $row->nuptk : '-') ?>
-                                                        </span>
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">Tempat Tanggal Lahir :</span><br>
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light"><?php echo html_escape($row->tempat_lahir) . ($row->tanggal_lahir && $row->tanggal_lahir !== '0000-00-00' ? ', ' . date('d F Y', strtotime($row->tanggal_lahir)) : '') ?></span>
                                                     </div>
-                                                    <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
-                                                    </button>
+                                                    <?php echo renderDapodikStatusIcon($row->tempat_lahir && $row->tanggal_lahir && $row->tanggal_lahir !== '0000-00-00' ? $row->tempat_lahir : ''); ?>
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div class="col-md-6">
-                                            <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
+                                            <div class="form-switch switch-primary py-12 px-16 border radius-8 mb-16">
                                                 <div class="align-items-center gap-3 d-flex justify-content-between">
                                                     <div>
-                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
-                                                            SK Pengangkatan :
-                                                        </span><br>
-                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
-                                                            <?php echo ($row->no_sk_pengangkatan ? $row->no_sk_pengangkatan : '-') ?>
-                                                        </span>
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">Agama :</span><br>
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light"><?php echo html_escape($row->agama ?: '-') ?></span>
                                                     </div>
-                                                    <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
-                                                    </button>
+                                                    <?php echo renderDapodikStatusIcon($row->agama); ?>
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div class="col-md-6">
-                                            <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
+                                            <div class="form-switch switch-primary py-12 px-16 border radius-8 mb-16">
                                                 <div class="align-items-center gap-3 d-flex justify-content-between">
                                                     <div>
-                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
-                                                            TMT Pengangkatan :
-                                                        </span><br>
-                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
-                                                            <?php echo ($row->tgl_sk_pengangkatan ? date('d F Y', strtotime($row->tgl_sk_pengangkatan)) : '-') ?>
-                                                        </span>
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">Status Perkawinan :</span><br>
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light"><?php echo html_escape($row->status_perkawinan ?: '-') ?></span>
                                                     </div>
-                                                    <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
-                                                    </button>
+                                                    <?php echo renderDapodikStatusIcon($row->status_perkawinan); ?>
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div class="col-md-6">
-                                            <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
+                                            <div class="form-switch switch-primary py-12 px-16 border radius-8 mb-16">
                                                 <div class="align-items-center gap-3 d-flex justify-content-between">
                                                     <div>
-                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
-                                                            Sekolah Induk :
-                                                        </span><br>
-                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
-                                                            Ya
-                                                        </span>
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">Nama Ibu Kandung :</span><br>
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light"><?php echo html_escape($row->nama_ibu_kandung ?: '-') ?></span>
                                                     </div>
-                                                    <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
-                                                    </button>
+                                                    <?php echo renderDapodikStatusIcon($row->nama_ibu_kandung); ?>
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div class="col-md-6">
-                                            <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
+                                            <div class="form-switch switch-primary py-12 px-16 border radius-8 mb-16">
                                                 <div class="align-items-center gap-3 d-flex justify-content-between">
                                                     <div>
-                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
-                                                            Alamat :
-                                                        </span><br>
-                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
-                                                            <?php echo $row->alamat . ' RT ' . $row->rt . ' RW ' . $row->rw . ' Desa ' . $row->kelurahan_desa . ' Kec. ' . $row->kecamatan . ' Kab. ' . $row->kabupaten . ' Prov. ' . $row->provinsi ?>
-                                                        </span>
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">NIK :</span><br>
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light"><?php echo html_escape($row->nik ?: '-') ?></span>
                                                     </div>
-                                                    <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
-                                                    </button>
+                                                    <?php echo renderDapodikStatusIcon($row->nik); ?>
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div class="col-md-6">
-                                            <div class="form-switch switch-primary py-12 px-16 border radius-8  mb-16">
+                                            <div class="form-switch switch-primary py-12 px-16 border radius-8 mb-16">
                                                 <div class="align-items-center gap-3 d-flex justify-content-between">
                                                     <div>
-                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">
-                                                            Status Kepegawaian :
-                                                        </span><br>
-                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light ">
-                                                            <?php echo $row->penugasan . ' (' . $row->status_pegawai . ')' ?>
-                                                        </span>
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">NUPTK :</span><br>
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light"><?php echo html_escape($row->nuptk ?: '-') ?></span>
                                                     </div>
-                                                    <button class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Sesuai Dapodik">
-                                                        <iconify-icon icon="material-symbols:check-box" class="text-xl"></iconify-icon>
-                                                    </button>
+                                                    <?php echo renderDapodikStatusIcon($row->nuptk); ?>
                                                 </div>
                                             </div>
                                         </div>
 
+                                        <div class="col-md-6">
+                                            <div class="form-switch switch-primary py-12 px-16 border radius-8 mb-16">
+                                                <div class="align-items-center gap-3 d-flex justify-content-between">
+                                                    <div>
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">SK Pengangkatan :</span><br>
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light"><?php echo html_escape($row->no_sk_pengangkatan ?: '-') ?></span>
+                                                    </div>
+                                                    <?php echo renderDapodikStatusIcon($row->no_sk_pengangkatan); ?>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="form-switch switch-primary py-12 px-16 border radius-8 mb-16">
+                                                <div class="align-items-center gap-3 d-flex justify-content-between">
+                                                    <div>
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">TMT Pengangkatan :</span><br>
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light"><?php echo ($row->tgl_sk_pengangkatan && $row->tgl_sk_pengangkatan !== '0000-00-00' ? date('d F Y', strtotime($row->tgl_sk_pengangkatan)) : '-') ?></span>
+                                                    </div>
+                                                    <?php echo renderDapodikStatusIcon($row->tgl_sk_pengangkatan); ?>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="form-switch switch-primary py-12 px-16 border radius-8 mb-16">
+                                                <div class="align-items-center gap-3 d-flex justify-content-between">
+                                                    <div>
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">Sekolah Induk :</span><br>
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light">Ya</span>
+                                                    </div>
+                                                    <?php echo renderDapodikStatusIcon('Ya'); ?>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="form-switch switch-primary py-12 px-16 border radius-8 mb-16">
+                                                <div class="align-items-center gap-3 d-flex justify-content-between">
+                                                    <div>
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">Alamat :</span><br>
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light"><?php echo html_escape(($row->alamat ? $row->alamat : '-') . ' RT ' . ($row->rt ?: '0') . ' RW ' . ($row->rw ?: '0')) ?></span>
+                                                    </div>
+                                                    <?php echo renderDapodikStatusIcon($row->alamat); ?>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="form-switch switch-primary py-12 px-16 border radius-8 mb-16">
+                                                <div class="align-items-center gap-3 d-flex justify-content-between">
+                                                    <div>
+                                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light fst-italic">Status Kepegawaian :</span><br>
+                                                        <span class="form-check-label line-height-1 fw-semibold text-primary-light"><?php echo html_escape(($row->penugasan ?: '') . ($row->status_pegawai ? ' (' . $row->status_pegawai . ')' : '')) ?></span>
+                                                    </div>
+                                                    <?php echo renderDapodikStatusIcon($row->status_pegawai); ?>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
