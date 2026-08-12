@@ -90,6 +90,7 @@ class Perangkat_pembelajaran_model extends MY_Model
         $this->db->join('mapel m', 'm.id_mapel = pm.id_mapel');
         $this->db->join('ptk', 'ptk.id_ptk = pm.id_ptk', 'left');
         $this->db->where('pm.id_pembelajaran_mapel', (int) $id_pembelajaran_mapel);
+        $this->db->reconnect();
         $query = $this->db->get();
         if ($query) {
             return $query->row();
