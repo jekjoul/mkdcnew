@@ -90,15 +90,45 @@ class GoogleAI_Helper
         $raw_json = $res['candidates'][0]['content']['parts'][0]['text'];
         $clean_json = trim($raw_json);
         
-        // Remove markdown block if AI somehow returned it
-        if (strpos($clean_json, '```') === 0) {
-            $clean_json = preg_replace('/^```(?:json)?|```$/i', '', $clean_json);
-            $clean_json = trim($clean_json);
+        // Remove markdown block if AI returned it (even if inside the string)
+        if (preg_match('/^```(?:json)?\s*(.*?)\s*```$/is', $clean_json, $matches)) {
+            $clean_json = trim($matches[1]);
+        } else {
+            // Fallback: search for first [ or { and last ] or } to extract JSON
+            $first_bracket = strpos($clean_json, '[');
+            $first_curly = strpos($clean_json, '{');
+            $start = false;
+            
+            if ($first_bracket !== false && $first_curly !== false) {
+                $start = min($first_bracket, $first_curly);
+            } elseif ($first_bracket !== false) {
+                $start = $first_bracket;
+            } elseif ($first_curly !== false) {
+                $start = $first_curly;
+            }
+            
+            if ($start !== false) {
+                $last_bracket = strrpos($clean_json, ']');
+                $last_curly = strrpos($clean_json, '}');
+                $end = false;
+                
+                if ($last_bracket !== false && $last_curly !== false) {
+                    $end = max($last_bracket, $last_curly);
+                } elseif ($last_bracket !== false) {
+                    $end = $last_bracket;
+                } elseif ($last_curly !== false) {
+                    $end = $last_curly;
+                }
+                
+                if ($end !== false && $end > $start) {
+                    $clean_json = substr($clean_json, $start, $end - $start + 1);
+                }
+            }
         }
 
         $agenda_data = json_decode($clean_json, true);
         if (!is_array($agenda_data)) {
-            return ['error' => 'Format JSON respon AI tidak valid untuk diproses.'];
+            return ['error' => 'Format JSON respon AI tidak valid untuk diproses. Respon mentah: ' . substr($raw_json, 0, 200)];
         }
 
         return $agenda_data;
@@ -211,14 +241,45 @@ class GoogleAI_Helper
         $raw_json = $res['candidates'][0]['content']['parts'][0]['text'];
         $clean_json = trim($raw_json);
 
-        if (strpos($clean_json, '```') === 0) {
-            $clean_json = preg_replace('/^```(?:json)?|```$/i', '', $clean_json);
-            $clean_json = trim($clean_json);
+        // Remove markdown block if AI returned it (even if inside the string)
+        if (preg_match('/^```(?:json)?\s*(.*?)\s*```$/is', $clean_json, $matches)) {
+            $clean_json = trim($matches[1]);
+        } else {
+            // Fallback: search for first [ or { and last ] or } to extract JSON
+            $first_bracket = strpos($clean_json, '[');
+            $first_curly = strpos($clean_json, '{');
+            $start = false;
+            
+            if ($first_bracket !== false && $first_curly !== false) {
+                $start = min($first_bracket, $first_curly);
+            } elseif ($first_bracket !== false) {
+                $start = $first_bracket;
+            } elseif ($first_curly !== false) {
+                $start = $first_curly;
+            }
+            
+            if ($start !== false) {
+                $last_bracket = strrpos($clean_json, ']');
+                $last_curly = strrpos($clean_json, '}');
+                $end = false;
+                
+                if ($last_bracket !== false && $last_curly !== false) {
+                    $end = max($last_bracket, $last_curly);
+                } elseif ($last_bracket !== false) {
+                    $end = $last_bracket;
+                } elseif ($last_curly !== false) {
+                    $end = $last_curly;
+                }
+                
+                if ($end !== false && $end > $start) {
+                    $clean_json = substr($clean_json, $start, $end - $start + 1);
+                }
+            }
         }
 
         $media_data = json_decode($clean_json, true);
         if (!is_array($media_data)) {
-            return ['error' => 'Format JSON respon AI tidak valid untuk diproses.'];
+            return ['error' => 'Format JSON respon AI tidak valid untuk diproses. Respon mentah: ' . substr($raw_json, 0, 200)];
         }
 
         return $media_data;
