@@ -976,6 +976,17 @@ if (!function_exists('hasPermissions')) {
 			return false;
 		}
 
+		// Hindari infinite recursion
+		static $checking = false;
+		if (!$checking && ($code === 'perangkat_pembelajaran_list' || $code === 'perangkat_pembelajaran_edit')) {
+			$checking = true;
+			$has_guru_perangkat = hasPermissions('menu_perangkat_guru');
+			$checking = false;
+			if ($has_guru_perangkat) {
+				return true;
+			}
+		}
+
 		// Auto-create tabel user_permissions jika belum ada
 		if (!$CI->db->table_exists('user_permissions')) {
 			$CI->load->dbforge();

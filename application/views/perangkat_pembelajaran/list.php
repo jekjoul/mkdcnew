@@ -49,7 +49,7 @@
                                 <td><?php echo html_escape($row->tahun_pelajaran . ' (' . $row->semester . ')') ?></td>
                                 <td><?php echo html_escape(trim( $row->nama_tingkat . ' - ' . $row->nama_rombel)) ?></td>
                                 <td><?php echo html_escape($row->nama_mapel) ?></td>
-                                <td><?php echo html_escape($row->nama_ptk ?: '-') ?></td>
+                                <td><?php echo html_escape(!empty($row->nama_ptk) ? $row->nama_ptk : '-') ?></td>
                                 <td>
                                     <div class="d-flex align-items-center gap-2">
                                         <div class="progress flex-grow-1" style="height: 8px;">
@@ -100,7 +100,7 @@
                             $accordionId = "collapseAdminPerangkat" . $row->id_pembelajaran_mapel;
                             $headingId   = "headingAdminPerangkat" . $row->id_pembelajaran_mapel;
                             $nama_kelas  = trim($row->nama_tingkat . ' - ' . $row->nama_rombel);
-                            $searchableText = strtolower(html_escape($row->nama_mapel . ' ' . $nama_kelas . ' ' . ($row->nama_ptk ?: '') . ' ' . $row->tahun_pelajaran . ' ' . $row->semester));
+                            $searchableText = strtolower(html_escape($row->nama_mapel . ' ' . $nama_kelas . ' ' . (!empty($row->nama_ptk) ? $row->nama_ptk : '') . ' ' . $row->tahun_pelajaran . ' ' . $row->semester));
                             ?>
                             <div class="accordion-item border radius-8 mb-12 mobile-admin-perangkat-card" data-search="<?php echo $searchableText; ?>">
                                 <h2 class="accordion-header" id="<?php echo $headingId; ?>">
@@ -111,7 +111,7 @@
                                                 <span class="badge bg-success-100 text-success-700 px-8 py-2 radius-4 text-xs"><?php echo $percent; ?>% Kelengkapan</span>
                                             </div>
                                             <div class="d-flex align-items-center gap-12 text-xs text-secondary-light mt-4">
-                                                <span><iconify-icon icon="solar:user-bold" class="me-4"></iconify-icon>Guru: <strong><?php echo html_escape($row->nama_ptk ?: '-'); ?></strong></span>
+                                                <span><iconify-icon icon="solar:user-bold" class="me-4"></iconify-icon>Guru: <strong><?php echo html_escape(!empty($row->nama_ptk) ? $row->nama_ptk : '-'); ?></strong></span>
                                                 <span><iconify-icon icon="solar:users-group-two-rounded-linear" class="me-4"></iconify-icon><?php echo html_escape($nama_kelas); ?></span>
                                             </div>
                                         </div>
@@ -126,7 +126,7 @@
                                             </div>
                                             <div class="col-6">
                                                 <span class="text-secondary-light d-block mb-2">Guru Pengampu</span>
-                                                <span class="fw-semibold text-primary-light"><?php echo html_escape($row->nama_ptk ?: '-'); ?></span>
+                                                <span class="fw-semibold text-primary-light"><?php echo html_escape(!empty($row->nama_ptk) ? $row->nama_ptk : '-'); ?></span>
                                             </div>
                                             <div class="col-12 mt-8">
                                                 <span class="text-secondary-light d-block mb-2">Progress Kelengkapan</span>

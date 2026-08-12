@@ -153,7 +153,7 @@ class Perangkat_pembelajaran_model extends MY_Model
 
     public function getGuruItems($id_ptk, $status_tahun = 'Aktif')
     {
-        $this->db->select('MIN(pm.id_pembelajaran_mapel) AS id_pembelajaran_mapel, pp.id_perangkat, l.nama_lembaga, l.nama_lembaga_singkat, t.nama_tingkat, GROUP_CONCAT(DISTINCT r.nama_rombel ORDER BY r.nama_rombel SEPARATOR ", ") AS nama_rombel, tp.tahun_pelajaran, tp.semester, m.nama_mapel, COUNT(ap.id_agenda) AS total_materi, SUM(CASE WHEN ap.status = "Terlaksana" THEN 1 ELSE 0 END) AS diajarkan, pp.file_cp, pp.file_tp, pp.file_atp, pp.file_kktp, pp.file_kisi_sts, pp.file_soal_sts, pp.file_kisi_sas, pp.file_soal_sas, (SELECT COUNT(*) FROM perangkat_pembelajaran_modul_ajar ma WHERE ma.id_tahun_pelajaran = p.id_tahun_pelajaran AND ma.id_tingkat_sekolah = p.id_tingkat_sekolah AND ma.id_mapel = pm.id_mapel) AS total_modul_ajar');
+        $this->db->select('MIN(pm.id_pembelajaran_mapel) AS id_pembelajaran_mapel, pp.id_perangkat, l.nama_lembaga, l.nama_lembaga_singkat, t.nama_tingkat, GROUP_CONCAT(DISTINCT r.nama_rombel ORDER BY r.nama_rombel SEPARATOR ", ") AS nama_rombel, tp.tahun_pelajaran, tp.semester, m.nama_mapel, GROUP_CONCAT(DISTINCT ptk.nama_ptk ORDER BY ptk.nama_ptk SEPARATOR ", ") AS nama_ptk, COUNT(ap.id_agenda) AS total_materi, SUM(CASE WHEN ap.status = "Terlaksana" THEN 1 ELSE 0 END) AS diajarkan, pp.file_cp, pp.file_tp, pp.file_atp, pp.file_kktp, pp.file_kisi_sts, pp.file_soal_sts, pp.file_kisi_sas, pp.file_soal_sas, (SELECT COUNT(*) FROM perangkat_pembelajaran_modul_ajar ma WHERE ma.id_tahun_pelajaran = p.id_tahun_pelajaran AND ma.id_tingkat_sekolah = p.id_tingkat_sekolah AND ma.id_mapel = pm.id_mapel) AS total_modul_ajar');
         $this->db->from('pembelajaran_mapel pm');
         $this->db->join('pembelajaran p', 'p.id_pembelajaran = pm.id_pembelajaran');
         $this->db->join('lembaga l', 'l.id_lembaga = p.id_lembaga');
@@ -161,6 +161,7 @@ class Perangkat_pembelajaran_model extends MY_Model
         $this->db->join('rombel r', 'r.id_rombel = p.id_rombel');
         $this->db->join('pembelajaran_tahun_pelajaran tp', 'tp.id_tahun_pelajaran = p.id_tahun_pelajaran');
         $this->db->join('mapel m', 'm.id_mapel = pm.id_mapel');
+        $this->db->join('ptk', 'ptk.id_ptk = pm.id_ptk', 'left');
         $this->db->join($this->perangkat_table . ' pp', 'pp.id_tahun_pelajaran = p.id_tahun_pelajaran AND pp.id_tingkat_sekolah = p.id_tingkat_sekolah AND pp.id_mapel = pm.id_mapel', 'left');
         $this->db->join($this->agenda_table . ' ap', 'ap.id_pembelajaran_mapel = pm.id_pembelajaran_mapel', 'left');
         $this->db->where('pm.id_ptk', (int) $id_ptk);
@@ -1495,6 +1496,7 @@ class Perangkat_pembelajaran_model extends MY_Model
         
         $this->db->where('tp.status', 'Aktif');
         $this->db->where('p.status', 'Aktif');
+        $this->db->where('a.status !=', 'Terlaksana'); // Jangan sesuaikan agenda yang sudah terlaksana
 
         if ($ptk_id) {
             $this->db->where('pm.id_ptk', (int) $ptk_id);
@@ -1524,5 +1526,133 @@ class Perangkat_pembelajaran_model extends MY_Model
         }
 
         return $count_updated;
+    }
+
+    /**
+     * Dapatkan daftar hari KBM dari jadwal pelajaran master
+     */
+    public function getJadwalMasterHariList($id_pembelajaran_mapel)
+    {
+        $pm = $this->db->get_where('pembelajaran_mapel', ['id_pembelajaran_mapel' => (int) $id_pembelajaran_mapel])->row();
+        if (!$pm || !$this->db->table_exists('jadwal_pelajaran_item')) {
+            return [];
+        }
+
+        $this->db->distinct();
+        $this->db->select('hari');
+        $this->db->from('jadwal_pelajaran_item');
+        $this->db->where('id_pembelajaran', (int) $pm->id_pembelajaran);
+        $this->db->where('id_mapel', (int) $pm->id_mapel);
+        $rows = $this->db->get()->result();
+
+        $hari_list = [];
+        foreach ($rows as $r) {
+            if (!empty($r->hari)) {
+                $hari_list[] = trim($r->hari);
+            }
+        }
+        return $hari_list;
+    }
+
+    /**
+     * Periksa apakah hari, tanggal, atau jam mulai/keluar agenda mengalami ketidaksesuaian dengan jadwal pelajaran master
+     */
+    public function checkAgendaJadwalMismatch($agenda)
+    {
+        if (!$agenda || empty($agenda->id_pembelajaran_mapel) || empty($agenda->tanggal)) {
+            return ['is_mismatch' => false, 'master_days' => []];
+        }
+
+        // Jangan deteksi untuk agenda yang sudah terlaksana
+        if (!empty($agenda->status) && $agenda->status === 'Terlaksana') {
+            return ['is_mismatch' => false, 'master_days' => []];
+        }
+
+        $master_days = $this->getJadwalMasterHariList($agenda->id_pembelajaran_mapel);
+        if (empty($master_days)) {
+            return ['is_mismatch' => false, 'master_days' => []];
+        }
+
+        $days_map = [
+            1 => 'Senin',
+            2 => 'Selasa',
+            3 => 'Rabu',
+            4 => 'Kamis',
+            5 => 'Jumat',
+            6 => 'Sabtu',
+            7 => 'Minggu'
+        ];
+        $day_num = date('N', strtotime($agenda->tanggal));
+        $actual_day = isset($days_map[$day_num]) ? $days_map[$day_num] : '';
+        $saved_day  = !empty($agenda->hari) ? trim($agenda->hari) : '';
+
+        $master_days_lower = array_map('strtolower', array_map('trim', $master_days));
+        $actual_day_lower  = strtolower(trim($actual_day));
+        $saved_day_lower   = strtolower(trim($saved_day));
+
+        // 1. Cek Kesesuaian Hari
+        $day_not_in_master = !in_array($actual_day_lower, $master_days_lower, true);
+        $day_name_mismatch = (!empty($saved_day) && $saved_day_lower !== $actual_day_lower);
+
+        if ($day_not_in_master || $day_name_mismatch) {
+            $reason = '';
+            if ($day_not_in_master && $day_name_mismatch) {
+                $reason = "Hari agenda ($saved_day) & tanggal ($actual_day) tidak sesuai dengan Jadwal Pelajaran Master (" . implode(', ', $master_days) . ")";
+            } elseif ($day_not_in_master) {
+                $reason = "Hari $actual_day (tanggal " . date('d/m/Y', strtotime($agenda->tanggal)) . ") tidak dijadwalkan pada Jadwal Pelajaran Master (" . implode(', ', $master_days) . ")";
+            } else {
+                $reason = "Hari tersimpan ($saved_day) tidak cocok dengan hari sebenarnya ($actual_day) pada tanggal " . date('d/m/Y', strtotime($agenda->tanggal));
+            }
+
+            return [
+                'is_mismatch'   => true,
+                'mismatch_type' => 'day',
+                'actual_day'    => $actual_day,
+                'saved_day'     => $saved_day,
+                'master_days'   => $master_days,
+                'reason'        => $reason
+            ];
+        }
+
+        // 2. Cek Kesesuaian Jam Mulai & Jam Selesai dengan Master Jadwal untuk Hari ini
+        $master_info = $this->getJadwalMasterPembelajaran($agenda->id_pembelajaran_mapel, $actual_day);
+        if ($master_info && (!empty($master_info->jam_mulai) || !empty($master_info->jam_selesai))) {
+            $m_jam_mulai   = !empty($master_info->jam_mulai) ? date('H:i', strtotime($master_info->jam_mulai)) : '';
+            $m_jam_selesai = !empty($master_info->jam_selesai) ? date('H:i', strtotime($master_info->jam_selesai)) : '';
+
+            $a_jam_mulai   = !empty($agenda->jam_mulai) ? date('H:i', strtotime($agenda->jam_mulai)) : '';
+            $a_jam_selesai = !empty($agenda->jam_selesai) ? date('H:i', strtotime($agenda->jam_selesai)) : '';
+
+            $jam_mulai_mismatch   = (!empty($m_jam_mulai) && (empty($a_jam_mulai) || $a_jam_mulai !== $m_jam_mulai));
+            $jam_selesai_mismatch = (!empty($m_jam_selesai) && (empty($a_jam_selesai) || $a_jam_selesai !== $m_jam_selesai));
+
+            if ($jam_mulai_mismatch || $jam_selesai_mismatch) {
+                $reason_time = "";
+                if (empty($a_jam_mulai)) {
+                    $reason_time = "Jam masuk KBM belum diatur (Jadwal Master: $m_jam_mulai - $m_jam_selesai WIB)";
+                } else {
+                    $reason_time = "Jam KBM agenda ($a_jam_mulai - $a_jam_selesai WIB) tidak sama dengan Jadwal Pelajaran Master ($m_jam_mulai - $m_jam_selesai WIB)";
+                }
+
+                return [
+                    'is_mismatch'        => true,
+                    'mismatch_type'      => 'time',
+                    'actual_day'         => $actual_day,
+                    'saved_day'          => $saved_day,
+                    'master_days'        => $master_days,
+                    'master_jam_mulai'   => $m_jam_mulai,
+                    'master_jam_selesai' => $m_jam_selesai,
+                    'agenda_jam_mulai'   => $a_jam_mulai,
+                    'agenda_jam_selesai' => $a_jam_selesai,
+                    'reason'             => $reason_time
+                ];
+            }
+        }
+
+        return [
+            'is_mismatch' => false,
+            'master_days' => $master_days,
+            'actual_day'  => $actual_day
+        ];
     }
 }

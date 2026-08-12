@@ -72,7 +72,15 @@ class Dashboard extends MY_Controller
 			JOIN siswa s ON s.id_siswa = ps.peserta_didik_id
 			WHERE tp.status = 'Aktif' AND s.status_keaktifan = 'Aktif'
 			GROUP BY l.id_lembaga, r.id_rombel
-			ORDER BY l.nama_lembaga ASC, t.tingkat_angka ASC, r.nama_rombel ASC
+			ORDER BY 
+				CASE 
+					WHEN l.nama_lembaga LIKE '%SMP%' THEN 1 
+					WHEN l.nama_lembaga LIKE '%SMA%' THEN 2 
+					ELSE 3 
+				END ASC, 
+				l.nama_lembaga ASC, 
+				t.tingkat_angka ASC, 
+				r.nama_rombel ASC
 		")->result();
 
 		$siswa_rombel = [];

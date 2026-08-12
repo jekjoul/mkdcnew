@@ -34,6 +34,40 @@
         </div>
     <?php endif; ?>
 
+    <!-- Alert Peringatan Mismatch Jadwal Pelajaran -->
+    <?php if (!empty($mismatch_info['is_mismatch'])): ?>
+        <div class="alert alert-warning border border-warning-300 radius-12 p-20 mb-24 d-flex align-items-start gap-3 shadow-xs" role="alert">
+            <iconify-icon icon="solar:danger-triangle-bold" class="text-warning-main text-3xl flex-shrink-0 mt-1"></iconify-icon>
+            <div class="flex-grow-1">
+                <h6 class="fw-bold text-warning-main mb-6 d-flex align-items-center gap-2">
+                    <?php if (($mismatch_info['mismatch_type'] ?? '') === 'time'): ?>
+                        Peringatan: Ketidaksesuaian Jam Masuk/Keluar Agenda dengan Jadwal Pelajaran Master!
+                    <?php else: ?>
+                        Peringatan: Ketidaksesuaian Hari/Tanggal Agenda dengan Jadwal Pelajaran Master!
+                    <?php endif; ?>
+                </h6>
+                <p class="text-sm text-warning-900 mb-12">
+                    <?php if (($mismatch_info['mismatch_type'] ?? '') === 'time'): ?>
+                        Jam KBM agenda ini (<strong><?php echo !empty($agenda->jam_mulai) ? html_escape($agenda->jam_mulai . ' - ' . $agenda->jam_selesai) : 'Belum diatur'; ?> WIB</strong>) 
+                        <strong>tidak sama</strong> dengan Jam KBM pada Jadwal Pelajaran Master (<strong><?php echo html_escape($mismatch_info['master_jam_mulai'] . ' - ' . $mismatch_info['master_jam_selesai']); ?> WIB</strong>).
+                    <?php else: ?>
+                        Hari pada tanggal agenda ini (<strong><?php echo html_escape($mismatch_info['actual_day']); ?></strong>, <?php echo date('d M Y', strtotime($agenda->tanggal)); ?>) 
+                        <strong>tidak sama</strong> dengan Hari KBM pada Jadwal Pelajaran Master (Jadwal KBM: <strong><?php echo html_escape(implode(', ', $mismatch_info['master_days'])); ?></strong>).
+                    <?php endif; ?>
+                    <?php if (!empty($mismatch_info['reason'])): ?>
+                        <br><span class="fst-italic text-xs text-warning-800">Detail: <?php echo html_escape($mismatch_info['reason']); ?></span>
+                    <?php endif; ?>
+                </p>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <button type="button" class="btn btn-sm btn-warning-600 text-white radius-8 px-16 py-8 d-inline-flex align-items-center gap-2 fw-semibold shadow-xs" data-bs-toggle="modal" data-bs-target="#modalSesuaikanJadwal">
+                        <iconify-icon icon="solar:calendar-minimalistic-bold" class="text-base"></iconify-icon>
+                        Sesuaikan Kembali Jadwal & Waktu KBM Agenda
+                    </button>
+                </div>
+            </div>
+        </div>
+    <?php endif; ?>
+
     <!-- Back Button & Header Summary Card -->
     <div class="card border-0 radius-12 shadow-xs mb-24">
         <div class="card-body p-20">
@@ -493,6 +527,15 @@
                     <iconify-icon icon="solar:info-circle-bold" class="me-1"></iconify-icon>
                     Penyesuaian ini hanya akan merubah <strong>Hari, Tanggal, Jam Masuk, dan Jam Keluar</strong>. Seluruh isi Materi, Kegiatan KBM, dan Presensi Siswa dijamin tetap utuh.
                 </div>
+
+                <?php if (!empty($mismatch_info['master_days'])): ?>
+                    <div class="alert alert-warning text-xs radius-8 mb-16 p-12">
+                        <iconify-icon icon="solar:info-square-bold" class="me-1 text-warning-main"></iconify-icon>
+                        <strong>Saran Hari Jadwal Master:</strong> Mata pelajaran ini dijadwalkan pada hari 
+                        <strong><?php echo html_escape(implode(', ', $mismatch_info['master_days'])); ?></strong>. 
+                        Disarankan memilih tanggal yang jatuh pada hari tersebut.
+                    </div>
+                <?php endif; ?>
 
                 <div class="mb-16">
                     <label class="form-label fw-semibold text-secondary-light text-sm mb-6">Tanggal Pembelajaran (KBM)</label>

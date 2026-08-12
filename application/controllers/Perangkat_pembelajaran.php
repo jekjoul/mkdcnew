@@ -1023,6 +1023,7 @@ class Perangkat_pembelajaran extends MY_Controller
 
         $this->page_data['agenda'] = $agenda;
         $this->page_data['siswa_presensi'] = $this->perangkat_model->getSiswaAgenda($id_agenda);
+        $this->page_data['mismatch_info'] = $this->perangkat_model->checkAgendaJadwalMismatch($agenda);
         $this->load->view('perangkat_pembelajaran/agenda_detail', $this->page_data);
     }
 

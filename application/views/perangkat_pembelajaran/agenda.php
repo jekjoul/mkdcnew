@@ -35,6 +35,7 @@
     
     $agendas_sudah = [];
     $agendas_belum = [];
+    $mismatch_count = 0;
 
     if (!empty($agendas)) {
         foreach ($agendas as $row) {
@@ -43,6 +44,11 @@
             } else {
                 $agendas_belum[] = $row;
             }
+
+            $chk = $this->perangkat_model->checkAgendaJadwalMismatch($row);
+            if (!empty($chk['is_mismatch'])) {
+                $mismatch_count++;
+            }
         }
     }
 
@@ -50,6 +56,26 @@
     $total_terlaksana = count($agendas_sudah);
     $total_belum = count($agendas_belum);
     ?>
+
+    <!-- Banner Peringatan Ketidaksesuaian Jadwal -->
+    <?php if ($mismatch_count > 0): ?>
+        <div class="alert alert-warning border border-warning-300 radius-12 p-20 mb-24 d-flex align-items-start gap-3 shadow-xs">
+            <iconify-icon icon="solar:danger-triangle-bold" class="text-warning-main text-3xl flex-shrink-0 mt-1"></iconify-icon>
+            <div class="flex-grow-1">
+                <h6 class="fw-bold text-warning-main mb-4 d-flex align-items-center gap-2">
+                    Peringatan: Terdeteksi <?php echo $mismatch_count; ?> Agenda yang Tidak Sesuai dengan Jadwal Pelajaran!
+                </h6>
+                <p class="text-sm text-warning-900 mb-12">
+                    Hari/tanggal pada beberapa agenda tidak sama dengan hari pelaksanaan di <strong>Jadwal Pelajaran Master</strong>.
+                    Disarankan untuk menyesuaikan kembali tanggal agenda agar selaras dengan jadwal pelajaran yang berlaku.
+                </p>
+                <button type="button" class="btn btn-sm btn-warning-600 text-white radius-8 px-16 py-8 d-inline-flex align-items-center gap-2 fw-semibold shadow-xs" data-bs-toggle="modal" data-bs-target="#modalSyncAllJadwal">
+                    <iconify-icon icon="solar:calendar-minimalistic-bold" class="text-base"></iconify-icon>
+                    Sesuaikan Kembali Agenda dengan Jadwal Master
+                </button>
+            </div>
+        </div>
+    <?php endif; ?>
     <div class="row g-3 mb-24 mt-10">
         <div class="col-4">
             <div class="card border-0 radius-12 bg-primary-50 p-20 d-flex align-items-center flex-row justify-content-between">
@@ -191,6 +217,7 @@
                                         } elseif ($is_today && !empty($row->jam_mulai) && $now_time > $row->jam_mulai) {
                                             $is_late = true;
                                         }
+                                        $mm = $this->perangkat_model->checkAgendaJadwalMismatch($row);
                                         ?>
                                         <tr>
                                             <td>
@@ -215,6 +242,12 @@
                                                 </div>
 
                                                 <div>
+                                                    <?php if (!empty($mm['is_mismatch'])): ?>
+                                                        <?php $lbl = (($mm['mismatch_type'] ?? '') === 'time') ? 'Jam KBM Tidak Sesuai' : 'Hari Tidak Sesuai'; ?>
+                                                        <span class="badge bg-warning-focus text-warning-main px-10 py-4 radius-4 d-inline-flex align-items-center gap-1 mb-1" title="<?php echo html_escape($mm['reason']) ?>">
+                                                            <iconify-icon icon="solar:danger-triangle-bold" class="text-xs"></iconify-icon> <?php echo $lbl; ?>
+                                                        </span><br>
+                                                    <?php endif; ?>
                                                     <?php if ($is_late): ?>
                                                         <span class="badge bg-danger-focus text-danger-main px-10 py-4 radius-4 d-inline-flex align-items-center gap-1" title="Jadwal mengajar telah lewat tetapi belum dilaksanakan">
                                                             <iconify-icon icon="solar:danger-triangle-bold" class="text-xs"></iconify-icon> Terlambat
@@ -261,6 +294,7 @@
                                     } elseif ($is_today && !empty($row->jam_mulai) && $now_time > $row->jam_mulai) {
                                         $is_late = true;
                                     }
+                                    $mm_mob = $this->perangkat_model->checkAgendaJadwalMismatch($row);
                                     $accordionId = "collapseAgendaBelum" . $row->id_agenda;
                                     $headingId   = "headingAgendaBelum" . $row->id_agenda;
                                     $searchableText = strtolower(html_escape($row->hari . ' ' . date('d M Y', strtotime($row->tanggal)) . ' ' . $row->nama_mapel . ' ' . $row->nama_rombel));
@@ -271,11 +305,16 @@
                                                 <div class="d-flex flex-column gap-1 w-100 me-12">
                                                     <div class="d-flex align-items-center justify-content-between">
                                                         <span class="text-primary-600 fw-bold"><?php echo html_escape($row->nama_mapel); ?></span>
-                                                        <?php if ($is_late): ?>
-                                                            <span class="badge bg-danger-focus text-danger-main px-8 py-2 radius-4 text-xs" style="position: relative;right: 35px;top: 15px;">Terlambat</span>
-                                                        <?php else: ?>
-                                                            <span class="badge bg-warning-50 text-warning-700 px-8 py-2 radius-4 text-xs" style="position: relative;right: 35px;top: 15px;">Belum</span>
-                                                        <?php endif; ?>
+                                                        <div style="position: relative;right: 35px;top: 15px;">
+                                                            <?php if (!empty($mm_mob['is_mismatch'])): ?>
+                                                                <span class="badge bg-warning-focus text-warning-main px-8 py-2 radius-4 text-xs me-1">⚠️ Hari Mismatch</span>
+                                                            <?php endif; ?>
+                                                            <?php if ($is_late): ?>
+                                                                <span class="badge bg-danger-focus text-danger-main px-8 py-2 radius-4 text-xs">Terlambat</span>
+                                                            <?php else: ?>
+                                                                <span class="badge bg-warning-50 text-warning-700 px-8 py-2 radius-4 text-xs">Belum</span>
+                                                            <?php endif; ?>
+                                                        </div>
                                                     </div>
                                                     <div class="d-flex align-items-center gap-12 text-xs text-secondary-light mt-4">
                                                         <span><?php echo html_escape($row->hari) ?>, <?php echo date('d M Y', strtotime($row->tanggal)) ?></span>
@@ -360,7 +399,7 @@
                                                 </div>
 
                                                 <div>
-                                                    <span class="badge bg-success-focus text-success-main px-10 py-4 radius-4" >Terlaksana</span>
+                                                    <span class="badge bg-success-focus text-success-main px-10 py-4 radius-4">Terlaksana</span>
                                                 </div>
                                             </td>
 

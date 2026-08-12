@@ -344,6 +344,72 @@
             </div>
         </div>
     </div>
+
+    <!-- Tabel Jumlah Siswa per Lembaga & Rombel -->
+    <?php if (!empty($siswa_rombel)): ?>
+        <div class="row gy-4 mb-24">
+            <div class="col-12">
+                <div class="card-header bg-transparent border-0 px-0 pb-0 mb-0">
+                    <h6 class="mt-3 mb-0 text-primary-light fw-bold d-flex align-items-center gap-2">
+                        <iconify-icon icon="solar:users-group-two-rounded-bold" class="text-primary-600 text-xl"></iconify-icon>
+                        Jumlah Siswa per Lembaga & Rombel
+                    </h6>
+                </div>
+            </div>
+            <?php foreach ($siswa_rombel as $lembaga => $rombels): ?>
+                <div class="col-xxl-6 col-md-6">
+                    <div class="card h-100 radius-12 border-0 shadow-xs">
+                        <div class="card-header bg-white border-bottom p-20">
+                            <h6 class="mb-0 fw-bold text-md text-primary-900 d-flex align-items-center gap-2">
+                                <iconify-icon icon="solar:buildings-bold" class="text-primary-600"></iconify-icon>
+                                <?php echo html_escape($lembaga); ?>
+                            </h6>
+                        </div>
+                        <div class="card-body p-20">
+                            <div class="table-responsive">
+                                <table class="table bordered-table mb-0 align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Nama Rombel</th>
+                                            <th scope="col" class="text-center">Laki-laki</th>
+                                            <th scope="col" class="text-center">Perempuan</th>
+                                            <th scope="col" class="text-center">Jumlah</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php 
+                                        $total_l = 0;
+                                        $total_p = 0;
+                                        $total_j = 0;
+                                        foreach ($rombels as $r): 
+                                            $total_l += $r->laki_laki;
+                                            $total_p += $r->perempuan;
+                                            $total_j += $r->jumlah;
+                                        ?>
+                                            <tr>
+                                                <td><span class="text-secondary-light fw-medium"><?php echo html_escape($r->nama_rombel); ?></span></td>
+                                                <td class="text-center"><span class="text-secondary-light"><?php echo number_format($r->laki_laki); ?></span></td>
+                                                <td class="text-center"><span class="text-secondary-light"><?php echo number_format($r->perempuan); ?></span></td>
+                                                <td class="text-center"><span class="fw-semibold text-primary-light"><?php echo number_format($r->jumlah); ?></span></td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="fw-bold bg-neutral-100">
+                                            <td>Total</td>
+                                            <td class="text-center"><?php echo number_format($total_l); ?></td>
+                                            <td class="text-center"><?php echo number_format($total_p); ?></td>
+                                            <td class="text-center"><?php echo number_format($total_j); ?></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
 </div>
 <?php include viewPath('includes/footer'); ?>
 
