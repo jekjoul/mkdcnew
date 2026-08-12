@@ -1070,7 +1070,7 @@ class Perangkat_pembelajaran_model extends MY_Model
     /**
      * Update status and catatan for Agenda Pembelajaran
      */
-    public function updateAgendaStatusCatatan($id_agenda, $status, $catatan = null)
+    public function updateAgendaStatusCatatan($id_agenda, $status, $catatan = null, $hambatan = null, $pemecahan = null)
     {
         $data = [
             'status'     => $status,
@@ -1078,6 +1078,12 @@ class Perangkat_pembelajaran_model extends MY_Model
         ];
         if ($catatan !== null) {
             $data['catatan'] = $catatan;
+        }
+        if ($hambatan !== null) {
+            $data['hambatan'] = $hambatan;
+        }
+        if ($pemecahan !== null) {
+            $data['pemecahan'] = $pemecahan;
         }
 
         $this->db->where('id_agenda', (int) $id_agenda);

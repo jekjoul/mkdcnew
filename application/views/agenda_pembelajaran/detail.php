@@ -1,5 +1,17 @@
-<?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
 <?php include viewPath('includes/header'); ?>
+
+<style>
+    .draggable-row td {
+        transition: background-color 0.4s ease-in-out;
+    }
+    .item-swapped-highlight td {
+        background-color: #fef08a !important; /* Vibrant soft yellow highlight on every cell */
+    }
+    .item-swapped-highlight {
+        outline: 2px solid #eab308 !important;
+        outline-offset: -2px !important;
+    }
+</style>
 
 <div class="dashboard-main-body">
     <!-- Header Title Banner -->
@@ -101,7 +113,7 @@
             <div class="d-flex flex-wrap align-items-center gap-2">
                 <?php if (!empty($templates)): ?>
                     <button type="button" class="btn btn-outline-primary radius-8 px-14 py-8 text-xs fw-semibold d-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#modalPilihTemplate">
-                        <iconify-icon icon="solar:copy-bold" class="text-base"></iconify-icon> Pilih / Salin Agenda
+                        <iconify-icon icon="solar:copy-bold" class="text-base"></iconify-icon> Salin Agenda &amp; Berkas
                     </button>
                 <?php endif; ?>
                 
@@ -125,17 +137,17 @@
                     <iconify-icon icon="solar:notebook-square-linear" style="font-size: 56px;" class="text-primary-300 mb-12"></iconify-icon>
                     <h5 class="fw-bold text-primary-light mb-8">Agenda Harian Belum Digenerate</h5>
                     <p class="text-secondary-light text-sm max-w-500-px mx-auto mb-20">
-                        Silakan buat agenda harian dasar terlebih dahulu berdasarkan jadwal pelajaran &amp; kalender hari efektif kelas ini.
+                        Silakan buat agenda harian dasar terlebih dahulu berdasarkan jadwal pelajaran &amp; kalender hari efektif kelas ini, atau salin dari agenda terdahulu.
                     </p>
                     <div class="d-flex align-items-center justify-content-center gap-3">
                         <?php if (!empty($templates)): ?>
                             <button type="button" class="btn btn-primary-600 radius-8 px-20 py-10 text-sm fw-bold" data-bs-toggle="modal" data-bs-target="#modalPilihTemplate">
-                                <iconify-icon icon="solar:copy-bold" class="me-1"></iconify-icon> Pilih dari Agenda Tersimpan
+                                <iconify-icon icon="solar:copy-bold" class="me-1"></iconify-icon> Salin Agenda &amp; Berkas
                             </button>
                         <?php endif; ?>
                         <?php echo form_open($generate_agenda_url, ['class' => 'd-inline']); ?>
-                            <button type="submit" class="btn btn-success-600 text-white radius-8 px-20 py-10 text-sm fw-bold d-inline-flex align-items-center gap-2">
-                                <iconify-icon icon="solar:add-circle-bold" class="text-lg"></iconify-icon> Generate Agenda Baru
+                            <button type="submit" class="btn btn-outline-primary radius-8 px-20 py-10 text-sm fw-bold d-inline-flex align-items-center gap-2">
+                                <iconify-icon icon="solar:add-circle-bold" class="text-lg"></iconify-icon> Generate Agenda Kosong
                             </button>
                         <?php echo form_close(); ?>
                     </div>
@@ -143,63 +155,73 @@
             <?php else: ?>
                 <!-- TAMPILAN FIXED READ-ONLY DENGAN TOMBOL EDIT PER ITEM -->
                 <div class="table-responsive">
-                    <table class="table bordered-table align-middle">
+                    <table class="table bordered-table align-middle w-100 mb-0">
                         <thead>
                             <tr class="bg-neutral-100">
+                                <th style="width: 70px;" class="text-center" title="Geser urutan materi ke atas/bawah">Urutan</th>
                                 <th style="width: 50px;" class="text-center">Ke-</th>
                                 <th style="width: 140px;">Hari / Tanggal</th>
                                 <th style="width: 130px;">Jam KBM</th>
-                                <th>Materi &amp; Pokok Bahasan</th>
-                                <th>Kegiatan Pembelajaran</th>
-                                <th style="width: 180px;">Media Pembelajaran</th>
-                                <th style="width: 110px;" class="text-center">Status</th>
-                                <th style="width: 90px;" class="text-center">Aksi</th>
+                                <th style="max-width: 250px; width: 250px;">Materi &amp; Pokok Bahasan</th>
+                                <th style="width: 160px;">Media Pembelajaran</th>
+                                <th style="width: 100px;" class="text-center">Status</th>
+                                <th style="width: 80px;" class="text-center">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <?php foreach ($agenda as $row): ?>
+                        <tbody id="agendaTableBody">
+                            <?php foreach ($agenda as $idx_row => $row): ?>
                                 <?php
                                 $media_items = json_decode($row->media_files ?: '[]', true) ?: [];
+                                $raw_materi = !empty($row->materi) ? strip_tags($row->materi) : '';
+                                $preview_materi = mb_strlen($raw_materi) > 100 ? mb_substr($raw_materi, 0, 100) . '...' : $raw_materi;
                                 ?>
-                                <tr>
-                                    <td class="text-center fw-bold text-primary-600"><?php echo $row->pertemuan_ke ?></td>
-                                    <td>
-                                        <div class="fw-bold text-primary-900"><?php echo html_escape($row->hari) ?></div>
-                                        <div class="text-xs text-secondary-light"><?php echo date('d M Y', strtotime($row->tanggal)) ?></div>
-                                    </td>
-                                    <td>
-                                        <div class="text-xs fw-semibold text-neutral-800"><?php echo html_escape($row->jam_mulai ?: '-') ?> - <?php echo html_escape($row->jam_selesai ?: '-') ?></div>
-                                        <div class="text-xs text-secondary-light"><?php echo $row->jumlah_jam ?: 0 ?> JP</div>
-                                    </td>
-                                    <td>
-                                        <div class="text-sm fw-semibold text-primary-900">
-                                            <?php echo !empty($row->materi) ? nl2br(html_escape($row->materi)) : '<em class="text-secondary-light text-xs">- belum diisi -</em>'; ?>
+                                <tr class="draggable-row" data-id-agenda="<?php echo $row->id_agenda; ?>">
+                                    <td class="text-center align-middle px-4">
+                                        <div class="d-inline-flex flex-column gap-1 align-items-center">
+                                            <button type="button" 
+                                                    data-action-url="<?php echo url('agenda_pembelajaran/move_up/' . $row->id_agenda); ?>"
+                                                    class="btn btn-xs btn-outline-primary p-2 radius-4 btn-action-move-up <?php echo $idx_row === 0 ? 'disabled opacity-50' : ''; ?>" 
+                                                    <?php echo $idx_row === 0 ? 'disabled' : ''; ?> 
+                                                    title="Geser Materi ke Pertemuan Sebelumnya (Atas)">
+                                                <iconify-icon icon="solar:alt-arrow-up-bold" class="text-xs d-block" style="pointer-events: none;"></iconify-icon>
+                                            </button>
+                                            <button type="button" 
+                                                    data-action-url="<?php echo url('agenda_pembelajaran/move_down/' . $row->id_agenda); ?>"
+                                                    class="btn btn-xs btn-outline-primary p-2 radius-4 btn-action-move-down <?php echo $idx_row === count($agenda) - 1 ? 'disabled opacity-50' : ''; ?>" 
+                                                    <?php echo $idx_row === count($agenda) - 1 ? 'disabled' : ''; ?> 
+                                                    title="Geser Materi ke Pertemuan Berikutnya (Bawah)">
+                                                <iconify-icon icon="solar:alt-arrow-down-bold" class="text-xs d-block" style="pointer-events: none;"></iconify-icon>
+                                            </button>
                                         </div>
                                     </td>
-                                    <td>
-                                        <div class="text-xs text-neutral-700">
-                                            <?php echo !empty($row->kegiatan) ? nl2br(html_escape($row->kegiatan)) : '<em class="text-secondary-light">- belum diisi -</em>'; ?>
-                                        </div>
-                                        <?php if (!empty($row->catatan)): ?>
-                                            <div class="text-xs text-warning-800 bg-warning-50 p-6 radius-4 mt-6 border border-warning-200">
-                                                <strong>Catatan:</strong> <?php echo html_escape($row->catatan); ?>
-                                            </div>
-                                        <?php endif; ?>
+                                    <td class="text-center fw-bold text-primary-600 pertemuan-ke-cell align-middle"><?php echo $row->pertemuan_ke ?></td>
+                                    <td class="tanggal-cell align-middle">
+                                        <div class="fw-bold text-primary-900 hari-text"><?php echo html_escape($row->hari) ?></div>
+                                        <div class="text-xs text-secondary-light tgl-text"><?php echo date('d M Y', strtotime($row->tanggal)) ?></div>
                                     </td>
-                                    <td>
+                                    <td class="jam-cell align-middle">
+                                        <div class="text-xs fw-semibold text-neutral-800 jam-text"><?php echo html_escape($row->jam_mulai ?: '-') ?> - <?php echo html_escape($row->jam_selesai ?: '-') ?></div>
+                                        <div class="text-xs text-secondary-light jp-text"><?php echo $row->jumlah_jam ?: 0 ?> JP</div>
+                                    </td>
+                                    <td style="max-width: 250px; word-wrap: break-word; white-space: normal;" class="align-middle">
+                                        <div class="text-sm fw-semibold text-primary-900 mb-2">
+                                            <?php echo !empty($preview_materi) ? html_escape($preview_materi) : '<em class="text-secondary-light text-xs">- belum diisi -</em>'; ?>
+                                        </div>
+                                    </td>
+                                    <td class="align-middle">
                                         <!-- DAFTAR MEDIA PEMBELAJARAN (FILE / LINK) -->
                                         <?php if (!empty($media_items)): ?>
                                             <div class="d-flex flex-column gap-4">
                                                 <?php foreach ($media_items as $m_idx => $media): ?>
                                                     <?php if (isset($media['type']) && $media['type'] === 'file'): ?>
-                                                        <a href="<?php echo base_url('uploads/agenda_media/' . $media['file_name']); ?>" target="_blank" class="badge bg-primary-50 text-primary-700 border border-primary-200 px-8 py-4 radius-4 text-xs d-inline-flex align-items-center gap-1 text-truncate" style="max-width: 170px;" title="<?php echo html_escape($media['title']); ?>">
-                                                            <iconify-icon icon="solar:document-bold" class="text-sm"></iconify-icon>
-                                                            <?php echo html_escape($media['title']); ?>
+                                                        <a href="<?php echo base_url('uploads/agenda_media/' . $media['file_name']); ?>" target="_blank" class="badge bg-primary-50 text-primary-700 border border-primary-200 px-8 py-4 radius-4 text-xs d-inline-flex align-items-center gap-1 text-truncate" style="max-width: 150px;" title="<?php echo html_escape($media['title']); ?>">
+                                                            <iconify-icon icon="solar:document-bold" class="text-sm flex-shrink-0"></iconify-icon>
+                                                            <span class="text-truncate"><?php echo html_escape($media['title']); ?></span>
                                                         </a>
                                                     <?php elseif (isset($media['type']) && $media['type'] === 'link'): ?>
-                                                        <a href="<?php echo html_escape($media['url']); ?>" target="_blank" class="badge bg-info-50 text-info-700 border border-info-200 px-8 py-4 radius-4 text-xs d-inline-flex align-items-center gap-1 text-truncate" style="max-width: 170px;" title="<?php echo html_escape($media['url']); ?>">
-                                                            <iconify-icon icon="solar:link-bold" class="text-sm"></iconify-icon>
-                                                            <?php echo html_escape($media['title'] ?: 'Link Media'); ?>
+                                                        <a href="<?php echo html_escape($media['url']); ?>" target="_blank" class="badge bg-info-50 text-info-700 border border-info-200 px-8 py-4 radius-4 text-xs d-inline-flex align-items-center gap-1 text-truncate" style="max-width: 150px;" title="<?php echo html_escape($media['url']); ?>">
+                                                            <iconify-icon icon="solar:link-bold" class="text-sm flex-shrink-0"></iconify-icon>
+                                                            <span class="text-truncate"><?php echo html_escape($media['title'] ?: 'Link Media'); ?></span>
                                                         </a>
                                                     <?php endif; ?>
                                                 <?php endforeach; ?>
@@ -208,14 +230,14 @@
                                             <span class="text-xs text-secondary-light">- Tidak ada -</span>
                                         <?php endif; ?>
                                     </td>
-                                    <td class="text-center">
+                                    <td class="text-center align-middle">
                                         <?php if ($row->status === 'Terlaksana'): ?>
                                             <span class="badge bg-success-100 text-success-700 px-8 py-4 radius-4 text-xs fw-bold">Terlaksana</span>
                                         <?php else: ?>
                                             <span class="badge bg-warning-100 text-warning-700 px-8 py-4 radius-4 text-xs fw-bold">Belum</span>
                                         <?php endif; ?>
                                     </td>
-                                    <td class="text-center">
+                                    <td class="text-center align-middle">
                                         <!-- TOMBOL EDIT PER ITEM -->
                                         <button type="button" 
                                                 class="btn btn-sm btn-primary-600 radius-8 px-10 py-6 text-xs d-inline-flex align-items-center gap-1 btn-trigger-edit-item"
@@ -258,18 +280,12 @@
                         </div>
                     </div>
 
-                    <div class="row g-3 mb-16">
-                        <div class="col-md-8">
-                            <label class="form-label text-sm fw-semibold text-primary-900 mb-6">Status Keterlaksanaan <span class="text-danger">*</span></label>
-                            <select name="status" id="edit_status" class="form-select radius-8 text-sm" required>
-                                <option value="Belum">Belum Terlaksana</option>
-                                <option value="Terlaksana">Terlaksana</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label text-sm fw-semibold text-primary-900 mb-6">Catatan Kelas / Tambahan</label>
-                            <input type="text" name="catatan" id="edit_catatan" class="form-control radius-8 text-sm" placeholder="Contoh: Siswa antusias...">
-                        </div>
+                    <div class="mb-16">
+                        <label class="form-label text-sm fw-semibold text-primary-900 mb-6">Status Keterlaksanaan <span class="text-danger">*</span></label>
+                        <select name="status" id="edit_status" class="form-select radius-8 text-sm" required>
+                            <option value="Belum">Belum Terlaksana</option>
+                            <option value="Terlaksana">Terlaksana</option>
+                        </select>
                     </div>
 
                     <div class="mb-16">
@@ -277,9 +293,24 @@
                         <textarea name="materi" id="edit_materi" class="form-control radius-8 text-sm" rows="3" placeholder="Tuliskan materi pokok bahasan yang diajarkan..." required></textarea>
                     </div>
 
-                    <div class="mb-20">
+                    <div class="mb-16">
                         <label class="form-label text-sm fw-semibold text-primary-900 mb-6">Kegiatan &amp; Aktivitas Pembelajaran</label>
                         <textarea name="kegiatan" id="edit_kegiatan" class="form-control radius-8 text-sm" rows="3" placeholder="Tuliskan bentuk aktivitas/kegiatan KBM..."></textarea>
+                    </div>
+
+                    <div class="row g-3 mb-20">
+                        <div class="col-md-6">
+                            <label class="form-label text-sm fw-semibold text-danger-700 mb-6 d-flex align-items-center gap-1">
+                                <iconify-icon icon="solar:danger-triangle-bold" class="text-base"></iconify-icon> Hambatan / Kendala KBM
+                            </label>
+                            <textarea name="hambatan" id="edit_hambatan" class="form-control radius-8 text-sm border-danger-200" rows="2" placeholder="Tuliskan hambatan/kendala selama KBM (jika ada)..."></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-sm fw-semibold text-success-700 mb-6 d-flex align-items-center gap-1">
+                                <iconify-icon icon="solar:check-circle-bold" class="text-base"></iconify-icon> Pemecahan Masalah / Solusi
+                            </label>
+                            <textarea name="pemecahan" id="edit_pemecahan" class="form-control radius-8 text-sm border-success-200" rows="2" placeholder="Tuliskan pemecahan masalah/solusi KBM (jika ada)..."></textarea>
+                        </div>
                     </div>
 
                     <!-- SEKSI MEDIA PEMBELAJARAN (FILE UPLOAD & LINKS) -->
@@ -389,33 +420,58 @@
 <div class="modal fade" id="modalPilihTemplate" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content radius-12 border-0">
-            <div class="modal-header bg-primary-600 text-white">
-                <h6 class="modal-title text-white fw-bold">Pilih &amp; Salin Agenda Tersimpan</h6>
+            <div class="modal-header bg-primary-600 text-white radius-top-12">
+                <h6 class="modal-title text-white d-flex align-items-center gap-2">
+                    <iconify-icon icon="solar:copy-bold" class="text-xl"></iconify-icon>
+                    Salin Agenda &amp; Berkas Pembelajaran
+                </h6>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <?php echo form_open($pilih_template_url); ?>
             <div class="modal-body p-20">
-                <p class="text-xs text-secondary-light mb-16">Pilih agenda tersimpan untuk mapel <strong><?php echo html_escape($item->nama_mapel) ?> (Tingkat <?php echo html_escape($item->nama_tingkat) ?>)</strong>. Materi &amp; kegiatan akan disalin, dan jadwal tanggal/jamnya akan disesuaikan otomatis dengan kelas ini.</p>
-                <div class="list-group radius-8">
+                <div class="alert alert-primary bg-primary-50 border-primary-200 radius-8 p-12 text-xs mb-16 text-primary-900 d-flex align-items-center gap-2">
+                    <iconify-icon icon="solar:info-circle-bold" class="text-lg text-primary-600 flex-shrink-0"></iconify-icon>
+                    <div>
+                        Anda dapat menyalin agenda dari <strong>Tahun Pelajaran Lalu</strong> maupun dari <strong>Tahun Pelajaran yang Sama untuk Rombel Berbeda</strong> (misal dari Kelas 8A ke 8B). Seluruh materi, kegiatan, catatan, dan berkas/link media pembelajaran akan disalin secara otomatis.
+                    </div>
+                </div>
+                <div class="list-group radius-8 gap-2">
                     <?php foreach ($templates as $tpl): ?>
-                        <label class="list-group-item d-flex align-items-center justify-content-between p-16 cursor-pointer hover-bg-neutral-50">
+                        <?php 
+                        $is_same_year = (!empty($item->id_tahun_pelajaran) && (int)$tpl->id_tahun_pelajaran === (int)$item->id_tahun_pelajaran);
+                        $sem_fmt = is_numeric($tpl->semester) ? 'Semester ' . $tpl->semester : (strpos(strtolower($tpl->semester), 'semester') !== false ? $tpl->semester : 'Semester ' . $tpl->semester);
+                        ?>
+                        <label class="list-group-item d-flex align-items-center justify-content-between p-16 cursor-pointer hover-bg-neutral-50 border radius-8 mb-0">
                             <div class="d-flex align-items-center gap-3">
-                                <input class="form-check-input flex-shrink-0" type="radio" name="source_id_pembelajaran_mapel" value="<?php echo $tpl->id_pembelajaran_mapel ?>" required>
+                                <input class="form-check-input flex-shrink-0 my-0" type="radio" name="source_id_pembelajaran_mapel" value="<?php echo $tpl->id_pembelajaran_mapel ?>" required>
                                 <div>
-                                    <div class="fw-bold text-primary-900 text-sm"><?php echo html_escape($tpl->judul_agenda) ?></div>
-                                    <div class="text-xs text-secondary-light mt-1">
-                                        Guru: <strong><?php echo html_escape($tpl->nama_ptk ?: '-') ?></strong> | Rombel: <?php echo html_escape($tpl->nama_rombel) ?> (Semester <?php echo $tpl->semester ?> - <?php echo $tpl->tahun_pelajaran ?>)
+                                    <div class="d-flex flex-wrap align-items-center gap-2 mb-4">
+                                        <span class="fw-bold text-primary-900 text-sm"><?php echo html_escape($tpl->judul_agenda) ?></span>
+                                        <?php if ($is_same_year): ?>
+                                            <span class="badge bg-success-100 text-success-800 radius-4 text-xs px-8 py-2 fw-semibold">
+                                                <iconify-icon icon="solar:check-circle-bold" class="me-1"></iconify-icon>Tahun Sama (Rombel Lain)
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="badge bg-info-100 text-info-800 radius-4 text-xs px-8 py-2 fw-semibold">
+                                                <iconify-icon icon="solar:history-bold" class="me-1"></iconify-icon>Tahun Lalu (TP <?php echo html_escape($tpl->tahun_pelajaran); ?>)
+                                            </span>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div class="text-xs text-secondary-light">
+                                        Guru Pengampu: <strong><?php echo html_escape($tpl->nama_ptk ?: '-') ?></strong> | Rombel: <strong><?php echo html_escape($tpl->nama_rombel) ?></strong> (<?php echo html_escape($sem_fmt) ?> - TP <?php echo html_escape($tpl->tahun_pelajaran) ?>)
                                     </div>
                                 </div>
                             </div>
-                            <span class="badge bg-primary-100 text-primary-700 radius-4 text-xs"><?php echo $tpl->total_agenda ?> Pertemuan</span>
+                            <span class="badge bg-primary-100 text-primary-700 radius-4 text-xs fw-bold px-10 py-6 flex-shrink-0 ms-2"><?php echo $tpl->total_agenda ?> Pertemuan</span>
                         </label>
                     <?php endforeach; ?>
                 </div>
             </div>
-            <div class="modal-footer bg-neutral-50">
-                <button type="button" class="btn btn-secondary radius-8 text-sm" data-bs-dismiss="modal">Batal</button>
-                <button type="submit" class="btn btn-primary-600 radius-8 text-sm fw-bold">Salin &amp; Sesuaikan Jadwal</button>
+            <div class="modal-footer bg-neutral-50 radius-bottom-12">
+                <button type="button" class="btn btn-outline-secondary radius-8 text-sm" data-bs-dismiss="modal">Batal</button>
+                <button type="submit" class="btn btn-primary-600 radius-8 text-sm fw-bold d-inline-flex align-items-center gap-1">
+                    <iconify-icon icon="solar:copy-bold" class="text-base"></iconify-icon> Salin &amp; Sesuaikan Jadwal
+                </button>
             </div>
             <?php echo form_close(); ?>
         </div>
@@ -469,7 +525,21 @@
     </div>
 </div>
 
+<!-- FLOATING TOAST NOTIFICATION UNTUK DRAG AND DROP -->
+<div id="dragToastNotice" class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999; display: none;">
+    <div id="dragToastAlert" class="toast show align-items-center text-white bg-success-600 border-0 radius-8 shadow-lg" role="alert">
+        <div class="d-flex">
+            <div class="toast-body d-flex align-items-center gap-2 fw-semibold">
+                <iconify-icon icon="solar:check-circle-bold" class="text-xl"></iconify-icon>
+                <span id="dragToastMsg">Urutan materi agenda berhasil diperbarui!</span>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="$('#dragToastNotice').fadeOut()"></button>
+        </div>
+    </div>
+</div>
+
 <?php include viewPath('includes/footer'); ?>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 <script>
     $('#formGenerateAi').on('submit', function() {
         $('#aiGeneratingStatus').removeClass('d-none');
@@ -488,7 +558,8 @@
         $('#modalJamKbm').text((rowData.jam_mulai || '-') + ' - ' + (rowData.jam_selesai || '-') + ' (' + (rowData.jumlah_jam || 0) + ' JP)');
         
         $('#edit_status').val(rowData.status || 'Belum');
-        $('#edit_catatan').val(rowData.catatan || '');
+        $('#edit_hambatan').val(rowData.hambatan || rowData.catatan || '');
+        $('#edit_pemecahan').val(rowData.pemecahan || '');
         $('#edit_materi').val(rowData.materi || '');
         $('#edit_kegiatan').val(rowData.kegiatan || '');
 
@@ -524,5 +595,180 @@
 
         var editModal = new bootstrap.Modal(document.getElementById('modalEditItemAgenda'));
         editModal.show();
+    });
+
+    // REORDER MATERI AGENDA (AJAX TANPA RELOAD HALAMAN)
+    var originalSlots = [];
+
+    function captureOriginalSlots() {
+        originalSlots = [];
+        var rows = document.querySelectorAll('#agendaTableBody tr.draggable-row');
+        rows.forEach(function(row) {
+            var cellKe = row.querySelector('.pertemuan-ke-cell');
+            var cellHari = row.querySelector('.hari-text');
+            var cellTgl = row.querySelector('.tgl-text');
+            var cellJam = row.querySelector('.jam-text');
+            var cellJp = row.querySelector('.jp-text');
+
+            originalSlots.push({
+                pertemuan_ke: cellKe ? cellKe.textContent.trim() : '',
+                hari: cellHari ? cellHari.textContent.trim() : '',
+                tanggal_fmt: cellTgl ? cellTgl.textContent.trim() : '',
+                jam_text: cellJam ? cellJam.textContent.trim() : '',
+                jp_text: cellJp ? cellJp.textContent.trim() : ''
+            });
+        });
+    }
+
+    function refreshSlotLabelsInDom() {
+        var tbody = document.getElementById('agendaTableBody');
+        if (!tbody) return;
+
+        var rows = tbody.querySelectorAll('tr.draggable-row');
+        rows.forEach(function(row, index) {
+            var slot = originalSlots[index];
+            if (slot) {
+                var cellKe = row.querySelector('.pertemuan-ke-cell');
+                var cellHari = row.querySelector('.hari-text');
+                var cellTgl = row.querySelector('.tgl-text');
+                var cellJam = row.querySelector('.jam-text');
+                var cellJp = row.querySelector('.jp-text');
+
+                if (cellKe) cellKe.textContent = slot.pertemuan_ke;
+                if (cellHari) cellHari.textContent = slot.hari;
+                if (cellTgl) cellTgl.textContent = slot.tanggal_fmt;
+                if (cellJam) cellJam.textContent = slot.jam_text;
+                if (cellJp) cellJp.textContent = slot.jp_text;
+            }
+
+            var btnUp = row.querySelector('.btn-action-move-up');
+            var btnDown = row.querySelector('.btn-action-move-down');
+
+            if (btnUp) {
+                if (index === 0) {
+                    btnUp.classList.add('disabled', 'opacity-50');
+                } else {
+                    btnUp.classList.remove('disabled', 'opacity-50');
+                }
+            }
+
+            if (btnDown) {
+                if (index === rows.length - 1) {
+                    btnDown.classList.add('disabled', 'opacity-50');
+                } else {
+                    btnDown.classList.remove('disabled', 'opacity-50');
+                }
+            }
+        });
+    }
+
+    function highlightSwappedPair(tr1, tr2) {
+        var $pair = $(tr1).add($(tr2));
+        $pair.addClass('item-swapped-highlight');
+        setTimeout(function() {
+            $pair.removeClass('item-swapped-highlight');
+        }, 3000);
+    }
+
+    $(document).ready(function() {
+        captureOriginalSlots();
+
+        // AJAX Handler Panah Atas
+        $(document).on('click', '.btn-action-move-up', function(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            if ($(this).is(':disabled') || $(this).hasClass('disabled')) return false;
+
+            var targetUrl = $(this).data('action-url');
+            if (!targetUrl) return false;
+
+            var tr = this.closest('tr');
+            if (!tr) return false;
+            var prevTr = tr.previousElementSibling;
+            if (prevTr && prevTr.classList.contains('draggable-row')) {
+                // Swap DOM nodes secara fisik
+                tr.parentNode.insertBefore(tr, prevTr);
+
+                // Berikan animasi sorot kuning menyala selama 3 detik pada KEDUA baris yang ditukar
+                highlightSwappedPair(tr, prevTr);
+
+                refreshSlotLabelsInDom();
+
+                // AJAX background GET request ke server
+                $.ajax({
+                    url: targetUrl,
+                    type: 'GET',
+                    dataType: 'json',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                    success: function(res) {
+                        if (res && res.success) {
+                            $('#dragToastMsg').text(res.message || 'Urutan materi agenda berhasil dipindahkan!');
+                            $('#dragToastAlert').removeClass('bg-danger-600').addClass('bg-success-600');
+                            $('#dragToastNotice').stop(true, true).fadeIn().delay(2500).fadeOut();
+                        } else {
+                            $('#dragToastMsg').text((res && res.message) ? res.message : 'Gagal memindahkan urutan.');
+                            $('#dragToastAlert').removeClass('bg-success-600').addClass('bg-danger-600');
+                            $('#dragToastNotice').stop(true, true).fadeIn().delay(4000).fadeOut();
+                        }
+                    },
+                    error: function() {
+                        $('#dragToastMsg').text('Terjadi kesalahan koneksi.');
+                        $('#dragToastAlert').removeClass('bg-success-600').addClass('bg-danger-600');
+                        $('#dragToastNotice').stop(true, true).fadeIn().delay(4000).fadeOut();
+                    }
+                });
+            }
+        });
+
+        // AJAX Handler Panah Bawah
+        $(document).on('click', '.btn-action-move-down', function(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            if ($(this).is(':disabled') || $(this).hasClass('disabled')) return false;
+
+            var targetUrl = $(this).data('action-url');
+            if (!targetUrl) return false;
+
+            var tr = this.closest('tr');
+            if (!tr) return false;
+            var nextTr = tr.nextElementSibling;
+            if (nextTr && nextTr.classList.contains('draggable-row')) {
+                // Swap DOM nodes secara fisik
+                tr.parentNode.insertBefore(nextTr, tr);
+
+                // Berikan animasi sorot kuning menyala selama 3 detik pada KEDUA baris yang ditukar
+                highlightSwappedPair(tr, nextTr);
+
+                refreshSlotLabelsInDom();
+
+                // AJAX background GET request ke server
+                $.ajax({
+                    url: targetUrl,
+                    type: 'GET',
+                    dataType: 'json',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                    success: function(res) {
+                        if (res && res.success) {
+                            $('#dragToastMsg').text(res.message || 'Urutan materi agenda berhasil dipindahkan!');
+                            $('#dragToastAlert').removeClass('bg-danger-600').addClass('bg-success-600');
+                            $('#dragToastNotice').stop(true, true).fadeIn().delay(2500).fadeOut();
+                        } else {
+                            $('#dragToastMsg').text((res && res.message) ? res.message : 'Gagal memindahkan urutan.');
+                            $('#dragToastAlert').removeClass('bg-success-600').addClass('bg-danger-600');
+                            $('#dragToastNotice').stop(true, true).fadeIn().delay(4000).fadeOut();
+                        }
+                    },
+                    error: function() {
+                        $('#dragToastMsg').text('Terjadi kesalahan koneksi.');
+                        $('#dragToastAlert').removeClass('bg-success-600').addClass('bg-danger-600');
+                        $('#dragToastNotice').stop(true, true).fadeIn().delay(4000).fadeOut();
+                    }
+                });
+            }
+        });
     });
 </script>

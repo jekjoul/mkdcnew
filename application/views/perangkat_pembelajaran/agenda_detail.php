@@ -404,7 +404,7 @@
                 <div class="card-header bg-white border-bottom p-20">
                     <h6 class="mb-0 text-primary-light fw-bold d-flex align-items-center gap-2">
                         <iconify-icon icon="solar:pen-bold" class="text-primary-600 text-xl"></iconify-icon>
-                        Catatan & Status Pelaksanaan Agenda
+                        Hambatan, Solusi &amp; Status Agenda
                     </h6>
                 </div>
                 <div class="card-body p-20">
@@ -413,11 +413,20 @@
                     echo form_open($action_url, ['id' => 'form-update-status']);
                     ?>
                     
+                    <div class="mb-16">
+                        <label class="form-label fw-semibold text-danger-700 text-sm mb-6 d-flex align-items-center gap-1">
+                            <iconify-icon icon="solar:danger-triangle-bold" class="text-base"></iconify-icon> Hambatan / Kendala KBM
+                        </label>
+                        <textarea name="hambatan" class="form-control radius-8 p-12 text-sm border-danger-200" rows="3"
+                                  placeholder="Tuliskan hambatan/kendala selama KBM (jika ada)..."><?php echo html_escape(!empty($agenda->hambatan) ? $agenda->hambatan : $agenda->catatan) ?></textarea>
+                    </div>
+
                     <div class="mb-20">
-                        <label class="form-label fw-semibold text-secondary-light text-sm mb-8">Form Catatan Tambahan KBM Agenda</label>
-                        <textarea name="catatan" class="form-control radius-8 p-12 text-sm" rows="5"
-                                  placeholder="Tuliskan catatan pelaksanaan KBM, respons murid, kendala, atau rangkuman evaluasi..."><?php echo html_escape($agenda->catatan) ?></textarea>
-                        <div class="text-xs text-secondary-light mt-6">Catatan ini akan tersimpan saat Anda memperbarui status pelaksanaan agenda.</div>
+                        <label class="form-label fw-semibold text-success-700 text-sm mb-6 d-flex align-items-center gap-1">
+                            <iconify-icon icon="solar:check-circle-bold" class="text-base"></iconify-icon> Pemecahan Masalah / Solusi
+                        </label>
+                        <textarea name="pemecahan" class="form-control radius-8 p-12 text-sm border-success-200" rows="3"
+                                  placeholder="Tuliskan pemecahan masalah/solusi KBM (jika ada)..."><?php echo html_escape($agenda->pemecahan) ?></textarea>
                     </div>
 
                     <div class="d-flex flex-column gap-2">

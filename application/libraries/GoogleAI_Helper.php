@@ -19,6 +19,9 @@ class GoogleAI_Helper
      */
     public function generateAgenda($subjectName, $classLevel, $meetingsCount, $modulListStr = "")
     {
+        @set_time_limit(180);
+        @ini_set('max_execution_time', 180);
+
         if (empty($this->api_key) || $this->api_key === '0') {
             return ['error' => 'API Key Google AI belum dikonfigurasikan di halaman Pengaturan API.'];
         }
@@ -63,7 +66,8 @@ class GoogleAI_Helper
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 45);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 120);
 
         $output = curl_exec($ch);
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -105,6 +109,9 @@ class GoogleAI_Helper
      */
     public function generateAgendaMedia($jenisMedia, $topicMateri, $customPrompt = "")
     {
+        @set_time_limit(180);
+        @ini_set('max_execution_time', 180);
+
         if (empty($this->api_key) || $this->api_key === '0') {
             return ['error' => 'API Key Google AI belum dikonfigurasikan di halaman Pengaturan API.'];
         }

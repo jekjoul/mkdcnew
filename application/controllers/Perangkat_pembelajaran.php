@@ -1061,10 +1061,11 @@ class Perangkat_pembelajaran extends MY_Controller
         $agenda = $this->perangkat_model->getAgendaDetail($id_agenda);
         if (!$agenda) show_404();
 
-        $status  = post('status') ?: 'Terlaksana';
-        $catatan = post('catatan');
+        $status    = post('status') ?: 'Terlaksana';
+        $hambatan  = post('hambatan');
+        $pemecahan = post('pemecahan');
 
-        $this->perangkat_model->updateAgendaStatusCatatan($id_agenda, $status, $catatan);
+        $this->perangkat_model->updateAgendaStatusCatatan($id_agenda, $status, $hambatan, $hambatan, $pemecahan);
 
         $this->session->set_flashdata('alert-type', 'success');
         $this->session->set_flashdata('alert', 'Status pelaksanaan dan catatan tambahan agenda berhasil disimpan.');

@@ -98,6 +98,12 @@
                             <span>Rekap Absensi Agenda</span>
                         </a>
                     </li>
+                    <li>
+                        <a href="<?php echo url('jurnal_guru') ?>">
+                            <iconify-icon icon="solar:book-bookmark-bold" class="menu-icon text-primary"></iconify-icon>
+                            <span>Jurnal KBM Guru</span>
+                        </a>
+                    </li>
                 <?php endif; ?>
 
                 <?php if (hasPermissions('menu_jadwal_guru')): ?>
@@ -444,6 +450,9 @@
                 </li>
                 <li>
                     <a href="<?php echo url('agenda_pembelajaran/ptk') ?>"><i class="ri-circle-fill circle-icon text-success-600 w-auto"></i> Agenda per Guru Pengampu</a>
+                </li>
+                <li>
+                    <a href="<?php echo url('jurnal_guru') ?>"><i class="ri-circle-fill circle-icon text-info-600 w-auto"></i> Jurnal KBM Guru</a>
                 </li>
             </ul>
         </li>

@@ -48,6 +48,16 @@ class Agenda_pembelajaran_model extends MY_Model
                     'media_files' => ['type' => 'TEXT', 'null' => true]
                 ]);
             }
+            if (!$this->db->field_exists('hambatan', 'agenda_pembelajaran')) {
+                $this->dbforge->add_column('agenda_pembelajaran', [
+                    'hambatan' => ['type' => 'TEXT', 'null' => true]
+                ]);
+            }
+            if (!$this->db->field_exists('pemecahan', 'agenda_pembelajaran')) {
+                $this->dbforge->add_column('agenda_pembelajaran', [
+                    'pemecahan' => ['type' => 'TEXT', 'null' => true]
+                ]);
+            }
         }
 
         // Ensure custom agenda fields in pembelajaran_mapel
@@ -162,9 +172,9 @@ class Agenda_pembelajaran_model extends MY_Model
         return $this->db->get()->result();
     }
 
-    public function getAvailableMapelForGuru($id_ptk = null, $status_tahun = 'Aktif')
+    public function getAvailableMapelForGuru($id_ptk = null, $status_tahun = null)
     {
-        $this->db->select('pm.id_pembelajaran_mapel, pm.id_ptk, pm.judul_agenda, l.nama_lembaga_singkat, t.nama_tingkat, r.nama_rombel, tp.tahun_pelajaran, tp.semester, m.nama_mapel, COALESCE(ptk.nama_ptk, ptk_pemilik.nama_ptk, ptk_takeover.nama_ptk) as nama_ptk');
+        $this->db->select('pm.id_pembelajaran_mapel, pm.id_ptk, pm.judul_agenda, p.id_tahun_pelajaran, l.nama_lembaga_singkat, t.nama_tingkat, r.nama_rombel, tp.tahun_pelajaran, tp.semester, m.nama_mapel, COALESCE(ptk.nama_ptk, ptk_pemilik.nama_ptk, ptk_takeover.nama_ptk) as nama_ptk');
         $this->db->from('pembelajaran_mapel pm');
         $this->db->join('pembelajaran p', 'p.id_pembelajaran = pm.id_pembelajaran');
         $this->db->join('lembaga l', 'l.id_lembaga = p.id_lembaga');
@@ -250,7 +260,16 @@ class Agenda_pembelajaran_model extends MY_Model
         $item = $this->getPembelajaranMapel($id_pembelajaran_mapel);
         if (!$item) return [];
 
-        $this->db->select('pm.id_pembelajaran_mapel, pm.judul_agenda, ptk.nama_ptk, tp.tahun_pelajaran, tp.semester, r.nama_rombel, COUNT(ap.id_agenda) as total_agenda');
+        $id_mapel = (int)$item->id_mapel;
+        $id_tingkat = (int)$item->id_tingkat_sekolah;
+        $target_sem = strtolower(trim((string)$item->semester));
+        $target_id_tp = (int)$item->id_tahun_pelajaran;
+
+        $is_ganjil = (strpos($target_sem, '1') !== false || strpos($target_sem, 'ganjil') !== false);
+        $is_genap  = (strpos($target_sem, '2') !== false || strpos($target_sem, 'genap') !== false);
+
+        // Strict match: same mapel, same tingkat_sekolah, and same semester type
+        $this->db->select('pm.id_pembelajaran_mapel, pm.judul_agenda, ptk.nama_ptk, tp.tahun_pelajaran, tp.semester, p.id_tahun_pelajaran, r.nama_rombel, COUNT(ap.id_agenda) as total_agenda, (CASE WHEN p.id_tahun_pelajaran = ' . $target_id_tp . ' THEN 1 ELSE 0 END) as is_same_year');
         $this->db->from('pembelajaran_mapel pm');
         $this->db->join('pembelajaran p', 'p.id_pembelajaran = pm.id_pembelajaran');
         $this->db->join('pembelajaran_tahun_pelajaran tp', 'tp.id_tahun_pelajaran = p.id_tahun_pelajaran');
@@ -258,21 +277,32 @@ class Agenda_pembelajaran_model extends MY_Model
         $this->db->join('ptk', 'ptk.id_ptk = pm.id_ptk', 'left');
         $this->db->join('agenda_pembelajaran ap', 'ap.id_pembelajaran_mapel = pm.id_pembelajaran_mapel');
         
-        $this->db->where('pm.id_mapel', (int)$item->id_mapel);
-        $this->db->where('p.id_tingkat_sekolah', (int)$item->id_tingkat_sekolah);
+        $this->db->where('pm.judul_agenda IS NOT NULL', NULL, FALSE);
+        $this->db->where("TRIM(pm.judul_agenda) != ''", NULL, FALSE);
+        $this->db->where('pm.id_mapel', $id_mapel);
+        
+        if ($id_tingkat > 0) {
+            $this->db->where('p.id_tingkat_sekolah', $id_tingkat);
+        }
+
         $this->db->where('pm.id_pembelajaran_mapel !=', (int)$id_pembelajaran_mapel);
 
-        $this->db->group_by('pm.id_pembelajaran_mapel');
-        $this->db->having('total_agenda > 0');
-        $this->db->order_by('tp.id_tahun_pelajaran', 'DESC');
-
-        $results = $this->db->get()->result();
-        foreach ($results as $res) {
-            if (empty($res->judul_agenda)) {
-                $res->judul_agenda = "Agenda " . $item->nama_mapel . " (" . $res->nama_rombel . " - Sem " . $res->semester . " " . $res->tahun_pelajaran . ")";
-            }
+        if ($is_ganjil) {
+            $this->db->where_in('tp.semester', ['1', 'Ganjil', 'ganjil']);
+        } elseif ($is_genap) {
+            $this->db->where_in('tp.semester', ['2', 'Genap', 'genap']);
+        } else {
+            $this->db->where('tp.semester', $item->semester);
         }
-        return $results;
+
+        $this->db->group_by(['pm.id_pembelajaran_mapel', 'pm.judul_agenda', 'ptk.nama_ptk', 'tp.tahun_pelajaran', 'tp.semester', 'p.id_tahun_pelajaran', 'r.nama_rombel']);
+        $this->db->having('total_agenda > 0');
+        $this->db->order_by('is_same_year', 'DESC');
+        $this->db->order_by('tp.id_tahun_pelajaran', 'DESC');
+        $this->db->order_by('r.nama_rombel', 'ASC');
+
+        $query = $this->db->get();
+        return ($query && is_object($query)) ? $query->result() : [];
     }
 
     public function copyAndAdaptAgenda($target_id_pembelajaran_mapel, $source_id_pembelajaran_mapel)
@@ -282,6 +312,39 @@ class Agenda_pembelajaran_model extends MY_Model
 
         if (!$target_item || empty($source_agendas)) return false;
 
+        $upload_dir = './uploads/agenda_media/';
+        $now = date('Y-m-d H:i:s');
+
+        // Helper function for copying media files
+        $duplicateMediaFiles = function($media_files_json) use ($upload_dir) {
+            if (empty($media_files_json)) return null;
+            $media_items = json_decode($media_files_json, true);
+            if (!is_array($media_items)) return null;
+
+            $new_media_items = [];
+            foreach ($media_items as $media) {
+                if (isset($media['type']) && $media['type'] === 'file' && !empty($media['file_name'])) {
+                    $old_file = $upload_dir . $media['file_name'];
+                    if (is_file($old_file)) {
+                        $ext = pathinfo($media['file_name'], PATHINFO_EXTENSION);
+                        $new_filename = 'agenda_copy_' . time() . '_' . rand(1000, 9999) . '.' . $ext;
+                        $new_file = $upload_dir . $new_filename;
+                        @copy($old_file, $new_file);
+
+                        $new_media = $media;
+                        $new_media['file_name'] = $new_filename;
+                        $new_media_items[] = $new_media;
+                    } else {
+                        $new_media_items[] = $media;
+                    }
+                } else {
+                    $new_media_items[] = $media;
+                }
+            }
+            return json_encode($new_media_items);
+        };
+
+        // Try schedule-based adaptation first
         $schedules = [];
         if ($this->db->table_exists('jadwal_pelajaran_item')) {
             $where_sched = [
@@ -295,7 +358,39 @@ class Agenda_pembelajaran_model extends MY_Model
             $schedules = ($sched_query && is_object($sched_query)) ? $sched_query->result() : [];
         }
 
-        if (empty($schedules)) return false;
+        $active_days = $this->db->where('id_tahun_pelajaran', $target_item->id_tahun_pelajaran)
+            ->where('status', 'Efektif')
+            ->order_by('tanggal', 'ASC')
+            ->get('pembelajaran_hari_efektif')->result();
+
+        // If no schedule or no active days, perform direct copy fallback
+        if (empty($schedules) || empty($active_days)) {
+            $this->db->delete($this->agenda_table, ['id_pembelajaran_mapel' => (int)$target_id_pembelajaran_mapel]);
+
+            foreach ($source_agendas as $i => $src) {
+                $copied_media_json = $duplicateMediaFiles($src->media_files);
+
+                $this->db->insert($this->agenda_table, [
+                    'id_pembelajaran_mapel' => $target_id_pembelajaran_mapel,
+                    'tanggal' => $src->tanggal,
+                    'hari' => $src->hari,
+                    'pertemuan_ke' => $src->pertemuan_ke ?: ($i + 1),
+                    'materi' => $src->materi,
+                    'kegiatan' => $src->kegiatan,
+                    'status' => 'Belum',
+                    'catatan' => null,
+                    'jumlah_jam' => $src->jumlah_jam ?: 2,
+                    'jam_mulai' => $src->jam_mulai,
+                    'jam_selesai' => $src->jam_selesai,
+                    'link_video' => $src->link_video,
+                    'slide_drive_id' => $src->slide_drive_id,
+                    'media_files' => $copied_media_json,
+                    'created_at' => $now,
+                    'updated_at' => $now
+                ]);
+            }
+            return true;
+        }
 
         $pengaturan = $this->db->get_where('jadwal_pelajaran_pengaturan', ['id_pembelajaran' => $target_item->id_pembelajaran])->result();
         if (empty($pengaturan)) {
@@ -354,19 +449,11 @@ class Agenda_pembelajaran_model extends MY_Model
             ];
         }
 
-        $active_days = $this->db->where('id_tahun_pelajaran', $target_item->id_tahun_pelajaran)
-            ->where('status', 'Efektif')
-            ->order_by('tanggal', 'ASC')
-            ->get('pembelajaran_hari_efektif')->result();
-
-        if (empty($active_days)) return false;
-
         $day_names = [0 => 'minggu', 1 => 'senin', 2 => 'selasa', 3 => 'rabu', 4 => 'kamis', 5 => 'jumat', 6 => 'sabtu'];
 
         $this->db->delete($this->agenda_table, ['id_pembelajaran_mapel' => (int)$target_id_pembelajaran_mapel]);
 
         $idx = 0;
-        $now = date('Y-m-d H:i:s');
 
         foreach ($active_days as $ad) {
             $w = (int) date('w', strtotime($ad->tanggal));
@@ -377,6 +464,8 @@ class Agenda_pembelajaran_model extends MY_Model
                 $src = $source_agendas[$idx];
                 $sched_info = $scheduled_days[$day_ind];
 
+                $copied_media_json = $duplicateMediaFiles($src->media_files);
+
                 $this->db->insert($this->agenda_table, [
                     'id_pembelajaran_mapel' => $target_id_pembelajaran_mapel,
                     'tanggal' => $ad->tanggal,
@@ -385,17 +474,46 @@ class Agenda_pembelajaran_model extends MY_Model
                     'materi' => $src->materi,
                     'kegiatan' => $src->kegiatan,
                     'status' => 'Belum',
-                    'catatan' => $src->catatan,
+                    'catatan' => null,
                     'jumlah_jam' => $sched_info['jumlah_jam'],
                     'jam_mulai' => $sched_info['jam_mulai'],
                     'jam_selesai' => $sched_info['jam_selesai'],
                     'link_video' => $src->link_video,
                     'slide_drive_id' => $src->slide_drive_id,
+                    'media_files' => $copied_media_json,
                     'created_at' => $now,
                     'updated_at' => $now
                 ]);
                 $idx++;
             }
+        }
+
+        // If no agenda was inserted due to empty schedule day match, fallback to direct copy
+        if ($idx === 0) {
+            $this->db->delete($this->agenda_table, ['id_pembelajaran_mapel' => (int)$target_id_pembelajaran_mapel]);
+            foreach ($source_agendas as $i => $src) {
+                $copied_media_json = $duplicateMediaFiles($src->media_files);
+
+                $this->db->insert($this->agenda_table, [
+                    'id_pembelajaran_mapel' => $target_id_pembelajaran_mapel,
+                    'tanggal' => $src->tanggal,
+                    'hari' => $src->hari,
+                    'pertemuan_ke' => $src->pertemuan_ke ?: ($i + 1),
+                    'materi' => $src->materi,
+                    'kegiatan' => $src->kegiatan,
+                    'status' => 'Belum',
+                    'catatan' => null,
+                    'jumlah_jam' => $src->jumlah_jam ?: 2,
+                    'jam_mulai' => $src->jam_mulai,
+                    'jam_selesai' => $src->jam_selesai,
+                    'link_video' => $src->link_video,
+                    'slide_drive_id' => $src->slide_drive_id,
+                    'media_files' => $copied_media_json,
+                    'created_at' => $now,
+                    'updated_at' => $now
+                ]);
+            }
+            return true;
         }
 
         return $idx > 0;
@@ -720,5 +838,130 @@ class Agenda_pembelajaran_model extends MY_Model
             return $query->result();
         }
         return [];
+    }
+
+    public function reorderAgendaItems($id_pembelajaran_mapel, $ordered_ids)
+    {
+        if (empty($ordered_ids) || !is_array($ordered_ids)) return false;
+
+        $existing = $this->getAgendaByMapel($id_pembelajaran_mapel);
+        if (empty($existing)) return false;
+
+        // Extract existing fixed schedule slots in sequence
+        $schedule_slots = [];
+        foreach ($existing as $ex) {
+            $schedule_slots[] = [
+                'pertemuan_ke' => $ex->pertemuan_ke,
+                'tanggal' => $ex->tanggal,
+                'hari' => $ex->hari,
+                'jam_mulai' => $ex->jam_mulai,
+                'jam_selesai' => $ex->jam_selesai,
+                'jumlah_jam' => $ex->jumlah_jam
+            ];
+        }
+
+        $this->db->trans_start();
+        $now = date('Y-m-d H:i:s');
+        foreach ($ordered_ids as $index => $id_agenda) {
+            if (isset($schedule_slots[$index])) {
+                $slot = $schedule_slots[$index];
+                $this->db->where('id_agenda', (int)$id_agenda);
+                $this->db->where('id_pembelajaran_mapel', (int)$id_pembelajaran_mapel);
+                $this->db->update($this->agenda_table, [
+                    'pertemuan_ke' => $slot['pertemuan_ke'],
+                    'tanggal' => $slot['tanggal'],
+                    'hari' => $slot['hari'],
+                    'jam_mulai' => $slot['jam_mulai'],
+                    'jam_selesai' => $slot['jam_selesai'],
+                    'jumlah_jam' => $slot['jumlah_jam'],
+                    'updated_at' => $now
+                ]);
+            }
+        }
+        $this->db->trans_complete();
+
+        return $this->db->trans_status();
+    }
+
+    public function moveAgendaItemUp($id_agenda)
+    {
+        $current = $this->getItemAgenda($id_agenda);
+        if (!$current) return false;
+
+        $id_pm = $current->id_pembelajaran_mapel;
+        $all = $this->getAgendaByMapel($id_pm);
+
+        $currentIndex = -1;
+        foreach ($all as $idx => $row) {
+            if ($row->id_agenda == $id_agenda) {
+                $currentIndex = $idx;
+                break;
+            }
+        }
+
+        if ($currentIndex <= 0) return false;
+
+        $prev = $all[$currentIndex - 1];
+
+        $content_fields = ['materi', 'kegiatan', 'catatan', 'hambatan', 'pemecahan', 'status', 'link_video', 'slide_drive_id', 'media_files'];
+        $current_data = [];
+        $prev_data = [];
+
+        foreach ($content_fields as $field) {
+            $current_data[$field] = $prev->$field;
+            $prev_data[$field] = $current->$field;
+        }
+
+        $now = date('Y-m-d H:i:s');
+        $current_data['updated_at'] = $now;
+        $prev_data['updated_at'] = $now;
+
+        $this->db->trans_start();
+        $this->db->where('id_agenda', (int)$current->id_agenda)->update($this->agenda_table, $current_data);
+        $this->db->where('id_agenda', (int)$prev->id_agenda)->update($this->agenda_table, $prev_data);
+        $this->db->trans_complete();
+
+        return $this->db->trans_status();
+    }
+
+    public function moveAgendaItemDown($id_agenda)
+    {
+        $current = $this->getItemAgenda($id_agenda);
+        if (!$current) return false;
+
+        $id_pm = $current->id_pembelajaran_mapel;
+        $all = $this->getAgendaByMapel($id_pm);
+
+        $currentIndex = -1;
+        foreach ($all as $idx => $row) {
+            if ($row->id_agenda == $id_agenda) {
+                $currentIndex = $idx;
+                break;
+            }
+        }
+
+        if ($currentIndex < 0 || $currentIndex >= count($all) - 1) return false;
+
+        $next = $all[$currentIndex + 1];
+
+        $content_fields = ['materi', 'kegiatan', 'catatan', 'hambatan', 'pemecahan', 'status', 'link_video', 'slide_drive_id', 'media_files'];
+        $current_data = [];
+        $next_data = [];
+
+        foreach ($content_fields as $field) {
+            $current_data[$field] = $next->$field;
+            $next_data[$field] = $current->$field;
+        }
+
+        $now = date('Y-m-d H:i:s');
+        $current_data['updated_at'] = $now;
+        $next_data['updated_at'] = $now;
+
+        $this->db->trans_start();
+        $this->db->where('id_agenda', (int)$current->id_agenda)->update($this->agenda_table, $current_data);
+        $this->db->where('id_agenda', (int)$next->id_agenda)->update($this->agenda_table, $next_data);
+        $this->db->trans_complete();
+
+        return $this->db->trans_status();
     }
 }

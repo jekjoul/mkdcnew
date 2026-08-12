@@ -55,9 +55,10 @@ class Agenda_pembelajaran extends MY_Controller
         $this->page_data['selected_ptk'] = $selected_ptk;
         $this->page_data['is_nonaktif'] = $is_nonaktif;
         $this->page_data['teachers'] = $this->db->where('status_keaktifan', 'Aktif')->order_by('nama_ptk', 'ASC')->get('ptk')->result();
+        $this->page_data['master_tahun_pelajaran'] = $this->db->order_by('id_tahun_pelajaran', 'DESC')->get('pembelajaran_tahun_pelajaran')->result();
         
         $filter_ptk_available = (!$is_admin && $ptk_id > 0) ? $ptk_id : $selected_ptk;
-        $this->page_data['available_mapels'] = $this->agenda_model->getAvailableMapelForGuru($filter_ptk_available, $status_tahun);
+        $this->page_data['available_mapels'] = $this->agenda_model->getAvailableMapelForGuru($filter_ptk_available, null);
 
         $this->load->view('agenda_pembelajaran/list', $this->page_data);
     }
@@ -89,16 +90,7 @@ class Agenda_pembelajaran extends MY_Controller
         $this->session->set_flashdata('alert-type', 'success');
         $this->session->set_flashdata('alert', 'Agenda Pembelajaran "' . html_escape($judul_agenda) . '" berhasil disimpan!');
 
-        if (!empty($redirect_to)) {
-            redirect($redirect_to);
-        } else {
-            $referer = $this->input->server('HTTP_REFERER');
-            if ($referer && strpos($referer, 'guru/pengaturan_agenda') !== false) {
-                redirect('guru/pengaturan_agenda');
-            } else {
-                redirect('agenda_pembelajaran');
-            }
-        }
+        redirect('agenda_pembelajaran/detail/' . $id_pembelajaran_mapel);
     }
 
     public function hapus_header($id_pembelajaran_mapel = 0)
@@ -152,6 +144,8 @@ class Agenda_pembelajaran extends MY_Controller
             $this->page_data['page']->subtitleUrl = 'agenda_pembelajaran/ptk';
             $this->page_data['page']->icon = 'solar:users-group-two-rounded-bold';
 
+            $this->page_data['master_tahun_pelajaran'] = $this->db->order_by('id_tahun_pelajaran', 'DESC')->get('pembelajaran_tahun_pelajaran')->result();
+            $this->page_data['available_mapels'] = $this->agenda_model->getAvailableMapelForGuru(null, null);
             $this->page_data['ptk_summary'] = $this->agenda_model->getPtkAgendaSummary('Aktif');
             $this->load->view('agenda_pembelajaran/ptk_summary', $this->page_data);
             return;
@@ -186,6 +180,8 @@ class Agenda_pembelajaran extends MY_Controller
         $this->page_data['selected_bulan'] = $bulan;
         $this->page_data['tp_active'] = $tp_active;
         $this->page_data['teachers'] = $this->db->order_by('nama_ptk', 'ASC')->get('ptk')->result();
+        $this->page_data['master_tahun_pelajaran'] = $this->db->order_by('id_tahun_pelajaran', 'DESC')->get('pembelajaran_tahun_pelajaran')->result();
+        $this->page_data['available_mapels'] = $this->agenda_model->getAvailableMapelForGuru($id_ptk, null);
 
         $this->load->view('agenda_pembelajaran/ptk_detail', $this->page_data);
     }
@@ -275,10 +271,11 @@ class Agenda_pembelajaran extends MY_Controller
             return;
         }
 
-        $materi   = post('materi');
-        $kegiatan = post('kegiatan');
-        $status   = post('status');
-        $catatan  = post('catatan');
+        $materi    = post('materi');
+        $kegiatan  = post('kegiatan');
+        $status    = post('status');
+        $hambatan  = post('hambatan');
+        $pemecahan = post('pemecahan');
 
         $media_list = json_decode($item_agenda->media_files ?: '[]', true) ?: [];
 
@@ -340,7 +337,9 @@ class Agenda_pembelajaran extends MY_Controller
             'materi'      => $materi,
             'kegiatan'    => $kegiatan,
             'status'      => $status,
-            'catatan'     => $catatan,
+            'hambatan'    => $hambatan,
+            'pemecahan'   => $pemecahan,
+            'catatan'     => $hambatan,
             'media_files' => json_encode($media_list),
             'updated_at'  => date('Y-m-d H:i:s')
         ];
@@ -454,6 +453,9 @@ class Agenda_pembelajaran extends MY_Controller
     public function generate_agenda_ai($id_pembelajaran_mapel)
     {
         postAllowed();
+        @set_time_limit(180);
+        @ini_set('max_execution_time', 180);
+
         $item = $this->agenda_model->getPembelajaranMapel($id_pembelajaran_mapel);
         if (!$item) {
             show_404();
@@ -517,4 +519,113 @@ class Agenda_pembelajaran extends MY_Controller
         }
         redirect('agenda_pembelajaran/detail/' . $id_pembelajaran_mapel);
     }
+
+    public function debug_templates($id_pembelajaran_mapel = 0)
+    {
+        header('Content-Type: text/plain');
+        $all_pm = $this->db->get('pembelajaran_mapel')->result();
+        echo "=== DAFTAR PEMBELAJARAN MAPEL & AVAILABLE TEMPLATES ===\n";
+        foreach ($all_pm as $pm) {
+            $item = $this->agenda_model->getPembelajaranMapel($pm->id_pembelajaran_mapel);
+            $tpl = $this->agenda_model->getAvailableTemplates($pm->id_pembelajaran_mapel);
+            echo "ID PM: {$pm->id_pembelajaran_mapel} | Mapel: " . ($item ? $item->nama_mapel . ' (id_mapel:' . $item->id_mapel . ')' : '-') . " | Tingkat: " . ($item ? $item->nama_tingkat . ' (id_tingkat:' . $item->id_tingkat_sekolah . ')' : '-') . " | Sem: " . ($item ? $item->semester : '-') . " | TP: " . ($item ? $item->tahun_pelajaran : '-') . " => Jumlah Template: " . count($tpl) . "\n";
+            if (!empty($tpl)) {
+                print_r($tpl);
+            }
+        }
+        exit;
+    }
+
+    public function reorder_items($id_pembelajaran_mapel)
+    {
+        header('Content-Type: application/json');
+        $id_pembelajaran_mapel = (int) $id_pembelajaran_mapel;
+        $ordered_ids = $this->input->post('ordered_ids');
+
+        if (!$id_pembelajaran_mapel || empty($ordered_ids) || !is_array($ordered_ids)) {
+            echo json_encode(['success' => false, 'message' => 'Data urutan agenda tidak valid.']);
+            return;
+        }
+
+        $result = $this->agenda_model->reorderAgendaItems($id_pembelajaran_mapel, $ordered_ids);
+
+        if ($result) {
+            echo json_encode(['success' => true, 'message' => 'Urutan materi agenda berhasil diperbarui!']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Gagal memperbarui urutan agenda.']);
+        }
+    }
+
+    public function move_up($id_agenda = 0)
+    {
+        $id_agenda = (int) $id_agenda;
+        $item = $this->agenda_model->getItemAgenda($id_agenda);
+        if (!$item) {
+            if ($this->input->is_ajax_request()) {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'message' => 'Agenda tidak ditemukan.']);
+                return;
+            }
+            redirect('agenda_pembelajaran');
+            return;
+        }
+
+        $res = $this->agenda_model->moveAgendaItemUp($id_agenda);
+        if ($this->input->is_ajax_request()) {
+            header('Content-Type: application/json');
+            if ($res) {
+                echo json_encode(['success' => true, 'message' => 'Urutan materi agenda berhasil dipindahkan ke atas!']);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Gagal memindahkan urutan agenda.']);
+            }
+            return;
+        }
+
+        if ($res) {
+            $this->session->set_flashdata('alert-type', 'success');
+            $this->session->set_flashdata('alert', 'Urutan materi agenda berhasil dipindahkan ke atas!');
+        } else {
+            $this->session->set_flashdata('alert-type', 'danger');
+            $this->session->set_flashdata('alert', 'Gagal memindahkan urutan agenda.');
+        }
+
+        redirect('agenda_pembelajaran/detail/' . $item->id_pembelajaran_mapel);
+    }
+
+    public function move_down($id_agenda = 0)
+    {
+        $id_agenda = (int) $id_agenda;
+        $item = $this->agenda_model->getItemAgenda($id_agenda);
+        if (!$item) {
+            if ($this->input->is_ajax_request()) {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'message' => 'Agenda tidak ditemukan.']);
+                return;
+            }
+            redirect('agenda_pembelajaran');
+            return;
+        }
+
+        $res = $this->agenda_model->moveAgendaItemDown($id_agenda);
+        if ($this->input->is_ajax_request()) {
+            header('Content-Type: application/json');
+            if ($res) {
+                echo json_encode(['success' => true, 'message' => 'Urutan materi agenda berhasil dipindahkan ke bawah!']);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Gagal memindahkan urutan agenda.']);
+            }
+            return;
+        }
+
+        if ($res) {
+            $this->session->set_flashdata('alert-type', 'success');
+            $this->session->set_flashdata('alert', 'Urutan materi agenda berhasil dipindahkan ke bawah!');
+        } else {
+            $this->session->set_flashdata('alert-type', 'danger');
+            $this->session->set_flashdata('alert', 'Gagal memindahkan urutan agenda.');
+        }
+
+        redirect('agenda_pembelajaran/detail/' . $item->id_pembelajaran_mapel);
+    }
+
 }

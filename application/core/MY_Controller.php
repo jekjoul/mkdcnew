@@ -121,7 +121,8 @@ class MY_Controller extends CI_Controller {
 				'tahun_pelajaran',
 				'master',
 				'master_tugas_tambahan',
-				'sarpras'
+				'sarpras',
+				'jurnal_guru'
 			];
 
 			$allowed_ptk_methods = [

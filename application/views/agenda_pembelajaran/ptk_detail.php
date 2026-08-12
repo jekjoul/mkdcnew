@@ -231,23 +231,46 @@
                     <div class="alert alert-primary bg-primary-50 border-primary-200 radius-8 p-16 mb-20 text-sm text-primary-900 d-flex align-items-center gap-2">
                         <iconify-icon icon="solar:info-circle-bold" class="text-xl text-primary-600 flex-shrink-0"></iconify-icon>
                         <div>
-                            Pilih penugasan <strong>Mata Pelajaran &amp; Kelas/Rombel</strong> yang diberikan oleh Kurikulum/Wakasek, lalu berikan <strong>Judul Agenda Pembelajaran</strong> kustom sesuai kebutuhan Anda.
+                            Pilih <strong>Tahun Pelajaran &amp; Semester</strong> dari master database, lalu pilih penugasan <strong>Mata Pelajaran &amp; Kelas/Rombel</strong> yang sesuai.
                         </div>
                     </div>
 
                     <div class="mb-20">
-                        <label class="form-label text-sm fw-semibold text-primary-900 mb-8">Pilih Penugasan Mapel &amp; Kelas / Rombel <span class="text-danger">*</span></label>
-                        <select name="id_pembelajaran_mapel" class="form-select radius-8 text-sm" required>
-                            <option value="">-- Pilih Penugasan Mata Pelajaran &amp; Kelas --</option>
-                            <?php if (!empty($available_mapels)): ?>
-                                <?php foreach ($available_mapels as $amp): ?>
-                                    <option value="<?php echo $amp->id_pembelajaran_mapel; ?>">
-                                        <?php echo html_escape('[' . $amp->tahun_pelajaran . ' - Sem ' . $amp->semester . '] ' . $amp->nama_tingkat . ' ' . $amp->nama_rombel . ' - ' . $amp->nama_mapel . ' (' . $amp->nama_ptk . ')'); ?>
+                        <label class="form-label text-sm fw-semibold text-primary-900 mb-8">Pilih Tahun Pelajaran &amp; Semester <span class="text-danger">*</span></label>
+                        <select name="id_tahun_pelajaran_modal" class="form-select radius-8 text-sm select-tp-modal" onchange="filterMapelOptionsByTp(this)">
+                            <option value="">-- Semua Tahun Pelajaran &amp; Semester --</option>
+                            <?php if (!empty($master_tahun_pelajaran)): ?>
+                                <?php foreach ($master_tahun_pelajaran as $tp): ?>
+                                    <?php 
+                                    $sem_label = is_numeric($tp->semester) ? 'Semester ' . $tp->semester : (strpos(strtolower($tp->semester), 'semester') !== false ? $tp->semester : 'Semester ' . $tp->semester);
+                                    $is_active = ($tp->status === 'Aktif');
+                                    ?>
+                                    <option value="<?php echo $tp->id_tahun_pelajaran; ?>" <?php echo $is_active ? 'selected' : ''; ?>>
+                                        <?php echo html_escape($tp->tahun_pelajaran . ' ' . $sem_label . ($is_active ? ' (Aktif)' : ' (Tidak Aktif)')); ?>
                                     </option>
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </select>
-                        <span class="text-xs text-secondary-light mt-4 d-block">Pilihan ini diambil dari penugasan pembelajaran semester aktif.</span>
+                        <span class="text-xs text-secondary-light mt-4 d-block">Pilihan master Tahun Pelajaran &amp; Semester dari database.</span>
+                    </div>
+
+                    <div class="mb-20">
+                        <label class="form-label text-sm fw-semibold text-primary-900 mb-8">Pilih Penugasan Mapel &amp; Kelas / Rombel <span class="text-danger">*</span></label>
+                        <select name="id_pembelajaran_mapel" class="form-select radius-8 text-sm select-mapel-modal" required>
+                            <option value="">-- Pilih Penugasan Mata Pelajaran &amp; Kelas --</option>
+                            <?php if (!empty($available_mapels)): ?>
+                                <?php foreach ($available_mapels as $amp): ?>
+                                    <?php
+                                    $sem_fmt = is_numeric($amp->semester) ? 'Semester ' . $amp->semester : (strpos(strtolower($amp->semester), 'semester') !== false ? $amp->semester : 'Semester ' . $amp->semester);
+                                    $tp_label = $amp->tahun_pelajaran . ' ' . $sem_fmt;
+                                    ?>
+                                    <option value="<?php echo $amp->id_pembelajaran_mapel; ?>" data-tp-id="<?php echo $amp->id_tahun_pelajaran; ?>">
+                                        <?php echo html_escape('[' . $tp_label . '] ' . $amp->nama_tingkat . ' ' . $amp->nama_rombel . ' - ' . $amp->nama_mapel . ' (' . $amp->nama_ptk . ')'); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
+                        <span class="text-xs text-secondary-light mt-4 d-block">Pilihan penugasan disesuaikan berdasarkan Tahun Pelajaran &amp; Semester yang dipilih di atas.</span>
                     </div>
 
                     <div class="mb-12">
@@ -281,6 +304,35 @@
                 $(this).removeClass('d-none');
             } else {
                 $(this).addClass('d-none');
+            }
+        });
+    });
+
+    function filterMapelOptionsByTp(selectEl) {
+        var tpId = $(selectEl).val();
+        var modal = $(selectEl).closest('.modal');
+        var mapelSelect = modal.find('.select-mapel-modal');
+        
+        mapelSelect.find('option').each(function() {
+            var optTpId = $(this).attr('data-tp-id');
+            if (!optTpId || !tpId || optTpId == tpId) {
+                $(this).show().prop('disabled', false);
+            } else {
+                $(this).hide().prop('disabled', true);
+            }
+        });
+
+        var selectedOpt = mapelSelect.find('option:selected');
+        if (selectedOpt.length && selectedOpt.is(':disabled')) {
+            mapelSelect.val('');
+        }
+    }
+
+    $(document).ready(function() {
+        $('.modal').on('shown.bs.modal', function () {
+            var tpSelect = $(this).find('.select-tp-modal');
+            if (tpSelect.length) {
+                filterMapelOptionsByTp(tpSelect[0]);
             }
         });
     });

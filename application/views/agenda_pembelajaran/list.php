@@ -9,6 +9,12 @@
                 <h6 class="mb-0 text-white"><?php echo !empty($is_nonaktif) ? 'Agenda Pembelajaran Tidak Aktif' : 'Daftar Agenda Pembelajaran Harian'; ?></h6>
             </div>
             <div class="d-flex flex-wrap align-items-center gap-2">
+                <div class="form-check form-switch d-inline-flex align-items-center gap-2 px-12 py-6 radius-8 bg-white-10 border border-white-20 mb-0">
+                    <input class="form-check-input cursor-pointer my-0" type="checkbox" role="switch" id="checkAgendaTidakAktif" <?php echo !empty($is_nonaktif) ? 'checked' : ''; ?> onchange="window.location.href = this.checked ? '<?php echo url('agenda_pembelajaran/nonaktif') ?>' : '<?php echo url('agenda_pembelajaran') ?>';">
+                    <label class="form-check-label text-xs text-white fw-semibold cursor-pointer mb-0" for="checkAgendaTidakAktif">
+                        Lihat agenda pembelajaran tidak aktif
+                    </label>
+                </div>
                 <button type="button" class="btn btn-sm btn-warning text-primary-900 radius-8 px-12 py-8 d-flex align-items-center gap-2 fw-bold" data-bs-toggle="modal" data-bs-target="#modalBuatAgenda">
                     <iconify-icon icon="solar:add-circle-bold" class="text-lg"></iconify-icon>
                     + Buat Agenda Pembelajaran Baru
@@ -16,10 +22,6 @@
                 <a href="<?php echo url('agenda_pembelajaran/ptk') ?>" class="btn btn-sm btn-light text-primary-600 radius-8 px-12 py-8 d-flex align-items-center gap-2">
                     <iconify-icon icon="solar:users-group-two-rounded-bold" class="text-lg"></iconify-icon>
                     Agenda per Guru Pengampu
-                </a>
-                <a href="<?php echo url(!empty($is_nonaktif) ? 'agenda_pembelajaran' : 'agenda_pembelajaran/nonaktif') ?>" class="btn btn-sm btn-outline-light radius-8 px-12 py-8 d-flex align-items-center gap-2">
-                    <iconify-icon icon="<?php echo !empty($is_nonaktif) ? 'solar:arrow-left-linear' : 'solar:archive-linear'; ?>" class="text-lg"></iconify-icon>
-                    <?php echo !empty($is_nonaktif) ? 'Kembali ke Aktif' : 'Data Tidak Aktif'; ?>
                 </a>
             </div>
         </div>
@@ -56,6 +58,23 @@
                             <a href="<?php echo url('agenda_pembelajaran') ?>" class="btn btn-outline-secondary radius-8 px-12" title="Reset Filter">
                                 <iconify-icon icon="solar:restart-bold"></iconify-icon>
                             </a>
+                        <?php endif; ?>
+                    </div>
+                    <div class="col-md-12 d-flex flex-wrap align-items-center justify-content-between pt-12 border-top mt-12 gap-2">
+                        <div class="form-check me-3">
+                            <input class="form-check-input cursor-pointer" type="checkbox" id="checkAgendaFilterNonaktif" <?php echo !empty($is_nonaktif) ? 'checked' : ''; ?> onchange="window.location.href = this.checked ? '<?php echo url('agenda_pembelajaran/nonaktif') ?>' : '<?php echo url('agenda_pembelajaran') ?>';">
+                            <label class="form-check-label text-xs fw-semibold text-primary-900 cursor-pointer" for="checkAgendaFilterNonaktif">
+                                Lihat agenda pembelajaran tidak aktif (tahun &amp; semester terdahulu)
+                            </label>
+                        </div>
+                        <?php if (!empty($is_nonaktif)): ?>
+                            <span class="badge bg-warning-100 text-warning-800 radius-4 text-xs px-10 py-6">
+                                <iconify-icon icon="solar:info-circle-bold" class="me-1"></iconify-icon> Menampilkan Agenda Pembelajaran dari Tahun Pelajaran &amp; Semester Tidak Aktif
+                            </span>
+                        <?php else: ?>
+                            <span class="badge bg-success-100 text-success-800 radius-4 text-xs px-10 py-6">
+                                <iconify-icon icon="solar:check-circle-bold" class="me-1"></iconify-icon> Menampilkan Agenda Pembelajaran Tahun Pelajaran &amp; Semester Aktif
+                            </span>
                         <?php endif; ?>
                     </div>
                 </form>
@@ -198,23 +217,46 @@
                     <div class="alert alert-primary bg-primary-50 border-primary-200 radius-8 p-16 mb-20 text-sm text-primary-900 d-flex align-items-center gap-2">
                         <iconify-icon icon="solar:info-circle-bold" class="text-xl text-primary-600 flex-shrink-0"></iconify-icon>
                         <div>
-                            Pilih penugasan <strong>Mata Pelajaran &amp; Kelas/Rombel</strong> yang diberikan oleh Kurikulum/Wakasek, lalu berikan <strong>Judul Agenda Pembelajaran</strong> kustom sesuai kebutuhan Anda.
+                            Pilih <strong>Tahun Pelajaran &amp; Semester</strong> dari master database, lalu pilih penugasan <strong>Mata Pelajaran &amp; Kelas/Rombel</strong> yang sesuai.
                         </div>
                     </div>
 
                     <div class="mb-20">
-                        <label class="form-label text-sm fw-semibold text-primary-900 mb-8">Pilih Penugasan Mapel &amp; Kelas / Rombel <span class="text-danger">*</span></label>
-                        <select name="id_pembelajaran_mapel" class="form-select radius-8 text-sm" required>
-                            <option value="">-- Pilih Penugasan Mata Pelajaran &amp; Kelas --</option>
-                            <?php if (!empty($available_mapels)): ?>
-                                <?php foreach ($available_mapels as $amp): ?>
-                                    <option value="<?php echo $amp->id_pembelajaran_mapel; ?>">
-                                        <?php echo html_escape('[' . $amp->tahun_pelajaran . ' - Sem ' . $amp->semester . '] ' . $amp->nama_tingkat . ' ' . $amp->nama_rombel . ' - ' . $amp->nama_mapel . ' (' . $amp->nama_ptk . ')'); ?>
+                        <label class="form-label text-sm fw-semibold text-primary-900 mb-8">Pilih Tahun Pelajaran &amp; Semester <span class="text-danger">*</span></label>
+                        <select name="id_tahun_pelajaran_modal" class="form-select radius-8 text-sm select-tp-modal" onchange="filterMapelOptionsByTp(this)">
+                            <option value="">-- Semua Tahun Pelajaran &amp; Semester --</option>
+                            <?php if (!empty($master_tahun_pelajaran)): ?>
+                                <?php foreach ($master_tahun_pelajaran as $tp): ?>
+                                    <?php 
+                                    $sem_label = is_numeric($tp->semester) ? 'Semester ' . $tp->semester : (strpos(strtolower($tp->semester), 'semester') !== false ? $tp->semester : 'Semester ' . $tp->semester);
+                                    $is_active = ($tp->status === 'Aktif');
+                                    ?>
+                                    <option value="<?php echo $tp->id_tahun_pelajaran; ?>" <?php echo $is_active ? 'selected' : ''; ?>>
+                                        <?php echo html_escape($tp->tahun_pelajaran . ' ' . $sem_label . ($is_active ? ' (Aktif)' : ' (Tidak Aktif)')); ?>
                                     </option>
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </select>
-                        <span class="text-xs text-secondary-light mt-4 d-block">Pilihan ini diambil dari penugasan pembelajaran semester aktif.</span>
+                        <span class="text-xs text-secondary-light mt-4 d-block">Pilihan master Tahun Pelajaran &amp; Semester dari database.</span>
+                    </div>
+
+                    <div class="mb-20">
+                        <label class="form-label text-sm fw-semibold text-primary-900 mb-8">Pilih Penugasan Mapel &amp; Kelas / Rombel <span class="text-danger">*</span></label>
+                        <select name="id_pembelajaran_mapel" class="form-select radius-8 text-sm select-mapel-modal" required>
+                            <option value="">-- Pilih Penugasan Mata Pelajaran &amp; Kelas --</option>
+                            <?php if (!empty($available_mapels)): ?>
+                                <?php foreach ($available_mapels as $amp): ?>
+                                    <?php
+                                    $sem_fmt = is_numeric($amp->semester) ? 'Semester ' . $amp->semester : (strpos(strtolower($amp->semester), 'semester') !== false ? $amp->semester : 'Semester ' . $amp->semester);
+                                    $tp_label = $amp->tahun_pelajaran . ' ' . $sem_fmt;
+                                    ?>
+                                    <option value="<?php echo $amp->id_pembelajaran_mapel; ?>" data-tp-id="<?php echo $amp->id_tahun_pelajaran; ?>">
+                                        <?php echo html_escape('[' . $tp_label . '] ' . $amp->nama_tingkat . ' ' . $amp->nama_rombel . ' - ' . $amp->nama_mapel . ' (' . $amp->nama_ptk . ')'); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
+                        <span class="text-xs text-secondary-light mt-4 d-block">Pilihan penugasan disesuaikan berdasarkan Tahun Pelajaran &amp; Semester yang dipilih di atas.</span>
                     </div>
 
                     <div class="mb-12">
@@ -248,6 +290,35 @@
                 $(this).removeClass('d-none');
             } else {
                 $(this).addClass('d-none');
+            }
+        });
+    });
+
+    function filterMapelOptionsByTp(selectEl) {
+        var tpId = $(selectEl).val();
+        var modal = $(selectEl).closest('.modal');
+        var mapelSelect = modal.find('.select-mapel-modal');
+        
+        mapelSelect.find('option').each(function() {
+            var optTpId = $(this).attr('data-tp-id');
+            if (!optTpId || !tpId || optTpId == tpId) {
+                $(this).show().prop('disabled', false);
+            } else {
+                $(this).hide().prop('disabled', true);
+            }
+        });
+
+        var selectedOpt = mapelSelect.find('option:selected');
+        if (selectedOpt.length && selectedOpt.is(':disabled')) {
+            mapelSelect.val('');
+        }
+    }
+
+    $(document).ready(function() {
+        $('.modal').on('shown.bs.modal', function () {
+            var tpSelect = $(this).find('.select-tp-modal');
+            if (tpSelect.length) {
+                filterMapelOptionsByTp(tpSelect[0]);
             }
         });
     });
