@@ -438,7 +438,8 @@
                 <iconify-icon icon="solar:document-add-linear" class="menu-icon"></iconify-icon>
                 <span>Perangkat Pembelajaran</span>
             </a>
-        </li>
+    <?php endif; ?>
+    <?php if (hasPermissions('menu_agenda_pembelajaran')): ?>
         <li class="dropdown">
             <a href="javascript:void(0)">
                 <iconify-icon icon="solar:calendar-date-linear" class="menu-icon"></iconify-icon>

@@ -34,6 +34,30 @@ CREATE TABLE IF NOT EXISTS `jadwal_pelajaran_header` (
 ALTER TABLE `jadwal_pelajaran_item`
   ADD COLUMN `id_jadwal_header` INT(11) NOT NULL DEFAULT 0 AFTER `id_jadwal`;
 
+-- 5. Pendaftaran Permission Baru untuk Menu Agenda Pembelajaran
+-- Cari ID group_pembelajaran terlebih dahulu (biasanya 42, tetapi kita cari secara dinamis di SQL)
+SET @parent_id = (SELECT `id` FROM `permissions` WHERE `code` = 'group_pembelajaran' LIMIT 1);
+
+-- Sisipkan permission jika belum terdaftar
+INSERT INTO `permissions` (`parent_id`, `level`, `title`, `code`)
+SELECT IFNULL(@parent_id, 42), 2, 'Agenda Pembelajaran Rombel', 'menu_agenda_pembelajaran'
+WHERE NOT EXISTS (
+    SELECT 1 FROM `permissions` WHERE `code` = 'menu_agenda_pembelajaran'
+);
+
+-- Sisipkan default role_permissions untuk Admin (Role ID: 1) dan Tenaga Administrasi (Role ID: 3)
+INSERT INTO `role_permissions` (`role`, `permission`)
+SELECT 1, 'menu_agenda_pembelajaran'
+WHERE NOT EXISTS (
+    SELECT 1 FROM `role_permissions` WHERE `role` = 1 AND `permission` = 'menu_agenda_pembelajaran'
+);
+
+INSERT INTO `role_permissions` (`role`, `permission`)
+SELECT 3, 'menu_agenda_pembelajaran'
+WHERE NOT EXISTS (
+    SELECT 1 FROM `role_permissions` WHERE `role` = 3 AND `permission` = 'menu_agenda_pembelajaran'
+);
+
 -- =========================================================================
 -- CATATAN MIGRASI DATA AWAL (AUTOMATIC MIGRATION HELPER)
 -- Saat aplikasi dijalankan pertama kali, sistem secara otomatis akan memigrasi

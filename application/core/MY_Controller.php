@@ -305,6 +305,29 @@ class MY_Controller extends CI_Controller {
 				$this->db->insert('role_permissions', ['role' => $r_id, 'permission' => 'presensi_view']);
 			}
 		}
+
+		// Pendaftaran permission menu_agenda_pembelajaran secara otomatis
+		$check_group_pembelajaran = $this->db->get_where('permissions', ['code' => 'group_pembelajaran'])->row();
+		if ($check_group_pembelajaran) {
+			$parent_pembelajaran_id = $check_group_pembelajaran->id;
+			$check_agenda_perm = $this->db->get_where('permissions', ['code' => 'menu_agenda_pembelajaran'])->row();
+			if (!$check_agenda_perm) {
+				$this->db->insert('permissions', [
+					'title' => 'Agenda Pembelajaran Rombel',
+					'code' => 'menu_agenda_pembelajaran',
+					'level' => 2,
+					'parent_id' => $parent_pembelajaran_id
+				]);
+			}
+			
+			// Default role mapping untuk Admin (1) dan Tenaga Administrasi (3)
+			foreach ([1, 3] as $r_id) {
+				$check_role_agenda = $this->db->get_where('role_permissions', ['role' => $r_id, 'permission' => 'menu_agenda_pembelajaran'])->row();
+				if (!$check_role_agenda) {
+					$this->db->insert('role_permissions', ['role' => $r_id, 'permission' => 'menu_agenda_pembelajaran']);
+				}
+			}
+		}
 	}
 }
 
