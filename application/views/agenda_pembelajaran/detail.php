@@ -43,9 +43,6 @@
                 </p>
             </div>
             <div class="d-flex flex-wrap align-items-center gap-2">
-                <a href="<?php echo $back_url ?>" class="btn btn-light text-primary-600 radius-8 px-16 py-8 d-flex align-items-center gap-2 fw-semibold text-sm">
-                    <iconify-icon icon="solar:arrow-left-linear" class="text-lg"></iconify-icon> Kembali
-                </a>
                 <button class="btn btn-warning-500 text-white radius-8 px-16 py-8 d-flex align-items-center gap-2 fw-semibold text-sm" data-bs-toggle="modal" data-bs-target="#modalTakeover">
                     <iconify-icon icon="solar:user-hand-up-bold" class="text-lg"></iconify-icon> Take Over Pengampu
                 </button>

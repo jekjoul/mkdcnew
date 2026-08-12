@@ -64,44 +64,29 @@
                     </li>
                 <?php endif; ?>
 
-                <?php if (hasPermissions('menu_data_siswa_guru')): ?>
-                    <li>
-                        <a href="<?php echo url('guru/siswa') ?>">
-                            <iconify-icon icon="solar:users-group-two-rounded-linear" class="menu-icon"></iconify-icon>
-                            <span>Data Siswa</span>
-                        </a>
-                    </li>
-                <?php endif; ?>
-
-                <?php if (hasPermissions('menu_perangkat_guru')): ?>
-                    <li>
-                        <a href="<?php echo url('guru/perangkat') ?>">
-                            <iconify-icon icon="solar:document-add-linear" class="menu-icon"></iconify-icon>
-                            <span>Perangkat Pembelajaran</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="<?php echo url('guru/pengaturan_agenda') ?>">
-                            <iconify-icon icon="solar:settings-linear" class="menu-icon"></iconify-icon>
-                            <span>Pengaturan Agenda</span>
-                        </a>
-                    </li>
+                <?php if (hasPermissions('menu_perangkat_guru')): // Menggunakan permission perangkat guru untuk Agenda Saya ?>
                     <li>
                         <a href="<?php echo url('guru/agenda') ?>">
                             <iconify-icon icon="solar:notebook-linear" class="menu-icon"></iconify-icon>
                             <span>Agenda Pembelajaran Saya</span>
                         </a>
                     </li>
+                <?php endif; ?>
+
+                <?php if (hasPermissions('menu_input_nilai_guru')): ?>
+                    <li>
+                        <a href="<?php echo url('guru/nilai') ?>">
+                            <iconify-icon icon="solar:clipboard-list-linear" class="menu-icon"></iconify-icon>
+                            <span>Input Nilai</span>
+                        </a>
+                    </li>
+                <?php endif; ?>
+
+                <?php if (hasPermissions('menu_perangkat_guru')): ?>
                     <li>
                         <a href="<?php echo url('guru/rekap_absensi_agenda') ?>">
                             <iconify-icon icon="solar:chart-square-linear" class="menu-icon"></iconify-icon>
                             <span>Rekap Absensi Agenda</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="<?php echo url('jurnal_guru') ?>">
-                            <iconify-icon icon="solar:book-bookmark-bold" class="menu-icon text-primary"></iconify-icon>
-                            <span>Jurnal KBM Guru</span>
                         </a>
                     </li>
                 <?php endif; ?>
@@ -115,11 +100,29 @@
                     </li>
                 <?php endif; ?>
 
-                <?php if (hasPermissions('menu_input_nilai_guru')): ?>
+                <?php if (hasPermissions('menu_perangkat_guru')): ?>
                     <li>
-                        <a href="<?php echo url('guru/nilai') ?>">
-                            <iconify-icon icon="solar:clipboard-list-linear" class="menu-icon"></iconify-icon>
-                            <span>Input Nilai</span>
+                        <a href="<?php echo url('jurnal_guru') ?>">
+                            <iconify-icon icon="solar:book-bookmark-linear" class="menu-icon"></iconify-icon>
+                            <span>Jurnal KBM Guru</span>
+                        </a>
+                    </li>
+                <?php endif; ?>
+
+                <?php if (hasPermissions('menu_data_siswa_guru')): ?>
+                    <li>
+                        <a href="<?php echo url('guru/siswa') ?>">
+                            <iconify-icon icon="solar:users-group-two-rounded-linear" class="menu-icon"></iconify-icon>
+                            <span>Data Siswa</span>
+                        </a>
+                    </li>
+                <?php endif; ?>
+
+                <?php if (hasPermissions('menu_perangkat_guru')): ?>
+                    <li>
+                        <a href="<?php echo url('guru/pengaturan_agenda') ?>">
+                            <iconify-icon icon="solar:settings-linear" class="menu-icon"></iconify-icon>
+                            <span>Pengaturan Agenda</span>
                         </a>
                     </li>
                 <?php endif; ?>
@@ -371,7 +374,7 @@
     <li class="sidebar-menu-group-title"
         style="background: #d3c5b1;
         background: linear-gradient(90deg, rgb(255, 233, 135) 0%, rgba(255, 255, 255, 0) 100%);">
-        Pembelajaran
+        <?php echo $is_guru_portal ? 'Menu Kurikulum' : 'Pembelajaran'; ?>
     </li>
 
     <?php if (hasPermissions('pembelajaran_list')): ?>
