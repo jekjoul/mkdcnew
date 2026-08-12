@@ -398,8 +398,15 @@ class Perangkat_pembelajaran_model extends MY_Model
 
     public function generateAgendaAI($id_pembelajaran_mapel, $ai_data)
     {
+        // Aktifkan db_debug agar error database SQL (seperti kolom hilang) langsung memicu error yang terlihat
+        $db_debug_original = $this->db->db_debug;
+        $this->db->db_debug = true;
+
         $item = $this->getPembelajaranMapel($id_pembelajaran_mapel);
-        if (!$item) return false;
+        if (!$item) {
+            $this->db->db_debug = $db_debug_original;
+            return false;
+        }
 
         // Clear existing agenda first
         $this->db->delete($this->agenda_table, ['id_pembelajaran_mapel' => $id_pembelajaran_mapel]);
@@ -589,6 +596,7 @@ class Perangkat_pembelajaran_model extends MY_Model
             }
         }
 
+        $this->db->db_debug = $db_debug_original;
         return $pageNum > 1;
     }
 
