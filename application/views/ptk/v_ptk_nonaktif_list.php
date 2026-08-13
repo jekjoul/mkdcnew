@@ -39,7 +39,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                     <tr>
                                         <td><?php echo $no++; ?></td>
                                         <td>
-                                            <h6 class="text-md mb-0 fw-medium"><?php echo $row->nama_ptk; ?></h6>
+                                            <h6 class="text-md mb-0 fw-medium"><?php echo (!empty($row->gelar_depan) ? trim($row->gelar_depan) . ' ' : '') . $row->nama_ptk . (!empty($row->gelar_belakang) ? ', ' . trim($row->gelar_belakang) : ''); ?></h6>
                                         </td>
                                         <td><?php echo $row->penugasan; ?></td>
                                         <td><?php echo $row->status_pegawai; ?></td>
