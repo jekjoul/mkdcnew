@@ -247,10 +247,17 @@
                             <?php if (!empty($available_mapels)): ?>
                                 <?php foreach ($available_mapels as $amp): ?>
                                     <?php
-                                    $sem_fmt = is_numeric($amp->semester) ? 'Semester ' . $amp->semester : (strpos(strtolower($amp->semester), 'semester') !== false ? $amp->semester : 'Semester ' . $amp->semester);
+                                    if ($amp->semester == '1' || strtolower($amp->semester) == 'ganjil') {
+                                        $sem_fmt = 'Semester Ganjil';
+                                    } elseif ($amp->semester == '2' || strtolower($amp->semester) == 'genap') {
+                                        $sem_fmt = 'Semester Genap';
+                                    } else {
+                                        $sem_fmt = 'Semester ' . $amp->semester;
+                                    }
                                     $tp_label = $amp->tahun_pelajaran . ' ' . $sem_fmt;
+                                    $label_agenda = trim($tp_label . ' - ' . $amp->nama_tingkat . ' ' . $amp->nama_rombel . ' - ' . $amp->nama_mapel);
                                     ?>
-                                    <option value="<?php echo $amp->id_pembelajaran_mapel; ?>" data-tp-id="<?php echo $amp->id_tahun_pelajaran; ?>">
+                                    <option value="<?php echo $amp->id_pembelajaran_mapel; ?>" data-tp-id="<?php echo $amp->id_tahun_pelajaran; ?>" data-default-title="<?php echo html_escape($label_agenda); ?>">
                                         <?php echo html_escape('[' . $tp_label . '] ' . $amp->nama_tingkat . ' ' . $amp->nama_rombel . ' - ' . $amp->nama_mapel . ' (' . $amp->nama_ptk . ')'); ?>
                                     </option>
                                 <?php endforeach; ?>
@@ -261,8 +268,8 @@
 
                     <div class="mb-12">
                         <label class="form-label text-sm fw-semibold text-primary-900 mb-8">Judul Agenda Pembelajaran <span class="text-danger">*</span></label>
-                        <input type="text" name="judul_agenda" class="form-control radius-8 text-sm" placeholder="Contoh: Agenda Pembelajaran Matematika Wajib Kelas X IPA 1 Semester Ganjil" required>
-                        <span class="text-xs text-secondary-light mt-4 d-block">Nama atau judul kustom untuk Agenda Pembelajaran Harian yang Anda buat.</span>
+                        <input type="text" name="judul_agenda" class="form-control radius-8 text-sm" placeholder="Contoh: 2026/2027 Semester Ganjil - VII Al Ghifari - Informatika" required>
+                        <span class="text-xs text-secondary-light mt-4 d-block">Judul terisi otomatis dari penugasan yang dipilih di atas, dan tetap dapat Anda sesuaikan/edit jika diperlukan.</span>
                     </div>
                 </div>
                 <div class="modal-footer bg-neutral-50 radius-bottom-12 p-16">
@@ -319,6 +326,16 @@
             var tpSelect = $(this).find('.select-tp-modal');
             if (tpSelect.length) {
                 filterMapelOptionsByTp(tpSelect[0]);
+            }
+        });
+
+        $('select[name="id_pembelajaran_mapel"]').on('change', function() {
+            var selectedOpt = $(this).find('option:selected');
+            var defaultTitle = selectedOpt.attr('data-default-title');
+            var modal = $(this).closest('.modal');
+            var inputJudul = modal.find('input[name="judul_agenda"]');
+            if (defaultTitle) {
+                inputJudul.val(defaultTitle);
             }
         });
     });

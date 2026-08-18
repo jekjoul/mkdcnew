@@ -36,12 +36,18 @@
     $agendas_sudah = [];
     $agendas_belum = [];
     $mismatch_count = 0;
+    $total_terlambat = 0;
 
     if (!empty($agendas)) {
         foreach ($agendas as $row) {
             if ($row->status === 'Terlaksana') {
                 $agendas_sudah[] = $row;
             } else {
+                $is_past_date = ($row->tanggal < $today_str);
+                $is_today     = ($row->tanggal === $today_str);
+                if ($is_past_date || ($is_today && !empty($row->jam_mulai) && $now_time > $row->jam_mulai)) {
+                    $total_terlambat++;
+                }
                 $agendas_belum[] = $row;
             }
 
@@ -77,10 +83,10 @@
         </div>
     <?php endif; ?>
     <div class="row g-3 mb-24 mt-10">
-        <div class="col-4">
+        <div class="col-md-3 col-6">
             <div class="card border-0 radius-12 bg-primary-50 p-20 d-flex align-items-center flex-row justify-content-between">
                 <div>
-                    <span class="text-xs text-primary-600 fw-semibold text-uppercase">Total</span>
+                    <span class="text-xs text-primary-600 fw-semibold text-uppercase">Total Agenda</span>
                     <h3 class="mb-0 text-primary-900 fw-bold mt-1"><?php echo $total_agenda ?></h3>
                 </div>
                 <div class="d-none d-sm-block w-48-px h-48-px bg-primary-600 rounded-circle d-flex align-items-center justify-content-center text-white">
@@ -88,10 +94,21 @@
                 </div>
             </div>
         </div>
-        <div class="col-4">
+        <div class="col-md-3 col-6">
+            <div class="card border-0 radius-12 bg-danger-50 p-20 d-flex align-items-center flex-row justify-content-between">
+                <div>
+                    <span class="text-xs text-danger-600 fw-semibold text-uppercase">Terlambat</span>
+                    <h3 class="mb-0 text-danger-900 fw-bold mt-1"><?php echo $total_terlambat ?></h3>
+                </div>
+                <div class="d-none d-sm-block w-48-px h-48-px bg-danger-600 rounded-circle d-flex align-items-center justify-content-center text-white">
+                    <iconify-icon icon="solar:danger-triangle-bold" class="text-2xl"></iconify-icon>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
             <div class="card border-0 radius-12 bg-warning-50 p-20 d-flex align-items-center flex-row justify-content-between">
                 <div>
-                    <span class="text-xs text-warning-600 fw-semibold text-uppercase">Belum</span>
+                    <span class="text-xs text-warning-600 fw-semibold text-uppercase">Belum Terlaksana</span>
                     <h3 class="mb-0 text-warning-900 fw-bold mt-1"><?php echo $total_belum ?></h3>
                 </div>
                 <div class="d-none d-sm-block w-48-px h-48-px bg-warning-600 rounded-circle d-flex align-items-center justify-content-center text-white">
@@ -99,7 +116,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-4">
+        <div class="col-md-3 col-6">
             <div class="card border-0 radius-12 bg-success-50 p-20 d-flex align-items-center flex-row justify-content-between">
                 <div>
                     <span class="text-xs text-success-600 fw-semibold text-uppercase">Terlaksana</span>
@@ -163,6 +180,11 @@
                         <iconify-icon icon="solar:clock-circle-bold" class="me-1 text-warning-600"></iconify-icon>
                         Agenda
                         <span class="badge bg-warning-50 text-warning-600 radius-4 ms-2 px-8 py-2"><?php echo $total_belum ?></span>
+                        <?php if ($total_terlambat > 0): ?>
+                            <span class="badge bg-danger-50 text-danger-600 radius-4 ms-1 px-8 py-2 fw-bold" title="<?php echo $total_terlambat; ?> agenda melewati tanggal tetapi belum terlaksana">
+                                <iconify-icon icon="solar:danger-triangle-bold" class="text-xs me-1"></iconify-icon><?php echo $total_terlambat ?> Terlambat
+                            </span>
+                        <?php endif; ?>
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">

@@ -32,6 +32,10 @@ class Jurnal_guru_model extends MY_Model
             r.id_rombel,
             r.nama_rombel,
             t.nama_tingkat,
+            t.tingkat_angka,
+            p.id_lembaga,
+            l.nama_lembaga,
+            l.id_ptk_kepsek,
             tp.id_tahun_pelajaran,
             tp.tahun_pelajaran,
             tp.semester
@@ -39,6 +43,7 @@ class Jurnal_guru_model extends MY_Model
         $this->db->from('agenda_pembelajaran ap');
         $this->db->join('pembelajaran_mapel pm', 'pm.id_pembelajaran_mapel = ap.id_pembelajaran_mapel');
         $this->db->join('pembelajaran p', 'p.id_pembelajaran = pm.id_pembelajaran');
+        $this->db->join('lembaga l', 'l.id_lembaga = p.id_lembaga', 'left');
         $this->db->join('rombel r', 'r.id_rombel = p.id_rombel');
         $this->db->join('master_tingkat_sekolah t', 't.id_tingkat_sekolah = p.id_tingkat_sekolah', 'left');
         $this->db->join('mapel m', 'm.id_mapel = pm.id_mapel');

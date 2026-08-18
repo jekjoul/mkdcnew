@@ -232,19 +232,85 @@ class Jurnal_guru extends MY_Controller
             'id_rombel'          => $id_rombel,
         ];
 
-        $this->page_data['is_admin']    = $is_admin;
-        $this->page_data['ptk_logged']  = $ptk_logged;
-        $this->page_data['jurnal_list'] = $this->jurnal_model->getJurnalGuru($filters);
+        $jurnal_list = $this->jurnal_model->getJurnalGuru($filters);
 
         // Metadata header cetak
-        $this->page_data['guru_info']   = $id_ptk
-            ? $this->db->get_where('ptk',   ['id_ptk'   => (int)$id_ptk])->row()   : null;
-        $this->page_data['mapel_info']  = $id_mapel
-            ? $this->db->get_where('mapel',  ['id_mapel'  => (int)$id_mapel])->row()  : null;
-        $this->page_data['rombel_info'] = $id_rombel
-            ? $this->db->get_where('rombel', ['id_rombel' => (int)$id_rombel])->row() : null;
-        $this->page_data['tahun_info']  = $id_tahun_pelajaran
-            ? $this->db->get_where('pembelajaran_tahun_pelajaran', ['id_tahun_pelajaran' => (int)$id_tahun_pelajaran])->row() : null;
+        $guru_info   = $id_ptk ? $this->db->get_where('ptk', ['id_ptk' => (int)$id_ptk])->row() : ($ptk_logged ?: null);
+        $mapel_info  = $id_mapel ? $this->db->get_where('mapel', ['id_mapel' => (int)$id_mapel])->row() : null;
+        $rombel_info = $id_rombel ? $this->db->get_where('rombel', ['id_rombel' => (int)$id_rombel])->row() : null;
+        $tahun_info  = $id_tahun_pelajaran ? $this->db->get_where('pembelajaran_tahun_pelajaran', ['id_tahun_pelajaran' => (int)$id_tahun_pelajaran])->row() : null;
+
+        // Cari pembelajaran & tingkat & lembaga dari rombel / jurnal_list
+        $id_lembaga = null;
+        $tingkat_nama = null;
+        if ($id_rombel) {
+            $pemb = $this->db->select('p.*, t.nama_tingkat, l.nama_lembaga, l.id_ptk_kepsek')
+                ->from('pembelajaran p')
+                ->join('master_tingkat_sekolah t', 't.id_tingkat_sekolah = p.id_tingkat_sekolah', 'left')
+                ->join('lembaga l', 'l.id_lembaga = p.id_lembaga', 'left')
+                ->where('p.id_rombel', (int)$id_rombel)
+                ->order_by("CASE WHEN p.status = 'Aktif' THEN 0 ELSE 1 END", "ASC", false)
+                ->get()->row();
+            if ($pemb) {
+                $id_lembaga = $pemb->id_lembaga;
+                $tingkat_nama = $pemb->nama_tingkat;
+            }
+        }
+        
+        if (!$id_lembaga && !empty($jurnal_list)) {
+            $first = $jurnal_list[0];
+            if (!empty($first->id_lembaga)) {
+                $id_lembaga = $first->id_lembaga;
+            }
+            if (!empty($first->nama_tingkat)) {
+                $tingkat_nama = $first->nama_tingkat;
+            }
+        }
+
+        // Default ke lembaga 1 (SMP) jika belum terdeteksi
+        if (!$id_lembaga) {
+            $id_lembaga = 1;
+        }
+
+        $lembaga_row = $this->db->get_where('lembaga', ['id_lembaga' => (int)$id_lembaga])->row();
+        
+        // Cari Kop Surat yang sesuai lembaga rombel
+        $kop_surat = null;
+        if ($lembaga_row) {
+            $singkat = strtoupper(trim($lembaga_row->nama_lembaga_singkat ?? ''));
+            $nama    = strtoupper(trim($lembaga_row->nama_lembaga ?? ''));
+
+            if (strpos($singkat, 'SMP') !== false || strpos($nama, 'SMP') !== false) {
+                $kop_surat = $this->db->where("nama_kop LIKE '%SMP%' OR nama_lembaga LIKE '%SMP%'")->get('surat_kop')->row();
+            } elseif (strpos($singkat, 'SMA') !== false || strpos($nama, 'SMA') !== false) {
+                $kop_surat = $this->db->where("nama_kop LIKE '%SMA%' OR nama_lembaga LIKE '%SMA%'")->get('surat_kop')->row();
+            } elseif (strpos($singkat, 'PPMK') !== false || strpos($nama, 'PESANTREN') !== false || strpos($nama, 'PONDOK') !== false) {
+                $kop_surat = $this->db->where("nama_kop LIKE '%PESANTREN%' OR nama_lembaga LIKE '%PESANTREN%' OR nama_kop LIKE '%PONDOK%'")->get('surat_kop')->row();
+            } else {
+                $kop_surat = $this->db->where("nama_kop LIKE '%YAYASAN%' OR nama_lembaga LIKE '%YAYASAN%'")->get('surat_kop')->row();
+            }
+        }
+        if (!$kop_surat) {
+            $kop_surat = $this->db->order_by('id_kop_surat', 'ASC')->get('surat_kop')->row();
+        }
+
+        // Cari data Kepala Sekolah dari lembaga tersebut
+        $kepsek_ptk = null;
+        if ($lembaga_row && !empty($lembaga_row->id_ptk_kepsek)) {
+            $kepsek_ptk = $this->db->get_where('ptk', ['id_ptk' => (int)$lembaga_row->id_ptk_kepsek])->row();
+        }
+
+        $this->page_data['is_admin']    = $is_admin;
+        $this->page_data['ptk_logged']  = $ptk_logged;
+        $this->page_data['jurnal_list'] = $jurnal_list;
+        $this->page_data['guru_info']   = $guru_info;
+        $this->page_data['mapel_info']  = $mapel_info;
+        $this->page_data['rombel_info'] = $rombel_info;
+        $this->page_data['tingkat_nama']= $tingkat_nama;
+        $this->page_data['tahun_info']  = $tahun_info;
+        $this->page_data['lembaga_info']= $lembaga_row;
+        $this->page_data['kop_surat']   = $kop_surat;
+        $this->page_data['kepsek_ptk']  = $kepsek_ptk;
 
         $this->load->view('jurnal_guru/cetak', $this->page_data);
     }

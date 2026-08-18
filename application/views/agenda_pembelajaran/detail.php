@@ -228,8 +228,14 @@
                                         <?php endif; ?>
                                     </td>
                                     <td class="text-center align-middle">
-                                        <?php if ($row->status === 'Terlaksana'): ?>
+                                        <?php 
+                                        $is_past = ($row->tanggal < date('Y-m-d')) || ($row->tanggal === date('Y-m-d') && !empty($row->jam_mulai) && date('H:i') > $row->jam_mulai);
+                                        if ($row->status === 'Terlaksana'): ?>
                                             <span class="badge bg-success-100 text-success-700 px-8 py-4 radius-4 text-xs fw-bold">Terlaksana</span>
+                                        <?php elseif ($is_past): ?>
+                                            <span class="badge bg-danger-focus text-danger-main px-8 py-4 radius-4 text-xs fw-bold d-inline-flex align-items-center gap-1" title="Pertemuan telah lewat tanggal jadwal tetapi belum ditandai terlaksana">
+                                                <iconify-icon icon="solar:danger-triangle-bold" class="text-xs"></iconify-icon> Terlambat
+                                            </span>
                                         <?php else: ?>
                                             <span class="badge bg-warning-100 text-warning-700 px-8 py-4 radius-4 text-xs fw-bold">Belum</span>
                                         <?php endif; ?>

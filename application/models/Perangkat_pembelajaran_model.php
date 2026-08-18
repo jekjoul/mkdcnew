@@ -982,11 +982,15 @@ class Perangkat_pembelajaran_model extends MY_Model
             $this->db->where('r.id_rombel', (int) $id_rombel);
         }
         if ($status) {
-            $this->db->where('a.status', $status);
+            if ($status === 'Terlambat') {
+                $today = date('Y-m-d');
+                $this->db->where('a.status !=', 'Terlaksana');
+                $this->db->where('a.tanggal <', $today);
+            } else {
+                $this->db->where('a.status', $status);
+            }
         }
 
-        $today = date('Y-m-d');
-        $this->db->order_by("CASE WHEN a.tanggal >= '$today' THEN 0 ELSE 1 END", "ASC", false);
         $this->db->order_by('a.tanggal', 'ASC');
         $this->db->order_by('a.jam_mulai', 'ASC');
         $this->db->order_by('a.pertemuan_ke', 'ASC');
