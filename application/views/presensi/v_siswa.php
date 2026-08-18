@@ -264,17 +264,20 @@ $judul_bulan = !empty($nama_bulan_str) ? 'BULAN ' . strtoupper($nama_bulan_str) 
                             </select>
                         </div>
                         <div class="col-md-4 d-flex align-items-end gap-2">
-                            <button type="submit" class="btn btn-primary-600 text-sm radius-8 px-20">
+                            <button type="submit" class="btn btn-primary-600 text-sm radius-8 px-16">
                                 <iconify-icon icon="solar:filter-linear" class="me-1"></iconify-icon> Tampilkan
                             </button>
-                            <button type="button" onclick="printRekap()" class="btn btn-warning-600 text-sm radius-8 px-20">
+                            <button type="button" onclick="printRekap()" class="btn btn-warning-600 text-sm radius-8 px-16">
                                 <iconify-icon icon="solar:printer-linear" class="me-1"></iconify-icon> Cetak
                             </button>
-                            <button type="button" onclick="exportExcel()" class="btn btn-success-600 text-sm radius-8 px-20">
+                            <button type="button" onclick="exportExcel()" class="btn btn-success-600 text-sm radius-8 px-16">
                                 <iconify-icon icon="solar:document-text-linear" class="me-1"></iconify-icon> Excel
                             </button>
+                            <button type="button" data-bs-toggle="modal" data-bs-target="#modalDownloadLembaga" class="btn btn-secondary-600 text-sm radius-8 px-16">
+                                <iconify-icon icon="solar:file-download-bold" class="me-1"></iconify-icon> Unduh Lembaga
+                            </button>
                             <?php if (!empty($selected_rombel)): ?>
-                                <button type="button" data-bs-toggle="modal" data-bs-target="#modalAksiMasal" class="btn btn-danger-600 text-sm radius-8 px-20">
+                                <button type="button" data-bs-toggle="modal" data-bs-target="#modalAksiMasal" class="btn btn-danger-600 text-sm radius-8 px-16">
                                     <iconify-icon icon="solar:users-group-rounded-bold" class="me-1"></iconify-icon> Aksi Masal
                                 </button>
                             <?php endif; ?>
@@ -581,6 +584,71 @@ $judul_bulan = !empty($nama_bulan_str) ? 'BULAN ' . strtoupper($nama_bulan_str) 
             <div class="modal-footer d-flex justify-content-end gap-2">
                 <button type="button" class="btn btn-secondary text-sm" data-bs-dismiss="modal">Batal</button>
                 <button type="submit" class="btn btn-danger text-sm" onclick="return confirm('Apakah Anda yakin ingin memproses aksi masal ini? Data kosong pada rentang tanggal terpilih akan otomatis terisi.')">Proses Aksi Masal</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Download Presensi Per Lembaga (PDF) -->
+<div class="modal fade" id="modalDownloadLembaga" tabindex="-1" aria-labelledby="modalDownloadLembagaLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="get" action="<?php echo url('presensi/download_lembaga_pdf') ?>" target="_blank" class="modal-content">
+            <div class="modal-header bg-secondary-600">
+                <h6 class="modal-title text-light" id="modalDownloadLembagaLabel">
+                    <iconify-icon icon="solar:file-download-bold" class="me-1"></iconify-icon> Unduh Rekap Presensi Seluruh Rombel (Per Lembaga)
+                </h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info text-sm p-12 radius-8 mb-16">
+                    <iconify-icon icon="solar:info-circle-bold" class="me-1"></iconify-icon>
+                    Sistem akan mengunduh satu file PDF gabungan berisi seluruh Rombongan Belajar pada Lembaga yang dipilih untuk bulan terpilih (1 lembar per Rombel).
+                </div>
+
+                <div class="mb-16">
+                    <label class="form-label text-sm fw-bold">Pilih Lembaga</label>
+                    <select class="form-select text-sm radius-8" name="id_lembaga" required>
+                        <option value="">— Pilih Lembaga —</option>
+                        <?php if (!empty($lembaga_list)): ?>
+                            <?php foreach ($lembaga_list as $l): ?>
+                                <option value="<?php echo $l->id_lembaga ?>">
+                                    <?php echo html_escape($l->nama_lembaga) . (!empty($l->nama_lembaga_singkat) ? ' (' . html_escape($l->nama_lembaga_singkat) . ')' : '') ?>
+                                </option>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </select>
+                </div>
+
+                <div class="mb-16">
+                    <label class="form-label text-sm fw-bold">Bulan (Tahun Pelajaran Aktif)</label>
+                    <select class="form-select text-sm radius-8" name="bulan_tahun" required>
+                        <option value="">— Pilih Bulan —</option>
+                        <?php if (!empty($bulan_list)): ?>
+                            <?php foreach ($bulan_list as $bl): ?>
+                                <option value="<?php echo $bl->bulan_tahun ?>"
+                                    <?php echo ($selected_month ?? '') == $bl->bulan_tahun ? 'selected' : '' ?>>
+                                    <?php echo html_escape($bl->nama_bulan ?? $bl->bulan_tahun) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </select>
+                </div>
+
+                <div class="mb-0">
+                    <div class="form-check form-switch d-inline-flex align-items-center">
+                        <input class="form-check-input me-2" type="checkbox" name="show_menginduk" value="1" id="showMengindukLembagaPdf"
+                            <?php echo (!empty($show_menginduk)) ? 'checked' : '' ?>>
+                        <label class="form-check-label text-xs fw-medium" for="showMengindukLembagaPdf">
+                            Sertakan Siswa Menginduk (Kelas Jauh)
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-secondary text-sm" data-bs-dismiss="modal">Batal</button>
+                <button type="submit" class="btn btn-primary text-sm">
+                    <iconify-icon icon="solar:file-download-bold" class="me-1"></iconify-icon> Unduh PDF
+                </button>
             </div>
         </form>
     </div>

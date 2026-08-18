@@ -465,7 +465,193 @@ class Presensi extends MY_Controller
             $this->page_data['selected_month']  = $selected_month;
         }
 
+        $this->page_data['lembaga_list'] = $this->db->order_by('nama_lembaga', 'ASC')->get('lembaga')->result();
+
         $this->load->view('presensi/v_siswa', $this->page_data);
+    }
+
+    // =========================================================================
+    // Download / Ekspor PDF Presensi Seluruh Rombel Per Lembaga (Tanpa Kop & TTD)
+    // =========================================================================
+    public function download_lembaga_pdf()
+    {
+        $id_lembaga     = (int) $this->input->get('id_lembaga');
+        $selected_month = $this->input->get('bulan_tahun');
+        $show_menginduk = $this->input->get('show_menginduk') == '1';
+
+        if (!$id_lembaga || empty($selected_month)) {
+            $this->session->set_flashdata('alert-type', 'danger');
+            $this->session->set_flashdata('alert', 'Harap pilih Lembaga dan Bulan terlebih dahulu.');
+            redirect('presensi/siswa');
+            return;
+        }
+
+        $lembaga = $this->db->get_where('lembaga', ['id_lembaga' => $id_lembaga])->row();
+        if (!$lembaga) {
+            show_404();
+        }
+
+        $year  = substr($selected_month, 0, 4);
+        $month = substr($selected_month, 5, 2);
+
+        // Format nama bulan
+        $b_names = [
+            '01' => 'Januari', '02' => 'Februari', '03' => 'Maret',
+            '04' => 'April',   '05' => 'Mei',      '06' => 'Juni',
+            '07' => 'Juli',    '08' => 'Agustus',  '09' => 'September',
+            '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
+        ];
+        $nama_bulan_str = isset($b_names[$month]) ? ($b_names[$month] . ' ' . $year) : $selected_month;
+        $judul_bulan = 'BULAN ' . strtoupper($nama_bulan_str);
+
+        // 1. Ambil daftar tanggal efektif/hari libur pada bulan terpilih
+        $tanggal_list = [];
+        if ($this->db->table_exists('pembelajaran_hari_efektif')) {
+            $this->db->where('YEAR(tanggal)', $year);
+            $this->db->where('MONTH(tanggal)', $month);
+            $this->db->order_by('tanggal', 'ASC');
+            $q = $this->db->get('pembelajaran_hari_efektif');
+            if ($q && $q->num_rows() > 0) {
+                foreach ($q->result() as $r) {
+                    $obj = new stdClass();
+                    $obj->tanggal_absensi = $r->tanggal;
+                    $obj->status          = $r->status;
+                    $obj->keterangan      = $r->keterangan;
+                    $tanggal_list[] = $obj;
+                }
+            }
+        }
+        if (empty($tanggal_list) && $this->db->table_exists('absensi_tanggal')) {
+            $this->db->where('YEAR(tanggal_absensi)', $year);
+            $this->db->where('MONTH(tanggal_absensi)', $month);
+            $this->db->order_by('tanggal_absensi', 'ASC');
+            $q = $this->db->get('absensi_tanggal');
+            if ($q && $q->num_rows() > 0) {
+                $tanggal_list = $q->result();
+            }
+        }
+        if (empty($tanggal_list)) {
+            $total_days = date('t', strtotime("{$year}-{$month}-01"));
+            for ($d = 1; $d <= $total_days; $d++) {
+                $date_str = sprintf('%04d-%02d-%02d', $year, $month, $d);
+                $day_of_week = date('N', strtotime($date_str));
+                
+                $obj = new stdClass();
+                $obj->tanggal_absensi = $date_str;
+                $obj->status          = ($day_of_week == 7) ? 'Libur' : 'Efektif';
+                $obj->keterangan      = ($day_of_week == 7) ? 'Hari Minggu' : '';
+                $tanggal_list[] = $obj;
+            }
+        }
+
+        // 2. Ambil seluruh pembelajaran / rombel aktif pada lembaga tersebut
+        $this->db->select('p.id_pembelajaran, t.nama_tingkat, t.tingkat_angka, r.id_rombel, r.nama_rombel, tp.tahun_pelajaran, tp.semester');
+        $this->db->from('pembelajaran p');
+        $this->db->join('master_tingkat_sekolah t', 'p.id_tingkat_sekolah = t.id_tingkat_sekolah');
+        $this->db->join('rombel r', 'p.id_rombel = r.id_rombel');
+        $this->db->join('pembelajaran_tahun_pelajaran tp', 'p.id_tahun_pelajaran = tp.id_tahun_pelajaran');
+        $this->db->where('p.id_lembaga', $id_lembaga);
+        $this->db->where('tp.status', 'Aktif');
+        $this->db->where('p.status', 'Aktif');
+        $this->db->order_by('t.tingkat_angka', 'ASC');
+        $this->db->order_by('r.nama_rombel', 'ASC');
+        $pembelajaran_list = $this->db->get()->result();
+
+        $menginduk_ids = [];
+        if (!$show_menginduk && $this->db->table_exists('kelas_jauh_siswa')) {
+            $q_kj = $this->db->select('id_siswa')->get('kelas_jauh_siswa');
+            if ($q_kj && $q_kj->num_rows() > 0) {
+                $menginduk_ids = array_column($q_kj->result_array(), 'id_siswa');
+            }
+        }
+
+        $rekap_rombel_data = [];
+
+        foreach ($pembelajaran_list as $pemb) {
+            // Ambil daftar siswa
+            $this->db->select('s.id_siswa, s.nama_siswa, s.nisn, s.nipd, s.jenis_kelamin, s.rombel');
+            $this->db->from('pembelajaran_siswa ps');
+            $this->db->join('siswa s', 's.id_siswa = ps.peserta_didik_id');
+            $this->db->where('ps.id_pembelajaran', $pemb->id_pembelajaran);
+            $this->db->where('s.status_keaktifan', 'Aktif');
+            if (!empty($menginduk_ids)) {
+                $this->db->where_not_in('s.id_siswa', $menginduk_ids);
+            }
+            $this->db->order_by('s.nama_siswa', 'ASC');
+            $siswa_list = $this->db->get()->result();
+
+            // Fallback: jika pembelajaran_siswa belum dimapping, cari via siswa.rombel
+            if (empty($siswa_list)) {
+                $rombel_candidates = [
+                    $pemb->nama_rombel,
+                    $pemb->nama_tingkat . ' - ' . $pemb->nama_rombel,
+                    $pemb->nama_tingkat . ' ' . $pemb->nama_rombel
+                ];
+                $this->db->select('s.id_siswa, s.nama_siswa, s.nisn, s.nipd, s.jenis_kelamin, s.rombel');
+                $this->db->from('siswa s');
+                $this->db->where_in('s.rombel', $rombel_candidates);
+                $this->db->where('s.status_keaktifan', 'Aktif');
+                if (!empty($menginduk_ids)) {
+                    $this->db->where_not_in('s.id_siswa', $menginduk_ids);
+                }
+                $this->db->order_by('s.nama_siswa', 'ASC');
+                $siswa_list = $this->db->get()->result();
+            }
+
+            if (empty($siswa_list)) {
+                continue;
+            }
+
+            // Agregasi presensi siswa
+            $agg = $this->_aggregasi_presensi('siswa', $siswa_list, $year, $month);
+
+            // Format Judul Rombel
+            $raw_rombel = $pemb->nama_tingkat . ' - ' . $pemb->nama_rombel;
+            $rombel_upper = strtoupper(trim($raw_rombel));
+            if (strpos($rombel_upper, 'KELAS') === 0) {
+                $judul_rombel = "PRESENSI SISWA " . $rombel_upper;
+            } else {
+                $judul_rombel = "PRESENSI SISWA KELAS " . $rombel_upper;
+            }
+
+            $rekap_rombel_data[] = [
+                'pembelajaran'           => $pemb,
+                'judul_rombel'           => $judul_rombel,
+                'siswa_list'             => $siswa_list,
+                'presensi_matrix'        => $agg['by_id'],
+                'presensi_matrix_by_pin' => $agg['by_pin'],
+            ];
+        }
+
+        if (empty($rekap_rombel_data)) {
+            $this->session->set_flashdata('alert-type', 'warning');
+            $this->session->set_flashdata('alert', 'Tidak ditemukan data siswa aktif pada lembaga ' . html_escape($lembaga->nama_lembaga) . ' untuk periode ini.');
+            redirect('presensi/siswa');
+            return;
+        }
+
+        $pdf_data = [
+            'lembaga'           => $lembaga,
+            'selected_month'    => $selected_month,
+            'judul_bulan'       => $judul_bulan,
+            'tanggal_list'      => $tanggal_list,
+            'rekap_rombel_data' => $rekap_rombel_data,
+        ];
+
+        $html = $this->load->view('presensi/v_siswa_lembaga_pdf', $pdf_data, true);
+
+        $options = new \Dompdf\Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', true);
+
+        $dompdf = new \Dompdf\Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'landscape');
+        $dompdf->render();
+
+        $clean_lembaga_name = preg_replace('/[^A-Za-z0-9_\-]/', '_', $lembaga->nama_lembaga_singkat ?: $lembaga->nama_lembaga);
+        $filename = 'Presensi_' . $clean_lembaga_name . '_' . $selected_month . '.pdf';
+        $dompdf->stream($filename, ["Attachment" => 1]);
     }
 
     // =========================================================================
