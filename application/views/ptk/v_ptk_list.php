@@ -39,7 +39,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                                     <tr>
                                         <td><?php echo $no++; ?></td>
                                         <td><?php echo $row->status_pegawai; ?></td>
-                                        <td><?php echo $row->nama_ptk; ?></td>
+                                        <td><?php echo (!empty($row->gelar_depan) ? trim($row->gelar_depan) . ' ' : '') . $row->nama_ptk . (!empty($row->gelar_belakang) ? ', ' . trim($row->gelar_belakang) : ''); ?></td>
                                         <td><?php echo $row->niy; ?></td>
                                         <td class="text-center">
                                             <?php if (isset($user_map[$row->id_ptk])): ?>
