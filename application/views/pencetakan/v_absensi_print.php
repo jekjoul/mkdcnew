@@ -556,6 +556,18 @@ if (!empty($kop)) {
             </tbody>
         </table>
 
+        <!-- Keterangan Absen -->
+        <div style="font-size: 8pt; margin-top: 6px; margin-bottom: 8px; color: #000; font-family: 'Times New Roman', Times, serif;">
+            <strong>Keterangan Absen:</strong> &nbsp;
+            <span><strong>H</strong> = Hadir Lengkap</span> &nbsp;&nbsp;|&nbsp;&nbsp;
+            <span><strong>D</strong> = Hanya Dhuha</span> &nbsp;&nbsp;|&nbsp;&nbsp;
+            <span><strong>Z</strong> = Hanya Dzuhur</span> &nbsp;&nbsp;|&nbsp;&nbsp;
+            <span><strong>S</strong> = Sakit</span> &nbsp;&nbsp;|&nbsp;&nbsp;
+            <span><strong>I</strong> = Izin</span> &nbsp;&nbsp;|&nbsp;&nbsp;
+            <span><strong>A</strong> = Alfa</span> &nbsp;&nbsp;|&nbsp;&nbsp;
+            <span><strong>L</strong> = Libur</span>
+        </div>
+
         <!-- Ringkasan Jumlah Siswa & Tanda Tangan Wali Kelas -->
         <table border="0" style="width: 100%; margin-top: 15px; font-size: 10pt; border-collapse: collapse; border: 0;">
             <tr>

@@ -1,6 +1,37 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
 <?php include viewPath('includes/header'); ?>
 
+<?php
+// Formatting Judul Print Rekap Presensi PTK / Guru
+$nama_bulan_str = '';
+if (!empty($selected_month)) {
+    if (!empty($bulan_list)) {
+        foreach ($bulan_list as $bl) {
+            if (isset($bl->bulan_tahun) && $bl->bulan_tahun === $selected_month && !empty($bl->nama_bulan)) {
+                $nama_bulan_str = $bl->nama_bulan;
+                break;
+            }
+        }
+    }
+    if (empty($nama_bulan_str)) {
+        $b_array = [
+            '01' => 'Januari', '02' => 'Februari', '03' => 'Maret',
+            '04' => 'April',   '05' => 'Mei',      '06' => 'Juni',
+            '07' => 'Juli',    '08' => 'Agustus',  '09' => 'September',
+            '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
+        ];
+        $m_part = substr($selected_month, 5, 2);
+        $y_part = substr($selected_month, 0, 4);
+        if (isset($b_array[$m_part])) {
+            $nama_bulan_str = $b_array[$m_part] . ' ' . $y_part;
+        } else {
+            $nama_bulan_str = $selected_month;
+        }
+    }
+}
+$judul_bulan = !empty($nama_bulan_str) ? 'BULAN ' . strtoupper($nama_bulan_str) : '';
+?>
+
 <style type="text/css">
 .table-grid {
     overflow-x: auto;
@@ -91,14 +122,55 @@
 .legend-color { width: 18px; height: 18px; border-radius: 3px; display: inline-block; }
 
 .print-header {
+    text-align: center;
+    margin-bottom: 20px;
     display: none;
+}
+.print-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: #1e293b;
+}
+.print-subtitle {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 0;
+    color: #475569;
+}
+.print-keterangan {
+    font-size: 11px;
+    color: #475569;
+    padding-top: 10px;
+    border-top: 1px dashed #cbd5e1;
 }
 
 @media print {
     .print-header {
         display: block !important;
-        text-align: center;
-        margin-bottom: 20px;
+        margin-bottom: 15px !important;
+        text-align: center !important;
+    }
+    .print-title {
+        font-size: 14pt !important;
+        font-weight: bold !important;
+        color: #000 !important;
+        margin-bottom: 4px !important;
+    }
+    .print-subtitle {
+        font-size: 12pt !important;
+        font-weight: bold !important;
+        color: #000 !important;
+        margin-bottom: 12px !important;
+    }
+    .print-keterangan {
+        display: block !important;
+        font-size: 8.5pt !important;
+        color: #000 !important;
+        margin-top: 10px !important;
+        padding-top: 6px !important;
+        border-top: 1px solid #000 !important;
+        page-break-inside: avoid;
     }
     .sidebar-menu, .navbar, .navbar-header, .card-header, .legend-box, .legend-title, .breadcrumb, footer, .btn, .d-flex.flex-wrap.gap-2, .form-check-input, .form-check-label {
         display: none !important;
@@ -184,6 +256,14 @@
                 </div>
 
                 <div class="card-body">
+                    <!-- Header Judul Print -->
+                    <div class="print-header text-center mb-20">
+                        <h5 class="fw-bold mb-1 text-uppercase print-title">PRESENSI GURU & STAF</h5>
+                        <?php if (!empty($judul_bulan)): ?>
+                            <h6 class="fw-bold mb-0 text-uppercase print-subtitle"><?php echo html_escape($judul_bulan) ?></h6>
+                        <?php endif; ?>
+                    </div>
+
                     <!-- Legenda -->
                     <div class="d-flex flex-wrap gap-2 mb-16 text-sm">
                         <span class="legend-box"><span class="legend-color cell-hadir"></span> H = Hadir Lengkap</span>
@@ -335,6 +415,18 @@
                                 </tbody>
                             </table>
                         </div>
+
+                        <!-- Keterangan Absen Cetak -->
+                        <div class="print-keterangan mt-16 pt-12">
+                            <span class="fw-bold text-dark me-2">Keterangan Absen:</span>
+                            <span class="me-3"><strong>H</strong> = Hadir Lengkap</span>
+                            <span class="me-3"><strong>D</strong> = Hanya Dhuha</span>
+                            <span class="me-3"><strong>Z</strong> = Hanya Dzuhur</span>
+                            <span class="me-3"><strong>S</strong> = Sakit</span>
+                            <span class="me-3"><strong>I</strong> = Izin</span>
+                            <span class="me-3"><strong>A</strong> = Alfa</span>
+                            <span><strong>L</strong> = Libur</span>
+                        </div>
                     <?php else: ?>
                         <div class="text-center py-40 text-secondary-light">
                             <iconify-icon icon="icon-park-outline:user-business" style="font-size:40px" class="mb-12 d-block"></iconify-icon>
@@ -455,11 +547,15 @@ function exportExcel() {
     });
 
     var html = clonedTable.outerHTML;
+    var printHeader = document.querySelector(".print-header");
+    var headerHtml = printHeader ? printHeader.outerHTML : "";
+    var printKet = document.querySelector(".print-keterangan");
+    var ketHtml = printKet ? printKet.outerHTML : "";
     
     // Tambahkan style dasar agar border dan format sel terlihat rapi di Excel
-    var style = "<style>table { border-collapse: collapse; } th, td { border: 1px solid #999; text-align: center; padding: 4px; } .sticky-col-2 { text-align: left; } th { background-color: #f2f2f2; }</style>";
+    var style = "<style>table { border-collapse: collapse; } th, td { border: 1px solid #999; text-align: center; padding: 4px; } .sticky-col-2 { text-align: left; } th { background-color: #f2f2f2; } .print-header { text-align: center; margin-bottom: 12px; font-family: sans-serif; } .print-title { font-size: 14pt; font-weight: bold; } .print-subtitle { font-size: 12pt; font-weight: bold; } .print-keterangan { font-size: 9.5pt; margin-top: 10px; font-family: sans-serif; }</style>";
     
-    var blob = new Blob([style + html], {
+    var blob = new Blob([style + headerHtml + html + ketHtml], {
         type: "application/vnd.ms-excel"
     });
     

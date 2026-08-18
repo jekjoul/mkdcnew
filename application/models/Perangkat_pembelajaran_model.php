@@ -1174,6 +1174,100 @@ class Perangkat_pembelajaran_model extends MY_Model
             'updated_at' => date('Y-m-d H:i:s')
         ];
         $this->db->replace('presensi_agenda_siswa', $data);
+
+        // --- SINKRONISASI / OVERRIDE OTOMATIS KE PRESENSI SISWA (presensi_override) ---
+        $agenda = $this->getAgendaDetail($id_agenda);
+        if ($agenda && !empty($agenda->tanggal)) {
+            $tanggal = $agenda->tanggal;
+
+            // Pastikan tabel presensi_override sudah dibuat
+            if (!$this->db->table_exists('presensi_override')) {
+                $this->db->query("
+                    CREATE TABLE IF NOT EXISTS `presensi_override` (
+                        `id`         INT(11) NOT NULL AUTO_INCREMENT,
+                        `tipe_user`  ENUM('siswa','ptk') NOT NULL,
+                        `id_user`    INT(11) NOT NULL,
+                        `pin`        VARCHAR(100) NOT NULL DEFAULT '',
+                        `tanggal`    DATE NOT NULL,
+                        `status`     VARCHAR(20) NOT NULL DEFAULT 'Hadir',
+                        `keterangan` TEXT NULL,
+                        `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        PRIMARY KEY (`id`),
+                        UNIQUE KEY `idx_override_user_tgl` (`tipe_user`, `id_user`, `tanggal`)
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+                ");
+            }
+
+            if ($status === 'Sakit' || $status === 'Izin') {
+                $status_override = $status;
+
+                $siswa = $this->db->get_where('siswa', ['id_siswa' => (int)$id_siswa])->row();
+                $pin = $siswa ? (string)$siswa->nipd : '';
+
+                $mapel_info = !empty($agenda->nama_mapel) ? ' (' . $agenda->nama_mapel . ')' : '';
+                $ket_override = !empty($catatan) 
+                    ? $catatan 
+                    : ($status_override . $mapel_info);
+
+                $existing = $this->db->get_where('presensi_override', [
+                    'tipe_user' => 'siswa',
+                    'id_user'   => (int)$id_siswa,
+                    'tanggal'   => $tanggal
+                ])->row();
+
+                if ($existing) {
+                    $this->db->where('id', $existing->id);
+                    $this->db->update('presensi_override', [
+                        'status'     => $status_override,
+                        'keterangan' => $ket_override
+                    ]);
+                } else {
+                    $this->db->insert('presensi_override', [
+                        'tipe_user'  => 'siswa',
+                        'id_user'    => (int)$id_siswa,
+                        'pin'        => $pin,
+                        'tanggal'    => $tanggal,
+                        'status'     => $status_override,
+                        'keterangan' => $ket_override
+                    ]);
+                }
+            } else {
+                // Jika status Hadir, Alpa, atau kosong, hapus override (kecuali ada agenda lain pada hari itu yang Sakit/Izin)
+                $other_agenda = $this->db->select('pas.status, pas.catatan, m.nama_mapel')
+                    ->from('presensi_agenda_siswa pas')
+                    ->join('agenda_pembelajaran ap', 'ap.id_agenda = pas.id_agenda')
+                    ->join('pembelajaran_mapel pm', 'pm.id_pembelajaran_mapel = ap.id_pembelajaran_mapel')
+                    ->join('mapel m', 'm.id_mapel = pm.id_mapel', 'left')
+                    ->where('ap.tanggal', $tanggal)
+                    ->where('pas.id_siswa', (int)$id_siswa)
+                    ->where('pas.id_agenda !=', (int)$id_agenda)
+                    ->where_in('pas.status', ['Sakit', 'Izin'])
+                    ->get()->row();
+
+                if ($other_agenda) {
+                    $other_status = $other_agenda->status;
+                    $mapel_info   = !empty($other_agenda->nama_mapel) ? ' (' . $other_agenda->nama_mapel . ')' : '';
+                    $other_ket    = !empty($other_agenda->catatan) ? $other_agenda->catatan : ($other_status . $mapel_info);
+
+                    $this->db->where([
+                        'tipe_user' => 'siswa',
+                        'id_user'   => (int)$id_siswa,
+                        'tanggal'   => $tanggal
+                    ]);
+                    $this->db->update('presensi_override', [
+                        'status'     => $other_status,
+                        'keterangan' => $other_ket
+                    ]);
+                } else {
+                    // Hapus override jika tidak ada ketidakhadiran (Sakit/Izin) di agenda lain pada hari itu
+                    $this->db->delete('presensi_override', [
+                        'tipe_user' => 'siswa',
+                        'id_user'   => (int)$id_siswa,
+                        'tanggal'   => $tanggal
+                    ]);
+                }
+            }
+        }
     }
 
     /**
