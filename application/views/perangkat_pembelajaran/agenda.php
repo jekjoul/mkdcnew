@@ -35,6 +35,7 @@
     
     $agendas_sudah = [];
     $agendas_belum = [];
+    $agendas_terlambat = [];
     $mismatch_count = 0;
     $total_terlambat = 0;
 
@@ -44,11 +45,12 @@
                 $agendas_sudah[] = $row;
             } else {
                 $is_past_date = ($row->tanggal < $today_str);
-                $is_today     = ($row->tanggal === $today_str);
-                if ($is_past_date || ($is_today && !empty($row->jam_mulai) && $now_time > $row->jam_mulai)) {
+                if ($is_past_date) {
+                    $agendas_terlambat[] = $row;
                     $total_terlambat++;
+                } else {
+                    $agendas_belum[] = $row;
                 }
-                $agendas_belum[] = $row;
             }
 
             $chk = $this->perangkat_model->checkAgendaJadwalMismatch($row);
@@ -180,11 +182,13 @@
                         <iconify-icon icon="solar:clock-circle-bold" class="me-1 text-warning-600"></iconify-icon>
                         Agenda
                         <span class="badge bg-warning-50 text-warning-600 radius-4 ms-2 px-8 py-2"><?php echo $total_belum ?></span>
-                        <?php if ($total_terlambat > 0): ?>
-                            <span class="badge bg-danger-50 text-danger-600 radius-4 ms-1 px-8 py-2 fw-bold" title="<?php echo $total_terlambat; ?> agenda melewati tanggal tetapi belum terlaksana">
-                                <iconify-icon icon="solar:danger-triangle-bold" class="text-xs me-1"></iconify-icon><?php echo $total_terlambat ?> Terlambat
-                            </span>
-                        <?php endif; ?>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link px-20 py-10 fw-semibold" id="tab-terlambat-btn" data-bs-toggle="tab" data-bs-target="#tab-agenda-terlambat" type="button" role="tab">
+                        <iconify-icon icon="solar:danger-triangle-bold" class="me-1 text-danger-600"></iconify-icon>
+                        Terlambat
+                        <span class="badge bg-danger-50 text-danger-600 radius-4 ms-2 px-8 py-2"><?php echo $total_terlambat ?></span>
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
@@ -214,7 +218,7 @@
             </div>
 
             <div class="tab-content">
-                <!-- TAB 1: BELUM DILAKSANAKAN -->
+                <!-- TAB 1: AGENDA (HARI INI & AKAN DATANG) -->
                 <div class="tab-pane fade show active" id="tab-agenda-belum" role="tabpanel">
                     <!-- Desktop Table -->
                     <div class="table-responsive d-none d-md-block">
@@ -230,15 +234,6 @@
                                 <?php if (!empty($agendas_belum)): ?>
                                     <?php foreach ($agendas_belum as $row): ?>
                                         <?php
-                                        $is_past_date = ($row->tanggal < $today_str);
-                                        $is_today     = ($row->tanggal === $today_str);
-                                        $is_late      = false;
-
-                                        if ($is_past_date) {
-                                            $is_late = true;
-                                        } elseif ($is_today && !empty($row->jam_mulai) && $now_time > $row->jam_mulai) {
-                                            $is_late = true;
-                                        }
                                         $mm = $this->perangkat_model->checkAgendaJadwalMismatch($row);
                                         ?>
                                         <tr>
@@ -270,11 +265,7 @@
                                                             <iconify-icon icon="solar:danger-triangle-bold" class="text-xs"></iconify-icon> <?php echo $lbl; ?>
                                                         </span><br>
                                                     <?php endif; ?>
-                                                    <?php if ($is_late): ?>
-                                                        <span class="badge bg-danger-focus text-danger-main px-10 py-4 radius-4 d-inline-flex align-items-center gap-1" title="Jadwal mengajar telah lewat tetapi belum dilaksanakan">
-                                                            <iconify-icon icon="solar:danger-triangle-bold" class="text-xs"></iconify-icon> Terlambat
-                                                        </span>
-                                                    <?php elseif ($row->status === 'Libur'): ?>
+                                                    <?php if ($row->status === 'Libur'): ?>
                                                         <span class="badge bg-danger-focus text-danger-main px-10 py-4 radius-4">Libur KBM</span>
                                                     <?php else: ?>
                                                         <span class="badge bg-neutral-200 text-neutral-700 px-10 py-4 radius-4">Belum Dilaksanakan</span>
@@ -307,15 +298,6 @@
                             <div class="accordion custom-accordion" id="accordionAgendaBelumMobile">
                                 <?php foreach ($agendas_belum as $i => $row): ?>
                                     <?php
-                                    $is_past_date = ($row->tanggal < $today_str);
-                                    $is_today     = ($row->tanggal === $today_str);
-                                    $is_late      = false;
-
-                                    if ($is_past_date) {
-                                        $is_late = true;
-                                    } elseif ($is_today && !empty($row->jam_mulai) && $now_time > $row->jam_mulai) {
-                                        $is_late = true;
-                                    }
                                     $mm_mob = $this->perangkat_model->checkAgendaJadwalMismatch($row);
                                     $accordionId = "collapseAgendaBelum" . $row->id_agenda;
                                     $headingId   = "headingAgendaBelum" . $row->id_agenda;
@@ -331,11 +313,7 @@
                                                             <?php if (!empty($mm_mob['is_mismatch'])): ?>
                                                                 <span class="badge bg-warning-focus text-warning-main px-8 py-2 radius-4 text-xs me-1">⚠️ Hari Mismatch</span>
                                                             <?php endif; ?>
-                                                            <?php if ($is_late): ?>
-                                                                <span class="badge bg-danger-focus text-danger-main px-8 py-2 radius-4 text-xs">Terlambat</span>
-                                                            <?php else: ?>
-                                                                <span class="badge bg-warning-50 text-warning-700 px-8 py-2 radius-4 text-xs">Belum</span>
-                                                            <?php endif; ?>
+                                                            <span class="badge bg-warning-50 text-warning-700 px-8 py-2 radius-4 text-xs">Belum</span>
                                                         </div>
                                                     </div>
                                                     <div class="d-flex align-items-center gap-12 text-xs text-secondary-light mt-4">
@@ -377,13 +355,149 @@
                             </div>
                         <?php else: ?>
                             <div class="text-center py-24 text-secondary-light">
-                                <p class="text-sm">Tidak ada agenda belum dilaksanakan.</p>
+                                <p class="text-sm">Tidak ada agenda aktif/hari ini yang belum dilaksanakan.</p>
                             </div>
                         <?php endif; ?>
                     </div>
                 </div>
 
-                <!-- TAB 2: SUDAH DILAKSANAKAN -->
+                <!-- TAB 2: TERLAMBAT (TANGGAL SUDAH BERLALU) -->
+                <div class="tab-pane fade" id="tab-agenda-terlambat" role="tabpanel">
+                    <!-- Desktop Table -->
+                    <div class="table-responsive d-none d-md-block">
+                        <table class="table bordered-table align-middle w-100" id="agendaTableTerlambat">
+                            <thead>
+                                <tr>
+                                    <th>Hari, Tanggal & Jadwal</th>
+                                    <th>Rombel & Mapel</th>
+                                    <th class="text-center" style="width: 140px;">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if (!empty($agendas_terlambat)): ?>
+                                    <?php foreach ($agendas_terlambat as $row): ?>
+                                        <?php
+                                        $mm = $this->perangkat_model->checkAgendaJadwalMismatch($row);
+                                        ?>
+                                        <tr>
+                                            <td>
+                                                <div class="mb-1">
+                                                    <span class="fw-semibold text-primary-light"><?php echo html_escape($row->hari) ?>,</span>
+                                                    <span class="text-xs text-secondary-light"><?php echo date('d M Y', strtotime($row->tanggal)) ?></span>
+                                                </div>
+
+                                                <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                                                    <?php if (!empty($row->jam_mulai)): ?>
+                                                        <span class="fw-bold text-primary-900 text-xs">
+                                                            <?php echo html_escape($row->jam_mulai) ?> - <?php echo html_escape($row->jam_selesai) ?> WIB
+                                                        </span>
+                                                    <?php else: ?>
+                                                        <span class="text-xs text-neutral-400">Belum diatur</span>
+                                                    <?php endif; ?>
+                                                </div>
+
+                                                <div>
+                                                    <?php if (!empty($mm['is_mismatch'])): ?>
+                                                        <?php $lbl = (($mm['mismatch_type'] ?? '') === 'time') ? 'Jam KBM Tidak Sesuai' : 'Hari Tidak Sesuai'; ?>
+                                                        <span class="badge bg-warning-focus text-warning-main px-10 py-4 radius-4 d-inline-flex align-items-center gap-1 mb-1" title="<?php echo html_escape($mm['reason']) ?>">
+                                                            <iconify-icon icon="solar:danger-triangle-bold" class="text-xs"></iconify-icon> <?php echo $lbl; ?>
+                                                        </span><br>
+                                                    <?php endif; ?>
+                                                    <span class="badge bg-danger-focus text-danger-main px-10 py-4 radius-4 d-inline-flex align-items-center gap-1" title="Tanggal pelaksanaan agenda telah berlalu tetapi belum dilaksanakan">
+                                                        <iconify-icon icon="solar:danger-triangle-bold" class="text-xs"></iconify-icon> Terlambat
+                                                    </span>
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <span class="badge bg-primary-50 text-primary-600 radius-4 mb-4 d-inline-block"><?php echo html_escape((!empty($row->nama_tingkat) ? $row->nama_tingkat . ' - ' : '') . $row->nama_rombel) ?></span>
+                                                <div class="fw-semibold text-neutral-800 text-sm"><?php echo html_escape($row->nama_mapel) ?></div>
+                                                <span class="badge bg-info-100 text-info-600 radius-4">Pert. Ke-<?php echo $row->pertemuan_ke ?></span>
+                                            </td>
+
+                                            <td class="text-center">
+                                                <?php $detail_route = (logged('role') == '1') ? 'perangkat_pembelajaran/agenda_detail/' : 'guru/agenda_detail/'; ?>
+                                                <a href="<?php echo url($detail_route . $row->id_agenda) ?>" class="btn btn-sm btn-success-600 text-white radius-8 px-14 py-8 d-inline-flex align-items-center gap-1 fw-semibold shadow-xs">
+                                                    <iconify-icon icon="solar:play-circle-bold" class="text-lg"></iconify-icon> Buka
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Mobile Accordion -->
+                    <div class="d-block d-md-none">
+                        <?php if (!empty($agendas_terlambat)): ?>
+                            <div class="accordion custom-accordion" id="accordionAgendaTerlambatMobile">
+                                <?php foreach ($agendas_terlambat as $i => $row): ?>
+                                    <?php
+                                    $mm_mob = $this->perangkat_model->checkAgendaJadwalMismatch($row);
+                                    $accordionId = "collapseAgendaTerlambat" . $row->id_agenda;
+                                    $headingId   = "headingAgendaTerlambat" . $row->id_agenda;
+                                    $searchableText = strtolower(html_escape($row->hari . ' ' . date('d M Y', strtotime($row->tanggal)) . ' ' . $row->nama_mapel . ' ' . $row->nama_rombel));
+                                    ?>
+                                    <div class="accordion-item border radius-8 mb-12 mobile-agenda-card" data-search="<?php echo $searchableText; ?>">
+                                        <h2 class="accordion-header" id="<?php echo $headingId; ?>">
+                                            <button class="accordion-button collapsed px-16 py-12 text-sm fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#<?php echo $accordionId; ?>" aria-expanded="false">
+                                                <div class="d-flex flex-column gap-1 w-100 me-12">
+                                                    <div class="d-flex align-items-center justify-content-between">
+                                                        <span class="text-primary-600 fw-bold"><?php echo html_escape($row->nama_mapel); ?></span>
+                                                        <div style="position: relative;right: 35px;top: 15px;">
+                                                            <?php if (!empty($mm_mob['is_mismatch'])): ?>
+                                                                <span class="badge bg-warning-focus text-warning-main px-8 py-2 radius-4 text-xs me-1">⚠️ Hari Mismatch</span>
+                                                            <?php endif; ?>
+                                                            <span class="badge bg-danger-focus text-danger-main px-8 py-2 radius-4 text-xs">Terlambat</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-flex align-items-center gap-12 text-xs text-secondary-light mt-4">
+                                                        <span><?php echo html_escape($row->hari) ?>, <?php echo date('d M Y', strtotime($row->tanggal)) ?></span>
+                                                    </div>
+                                                    <div class="d-flex align-items-center gap-12 text-xs text-secondary-light mt-4">
+                                                        <span><?php echo html_escape((!empty($row->nama_tingkat) ? $row->nama_tingkat . ' - ' : '') . $row->nama_rombel) ?></span>
+                                                    </div>
+                                                </div>
+                                            </button>
+                                        </h2>
+                                        <div id="<?php echo $accordionId; ?>" class="accordion-collapse collapse" aria-labelledby="<?php echo $headingId; ?>" data-bs-parent="#accordionAgendaTerlambatMobile">
+                                            <div class="accordion-body p-16 bg-neutral-50 radius-bottom-8">
+                                                <div class="row gy-2 text-xs mb-12">
+                                                    <div class="col-6">
+                                                        <span class="text-secondary-light d-block mb-2">Rombel</span>
+                                                        <span class="fw-semibold text-primary-light"><?php echo html_escape((!empty($row->nama_tingkat) ? $row->nama_tingkat . ' - ' : '') . $row->nama_rombel); ?></span>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <span class="text-secondary-light d-block mb-2">Pertemuan</span>
+                                                        <span class="fw-semibold text-primary-light">Pert. Ke-<?php echo $row->pertemuan_ke; ?></span>
+                                                    </div>
+                                                    <div class="col-12 mt-8">
+                                                        <span class="text-secondary-light d-block mb-2">Waktu KBM</span>
+                                                        <span class="fw-bold text-primary-900"><?php echo !empty($row->jam_mulai) ? html_escape($row->jam_mulai . ' - ' . $row->jam_selesai . ' WIB') : 'Belum diatur'; ?></span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mt-16 pt-12 border-top">
+                                                    <?php $detail_route = (logged('role') == '1') ? 'perangkat_pembelajaran/agenda_detail/' : 'guru/agenda_detail/'; ?>
+                                                    <a href="<?php echo url($detail_route . $row->id_agenda) ?>" class="btn btn-success-600 btn-sm text-white radius-8 w-100 d-flex align-items-center justify-content-center gap-2 py-8 fw-semibold">
+                                                        <iconify-icon icon="solar:play-circle-bold" class="text-lg"></iconify-icon> Buka Agenda & Presensi
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php else: ?>
+                            <div class="text-center py-24 text-secondary-light">
+                                <p class="text-sm">Tidak ada agenda terlambat.</p>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <!-- TAB 3: SUDAH DILAKSANAKAN -->
                 <div class="tab-pane fade" id="tab-agenda-sudah" role="tabpanel">
                     <!-- Desktop Table -->
                     <div class="table-responsive d-none d-md-block">
@@ -580,6 +694,16 @@ $(document).ready(function() {
 
     if ($('#agendaTableBelum').length > 0) {
         $('#agendaTableBelum').DataTable({
+            pageLength: 25,
+            order: [],
+            columnDefs: [
+                { orderable: false, targets: 2 }
+            ]
+        });
+    }
+
+    if ($('#agendaTableTerlambat').length > 0) {
+        $('#agendaTableTerlambat').DataTable({
             pageLength: 25,
             order: [],
             columnDefs: [
